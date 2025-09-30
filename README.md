@@ -7,11 +7,9 @@ A booking and account management platform to streamline how the University of Br
 
 Key features
 - Streamlined booking: enter pick‑up/drop‑off, time, vehicle type, instant confirmation.
-- Integrated PO management: .
 - Real‑time journey visibility: status changes and location sharing for reassurance and coordination.
 - Sustainability options: Hybrid/EV vehicle prioritisation.
 - Centralised invoicing: booking history and faculty specific invoices.
-- Notifications: .
 
 
 
