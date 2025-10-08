@@ -1,67 +1,36 @@
-# **UoB Sustainable Transport – Smart taxi & chauffeur booking Platform**
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Table of Contents
+## Getting Started
 
-- [Project Overview](#project-overview)
-- [Project Structure](#project-structure)
-- [Stakeholders](#stakeholders)
-  - [Primary Users](#primary-users)
-  - [Secondary Users](#secondary-users)
-- [User Stories](#user-stories)
-- [Project Architecture](#project-architecture)
-- [Team Members](#team-members)
+First, run the development server:
 
-## Project Overview
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
 
-A booking and account management platform to streamline how the University of Bristol (UoB) books and manages taxi and chauffeur services with Proline Taxi. The goal is to replace manual processes through emails and phone calls with a digital experience that is faster, more transparent, and easier to manage at scale while providing an intuitive and user-friendly interface suitable for non-technical individuals.
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-### Key Features
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-- Streamlined booking: enter pick-up/drop-off, time, name, email, instant confirmation through SMS.
-- Automated data handling: routing important booking details to the corresponding head/finance team of University Department for approval.
-- Real-time journey visibility: status changes and location sharing for reassurance and coordination.
-- Sustainability options: Hybrid/EV vehicle prioritisation and joining rides feature if applicable.
-- Centralised invoicing: booking history and faculty specific invoices.
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Project Structure
+## Learn More
 
-## Stakeholders
+To learn more about Next.js, take a look at the following resources:
 
-### Primary Users
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-#### Proline Taxi Company
-Maintains the platform and utilizes automated booking process to provide efficient taxi and chauffeur services for University of Bristol staff.
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-#### University of Bristol Faculty/Department
-Receives details regarding bookings and approve/reject them to allow/disallow PO number creation for invoicing.
+## Deploy on Vercel
 
-### Secondary Users
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-#### Service Providers (Drivers)
-Reach the pick-up location promptly and provide regular updates to the passenger for transparency and clear communication.
-
-#### University of Bristol Staff
-Benefit from a streamlined booking process, clear driver communication, and straightforward approval process from the University Department.
-
-## User Stories
-
-- As a passenger, I want the approval process for my booking to be done faster and establish transparent communication with the appointed driver to **save time**.
-- As the client, we want to optimize and automate the current laborious back and forth booking process to **save time** and resource for both the company and for our customers.
-- As the Head/Finance Manager of UoB Department, I want to see the important details of the booking instantly and approve/reject it in a timely fashion and receive bundled invoices to make the payment easier to **save time**.
-- As a driver, I want to receive the necessary details I need to provide quality service to the passenger.
-
-## Project Architecture
-
-## Team Members
-
-| **Name** | **Email** |
-|-----------|-----------|
-| Ioan Mori | ok24616@bristol.ac.uk |
-| Otgon-Erdene Otgonsukh | ww23805@bristol.ac.uk |
-| Yidi Ai | nb23869@bristol.ac.uk |
-| Erik Maltby | bg24935@bristol.ac.uk |
-
-
-
-
-
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
