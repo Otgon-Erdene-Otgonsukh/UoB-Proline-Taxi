@@ -36,11 +36,11 @@ The phone number on the system should be for the passenger, perhaps an option th
 
 Show the user how to use the platform, so that the first time they use the platform, they get to see how to use the platform.
 
-The purchase order number is required in the form. The invoices for one day could be consolidated into one purchase order number. It is up to us to come up with the optimal solution. - Ask this in the survey.
+The purchase order number is required in the form. The invoices for one day could be consolidated into one purchase order number. It is up to us to come up with the optimal solution. Ask this to the department heads in the survey.
 
 Field validation, as good practice with any website, but as much validation and sanitization as possible, such as the pre-selected country prefix.
 
-Two flows could be used, a user could be pre-approved and the head of department still sees it but does not have to approve it. Another flow is that the head of department must approve.
+Two flows could be used, a user could be pre-approved and the head of department still sees it but does not have to approve it. Another flow is that the head of department must approve. Pre-approval would require another field in our database such as a "permission level" integer.
 
 Take a look at icabbi for ideas on how forms should look, and how they behave such as when selecting an airport as a destination or pick up point.
 

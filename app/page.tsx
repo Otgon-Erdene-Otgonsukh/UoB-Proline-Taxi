@@ -155,7 +155,7 @@ function page() {
             type="submit"
             className="w-full bg-yellow-300  text-gray-700 py-2 px-4 rounded-md hover:bg-yellow-500 hover:scale-103 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 font-extrabold"
           >
-            BOOK THAT SHIT
+            Book Taxi
           </button>
         </form>
       </div>
