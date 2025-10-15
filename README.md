@@ -60,8 +60,8 @@ Benefit from a streamlined booking process, clear driver communication, and stra
 
 | **Name** | **Email** |
 |-----------|-----------|
-| Ioan Moir | ok24616@bristol.ac.uk |
+| Ioan Moir (Project Manager) | ok24616@bristol.ac.uk |
 | Otgon-Erdene Otgonsukh | ww23805@bristol.ac.uk |
 | Yidi Ai | nb23869@bristol.ac.uk |
-| Erik Maltby | bg24935@bristol.ac.uk |
+| Erik Maltby (Client Liason) | bg24935@bristol.ac.uk |
 
