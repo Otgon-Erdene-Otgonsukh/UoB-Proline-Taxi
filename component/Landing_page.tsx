@@ -1,12 +1,13 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export function Landing_page() {
   return (
     <div>
       <div className="flex flex-col mt-12 mb-8 lg:flex-row min-h-screen justify-evenly items-center px-4 py-8 lg:py-0">
         {/*the image and the h1 dynamically shrinks and expand based on the screen size using lg sm tailwind properties*/}
-        <img
-          className="w-64 h-64 mt-14 sm:w-80 sm:h-80 lg:w-100 lg:h-100 lg:order-2 lg:mr-12 mb-8 lg:mb-0"
+        <Image width="100" height="100"
+          className="w-64 h-64 mt-14 sm:w-80 sm:h-80 sm:mt-25 lg:w-100 lg:h-100 lg:order-2 lg:mr-12 mb-8 lg:mb-0"
           src={"/landpic.svg"}
           alt="Landing"
         />
