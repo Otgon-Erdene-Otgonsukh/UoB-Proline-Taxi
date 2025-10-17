@@ -12,7 +12,7 @@ export function BookingPage() {
 
   return (
     <div className="flex min-h-screen justify-center items-center font-inter p-4">
-      <div className="bg-white shadow-lg/20 p-4 sm:p-6 md:p-8 rounded-lg my-8 w-full max-w-lg">
+      <div className="bg-white mt-50 mb-30 shadow-lg/20 p-4 sm:p-6 md:p-8 rounded-lg my-8 w-full max-w-lg">
         <h1 className="font-aleo text-2xl sm:text-3xl font-semibold mb-6 text-center text-shadow-lg/20">
           BOOKING DETAILS
         </h1>
