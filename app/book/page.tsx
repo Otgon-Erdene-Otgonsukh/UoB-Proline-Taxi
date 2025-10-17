@@ -19,8 +19,7 @@ export function BookingPage() {
         <form action="/" method="POST">
           {/*should go to some confirmed page or alike, currently goes to homepage*/}
           <div className="flex flex-col gap-4">
-            {isManualChecked || isFlightChecked ? (
-              <div className="flex flex-col text-gray-400">
+              <div className={`flex flex-col ${(isManualChecked || isFlightChecked) ? "text-gray-400" : ""}`}>
                 <label htmlFor="commonLoc" className="mb-1 text-sm">
                   Common pick-up locations
                 </label>
@@ -37,25 +36,6 @@ export function BookingPage() {
                   <option>Richmond Building</option>
                 </select>
               </div>
-            ) : (
-              <div className="flex flex-col">
-                <label htmlFor="commonLoc" className="mb-1 text-sm">
-                  Common pick-up locations
-                </label>
-                <select
-                  id="commonLoc"
-                  className="border-2 rounded px-2 py-2"
-                  defaultValue="None"
-                  disabled={isManualChecked}
-                >
-                  <option>Queen's Building</option>
-                  <option>Will's Memorial</option>
-                  <option>Merchant Venturers Building</option>
-                  <option>Victoria Rooms</option>
-                  <option>Richmond Building</option>
-                </select>
-              </div>
-            )}
             <div id="checkboxes" className="flex flex-row justify-start gap-6">
               <label
                 htmlFor="manual"
