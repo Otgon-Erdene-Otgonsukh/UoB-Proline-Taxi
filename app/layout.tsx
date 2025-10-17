@@ -1,6 +1,9 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+import { Aleo, Inter } from "next/font/google";
 import "./globals.css";
 
+const aleo = Aleo({ subsets: ["latin"], variable: "--font-aleo" });
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
   title: "UoB Book",
@@ -14,10 +17,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
+      <body className={`${aleo.variable} ${inter.variable}`}>
         <main>{children}</main>
-        
-        <footer className="flex justify-center mb-4  text-white"> © Proline Taxi</footer>
       </body>
     </html>
   );
