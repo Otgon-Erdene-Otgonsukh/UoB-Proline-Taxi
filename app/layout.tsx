@@ -1,4 +1,4 @@
-import type { Metadata, Viewport } from "next";
+import type { Metadata } from "next";
 import { Aleo, Inter } from "next/font/google";
 import "./globals.css";
 
