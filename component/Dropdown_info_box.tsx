@@ -3,9 +3,10 @@ export default function DdInfoBox({title, description, open, click,}: {title: st
   return (
     // ${open ? ...} makes the background white (slightly easier to read thinner font) if the element is open.
     <div className={`my-4 border border-black rounded-md ${open ? "bg-white" : ""}`}>
-        {/* onClick passed as callback because otherwise it would not update the state of the page. */}
+        {/* onClick calls the callback function to trigger set state in page. */}
         <button onClick={click}
-            className="p-4 cursor-pointer w-full flex justify-between items-center text-left font-bold text-gray-800 focus:outline-none"
+            // focus:border-blue-500 places a blue box when it's in focus (tabbed onto) for accessibility.
+            className="p-4 cursor-pointer w-full flex justify-between items-center text-left font-bold transition-all focus:border-blue-500"
             aria-expanded={open}>
               
             {title}
@@ -16,7 +17,7 @@ export default function DdInfoBox({title, description, open, click,}: {title: st
 
         {/* Opened and closed animation / states are determined by the height and opacity judging by the state open == true / false. */}
         <div className={`transition-all duration-100 ease-in-out overflow-hidden ${open ? "px-4 pb-4 max-h-40 opacity-100 mt-2" : "max-h-0 opacity-0"}`}>
-            <p className="text-gray-600 leading-relaxed">{description}</p>
+            <p className="leading-relaxed">{description}</p>
         </div>
     </div>
   );
