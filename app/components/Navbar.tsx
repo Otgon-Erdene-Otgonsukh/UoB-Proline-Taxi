@@ -3,8 +3,8 @@ import Image from "next/image";
 
 export const Navbar = () => {
     return (
-        <nav className="bg-[#2C2C2C] text-white p-4 sm:p-6 md:flex md:justify-start">
-            <div className="w-full flex justify-between items-center">
+        <nav className= "bg-[#2C2C2C] text-white w-full p-4 sm:p-6 md:justify-start drop-shadow-xl drop-shadow-[#2C2C2C]">
+            <div className="flex justify-between items-center">
                 {/* logos */}
                 <div className="flex items-center space-x-4">
                     <Link href={"/"}>
@@ -45,15 +45,15 @@ export const Navbar = () => {
 
                     </Link>
                 </div>
-                <div className="md:flex flex-1 items-center justify-evenly">
-                    <Link href={"/"} className="mx-2 hover:text-gray-300">Home</Link>
+                <ul className="hidden sm:flex">
+                    <Link href={"/"} className="mr-10 text-xl hover:text-gray-300 hover:border-b-1">Home</Link>
                     
-                    <Link href={"/Dashbard"} className="mx-2 hover:text-gray-300">Dashbard</Link>
+                    <Link href={"/Dashboard"} className="mr-10 text-xl hover:text-gray-300 hover:border-b-1">Dashbard</Link>
                     
-                    <Link href={"/About"} className="mx-2 hover:text-gray-300">About</Link>
+                    <Link href={"/About"} className="mr-10 text-xl hover:text-gray-300 hover:border-b-1">About</Link>
                     
-                    <Link href={"/Help"} className="mx-2 hover:text-gray-300">Help</Link>
-                </div>
+                    <Link href={"/Help"} className="mr-10 text-xl hover:text-gray-300 hover:border-b-1">Help</Link>
+                </ul>
             </div>
         </nav>
     );
