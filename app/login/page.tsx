@@ -1,7 +1,8 @@
+import Log from "@/component/Log_forgot"
 
 const page = () => {
   return (
-    <div>log in</div>
+    <div><Log logIn={true} forgot={false} codeSent={false} reset={false}/></div>
   )
 }
 
