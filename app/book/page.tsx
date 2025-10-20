@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import {FormControl, InputLabel, MenuItem, Select} from "@mui/material"
 
 export function BookingPage() {
   const [isManualChecked, setIsManualChecked] = useState(false);
@@ -20,21 +21,57 @@ export function BookingPage() {
           {/*should go to some confirmed page or alike, currently goes to homepage*/}
           <div className="flex flex-col gap-4">
               <div className={`flex flex-col ${(isManualChecked || isFlightChecked) ? "text-gray-400" : ""}`}>
-                <label htmlFor="commonLoc" className="mb-1 text-sm">
+                <FormControl
+                fullWidth
+                disabled={isManualChecked || isFlightChecked}
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: "0.375rem", // rounded
+                    fontSize: "0.875rem", // text-sm
+                    color: "#111827", // gray-900 text color
+                    "& fieldset": {
+                      borderWidth: "2px", // border-2
+                      borderColor: "#111827", // gray-900
+                    },
+
+                    "&.Mui-focused fieldset": {
+                      borderWidth: "2px",
+                      borderColor: "#111827", // gray-900
+                    },
+                  },
+                  "& .MuiInputLabel-root": {
+                    fontSize: "0.875rem", // text-sm
+                    color: "#111827", // gray-900
+                    "&.Mui-focused": {
+                      color: "#111827", // gray-900
+                    },
+                  },
+                  "& .MuiSelect-icon": {
+                    color: "#111827", // gray-900 dropdown arrow
+                  },
+                }}
+              >
+                <InputLabel id="commonLoc-label" className="text-sm">
                   Common pick-up locations
-                </label>
-                <select
+                </InputLabel>
+                <Select
+                  labelId="commonLoc-label"
                   id="commonLoc"
-                  className="border-2 rounded px-2 py-2"
-                  defaultValue="None"
-                  disabled={isManualChecked}
+                  label="Common pick-up locations"
+                  defaultValue=""
                 >
-                  <option>Queen's Building</option>
-                  <option>Will's Memorial</option>
-                  <option>Merchant Venturers Building</option>
-                  <option>Victoria Rooms</option>
-                  <option>Richmond Building</option>
-                </select>
+                  <MenuItem value="">
+                    <em>Select a location</em>
+                  </MenuItem>
+                  <MenuItem value="queens">Queen's Building</MenuItem>
+                  <MenuItem value="wills">Will's Memorial</MenuItem>
+                  <MenuItem value="merchant">
+                    Merchant Venturers Building
+                  </MenuItem>
+                  <MenuItem value="victoria">Victoria Rooms</MenuItem>
+                  <MenuItem value="richmond">Richmond Building</MenuItem>
+                </Select>
+              </FormControl>
               </div>
             <div id="checkboxes" className="flex flex-row justify-start gap-6">
               <label
