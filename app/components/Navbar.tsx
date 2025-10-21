@@ -45,6 +45,7 @@ export const Navbar = () => {
 
                     </Link>
                 </div>
+                {/* Links */}
                 <ul className="hidden sm:flex">
                     <Link href={"/"} className="mr-10 text-xl hover:text-gray-300 hover:border-b-1">Home</Link>
                     
@@ -54,6 +55,15 @@ export const Navbar = () => {
                     
                     <Link href={"/Help"} className="mr-10 text-xl hover:text-gray-300 hover:border-b-1">Help</Link>
                 </ul>
+                <div>
+                    <Image
+                    className="h-11 w-11 rounded-full"
+                    width={340}
+                    height={340}
+                    src={"/no-pfp-found.jpg"}
+                    alt="profile picture"/>
+
+                </div>
             </div>
         </nav>
     );
