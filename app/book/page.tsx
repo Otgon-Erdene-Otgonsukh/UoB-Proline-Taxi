@@ -1,11 +1,69 @@
 "use client";
 
 import { useState } from "react";
-import {FormControl, InputLabel, MenuItem, Select} from "@mui/material"
+import {
+  Button,
+  createTheme,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  ThemeProvider,
+} from "@mui/material";
 
 export function BookingPage() {
+  const commonLocations = [
+    "Queens Building",
+    "Merchant Venturers Building",
+    "Richmond Building",
+    "Victoria's Room",
+    "Will's Memorial",
+    "Physics Building",
+  ];
+
   const [isManualChecked, setIsManualChecked] = useState(false);
   const [isFlightChecked, setIsFlightChecked] = useState(false);
+
+  const inputTheme = createTheme({
+    //creating a custom theme outside the component
+    components: {
+      MuiOutlinedInput: {
+        styleOverrides: {
+          root: {
+            borderRadius: "0.375rem", // rounded
+            fontSize: "0.875rem", // text-sm
+            color: "#111827", // gray-900 text color
+            "& fieldset": {
+              borderWidth: "2px",
+              borderColor: "#111827",
+            },
+          },
+        },
+      },
+      MuiSelect: {
+        styleOverrides: {
+          root: {
+            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+              borderColor: "#111827", // gray-900 when select is focused
+              borderWidth: "2px",
+            },
+          },
+        },
+      },
+      MuiInputLabel: {
+        //input label handling(default is blue)
+        styleOverrides: {
+          root: {
+            fontSize: "0.875rem",
+            color: "#111827",
+            "&.Mui-focused": {
+              color: "#111827",
+            },
+          },
+        },
+      },
+    },
+  });
 
   {
     /*no client side validation at all except some default ones like input types*/
@@ -20,59 +78,43 @@ export function BookingPage() {
         <form action="/" method="POST">
           {/*should go to some confirmed page or alike, currently goes to homepage*/}
           <div className="flex flex-col gap-4">
-              <div className={`flex flex-col ${(isManualChecked || isFlightChecked) ? "text-gray-400" : ""}`}>
+            <div
+              className={`flex flex-col ${
+                isManualChecked || isFlightChecked ? "text-gray-400" : ""
+              }`}
+            >
+              {/*using the custom theme above*/}
+              <ThemeProvider theme={inputTheme}> 
                 <FormControl
-                fullWidth
-                disabled={isManualChecked || isFlightChecked}
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    borderRadius: "0.375rem", // rounded
-                    fontSize: "0.875rem", // text-sm
-                    color: "#111827", // gray-900 text color
-                    "& fieldset": {
-                      borderWidth: "2px", // border-2
-                      borderColor: "#111827", // gray-900
+                  fullWidth
+                  disabled={isManualChecked || isFlightChecked}
+                  sx={{
+                    "& .MuiSelect-icon": {
+                      color: "#111827", // gray-900 dropdown arrow
                     },
-
-                    "&.Mui-focused fieldset": {
-                      borderWidth: "2px",
-                      borderColor: "#111827", // gray-900
-                    },
-                  },
-                  "& .MuiInputLabel-root": {
-                    fontSize: "0.875rem", // text-sm
-                    color: "#111827", // gray-900
-                    "&.Mui-focused": {
-                      color: "#111827", // gray-900
-                    },
-                  },
-                  "& .MuiSelect-icon": {
-                    color: "#111827", // gray-900 dropdown arrow
-                  },
-                }}
-              >
-                <InputLabel id="commonLoc-label" className="text-sm">
-                  Common pick-up locations
-                </InputLabel>
-                <Select
-                  labelId="commonLoc-label"
-                  id="commonLoc"
-                  label="Common pick-up locations"
-                  defaultValue=""
+                  }}
                 >
-                  <MenuItem value="">
-                    <em>Select a location</em>
-                  </MenuItem>
-                  <MenuItem value="queens">Queen's Building</MenuItem>
-                  <MenuItem value="wills">Will's Memorial</MenuItem>
-                  <MenuItem value="merchant">
-                    Merchant Venturers Building
-                  </MenuItem>
-                  <MenuItem value="victoria">Victoria Rooms</MenuItem>
-                  <MenuItem value="richmond">Richmond Building</MenuItem>
-                </Select>
-              </FormControl>
-              </div>
+                  <InputLabel id="commonLoc-label" className="text-sm">
+                    Common pick-up locations
+                  </InputLabel>
+                  <Select
+                    id="commonLoc"
+                    label="Common pick-up locations"
+                    defaultValue=""
+                  >
+                    <MenuItem value="">
+                      <em>Select a location</em>
+                    </MenuItem>
+                    {/*used an array to store the common locations and used map to populate the menu items*/}
+                    {commonLocations.map((loc) => (
+                      <MenuItem key={loc} value={loc}>
+                        {loc}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </ThemeProvider>
+            </div>
             <div id="checkboxes" className="flex flex-row justify-start gap-6">
               <label
                 htmlFor="manual"
@@ -240,12 +282,21 @@ export function BookingPage() {
               ></textarea>
             </div>
             <div className="flex justify-center mt-4">
-              <button
+              <Button //used MUI button component for a clean animation on clicks
                 type="submit"
-                className="cursor-pointer bg-[#2c2c2c] text-white font-light text-sm rounded-md py-3 px-12 hover:bg-[#414040] w-full hover:scale-101 transition-colors"
+                fullWidth
+                sx={{
+                  py: 2.5,
+                  bgcolor: "#2c2c2c",
+                  color: "white",
+                  borderRadius: 2,
+                  "&:hover": { bgcolor: "#414040", transform: "scale(1.01)" },
+                  transition: "all 0.2s",
+                  fontSize: "0.875rem"
+                }}
               >
-                CONFIRM BOOKING
-              </button>
+                Confirm Booking
+              </Button>
             </div>
           </div>
         </form>
