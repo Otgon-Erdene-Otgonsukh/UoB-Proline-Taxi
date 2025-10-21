@@ -37,7 +37,7 @@ export default function FAQPage() {
                     <h1 className="text-3xl font-bold mb-8 text-center text-shadow-lg">Contact Proline Taxi</h1>
                     <h2 className="text-2xl font-bold"><a href="tel:+447904459504">+44 7904 459 504</a></h2>
                     <p className="text-xl">Mon - Sat: 09:00 - 20:00</p>
-                    <h2 className="text-2xl font-bold pt-8"><a href="sales@prolinetaxi.com">sales@prolinetaxi.com</a></h2>
+                    <h2 className="text-2xl font-bold pt-8"><a href="mailto:sales@prolinetaxi.com">sales@prolinetaxi.com</a></h2>
                 </div>
             </div>
         </main>

@@ -6,7 +6,7 @@ export default function DdInfoBox({title, description, open, click,}: {title: st
         {/* onClick calls the callback function to trigger set state in page. */}
         <button onClick={click}
             // focus:border-blue-500 places a blue box when it's in focus (tabbed onto) for accessibility.
-            className="p-4 cursor-pointer w-full flex justify-between items-center text-left font-bold transition-all focus:border-blue-500"
+            className="p-4 cursor-pointer w-full flex justify-between items-center text-left font-bold"
             aria-expanded={open}>
               
             {title}
