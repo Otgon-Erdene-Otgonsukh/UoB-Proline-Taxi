@@ -1,4 +1,11 @@
 # **UoB Sustainable Transport – Smart taxi & chauffeur booking Platform**
+[![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=Next.js&color=black)](https://nextjs.org)
+[![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=React&color=white)](https://react.dev)
+[![Typescript](https://img.shields.io/badge/Typescript-06B6D4?style=for-the-badge&logo=Typescript&logoColor=white&color=blue)](https://www.typescriptlang.org)
+[![Tailwind](https://img.shields.io/badge/Tailwind-06B6D4?style=for-the-badge&logo=Tailwind%20CSS&color=blue)
+](https://tailwindcss.com)
+
+
 
 ## Table of Contents
 
@@ -24,6 +31,44 @@ A booking and account management platform to streamline how the University of Br
 - Centralised invoicing: booking history and faculty-specific invoices.
 
 ## Project Structure
+<pre>
+*2025-UoBsustainableTransport*
+|
+├── *.github*                                 
+│    ├── ISSUE_TEMPLATE                        # Issue template files
+|    ├── workflows                             # Continuous Integration & Deployment Workflow files
+|    └── pull_request_template.md    
+|
+├── *app*                                      # Next.js App directory (main application)
+│    ├── book/                                 # Booking page route
+│    │    └── page.tsx                         # Booking form component
+│    ├── globals.css                           # Global styles and Tailwind imports
+│    ├── layout.tsx                            # Root layout 
+│    └── page.tsx                              # Home/landing page
+|
+├── *component*                                # Reusable React components
+│    ├── Landing_page.tsx                      # Landing page component with responsive design
+|    └── ...
+|
+├── *docs*                                     # Documentation directory  
+│    ├── clientMeetings/                       # All client meeting materials
+│    │    └── ...
+│    ├── design/                               # All design documentation/Figma 
+│    └── ...
+|
+├── *public*                                   # public assets
+│    ├── landpic.svg                           # Landing page image
+│    └── ...
+|
+├── eslint.config.mjs                          # ESLint configuration
+├── next.config.ts                             # Next.js configuration
+├── next-env.d.ts                              # Next.js TypeScript declarations
+├── package.json                               # Project dependencies and scripts
+├── postcss.config.mjs                         # PostCSS configuration
+├── tsconfig.json                              # TypeScript configuration
+└── README.md                                  # Project documentation
+</pre>
+
 
 
 
@@ -54,7 +99,7 @@ Benefit from a streamlined booking process, clear driver communication, and stra
 
 ## Project Architecture
 
-*(we can add the tech stack and CI/CD diagram later on.)*
+<img src="./docs/Tech_stack.png" alt="tech stack diagram"/>
 
 ## Team Members
 
