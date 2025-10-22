@@ -10,12 +10,12 @@ Ensure you've done the following if necessary:
 - [ ] I have commented my code
 - [ ] My code compiles/passes without errors
 
-### Frontend changes (if applicable)
+Frontend changes (if applicable):
 - [ ] Pages render without errors
 - [ ] Page layout is responsive
 - [ ] No console warnings in browser dev tools
 
-### Backend changes (if applicable)
+Backend changes (if applicable):
 - [ ] I have tested API routes and they return expected responses
 - [ ] My code handles errors correctly
 - [ ] My code performs input validation, rate limiting, and sanitization of inputs

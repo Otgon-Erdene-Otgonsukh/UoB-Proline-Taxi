@@ -54,7 +54,7 @@ Benefit from a streamlined booking process, clear driver communication, and stra
 
 ## Project Architecture
 
-*(we can add the tech stack and CI/CD diagram later on.)*
+<img src="./docs/Tech_stack.png" alt="tech stack diagram"/>
 
 ## Team Members
 
