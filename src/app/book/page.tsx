@@ -305,4 +305,4 @@ export function BookingPage() {
   );
 }
 
-export default page
+export default BookingPage

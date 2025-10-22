@@ -53,7 +53,7 @@ export const Navbar = () => {
                     
                     <Link href={"/About"} className="mr-10 text-xl hover:text-gray-300 hover:border-b-1">About</Link>
                     
-                    <Link href={"/Help"} className="mr-10 text-xl hover:text-gray-300 hover:border-b-1">Help</Link>
+                    <Link href={"/faq"} className="mr-10 text-xl hover:text-gray-300 hover:border-b-1">Help</Link>
                 </ul>
                 <div>
                     <Image

@@ -1,3 +1,7 @@
+'use client';
+
+import { useRouter } from "next/navigation";
+
 type Location = {
   name: string;
   longitude: string;
@@ -14,6 +18,12 @@ type BookingRecord = {
 }
 
 const page = () => {
+
+  const router = useRouter();
+
+  const handleClick = () => {
+    router.push("/book")
+  }
 
   const data: BookingRecord[] = [{
     timeCreated: '2025-10-18 19:39:23',
@@ -58,7 +68,7 @@ const page = () => {
 
   return (
     <div>
-      <button className="bg-blue-300  text-gray-700 py-1 px-4 rounded-md hover:bg-yellow-500 hover:scale-103 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 font-extrabold m-1 float-end cursor-pointer">+ New Booking</button>
+      <button onClick={handleClick} className="bg-blue-300  text-gray-700 py-1 px-4 rounded-md hover:bg-yellow-500 hover:scale-103 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 font-extrabold m-1 float-end cursor-pointer">+ New Booking</button>
       <table className="table-auto md:table-fixed w-full border-collapse border border-gray-400">
         <thead>
           <tr>

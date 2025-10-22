@@ -1,4 +1,14 @@
 # **UoB Sustainable Transport – Smart taxi & chauffeur booking Platform**
+[![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=Next.js&color=black)](https://nextjs.org)
+[![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=React&color=white)](https://react.dev)
+[![Typescript](https://img.shields.io/badge/Typescript-06B6D4?style=for-the-badge&logo=Typescript&logoColor=white&color=blue)](https://www.typescriptlang.org)
+[![Tailwind](https://img.shields.io/badge/Tailwind-06B6D4?style=for-the-badge&logo=Tailwind%20CSS&color=blue)
+](https://tailwindcss.com)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=PostgreSQL&logoColor=white&color=blue)
+](https://www.postgresql.org)
+[![Mui](https://img.shields.io/badge/MUI-007FFF?style=for-the-badge&logo=MUI&color=white)
+](https://mui.com)
+
 
 ## Table of Contents
 
@@ -24,6 +34,58 @@ A booking and account management platform to streamline how the University of Br
 - Centralised invoicing: booking history and faculty-specific invoices.
 
 ## Project Structure
+<pre>
+*2025-UoBsustainableTransport*
+|
+├── *.github*                                 
+│    ├── ISSUE_TEMPLATE                        # Issue template files
+|    ├── workflows                             # Continuous Integration & Deployment Workflow files
+|    └── pull_request_template.md    
+|
+├── *docs*                                     # Documentation directory  
+│    ├── clientMeetings/                       # All client meeting materials
+│    │    ├── clientMeetingAgenda1.md
+│    │    └── clientMeetingNotes1.md
+│    └── design/                               # All design documentation/Figma 
+|
+├── public/                                    # Public assets
+|         └── ...
+
+├── *src*                                      # Source code directory
+│    ├── app/                                  # Next.js App directory (main application/pages)
+│    │    ├── book/                            # Booking page route
+│    │    │    └── page.tsx                    # Booking form component
+│    │    ├── faq/                             # FAQ page route
+│    │    │    └── page.tsx
+│    │    ├── forgot/                          # Forgot password page route
+│    │    │    └── page.tsx
+│    │    ├── home/                            # Home page route
+│    │    │    └── page.tsx
+│    │    ├── login/                           # Login page route
+│    │    │    └── page.tsx
+│    │    ├── globals.css                      # Global styles and Tailwind imports
+│    │    ├── layout.tsx                       # Root layout 
+│    │    └── page.tsx                         # Landing page
+│    │
+│    └── components/                           # Reusable React components
+│         ├── Dropdown_info_box.tsx
+│         ├── Landing_page.tsx                
+│         ├── Navbar.tsx
+|         └── ...
+│    
+│    
+|
+├── *Configuration Files*
+├── eslint.config.mjs                          # ESLint configuration file
+├── next.config.ts                             # Next.js configuration file
+├── next-env.d.ts                              # Next.js TypeScript declarations
+├── package.json                               # Project dependencies and scripts
+├── postcss.config.mjs                         # PostCSS configuration file
+├── tsconfig.json                              # TypeScript configuration file
+|
+└── README.md                                  # Project documentation
+</pre>
+
 
 
 
@@ -54,7 +116,7 @@ Benefit from a streamlined booking process, clear driver communication, and stra
 
 ## Project Architecture
 
-<img src="./docs/Tech_stack.png" alt="tech stack diagram"/>
+<img src="/docs/Tech_stack.png" alt="tech stack diagram"/>
 
 ## Team Members
 

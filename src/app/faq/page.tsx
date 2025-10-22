@@ -1,6 +1,6 @@
 "use client"; // Needed for useState.
 
-import DdInfoBox from "@/component/Dropdown_info_box";
+import DdInfoBox from "@/src/components/Dropdown_info_box";
 import { useState } from "react"; // For updates to UI when items are changed/clicked.
 
 export default function FAQPage() {

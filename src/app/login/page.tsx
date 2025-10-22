@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Box,
   Button,
@@ -16,11 +17,20 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 export default function Log_forgot() {
+  const router = useRouter();
+  
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    mail.length == 0 ? setMailEmpty(true) : setMailEmpty(false);
-    password.length == 0 ? setPassEmpty(true) : setPassEmpty(false);
-    console.log("Login:", { mail, password });
+    const isMailEmpty = mail.length == 0;
+    const isPassEmpty = password.length == 0;
+    
+    setMailEmpty(isMailEmpty);
+    setPassEmpty(isPassEmpty);
+    
+    if (!isMailEmpty && !isPassEmpty) {
+      console.log("Login:", { mail, password });
+      router.push("/home");
+    }
   };
 
   const [showPassword, setShowPassword] = useState(false);
