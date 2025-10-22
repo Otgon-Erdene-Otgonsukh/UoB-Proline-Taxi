@@ -19,9 +19,9 @@ export default function FAQPage() {
     ];
 
     return (
-        <main className="flex flex-col md:flex-row min-h-screen">
-            {/* Left hand side of page on md screen, FAQs. */}
-            <div className="md:w-1/2 flex flex-col max-w-3xl mb-auto mx-auto mt-10 md:mt-50 p-6">
+        <main className="flex flex-col lg:flex-row min-h-screen">
+            {/* Left hand side of page on lg screen, FAQs. */}
+            <div className="lg:w-1/2 flex flex-col max-w-3xl mb-auto mx-auto mt-10 lg:mt-50 py-6 px-20">
                 <h1 className="text-3xl font-bold mb-8 text-center text-shadow-lg">Frequently Asked Questions</h1>
                 <div className="w-full">
                     {faqs.map((faq, i) => (
@@ -31,8 +31,8 @@ export default function FAQPage() {
                 </div>
             </div>
 
-            {/* Right hand side of page on md screen, contact info. */}
-            <div className="md:w-1/2 flex items-center justify-center md:border-l border-black my-auto py-40">
+            {/* Right hand side of page on lg screen, contact info. */}
+            <div className="lg:w-1/2 flex items-center justify-center lg:border-l border-black my-auto py-40">
                 <div className="text-center">
                     <h1 className="text-3xl font-bold mb-8 text-center text-shadow-lg">Contact Proline Taxi</h1>
                     <h2 className="text-2xl font-bold"><a href="tel:+447904459504">+44 7904 459 504</a></h2>

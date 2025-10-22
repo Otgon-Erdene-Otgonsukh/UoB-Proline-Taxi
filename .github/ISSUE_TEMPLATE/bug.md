@@ -6,7 +6,7 @@ labels: ["bug"]
 ---
 
 ### Type
-<!-- Bug, Crash, UI, Performance, Security -->
+<!--Select between Bug, Crash, UI, Performance, Security-->
 
 Bug
 
