@@ -2,6 +2,13 @@
 -- DATABASE SCHEMA: iCab Booking System
 -- ==============================
 
+-- Delete old databases
+DROP TABLE IF EXISTS Trip CASCADE;
+DROP TABLE IF EXISTS Booking CASCADE;
+DROP TABLE IF EXISTS User_Address CASCADE;
+DROP TABLE IF EXISTS "User" CASCADE;
+DROP TABLE IF EXISTS Department CASCADE;
+
 -- ==============================
 -- TABLE: Department
 -- ==============================
