@@ -83,3 +83,10 @@ ALTER TABLE Booking
 ADD CONSTRAINT fk_booking_trip
 FOREIGN KEY (trip_id) REFERENCES Trip(trip_id) ON DELETE SET NULL;
 
+-- ==============================
+-- Indexes (for performance)
+-- ==============================
+CREATE INDEX idx_user_dep_id ON "DepartmentUserMap"(dep_id);
+CREATE INDEX idx_user_dep_id ON "DepartmentUserMap"(user_id);
+CREATE INDEX idx_booking_user_id ON Booking(user_id);
+
