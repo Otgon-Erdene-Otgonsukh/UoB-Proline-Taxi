@@ -15,21 +15,28 @@ import {
 import EmailIcon from "@mui/icons-material/Email";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import { userLogin } from "@/backend/app/user";
 
 export default function Log_forgot() {
   const router = useRouter();
-  
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const isMailEmpty = mail.length == 0;
     const isPassEmpty = password.length == 0;
-    
+
     setMailEmpty(isMailEmpty);
     setPassEmpty(isPassEmpty);
-    
+
     if (!isMailEmpty && !isPassEmpty) {
-      console.log("Login:", { mail, password });
-      router.push("/home");
+      userLogin(mail, password).then(res => {
+        console.log(res);
+        if (res === 'success') {
+          router.push("/home");
+        } else {
+          console.log('login fail');
+        }
+      })
     }
   };
 

@@ -1,8 +1,8 @@
-import { PrismaClient } from '../generated/prisma/client'
+import { PrismaClient, User } from '@/generated/prisma/client'
 
 const prisma = new PrismaClient()
 
-const createUser = async () => {
+export const createUser = async () => {
   return prisma.user.create({
     data: {
       username: 'Alice',
@@ -12,16 +12,14 @@ const createUser = async () => {
   })
 }
 
-const searchUser = async (email: string) => {
+export const searchUser = async (email: string): Promise<User> => {
   return prisma.user.findUnique({
-    select: {},
+    select: {
+      email: true,
+      password: true
+    },
     where: {
       email
     }
   })
 }
-
-// createUser()
-searchUser('alice@prisma.io').then(res => {
-  console.log(res);
-})
