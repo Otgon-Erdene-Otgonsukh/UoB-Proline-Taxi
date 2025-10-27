@@ -12,12 +12,8 @@ export const createUser = async () => {
   })
 }
 
-export const searchUser = async (email: string): Promise<User> => {
+export const searchUser = async (email: string): Promise<User | null> => {
   return prisma.user.findUnique({
-    select: {
-      email: true,
-      password: true
-    },
     where: {
       email
     }

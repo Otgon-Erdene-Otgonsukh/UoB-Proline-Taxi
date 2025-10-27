@@ -6,9 +6,9 @@ import { User } from '@/generated/prisma/browser';
 export const userLogin = async (email: string, password: string): Promise<String> => {
   console.log(email, password);
 
-  const userDetail: User = await searchUser(email);
+  const userDetail: User | null = await searchUser(email);
   // need encryption
-  if (userDetail.password === password) {
+  if (userDetail && userDetail.password === password) {
     console.log('success');
     return 'success'
   } else {
