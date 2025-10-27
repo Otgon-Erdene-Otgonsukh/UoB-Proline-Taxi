@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = "postgresql://postgres:root@localhost:5432/postgres?schema=public"
+}
+
+model User {
+  user_id      Int           @id @default(autoincrement())
+  username     String        @db.VarChar(100)
+  dep_id       Int?
+  email        String        @unique @db.VarChar(255)
+  password     String        @db.VarChar(255)
+  name         String?       @db.VarChar(100)
+  surname      String?       @db.VarChar(100)
+  phone_number String?       @db.VarChar(20)
+  time_created BigInt?       @default(dbgenerated("(EXTRACT(epoch FROM now()))::bigint"))
+  department   department?   @relation(fields: [dep_id], references: [dep_id], onUpdate: NoAction)
+  booking      booking[]
+  user_address user_address?
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
+model booking {
+  booking_id     Int     @id @default(autoincrement())
+  user_id        Int?
+  trip_id        Int?
+  booking_status Int?    @default(0)
+  time_created   BigInt? @default(dbgenerated("(EXTRACT(epoch FROM now()))::bigint"))
+  trip           trip?   @relation(fields: [trip_id], references: [trip_id], onDelete: NoAction, onUpdate: NoAction)
+  User           User?   @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([user_id], map: "idx_booking_user_id")
+}
+
+model department {
+  dep_id     Int    @id @default(autoincrement())
+  dep_name   String @db.VarChar(100)
+  manager_id Int?
+  User       User[]
+}
+
+model departmentusermap {
+  map_id  Int  @id @default(autoincrement())
+  dep_id  Int?
+  user_id Int?
+}
+
+model trip {
+  trip_id           Int       @id @default(autoincrement())
+  icabbi_booking_id Int?
+  pickup_location   String?
+  pickup_latitude   Int?
+  pickup_longitude  Int?
+  dropoff_location  String?
+  dropoff_latitude  Int?
+  dropoff_longitude Int?
+  pickup_time       BigInt?
+  booking           booking[]
+}
+
+model user_address {
+  user_id   Int     @id
+  address   String?
+  latitude  Int?
+  longitude Int?
+  User      User    @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
+}
