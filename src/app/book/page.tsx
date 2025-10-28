@@ -84,7 +84,7 @@ export function BookingPage() {
               }`}
             >
               {/*using the custom theme above*/}
-              <ThemeProvider theme={inputTheme}> 
+              <ThemeProvider theme={inputTheme}>
                 <FormControl
                   fullWidth
                   disabled={isManualChecked || isFlightChecked}
@@ -271,6 +271,16 @@ export function BookingPage() {
               ></input>
             </div>
             <div className="flex flex-col">
+              <label htmlFor="department" className="mb-1 text-sm">
+                Department
+              </label>
+              <input
+                id="department"
+                type="text"
+                className="border-2 rounded px-3 py-2"
+              ></input>
+            </div>
+            <div className="flex flex-col">
               <label htmlFor="addInfo" className="mb-1 text-sm">
                 Additional information
               </label>
@@ -292,7 +302,7 @@ export function BookingPage() {
                   borderRadius: 2,
                   "&:hover": { bgcolor: "#414040", transform: "scale(1.01)" },
                   transition: "all 0.2s",
-                  fontSize: "0.875rem"
+                  fontSize: "0.875rem",
                 }}
               >
                 Confirm Booking
@@ -305,4 +315,4 @@ export function BookingPage() {
   );
 }
 
-export default BookingPage
+export default BookingPage;
