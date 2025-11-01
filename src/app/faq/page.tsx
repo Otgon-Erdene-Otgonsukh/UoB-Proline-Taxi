@@ -28,9 +28,9 @@ export default function FAQPage() {
   ];
 
   return (
-    <main className="flex flex-col mt-10 lg:flex-row min-h-screen">
+    <main className="flex flex-col lg:flex-row min-h-screen">
       {/* Left hand side of page on lg screen, FAQs. */}
-      <div className="lg:w-1/2 flex flex-col max-w-3xl mb-auto mx-auto mt-10 lg:mt-35 py-6 px-20">
+      <div className="lg:w-1/2 flex flex-col max-w-3xl mb-auto mx-auto lg:mt-35 py-6 px-20">
         <h1 className="text-3xl font-bold mb-8 text-center text-shadow-lg text-gray-900 font-aleo">
           Frequently Asked Questions
         </h1>
