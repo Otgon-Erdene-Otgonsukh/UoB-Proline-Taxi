@@ -71,33 +71,36 @@ export function BookingPage() {
 
   return (
     <div className="flex min-h-screen justify-center items-center font-inter p-4">
-      <div className="border-3 border-[#2c2c2c] flex flex-col lg:flex-row bg-white shadow-lg rounded-lg my-8 max-w-5xl overflow-hidden">
-        {/* Booking Form Section */}
-        <div className="p-4 sm:p-6 md:p-8 w-full lg:w-1/2">
-          <div className="bg-[#2c2c2c] text-white py-4 -mx-4 sm:-mx-6 md:-mx-8 px-4 sm:px-6 md:px-8 -mt-4 sm:-mt-6 md:-mt-8 mb-6">
-            <h1 className="font-aleo text-2xl sm:text-3xl font-semibold text-center">
-              BOOKING DETAILS
-            </h1>
-          </div>
-
-          <form action="/" method="POST">
-            {/*should go to some confirmed page or alike, currently goes to homepage*/}
-            <div className="flex flex-col gap-4">
-              <div
-                className={`flex flex-col ${
-                  isManualChecked || isFlightChecked ? "text-gray-400" : ""
-                }`}
-              >
-                {/*using the custom theme above*/}
-                <ThemeProvider theme={inputTheme}>
-                  <FormControl
-                    fullWidth
-                    disabled={isManualChecked || isFlightChecked}
-                    sx={{
-                      "& .MuiSelect-icon": {
-                        color: "#111827", // gray-900 dropdown arrow
-                      },
-                    }}
+      <div className="bg-white mt-50 mb-30 shadow-lg/20 p-4 sm:p-6 md:p-8 rounded-lg my-8 w-full max-w-lg">
+        <h1 className="font-aleo text-2xl sm:text-3xl font-semibold mb-6 text-center text-shadow-lg/20">
+          BOOKING DETAILS
+        </h1>
+        <form action="/" method="POST">
+          {/*should go to some confirmed page or alike, currently goes to homepage*/}
+          <div className="flex flex-col gap-4">
+            <div
+              className={`flex flex-col ${
+                isManualChecked || isFlightChecked ? "text-gray-400" : ""
+              }`}
+            >
+              {/*using the custom theme above*/}
+              <ThemeProvider theme={inputTheme}>
+                <FormControl
+                  fullWidth
+                  disabled={isManualChecked || isFlightChecked}
+                  sx={{
+                    "& .MuiSelect-icon": {
+                      color: "#111827", // gray-900 dropdown arrow
+                    },
+                  }}
+                >
+                  <InputLabel id="commonLoc-label" className="text-sm">
+                    Common pick-up locations
+                  </InputLabel>
+                  <Select
+                    id="commonLoc"
+                    label="Common pick-up locations"
+                    defaultValue=""
                   >
                     <InputLabel id="commonLoc-label" className="text-sm">
                       Common pick-up locations
@@ -307,17 +310,56 @@ export function BookingPage() {
                 </Button>
               </div>
             </div>
-          </form>
-        </div>
-
-        {/* Image Section */}
-        <div className="hidden lg:block lg:w-1/2">
-          <img
-            src="/emptymap.png"
-            alt="Map"
-            className="w-full h-full object-cover border-l-3 border-[#2c2c2c]"
-          />
-        </div>
+            <div className="flex flex-col">
+              <label htmlFor="mail" className="mb-1 text-sm">
+                Email
+              </label>
+              <input
+                id="mail"
+                type="email"
+                className="border-2 rounded px-3 py-2"
+              ></input>
+            </div>
+            <div className="flex flex-col">
+              <label htmlFor="department" className="mb-1 text-sm">
+                Department
+              </label>
+              <input
+                id="department"
+                type="text"
+                className="border-2 rounded px-3 py-2"
+              ></input>
+            </div>
+            <div className="flex flex-col">
+              <label htmlFor="addInfo" className="mb-1 text-sm">
+                Additional information
+              </label>
+              <textarea
+                id="addInfo"
+                className="border-2 rounded px-3 py-2 min-h-[80px]"
+                maxLength={500}
+                placeholder="Enter any additional information..."
+              ></textarea>
+            </div>
+            <div className="flex justify-center mt-4">
+              <Button //used MUI button component for a clean animation on clicks
+                type="submit"
+                fullWidth
+                sx={{
+                  py: 2.5,
+                  bgcolor: "#2c2c2c",
+                  color: "white",
+                  borderRadius: 2,
+                  "&:hover": { bgcolor: "#414040", transform: "scale(1.01)" },
+                  transition: "all 0.2s",
+                  fontSize: "0.875rem",
+                }}
+              >
+                Confirm Booking
+              </Button>
+            </div>
+          </div>
+        </form>
       </div>
     </div>
   );
