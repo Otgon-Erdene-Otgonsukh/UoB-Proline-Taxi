@@ -58,10 +58,32 @@ export default function Log_forgot() {
           maxWidth: 500,
           width: "100%",
           borderRadius: 5,
-          mt: 25,
-          mb: 20
+          mt: 10,
+          mb: 20,
+          overflow: "hidden",
+          border: 3
         }}
       >
+        <Box
+          sx={{
+            bgcolor: "#2c2c2c",
+            color: "white",
+            py: 3,
+            textAlign: "center"
+          }}
+        >
+          <Typography
+            variant="h4"
+            sx={{
+              fontSize: { xs: "1.5rem", sm: "2rem" },
+              fontWeight: 600,
+              fontFamily: "aleo",
+            }}
+          >
+            LOG IN
+          </Typography>
+        </Box>
+
         <Box
           component="form"
           onSubmit={handleSubmit}
@@ -71,22 +93,7 @@ export default function Log_forgot() {
             gap: 3,
             p: { xs: 4, sm: 5, md: 6 },
           }}
-        >
-          <Typography
-            variant="h4"
-            className="text-shadow-lg/20"
-            sx={{
-              textAlign: "center",
-              fontSize: { xs: "1.5rem", sm: "2rem" },
-              fontWeight: 600,
-              fontFamily: "aleo",
-              mb: 2,
-            }}
-          >
-            LOG IN
-          </Typography>
-
-          <TextField
+        >          <TextField
             fullWidth
             error={mailEmpty}
             helperText={mailEmpty ? "Enter email!" : ""}
