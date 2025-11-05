@@ -11,6 +11,7 @@ type Location = {
 type BookingStatus = 'Approved' | 'Rejected' | 'Pending'
 
 type BookingRecord = {
+  id: number;
   timeCreated: string;
   from: Location;
   to: Location;
@@ -26,6 +27,7 @@ const page = () => {
   }
 
   const data: BookingRecord[] = [{
+    id: 1,
     timeCreated: '2025-10-18 19:39:23',
     from: {
       name: 'Booking 1 from',
@@ -39,6 +41,7 @@ const page = () => {
     },
     bookingStatus: 'Approved'
   }, {
+    id: 2,
     timeCreated: '2025-10-18 19:40:23',
     from: {
       name: 'Booking 2 from',
@@ -52,7 +55,8 @@ const page = () => {
     },
     bookingStatus: 'Rejected'
   }, {
-    timeCreated: '2025-10-18 19:39:23',
+    id: 3,
+    timeCreated: '2025-10-18 21:39:23',
     from: {
       name: 'Booking 2 from',
       longitude: '',

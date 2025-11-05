@@ -241,3 +241,4 @@ next-env.d.ts
 
 # production
 /build
+/generated/prisma
