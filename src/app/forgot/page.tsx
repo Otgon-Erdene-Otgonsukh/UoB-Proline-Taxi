@@ -26,12 +26,12 @@ export default function Forgot() {
     if (mail.length == 0) {
       setMailEmpty(true);
       setShowSuccess(false);
-      return
+      return;
     } else if (!mail.includes("@")) {
       //checking if the input is a valid mail
       setInvalidMail(true);
       setShowSuccess(false);
-      return
+      return;
     } else {
       setShowSuccess(true);
     }
@@ -46,16 +46,22 @@ export default function Forgot() {
     <div className="flex flex-col justify-center items-center min-h-screen font-inter p-4">
       <Paper
         elevation={3}
-        sx={{ borderRadius: 5, maxWidth: 500, width: "100%", mt:25, mb:20}}
+        sx={{
+          borderRadius: 5,
+          maxWidth: 500,
+          width: "100%",
+          mt: 10,
+          mb: 20,
+          overflow: "hidden",
+          border: 3,
+        }}
       >
         <Box
-          component="form"
-          onSubmit={handleSubmit}
           sx={{
-            display: "flex",
-            flexDirection: "column",
-            gap: 3,
-            p: { xs: 4, sm: 5, md: 6 },
+            background: "#2c2c2c",
+            color: "white",
+            py: 1,
+            pt: 3
           }}
         >
           <Typography
@@ -66,12 +72,22 @@ export default function Forgot() {
               textAlign: "center",
               fontWeight: 600,
               fontSize: { xs: "1.5rem", sm: "2rem" },
-              mb: 2,
+              mb: 1,
             }}
           >
             Confirm Mail
           </Typography>
-
+        </Box>
+        <Box
+          component="form"
+          onSubmit={handleSubmit}
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 3,
+            p: { xs: 4, sm: 5, md: 6 },
+          }}
+        >
           {showSuccess && (
             <Alert
               severity="success"
@@ -138,8 +154,9 @@ export default function Forgot() {
             sx={{
               bgcolor: "#2c2c2c",
               py: 1.5,
+              mt: 1,
               "&:hover": { bgcolor: "#414040", transform: "scale(1.01)" },
-              fontSize: {xs: "0.7rem", sm: "0.875rem"},
+              fontSize: { xs: "0.7rem", sm: "0.875rem" },
               borderRadius: "0.375rem",
               transition: "transform 0.2s",
             }}

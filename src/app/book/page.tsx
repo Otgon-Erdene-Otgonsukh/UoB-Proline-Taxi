@@ -514,4 +514,4 @@ return (
 );
 }
 
-export default BookingPage
+export default BookingPage;
