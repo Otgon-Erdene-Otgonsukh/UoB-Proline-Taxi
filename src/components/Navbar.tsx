@@ -16,7 +16,7 @@ export const Navbar = () => {
             />
           </Link>
 
-          <div className="h-12 w-px 2xl:w-0.5 bg-gradient-to-b via-gray-300"></div>
+          <div className="h-12 w-[0.5px] bg-gradient-to-b via-gray-300"></div>
 
           <Link href={"https://www.bristol.ac.uk/"}>
             <Image
@@ -29,7 +29,7 @@ export const Navbar = () => {
             />
           </Link>
 
-          <div className="h-12 w-px 2xl:w-0.5 bg-gradient-to-b via-gray-300"></div>
+          <div className="h-12 w-px bg-gradient-to-b via-gray-300"></div>
 
           <Link href={"https://prolinetaxi.com/"}>
             <Image
