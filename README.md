@@ -44,15 +44,23 @@ A booking and account management platform to streamline how the University of Br
 |
 ├── *.github*                                 
 │    ├── ISSUE_TEMPLATE                        # Issue template files
-|    ├── workflows                             # Continuous Integration & Deployment Workflow files
-|    └── pull_request_template.md    
-|
+│    ├── workflows                             # Continuous Integration & Deployment Workflow files
+│    └── pull_request_template.md    
+│
+├── *backend*                                  # Prisma functions
+│    └── ...
+│
+│
 ├── *docs*                                     # Documentation directory  
 │    ├── clientMeetings/                       # All client meeting materials
 │    │    ├── clientMeetingAgenda1.md
 │    │    └── clientMeetingNotes1.md
 │    └── design/                               # All design documentation/Figma 
-|
+│
+├── prisma
+│    └── schema.prisma                         # Prisma schema for database
+│
+│
 ├── public/                                    # Public assets
 |         └── ...
 
@@ -121,7 +129,7 @@ Benefit from a streamlined booking process, clear driver communication, and stra
 
 ## Project Architecture
 
-<img src="/docs/Tech_stack.png" alt="tech stack diagram"/>
+<img src="/docs/updated-teck-stack.jpg" alt="tech stack diagram"/>
 
 ## Team Members
 
