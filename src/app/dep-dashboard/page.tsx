@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogActions,
@@ -8,95 +8,31 @@ import {
   DialogTitle,
   Button,
 } from "@mui/material";
+import type {
+  booking,
+  trip,
+  User,
+  department,
+} from "@/generated/prisma/client"; // importing just the type is safe and does not expose any prisma code
 
-// to be removed but for now used as stock booking data
-type BookingRecord = {
-  id: number;
-  name: string;
-  lastName: string;
-  department: string;
-  phoneNumber: string;
-  timeCreated: string;
-  from: Location;
-  to: Location;
-  bookingStatus: BookingStatus;
+type BookingWithTrip = booking & {
+  // creating a custom type to access the data
+  trip: trip;
+  User: User & { department: department };
 };
-
-type Location = {
-  name: string;
-  longitude: string;
-  latitude: string;
-};
-
-type BookingStatus = "Approved" | "Rejected" | "Pending";
 
 export default function DepDashboard() {
-    // put the whole booking record in a stateful variable so we can change the status
-  const [bookings, setBookings] = useState<BookingRecord[]>([
-    {
-      id: 1,
-      name: "John",
-      lastName: "Smith",
-      department: "Computer Science",
-      phoneNumber: "+44 7700 900123",
-      timeCreated: "2025-10-18 19:39:23",
-      from: {
-        name: "Merchand Venturer's Building",
-        longitude: "51.456135536468345",
-        latitude: "-2.6031069746564572",
-      },
-      to: {
-        name: "Will's Memorial",
-        longitude: "51.45629453609578",
-        latitude: "-2.604629732327902",
-      },
-      bookingStatus: "Pending",
-    },
-    {
-      id: 2,
-      name: "Emma",
-      lastName: "Johnson",
-      department: "Physics",
-      phoneNumber: "+44 7700 900456",
-      timeCreated: "2025-10-18 19:40:23",
-      from: {
-        name: "Physics Building",
-        longitude: "51.45898708443594",
-        latitude: "-2.6021663169848677",
-      },
-      to: {
-        name: "Victoria Rooms",
-        longitude: "51.45839341614687",
-        latitude: "-2.609458972806376",
-      },
-      bookingStatus: "Pending",
-    },
-    {
-      id: 3,
-      name: "Michael",
-      lastName: "Brown",
-      department: "Chemistry",
-      phoneNumber: "+44 7700 900789",
-      timeCreated: "2025-10-18 19:39:23",
-      from: {
-        name: "Queen's Building",
-        longitude: "43.1232322323242",
-        latitude: "-2.8762387468762",
-      },
-      to: {
-        name: "Chemistry Building",
-        longitude: "34.34343454241123",
-        latitude: "-1.23232435343243",
-      },
-      bookingStatus: "Pending",
-    },
-  ]);
+  const [pendingBookings, setPendingBookings] = useState<BookingWithTrip[]>([]);
+  useEffect(() => {
+    fetch("api/get_pending_bookings")
+      .then((res) => res.json())
+      .then((data) => setPendingBookings(data));
+  }, []);
 
-  const [selectedBooking, setSelectedBooking] = useState<BookingRecord | null>(
-    null
-  );
+  const [selectedBooking, setSelectedBooking] =
+    useState<BookingWithTrip | null>(null);
 
-  const handleViewOpen = (booking: BookingRecord) => {
+  const handleViewOpen = (booking: BookingWithTrip) => {
     setSelectedBooking(booking);
   };
 
@@ -106,19 +42,27 @@ export default function DepDashboard() {
 
   // mapping over the booking records until id matches and update the status
   const handleApprove = (bookingId: number) => {
-    setBookings((prev) =>
+    setPendingBookings((prev) =>
       prev.map((b) =>
-        b.id === bookingId ? { ...b, bookingStatus: "Approved" } : b
+        b.booking_id === bookingId ? { ...b, booking_status: "Approved" } : b
       )
     );
+    fetch("api/update_booking", {
+      method: "POST",
+      body: JSON.stringify({ bookingId: bookingId, newStatus: "Approved" }),
+    });
   };
 
   const handleReject = (bookingId: number) => {
-    setBookings((prev) =>
+    setPendingBookings((prev) =>
       prev.map((b) =>
-        b.id === bookingId ? { ...b, bookingStatus: "Rejected" } : b
+        b.booking_id === bookingId ? { ...b, booking_status: "Rejected" } : b
       )
     );
+    fetch("api/update_booking", {
+      method: "POST",
+      body: JSON.stringify({ bookingId: bookingId, newStatus: "Rejected" }),
+    });
   };
 
   return (
@@ -129,95 +73,100 @@ export default function DepDashboard() {
             Department Bookings
           </h1>
         </div>
-        <div className="overflow-x-auto">
-          <table className="border-collapse w-full mt-10">
-            <thead>
-              <tr className="bg-gray-50">
-                <th className="border-2 border-gray-900 px-4 py-3 font-bold text-gray-900 text-lg">
-                  Time Created
-                </th>
-                <th className="border-2 border-gray-900 px-4 py-3 font-bold text-gray-900 text-lg">
-                  From
-                </th>
-                <th className="border-2 border-gray-900 px-4 py-3 font-bold text-gray-900 text-lg">
-                  To
-                </th>
-                <th className="border-2 border-gray-900 px-4 py-3 font-bold text-gray-900 text-lg">
-                  Operation
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {bookings.map((e) => {
-                return (
-                  <tr
-                    key={e.id}
-                    className="hover:bg-gray-50 transition-colors text-center"
-                  >
-                    <td className="border-2 border-gray-900 px-4 py-3 text-md">
-                      {e.timeCreated}
-                    </td>
-                    <td className="border-2 border-gray-900 px-4 py-3 text-md">
-                      {e.from.name}
-                    </td>
-                    <td className="border-2 border-gray-900 px-4 py-3 text-md">
-                      {e.to.name}
-                    </td>
-                    <td className="border-2 border-gray-900 px-4 py-3 text-md">
-                      {e.bookingStatus === "Approved" ? (
-                        <div className="flex flex-row justify-evenly items-center">
-                          <button
-                            className="bg-[#585858] text-white py-1.5 px-4 rounded-md hover:scale-105 hover:bg-cyan-700 duration-200 transition-all cursor-pointer"
-                            onClick={() => handleViewOpen(e)}
-                          >
-                            View
-                          </button>
-                          <span className="inline-block px-10 py-1 rounded-full text-xs font-medium bg-green-200 text-green-800">
-                            Approved
-                          </span>
-                        </div>
-                      ) : e.bookingStatus === "Rejected" ? (
-                        <div className="flex flex-row justify-evenly items-center">
-                          <button
-                            className="bg-[#585858] text-white py-1.5 px-4 rounded-md hover:scale-105 hover:bg-cyan-700 duration-200 transition-all cursor-pointer"
-                            onClick={() => handleViewOpen(e)}
-                          >
-                            View
-                          </button>
-                          <span className="inline-block px-10 py-1 rounded-full text-xs font-medium bg-red-200 text-red-800">
-                            Rejected
-                          </span>
-                        </div>
-                      ) : (
-                        <div className="flex flex-row justify-evenly">
-                          <button
-                            className="bg-[#585858] text-white py-1.5 px-4 rounded-md hover:scale-105 hover:bg-cyan-700 duration-200 transition-all cursor-pointer"
-                            onClick={() => handleViewOpen(e)}
-                          >
-                            View
-                          </button>
-                          <button
-                            className="bg-[#2c2c2c] text-white py-1.5 px-4 rounded-md hover:bg-green-400 hover:scale-105 transition-all duration-200 cursor-pointer"
-                            onClick={() => handleApprove(e.id)}
-                          >
-                            Approve
-                          </button>
-                          <button
-                            className="border-[#2c2c2c] py-1.5 px-4 border-2 rounded-md hover:scale-105 hover:bg-red-400 transition-all cursor-pointer"
-                            onClick={() => handleReject(e.id)}
-                          >
-                            Reject
-                          </button>
-                        </div>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-
+        {pendingBookings.length === 0 ? (
+          <div className="text-center py-15 font-inter text-gray-400">
+            There are no bookings awaiting approval.
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="border-collapse w-full mt-10">
+              <thead>
+                <tr className="bg-gray-50">
+                  <th className="border-2 border-gray-900 px-4 py-3 font-bold text-gray-900 text-lg">
+                    Time Created
+                  </th>
+                  <th className="border-2 border-gray-900 px-4 py-3 font-bold text-gray-900 text-lg">
+                    From
+                  </th>
+                  <th className="border-2 border-gray-900 px-4 py-3 font-bold text-gray-900 text-lg">
+                    To
+                  </th>
+                  <th className="border-2 border-gray-900 px-4 py-3 font-bold text-gray-900 text-lg">
+                    Operation
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {pendingBookings.map((e) => {
+                  return (
+                    <tr
+                      key={e.booking_id}
+                      className="hover:bg-gray-50 transition-colors text-center"
+                    >
+                      <td className="border-2 border-gray-900 px-4 py-3 text-md">
+                        {e.time_created}
+                      </td>
+                      <td className="border-2 border-gray-900 px-4 py-3 text-md">
+                        {e.trip.pickup_location}
+                      </td>
+                      <td className="border-2 border-gray-900 px-4 py-3 text-md">
+                        {e.trip.dropoff_location}
+                      </td>
+                      <td className="border-2 border-gray-900 px-4 py-3 text-md">
+                        {e.booking_status === "Approved" ? (
+                          <div className="flex flex-row justify-evenly items-center">
+                            <button
+                              className="bg-[#585858] text-white py-1.5 px-4 rounded-md hover:scale-105 hover:bg-cyan-700 duration-200 transition-all cursor-pointer"
+                              onClick={() => handleViewOpen(e)}
+                            >
+                              View
+                            </button>
+                            <span className="inline-block px-10 py-1 rounded-full text-xs font-medium bg-green-200 text-green-800">
+                              Approved
+                            </span>
+                          </div>
+                        ) : e.booking_status === "Rejected" ? (
+                          <div className="flex flex-row justify-evenly items-center">
+                            <button
+                              className="bg-[#585858] text-white py-1.5 px-4 rounded-md hover:scale-105 hover:bg-cyan-700 duration-200 transition-all cursor-pointer"
+                              onClick={() => handleViewOpen(e)}
+                            >
+                              View
+                            </button>
+                            <span className="inline-block px-10 py-1 rounded-full text-xs font-medium bg-red-200 text-red-800">
+                              Rejected
+                            </span>
+                          </div>
+                        ) : (
+                          <div className="flex flex-row justify-evenly">
+                            <button
+                              className="bg-[#585858] text-white py-1.5 px-4 rounded-md hover:scale-105 hover:bg-cyan-700 duration-200 transition-all cursor-pointer"
+                              onClick={() => handleViewOpen(e)}
+                            >
+                              View
+                            </button>
+                            <button
+                              className="bg-[#2c2c2c] text-white py-1.5 px-4 rounded-md hover:bg-green-400 hover:scale-105 transition-all duration-200 cursor-pointer"
+                              onClick={() => handleApprove(e.booking_id)}
+                            >
+                              Approve
+                            </button>
+                            <button
+                              className="border-[#2c2c2c] py-1.5 px-4 border-2 rounded-md hover:scale-105 hover:bg-red-400 transition-all cursor-pointer"
+                              onClick={() => handleReject(e.booking_id)}
+                            >
+                              Reject
+                            </button>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
         <Dialog
           open={selectedBooking !== null}
           onClose={handleViewClose}
@@ -245,16 +194,18 @@ export default function DepDashboard() {
                     Information about passenger:
                   </h1>
                   <h3>
-                    <strong>First name</strong>: {selectedBooking.name}
+                    <strong>First name</strong>: {selectedBooking.User.name}
                   </h3>
                   <h3>
-                    <strong>Last name</strong>: {selectedBooking.lastName}
+                    <strong>Last name</strong>: {selectedBooking.User.surname}
                   </h3>
                   <h3>
-                    <strong>Phone number</strong>: {selectedBooking.phoneNumber}
+                    <strong>Phone number</strong>:{" "}
+                    {selectedBooking.User.phone_number}
                   </h3>
                   <h3>
-                    <strong>Department</strong>: {selectedBooking.department}
+                    <strong>Department</strong>:{" "}
+                    {selectedBooking.User.department.dep_name}
                   </h3>
                 </div>
                 <div className="flex flex-col gap-2 mt-7">
@@ -262,25 +213,28 @@ export default function DepDashboard() {
                     Information about booking:
                   </h1>
                   <h3>
-                    <strong>Time Created</strong>: {selectedBooking.timeCreated}
+                    <strong>Time Created</strong>:{" "}
+                    {selectedBooking.time_created}
                   </h3>
                   <h3>
-                    <strong>From</strong>: {selectedBooking.from.name}
+                    <strong>From</strong>:{" "}
+                    {selectedBooking.trip.pickup_location}
                   </h3>
                   <h3>
                     <strong>Coordinates</strong>:{" "}
-                    {selectedBooking.from.latitude},{" "}
-                    {selectedBooking.from.longitude}
+                    {selectedBooking.trip.pickup_latitude},{" "}
+                    {selectedBooking.trip.pickup_longitude}
                   </h3>
                   <h3>
-                    <strong>To</strong>: {selectedBooking.to.name}
+                    <strong>To</strong>: {selectedBooking.trip.dropoff_location}
                   </h3>
                   <h3>
-                    <strong>Coordinates</strong>: {selectedBooking.to.latitude},{" "}
-                    {selectedBooking.to.longitude}
+                    <strong>Coordinates</strong>:{" "}
+                    {selectedBooking.trip.dropoff_latitude},{" "}
+                    {selectedBooking.trip.dropoff_longitude}
                   </h3>
                   <h3>
-                    <strong>Status</strong>: {selectedBooking.bookingStatus}
+                    <strong>Status</strong>: {selectedBooking.booking_status}
                   </h3>
                 </div>
               </>
