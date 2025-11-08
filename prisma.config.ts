@@ -1,4 +1,8 @@
 import { defineConfig, env } from "prisma/config";
+import * as dotenv from "dotenv";
+
+// Load .env manually since Prisma config disables automatic loading
+dotenv.config();
 
 export default defineConfig({
   schema: "prisma/schema.prisma",
@@ -7,6 +11,8 @@ export default defineConfig({
   },
   engine: "classic",
   datasource: {
-    url: "postgresql://neondb_owner:npg_kJBx3SFPTy1m@ep-round-paper-abb6oeju-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require",
+    // Reference DATABASE_URL from .env
+    url: env("DATABASE_URL"),
   },
 });
+

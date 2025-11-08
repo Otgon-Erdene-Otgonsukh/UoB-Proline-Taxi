@@ -54,7 +54,7 @@ export const Navbar = () => {
           </li>
           <li>
             <Link
-              href={"/Dashboard"}
+              href={"/dep-dashboard"}
               className="flex items-center gap-2 text-lg hover:text-gray-300 relative group"
             >
               <img src="/dashboard.svg" className="-mt-1"></img>
