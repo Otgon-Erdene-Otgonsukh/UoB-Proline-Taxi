@@ -44,7 +44,7 @@ export const Navbar = () => {
         <ul className="hidden lg:flex lg:items-center gap-9">
           <li>
             <Link
-              href={"/"}
+              href={"/home"}
               className="flex items-center gap-1 text-lg hover:text-gray-300 relative group"
             >
               <img src="/Home.svg" className="mt-1.5"></img>
