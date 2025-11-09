@@ -15,6 +15,7 @@ import {
 import EmailIcon from "@mui/icons-material/Email";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import { Snackbar, Alert } from "@mui/material";
 import { userLogin } from "./request";
 
 export default function Log_forgot() {
@@ -30,12 +31,12 @@ export default function Log_forgot() {
 
     if (!isMailEmpty && !isPassEmpty) {
       userLogin(mail, password).then(res => {
-        // console.log(res);
         if (res.status !== 200) {
-          console.log('login fail');
+          setSnackbarState({ open: true, status: 'fail' })
         } else {
           res.json().then(data => {
             localStorage.setItem('token', data.token)
+            setSnackbarState({ open: true, status: 'success' })
             router.push("/home");
           });
         }
@@ -53,8 +54,35 @@ export default function Log_forgot() {
     setShowPassword(!showPassword);
   };
 
+  const [snackbarState, setSnackbarState] = useState({
+    open: false,
+    status: 'success'
+  })
+
+  const handleCloseSnackbarState = () => {
+    setSnackbarState({
+      ...snackbarState,
+      open: false,
+    })
+  }
+
   return (
     <div className="flex min-h-screen justify-center items-center font-inter p-4">
+      <Snackbar
+        autoHideDuration={2000}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        open={snackbarState.open}
+        onClose={handleCloseSnackbarState}
+      >
+        <Alert
+          onClose={handleCloseSnackbarState}
+          severity={snackbarState.status === 'success' ? 'success' : 'error'}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {snackbarState.status === 'success' ? 'Login success!' : 'Login failed! Try again'}
+        </Alert>
+      </Snackbar>
       <Paper
         elevation={3}
         sx={{
