@@ -19,3 +19,14 @@ export const searchUser = async (email: string): Promise<User | null> => {
     }
   })
 }
+
+export const updateUserToken = async (email: string, token: string): Promise<User | null> => {
+  return prisma.user.update({
+    where: {
+      email
+    },
+    data: {
+      token: token
+    }
+  })
+}

@@ -19,9 +19,20 @@ export async function POST(request: Request,) {
   const { email, password } = body;
 
   const toReturn = await userLogin(email, password)
-
-  return new Response(JSON.stringify(toReturn), {
-    status: 200,
-    headers: { 'Content-Type': 'application/json' }
-  });
+  if (toReturn === 'fail') {
+    return new Response(JSON.stringify({
+      message: 'login failed'
+    }), {
+      status: 201,
+      headers: { 'Content-Type': 'application/json' }
+    })
+  } else {
+    return new Response(JSON.stringify({
+      message: 'login success',
+      token: toReturn
+    }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
 }
