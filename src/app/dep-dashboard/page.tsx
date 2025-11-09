@@ -23,10 +23,15 @@ type BookingWithTrip = booking & {
 
 export default function DepDashboard() {
   const [pendingBookings, setPendingBookings] = useState<BookingWithTrip[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
     fetch("api/get_pending_bookings")
       .then((res) => res.json())
-      .then((data) => setPendingBookings(data));
+      .then((data) => {
+        setPendingBookings(data);
+        setIsLoading(false);
+      });
   }, []);
 
   const [selectedBooking, setSelectedBooking] =
@@ -75,7 +80,9 @@ export default function DepDashboard() {
         </div>
         {pendingBookings.length === 0 ? (
           <div className="text-center py-15 font-inter text-gray-400">
-            There are no bookings awaiting approval.
+            {isLoading
+              ? "Loading..."
+              : "There are no bookings awaiting approval."}
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -104,7 +111,9 @@ export default function DepDashboard() {
                       className="hover:bg-gray-50 transition-colors text-center"
                     >
                       <td className="border-2 border-gray-900 px-4 py-3 text-md">
-                        {e.time_created}
+                        {e.time_created
+                          ? new Date(e.time_created).toLocaleString()
+                          : "N/A"}
                       </td>
                       <td className="border-2 border-gray-900 px-4 py-3 text-md">
                         {e.trip.pickup_location}
@@ -214,7 +223,9 @@ export default function DepDashboard() {
                   </h1>
                   <h3>
                     <strong>Time Created</strong>:{" "}
-                    {selectedBooking.time_created}
+                    {selectedBooking.time_created
+                      ? new Date(selectedBooking.time_created).toLocaleString()
+                      : "N/A"}
                   </h3>
                   <h3>
                     <strong>From</strong>:{" "}
