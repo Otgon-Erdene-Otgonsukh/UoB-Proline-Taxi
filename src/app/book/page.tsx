@@ -410,13 +410,13 @@ return (
                   <input
                     id="pickupDate"
                     type="date"
-                    className={`border-2 rounded px-3 py-2 sm:px-3 py-2 flex-1 min-w-0 ${formFeedback.PickupDate == "" ? "" : "border-red-700"}`}
+                    className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0 ${formFeedback.PickupDate == "" ? "" : "border-red-700"}`}
                     onChange={(e) => {setFormData({...formData, PickupDate: e.target.value});}}
                   ></input>
                   <input
                     id="pickupTime"
                     type="time"
-                    className={`border-2 rounded px-3 py-2 sm:px-3 py-2 flex-1 min-w-0 ${formFeedback.PickupTime == "" ? "" : "border-red-700"}`}
+                    className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0 ${formFeedback.PickupTime == "" ? "" : "border-red-700"}`}
 				            onChange={(e) => {setFormData({...formData, PickupTime: e.target.value});}}
                   ></input>
                 </div>
@@ -466,7 +466,7 @@ return (
                     type="tel"
                     id="number"
                     placeholder="1234567890"
-                    className={`border-2 rounded flex-1 py-2 sm:px-3 py-2 min-w-0 w-full ${formFeedback.Number == "" ? "" : "border-red-700"}`}
+                    className={`border-2 rounded flex-1 sm:px-3 py-2 min-w-0 w-full ${formFeedback.Number == "" ? "" : "border-red-700"}`}
 				            onChange={(e) => {setFormData({...formData, Number: e.target.value});}}
                   />
                 </div>
