@@ -20,7 +20,7 @@ export type Trip = {
 
 export type BookingRecord = {
   id: number;
-  time_ceated: string;
+  time_created: string;
   trip: Trip;
   booking_status: 0 | 1 | 2;
   BookingStatusStr?: BookingStatusStr
