@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useLayoutEffect } from "react";
+import { Pagination, Button } from "@mui/material";
 
 type Location = {
   name: string;
@@ -79,8 +80,12 @@ const page = () => {
   }]
 
   return (
-    <div>
-      <button onClick={handleClick} className="bg-blue-300  text-gray-700 py-1 px-4 rounded-md hover:bg-yellow-500 hover:scale-103 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 font-extrabold m-1 float-end cursor-pointer">+ New Booking</button>
+    <div className="mt-5">
+      <div className="justify-self-end mb-2">
+        <Button variant="contained" onClick={handleClick}>
+          + New Booking
+        </Button>
+      </div>
       <table className="table-auto md:table-fixed w-full border-collapse border border-gray-400">
         <thead>
           <tr>
@@ -108,6 +113,9 @@ const page = () => {
           })}
         </tbody>
       </table>
+      <div className="flex justify-center mt-5">
+        <Pagination count={10} shape="rounded" className="self-center-safe" />
+      </div>
     </div>
   )
 }
