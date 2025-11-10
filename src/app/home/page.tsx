@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from "next/navigation";
+import { useLayoutEffect } from "react";
 
 type Location = {
   name: string;
@@ -21,6 +22,13 @@ type BookingRecord = {
 const page = () => {
 
   const router = useRouter();
+
+  useLayoutEffect(() => {
+    if (!localStorage.getItem('token')) {
+      router.push("login")
+    }
+  })
+
 
   const handleClick = () => {
     router.push("/book")
