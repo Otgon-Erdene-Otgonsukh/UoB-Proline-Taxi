@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from "next/navigation";
-import { useLayoutEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { Button, TableHead } from "@mui/material";
 import Box from '@mui/material/Box';
 import { tableCellClasses } from '@mui/material/TableCell';
@@ -20,22 +20,9 @@ import FirstPageIcon from '@mui/icons-material/FirstPage';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
+import { BookingRecord } from "@/src/model/models";
+import { getUserBookingList } from "./requests";
 
-type Location = {
-  name: string;
-  longitude: string;
-  latitude: string;
-}
-
-type BookingStatus = 'Approved' | 'Rejected' | 'Pending'
-
-type BookingRecord = {
-  id: number;
-  timeCreated: string;
-  from: Location;
-  to: Location;
-  bookingStatus: BookingStatus;
-}
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -117,12 +104,19 @@ const page = () => {
 
   const router = useRouter();
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (!localStorage.getItem('token')) {
       router.push("login")
     }
-  })
-
+    getUserBookingList(paginationMeta.page, paginationMeta.pageSize).then(res => {
+      if (res.status === 200) {
+        res.json().then(data => {
+          console.log(data);
+          setBookingListData(data.bookings)
+        })
+      }
+    })
+  }, [])
 
   const handleClick = () => {
     router.push("/book")
@@ -152,50 +146,7 @@ const page = () => {
     })
   };
 
-
-  const data: BookingRecord[] = [{
-    id: 1,
-    timeCreated: '2025-10-18 19:39:23',
-    from: {
-      name: 'Booking 1 from',
-      longitude: '',
-      latitude: ''
-    },
-    to: {
-      name: 'Booking 1 to',
-      longitude: '',
-      latitude: ''
-    },
-    bookingStatus: 'Approved'
-  }, {
-    id: 2,
-    timeCreated: '2025-10-18 19:40:23',
-    from: {
-      name: 'Booking 2 from',
-      longitude: '',
-      latitude: ''
-    },
-    to: {
-      name: 'Booking 2 to',
-      longitude: '',
-      latitude: ''
-    },
-    bookingStatus: 'Rejected'
-  }, {
-    id: 3,
-    timeCreated: '2025-10-18 21:39:23',
-    from: {
-      name: 'Booking 2 from',
-      longitude: '',
-      latitude: ''
-    },
-    to: {
-      name: 'Booking 2 to',
-      longitude: '',
-      latitude: ''
-    },
-    bookingStatus: 'Pending'
-  }]
+  const [bookingListData, setBookingListData] = useState<BookingRecord[]>([])
 
   return (
     <div className="mt-5">
@@ -216,19 +167,19 @@ const page = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.map((row) => (
-              <TableRow key={row.timeCreated}>
+            {bookingListData && bookingListData.map((row) => (
+              <TableRow key={row.time_created}>
                 <TableCell style={{ width: 160 }}>
-                  {row.timeCreated}
+                  {row.time_created}
                 </TableCell>
                 <TableCell style={{ width: 160 }}>
-                  {row.from.name}
+                  {row.trip.pickup_location}
                 </TableCell>
                 <TableCell style={{ width: 160 }}>
-                  {row.to.name}
+                  {row.trip.dropoff_location}
                 </TableCell>
                 <TableCell style={{ width: 160 }}>
-                  {row.bookingStatus}
+                  {row.booking_status}
                 </TableCell>
                 <TableCell style={{ width: 160 }}>
                   <Button color="primary">View</Button>
@@ -242,7 +193,7 @@ const page = () => {
               <TablePagination
                 rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
                 colSpan={3}
-                count={data.length}
+                count={bookingListData.length}
                 rowsPerPage={paginationMeta.pageSize}
                 page={paginationMeta.page}
                 slotProps={{
