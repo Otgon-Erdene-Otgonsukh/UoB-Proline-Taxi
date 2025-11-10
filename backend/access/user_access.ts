@@ -30,3 +30,11 @@ export const updateUserToken = async (email: string, token: string): Promise<Use
     }
   })
 }
+
+export const getUserByTokenAccess = async (token: string): Promise<User | null> => {
+  return prisma.user.findUnique({
+    where: {
+      token
+    }
+  })
+}
