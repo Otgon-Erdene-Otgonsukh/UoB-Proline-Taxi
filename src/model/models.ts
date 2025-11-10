@@ -19,10 +19,10 @@ export type Trip = {
 }
 
 export type BookingRecord = {
-  id: number;
+  booking_id: number;
   time_created: string;
   trip: Trip;
-  booking_status: 0 | 1 | 2;
+  booking_status: 'Approved' | 'Pending' | 'Rejected';
   BookingStatusStr?: BookingStatusStr
 }
 

@@ -15,13 +15,21 @@ import TableFooter from '@mui/material/TableFooter';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import IconButton from '@mui/material/IconButton';
 import FirstPageIcon from '@mui/icons-material/FirstPage';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
 import { BookingRecord } from "@/src/model/models";
 import { getUserBookingList } from "./requests";
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+import Typography from '@mui/material/Typography';
+import Stack from '@mui/material/Stack';
+import Chip from '@mui/material/Chip';
 
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -116,6 +124,20 @@ const page = () => {
         })
       }
     })
+    // setBookingListData([{
+    //   booking_id: 5,
+    //   booking_status: "Pending",
+    //   time_created: "2025-11-10T09:42:02.512Z",
+    //   trip: {
+    //     dropoff_latitude: 23,
+    //     dropoff_location: "Physics Building",
+    //     dropoff_longitude: 2,
+    //     pickup_latitude: 34,
+    //     pickup_location: "Queens building",
+    //     pickup_longitude: 12,
+    //     trip_id: 1
+    //   }
+    // }])
   }, [])
 
   const handleClick = () => {
@@ -147,6 +169,18 @@ const page = () => {
   };
 
   const [bookingListData, setBookingListData] = useState<BookingRecord[]>([])
+
+  // Dialog
+  const [bookDetailDialogOpen, setBookDetailDialogOpen] = useState(false)
+  const [bookDetail, setBookDetail] = useState<BookingRecord>()
+
+  const handleDialogOpen = (data: BookingRecord) => {
+    setBookDetail(data)
+    setBookDetailDialogOpen(true);
+  };
+  const handleDialogClose = () => {
+    setBookDetailDialogOpen(false);
+  };
 
   return (
     <div className="mt-5">
@@ -182,7 +216,7 @@ const page = () => {
                   {row.booking_status}
                 </TableCell>
                 <TableCell style={{ width: 160 }}>
-                  <Button color="primary">View</Button>
+                  <Button color="primary" onClick={() => handleDialogOpen(row)}>View</Button>
                   <Button color="error">Cancel</Button>
                 </TableCell>
               </TableRow>
@@ -212,6 +246,64 @@ const page = () => {
           </TableFooter>
         </Table>
       </TableContainer>
+      <Dialog
+        onClose={handleDialogClose}
+        aria-labelledby="customized-dialog-title"
+        open={bookDetailDialogOpen}
+      >
+        <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
+          Book Detail
+        </DialogTitle>
+        <IconButton
+          aria-label="close"
+          onClick={handleDialogClose}
+          sx={(theme) => ({
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: theme.palette.grey[500],
+          })}
+        >
+          <CloseIcon />
+        </IconButton>
+        <DialogContent dividers >
+          <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
+            <Typography gutterBottom>
+              Time Created:
+            </Typography>
+            <Typography gutterBottom>
+              {bookDetail?.time_created}
+            </Typography>
+          </Stack>
+          <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
+            <Typography gutterBottom>
+              From:
+            </Typography>
+            <Typography gutterBottom>
+              {bookDetail?.trip.pickup_location}
+            </Typography>
+          </Stack>
+          <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
+            <Typography gutterBottom>
+              To:
+            </Typography>
+            <Typography gutterBottom>
+              {bookDetail?.trip.dropoff_location}
+            </Typography>
+          </Stack>
+          <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
+            <Typography gutterBottom>
+              Book Status:
+            </Typography>
+            <Chip color="primary" label={bookDetail?.booking_status} />
+          </Stack>
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus onClick={handleDialogClose}>
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   )
 }
