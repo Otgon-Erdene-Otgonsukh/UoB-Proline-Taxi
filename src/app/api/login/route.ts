@@ -1,12 +1,13 @@
-import { userLogin } from "@/backend/app/user";
+import { searchUser, updateUserToken } from "@/backend/access/user_access";
 import { NextRequest } from "next/server";
+import { User } from '@/generated/prisma/browser';
+import { uuid } from "@/backend/utils/uuid";
 
 export async function GET(
   request: NextRequest,
 ) {
   const searchParams = request.nextUrl.searchParams;
-  const id = searchParams.get('id'); // e.g. `/api/search?query=hello`
-  // e.g. Query a database for user with ID `id`
+  const id = searchParams.get('id');
   return new Response(JSON.stringify({ id, name: `User ${id}` }), {
     status: 200,
     headers: { 'Content-Type': 'application/json' },
@@ -18,21 +19,25 @@ export async function POST(request: Request,) {
 
   const { email, password } = body;
 
-  const toReturn = await userLogin(email, password)
-  if (toReturn === 'fail') {
+  const userDetail: User | null = await searchUser(email);
+
+  // need encryption
+  if (userDetail && userDetail.password === password) {
+    const token = uuid()
+    updateUserToken(email, token)
+    return new Response(JSON.stringify({
+      message: 'login success',
+      token: token
+    }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  } else {
     return new Response(JSON.stringify({
       message: 'login failed'
     }), {
       status: 201,
       headers: { 'Content-Type': 'application/json' }
     })
-  } else {
-    return new Response(JSON.stringify({
-      message: 'login success',
-      token: toReturn
-    }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' }
-    });
   }
 }
