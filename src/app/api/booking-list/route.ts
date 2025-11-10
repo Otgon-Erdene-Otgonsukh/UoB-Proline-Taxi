@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { loginRequired } from '../utils/login'
-import { getUserBookings } from "@/backend/access/booking_access";
+import { getUserBookingsAccess } from "@/backend/access/booking_access";
 
 export async function GET(
   request: NextRequest,
@@ -20,7 +20,7 @@ export async function GET(
   const pageSize = searchParams.get('pageSize');
 
   if (page && pageSize) {
-    const bookings = await getUserBookings(userDetail.user_id, parseInt(page), parseInt(pageSize))
+    const bookings = await getUserBookingsAccess(userDetail.user_id, parseInt(page), parseInt(pageSize))
 
     return new Response(JSON.stringify({
       bookings

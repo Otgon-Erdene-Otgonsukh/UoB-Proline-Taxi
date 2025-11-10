@@ -2,7 +2,7 @@ import { PrismaClient, User } from '@/generated/prisma/client'
 
 const prisma = new PrismaClient()
 
-export const createUser = async () => {
+export const createUserAccess = async () => {
   return prisma.user.create({
     data: {
       username: 'Alice',
@@ -12,7 +12,7 @@ export const createUser = async () => {
   })
 }
 
-export const searchUser = async (email: string): Promise<User | null> => {
+export const searchUserAccess = async (email: string): Promise<User | null> => {
   return prisma.user.findUnique({
     where: {
       email
@@ -20,7 +20,7 @@ export const searchUser = async (email: string): Promise<User | null> => {
   })
 }
 
-export const updateUserToken = async (email: string, token: string): Promise<User | null> => {
+export const updateUserTokenAccess = async (email: string, token: string): Promise<User | null> => {
   return prisma.user.update({
     where: {
       email

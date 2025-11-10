@@ -1,4 +1,4 @@
-import { searchUser, updateUserToken } from "@/backend/access/user_access";
+import { searchUserAccess, updateUserTokenAccess } from "@/backend/access/user_access";
 import { NextRequest } from "next/server";
 import { User } from '@/generated/prisma/browser';
 import { uuid } from "@/backend/utils/uuid";
@@ -19,12 +19,12 @@ export async function POST(request: Request,) {
 
   const { email, password } = body;
 
-  const userDetail: User | null = await searchUser(email);
+  const userDetail: User | null = await searchUserAccess(email);
 
   // need encryption
   if (userDetail && userDetail.password === password) {
     const token = uuid()
-    updateUserToken(email, token)
+    updateUserTokenAccess(email, token)
     return new Response(JSON.stringify({
       message: 'login success',
       token: token
