@@ -1,12 +1,22 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
+import { motion } from "framer-motion";
 
 export function Landing_page() {
   return (
     <div>
-      <div className="flex flex-col mt-12 mb-8 lg:flex-row min-h-screen justify-evenly items-center px-4 py-8 lg:py-0">
+      <motion.div
+        className="flex flex-col mb-8 lg:flex-row min-h-screen justify-evenly items-center px-4 md:-mt-13 mt-10 lg:py-0"
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1, ease: "easeOut" }}
+      >
         {/*the image and the h1 dynamically shrinks and expand based on the screen size using lg sm tailwind properties*/}
-        <Image width="100" height="100"
+        <Image
+          width="100"
+          height="100"
           className="w-64 h-64 mt-14 sm:w-80 sm:h-80 sm:mt-25 lg:w-100 lg:h-100 lg:order-2 lg:mr-12 mb-8 lg:mb-0"
           src={"/landpic.svg"}
           alt="Landing"
@@ -22,22 +32,22 @@ export function Landing_page() {
             <Link href="/login">
               <button
                 type="button"
-                className="w-full lg:w-auto border-[#2c2c2c] border-1 bg-[#2c2c2c] text-white font-inter font-light rounded-md py-3 px-11 text-sm cursor-pointer hover:scale-101 active:bg-[#4d4d4d] whitespace-nowrap"
+                className="w-full lg:w-auto border-[#2c2c2c] border-1 bg-[#2c2c2c] text-white font-inter font-light rounded-md py-3 px-11 text-sm cursor-pointer hover:scale-103 hover:bg-[#393939] transition-all duration-300 active:bg-[#4d4d4d] whitespace-nowrap"
               >
                 LOGIN TO BOOK NOW
               </button>
             </Link>
-            <Link href="/">
+            <Link href="/about">
               <button
                 type="button"
-                className="w-full lg:w-auto border-1 text-[#303030] font-inter font-medium rounded-md py-3 px-20 text-sm cursor-pointer hover:scale-101 whitespace-nowrap active:bg-[#efefef]"
+                className="w-full lg:w-auto border-1 text-[#303030] font-inter font-medium rounded-md py-3 px-20 text-sm cursor-pointer hover:scale-103 transition-all duration-300 hover:bg-[#f9f7f7] whitespace-nowrap active:bg-[#efefef]"
               >
                 MORE INFO
               </button>
             </Link>
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

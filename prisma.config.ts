@@ -11,6 +11,8 @@ export default defineConfig({
   },
   engine: "classic",
   datasource: {
+    // Reference DATABASE_URL from .env
     url: env("DATABASE_URL"),
   },
 });
+

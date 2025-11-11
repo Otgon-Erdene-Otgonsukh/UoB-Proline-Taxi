@@ -2,7 +2,8 @@ Related issue numbers:
 #1, #2, #5 ...
 
 ## Description
-Include a summary of your changes here.
+<!--Include a summary of your changes here.-->
+
 
 ## Checklist
 Ensure you've done the following if necessary:

@@ -1,0 +1,19 @@
+import { booking, PrismaClient } from "@/generated/prisma/client";
+
+const prisma = new PrismaClient();
+
+export default async function getPendingBookings() {
+  return prisma.booking.findMany({
+    where: {
+      booking_status: "Pending",
+    },
+    include: {   // fetching the connected trip and User and department tables to fill out the dep-dashboard table and view 
+      trip: true,
+      User: {
+        include: {
+          department: true,
+        },
+      },
+    },
+  });
+}

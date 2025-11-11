@@ -11,6 +11,11 @@
 ](https://www.postgresql.org)
 [![Mui](https://img.shields.io/badge/MUI-007FFF?style=for-the-badge&logo=MUI&color=white)
 ](https://mui.com)
+[![Neon](https://img.shields.io/badge/Neon-00E599?style=for-the-badge&logo=neon&logoColor=white)](https://neon.tech)
+[![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=for-the-badge&logo=Prisma)
+](https://www.prisma.io/)
+
+
 
 
 ## Table of Contents
@@ -42,15 +47,23 @@ A booking and account management platform to streamline how the University of Br
 |
 ├── *.github*                                 
 │    ├── ISSUE_TEMPLATE                        # Issue template files
-|    ├── workflows                             # Continuous Integration & Deployment Workflow files
-|    └── pull_request_template.md    
-|
+│    ├── workflows                             # Continuous Integration & Deployment Workflow files
+│    └── pull_request_template.md    
+│
+├── *backend*                                  # Prisma functions
+│    └── ...
+│
+│
 ├── *docs*                                     # Documentation directory  
 │    ├── clientMeetings/                       # All client meeting materials
 │    │    ├── clientMeetingAgenda1.md
 │    │    └── clientMeetingNotes1.md
 │    └── design/                               # All design documentation/Figma 
-|
+│
+├── prisma
+│    └── schema.prisma                         # Prisma schema for database
+│
+│
 ├── public/                                    # Public assets
 |         └── ...
 
@@ -119,7 +132,7 @@ Benefit from a streamlined booking process, clear driver communication, and stra
 
 ## Project Architecture
 
-<img src="/docs/Tech_stack.png" alt="tech stack diagram"/>
+<img src="/docs/updated-teck-stack.jpg" alt="tech stack diagram"/>
 
 ## Team Members
 

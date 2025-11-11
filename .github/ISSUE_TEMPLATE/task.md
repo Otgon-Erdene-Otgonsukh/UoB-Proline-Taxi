@@ -17,10 +17,10 @@ A short summary here.
 
 ### Subtasks
 <!--Broken into smaller tasks or steps, if possible.-->
-- [] Task 1 - Brief Description
-- [] Task 2 - Brief Description
-- [] Task 3 - Brief Description
-    
+- [ ] Task 1 - Brief Description
+- [ ] Task 2 - Brief Description
+- [ ] Task 3 - Brief Description
+
 ### Additional Information
 <!--If there's anything else that needs to be known, add it here.-->
 ...
