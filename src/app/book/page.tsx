@@ -12,8 +12,6 @@ import {
     ThemeProvider,
     FormHelperText
 } from "@mui/material";
-import { request } from "http";
-import { VapeFreeRounded } from "@mui/icons-material";
 
 export function BookingPage() {
 const commonLocations = [
@@ -74,7 +72,7 @@ const [formData, setFormData] = useState({
 
 // Client side validation.
 const handleSubmit = (e: React.FormEvent) => {
-  const router = useRouter()
+  //const router = useRouter()
   var fail = false
 
   // Disallow submission to endpoint before validation.
@@ -219,9 +217,18 @@ const handleSubmit = (e: React.FormEvent) => {
 
     // fail == false if all validation succeeds, then post the request.
     if (fail == false) {
-      const jsonBody = {"user_id": 0, "pickup_location": loc, "dropoff_location": formData.DropoffLoc, "pickup_time": pickupDateTime}
-		  fetch("/api/create_booking", {method: "POST", body: JSON.stringify(jsonBody)})
-      router.push("/") // Refresh page to root (/) page, to reflect changes once implemented.
+      const jsonBody = {"user_id": 1, "pickup_location": loc, "dropoff_location": formData.DropoffLoc, "pickup_time": pickupDateTime, "first_name": formData.FirstName, "surname": formData.Surname, "email": formData.Email, "tel_number": formData.Number, "additional_info": formData.AdditionalInfo}
+		  fetch("/api/create_booking", {method: "POST", body: JSON.stringify(jsonBody)}).then((response) =>{
+        if (response.status == 200) {
+          //router.push("/") // Refresh page to root (/) page, to reflect changes once implemented.
+        } else {
+          // Use additional info box to mark error. Will replace with specific errors in the future.
+          addFormFeedback("AdditionalInfo", "Form failed to submit. Please try again or check inputs.")
+        }
+      }).catch((err) => {
+        console.error("Error:", err);
+        addFormFeedback("AdditionalInfo", "Form failed to submit. Please try again later or check your network connection.")
+      });
     }
 };
 
