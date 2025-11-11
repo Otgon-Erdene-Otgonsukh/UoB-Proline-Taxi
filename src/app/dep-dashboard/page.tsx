@@ -195,7 +195,7 @@ export default function DepDashboard() {
           >
             Booking Detail
           </DialogTitle>
-          <DialogContent id="description">
+          <DialogContent id="desscription">
             {selectedBooking && (
               <>
                 <div className="flex flex-col gap-2 mt-8">
