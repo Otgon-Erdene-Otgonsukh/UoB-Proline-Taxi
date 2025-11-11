@@ -14,7 +14,7 @@ import {
 import EmailIcon from "@mui/icons-material/Email";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import { Snackbar, Alert, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from "@mui/material";
+import { Snackbar, Alert } from "@mui/material";
 import { userLogin } from "./request";
 
 export default function Log_forgot() {
@@ -53,6 +53,10 @@ export default function Log_forgot() {
     setShowPassword(!showPassword);
   };
 
+  const handleForgotClick = () => {
+    router.push("/forgot");
+  }
+
   const [snackbarState, setSnackbarState] = useState({
     open: false,
     status: 'success'
@@ -63,16 +67,6 @@ export default function Log_forgot() {
       ...snackbarState,
       open: false,
     })
-  }
-
-  const [resetDialogOpen, setResetDialogOpen] = useState(false)
-
-  const handleResetDialogClose = () => {
-    setResetDialogOpen(false)
-  }
-
-  const handleResetFormSubmit = () => {
-    // TODO
   }
 
   return (
@@ -227,10 +221,11 @@ export default function Log_forgot() {
             }}
           />
 
-          <Box sx={{ textAlign: "left" }}>
-            <Button variant="text" onClick={() => setResetDialogOpen(true)}
+          <Box sx={{ textAlign: "left"}}>
+            <Button variant="text" onClick={handleForgotClick}
               sx={{
                 fontSize: "0.875rem",
+                textTransform: "capitalize",
                 color: "#111827",
                 "&:hover": {
                   color: "#374151",
@@ -263,34 +258,6 @@ export default function Log_forgot() {
           </Button>
         </Box>
       </Paper>
-      <Dialog open={resetDialogOpen} onClose={handleResetDialogClose}>
-        <DialogTitle>Forget Password</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            To Reset your password, please enter your email address here. We
-            will send the reset link via email.
-          </DialogContentText>
-          <form onSubmit={handleResetFormSubmit} id="subscription-form">
-            <TextField
-              autoFocus
-              required
-              margin="dense"
-              id="email"
-              name="email"
-              label="Email Address"
-              type="email"
-              fullWidth
-              variant="standard"
-            />
-          </form>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleResetDialogClose}>Cancel</Button>
-          <Button type="submit" form="subscription-form">
-            Send email
-          </Button>
-        </DialogActions>
-      </Dialog>
     </div>
   );
 }
