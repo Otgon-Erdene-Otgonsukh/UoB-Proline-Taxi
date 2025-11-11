@@ -195,7 +195,7 @@ export default function DepDashboard() {
           >
             Booking Detail
           </DialogTitle>
-          <DialogContent id="description">
+          <DialogContent id="desscription">
             {selectedBooking && (
               <>
                 <div className="flex flex-col gap-2 mt-8">
@@ -203,14 +203,14 @@ export default function DepDashboard() {
                     Information about passenger:
                   </h1>
                   <h3>
-                    <strong>First name</strong>: {selectedBooking.User.name}
+                    <strong>First name</strong>: {selectedBooking.first_name}
                   </h3>
                   <h3>
-                    <strong>Last name</strong>: {selectedBooking.User.surname}
+                    <strong>Last name</strong>: {selectedBooking.surname}
                   </h3>
                   <h3>
                     <strong>Phone number</strong>:{" "}
-                    {selectedBooking.User.phone_number}
+                    {selectedBooking.tel_number}
                   </h3>
                   <h3>
                     <strong>Department</strong>:{" "}
@@ -245,7 +245,24 @@ export default function DepDashboard() {
                     {selectedBooking.trip.dropoff_longitude}
                   </h3>
                   <h3>
-                    <strong>Status</strong>: {selectedBooking.booking_status}
+                    <strong>Additional Info</strong>:{" "}
+                    {selectedBooking.additional_info}
+                  </h3>
+                  <h3>
+                    <strong>Status</strong>:{" "}
+                    {selectedBooking.booking_status === "Approved" ? (
+                      <span className="inline-block px-10 py-1 rounded-full text-xs font-medium border border-green-800 bg-green-200 text-green-800">
+                        Approved
+                      </span>
+                    ) : selectedBooking.booking_status === "Rejected" ? (
+                      <span className="inline-block px-10 py-1 rounded-full text-xs font-medium border border-red-800 bg-red-200 text-red-800">
+                        Rejected
+                      </span>
+                    ) : (
+                      <span className="inline-block px-10 py-1 rounded-full text-xs font-medium border border-yellow-800 bg-yellow-200 text-yellow-800">
+                        Pending
+                      </span>
+                    )}
                   </h3>
                 </div>
               </>
@@ -255,7 +272,7 @@ export default function DepDashboard() {
             <Button
               onClick={handleViewClose}
               sx={{
-                mr: 4,
+                mr: 2,
                 mt: 2,
                 mb: 1,
                 color: "#2c2c2c",

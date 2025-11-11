@@ -10,12 +10,12 @@ import {
   Paper,
   InputAdornment,
   IconButton,
-  Link,
 } from "@mui/material";
 import EmailIcon from "@mui/icons-material/Email";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import { userLogin } from "@/backend/app/user";
+import { Snackbar, Alert } from "@mui/material";
+import { userLogin } from "./request";
 
 export default function Log_forgot() {
   const router = useRouter();
@@ -30,11 +30,14 @@ export default function Log_forgot() {
 
     if (!isMailEmpty && !isPassEmpty) {
       userLogin(mail, password).then(res => {
-        console.log(res);
-        if (res === 'success') {
-          router.push("/home");
+        if (res.status !== 200) {
+          setSnackbarState({ open: true, status: 'fail' })
         } else {
-          console.log('login fail');
+          res.json().then(data => {
+            localStorage.setItem('token', data.token)
+            setSnackbarState({ open: true, status: 'success' })
+            router.push("/home");
+          });
         }
       })
     }
@@ -50,8 +53,39 @@ export default function Log_forgot() {
     setShowPassword(!showPassword);
   };
 
+  const handleForgotClick = () => {
+    router.push("/forgot");
+  }
+
+  const [snackbarState, setSnackbarState] = useState({
+    open: false,
+    status: 'success'
+  })
+
+  const handleCloseSnackbarState = () => {
+    setSnackbarState({
+      ...snackbarState,
+      open: false,
+    })
+  }
+
   return (
     <div className="flex min-h-screen justify-center items-center font-inter p-4">
+      <Snackbar
+        autoHideDuration={2000}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        open={snackbarState.open}
+        onClose={handleCloseSnackbarState}
+      >
+        <Alert
+          onClose={handleCloseSnackbarState}
+          severity={snackbarState.status === 'success' ? 'success' : 'error'}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {snackbarState.status === 'success' ? 'Login success!' : 'Login failed! Try again'}
+        </Alert>
+      </Snackbar>
       <Paper
         elevation={3}
         sx={{
@@ -194,12 +228,11 @@ export default function Log_forgot() {
             }}
           />
 
-          <Box sx={{ textAlign: "left" }}>
-            <Link
-              href="/forgot"
-              underline="hover"
+          <Box sx={{ textAlign: "left"}}>
+            <Button variant="text" onClick={handleForgotClick}
               sx={{
                 fontSize: "0.875rem",
+                textTransform: "capitalize",
                 color: "#111827",
                 "&:hover": {
                   color: "#374151",
@@ -207,7 +240,7 @@ export default function Log_forgot() {
               }}
             >
               Forgot password?
-            </Link>
+            </Button>
           </Box>
 
           <Button
