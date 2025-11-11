@@ -8,7 +8,12 @@ export default async function createBooking(
     pickupLatitude : number | null,
     pickupLongitude : number | null,
     dropoffLocation : string, dropoffLatitude: number | null, dropoffLongitude: number | null,
-    pickupTime : Date
+    pickupTime : Date,
+    first_name : string,
+    surname : string,
+    email: string,
+    tel_number: string,
+    additional_info: string
 )
 {
     // Create a trip for the booking to be bound to.
@@ -21,7 +26,7 @@ export default async function createBooking(
             dropoff_location: dropoffLocation,
             dropoff_latitude: dropoffLatitude,
             dropoff_longitude: dropoffLongitude,
-            pickup_time: pickupTime,
+            pickup_time: pickupTime
         }
     });
 
@@ -30,8 +35,13 @@ export default async function createBooking(
         data: {
             user_id: userID,
             trip_id: trip.trip_id,
-            time_created: new Date(), // Set as current date/time.
+            time_created: new Date(), // Current date/time.
             booking_status: "Pending",
-        },
+            first_name: first_name,
+            surname: surname,
+            email: email,
+            tel_number: tel_number,
+            additional_info: additional_info
+        }
     });
 }

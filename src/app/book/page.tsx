@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from 'next/router'
 import {
     Button,
     createTheme,
@@ -11,6 +12,8 @@ import {
     ThemeProvider,
     FormHelperText
 } from "@mui/material";
+import { request } from "http";
+import { VapeFreeRounded } from "@mui/icons-material";
 
 export function BookingPage() {
 const commonLocations = [
@@ -66,38 +69,44 @@ const [formData, setFormData] = useState({
 	Surname: "",
 	Number: "",
 	Email: "",
-    AdditionalInfo: ""
+  AdditionalInfo: ""
 });
 
 // Client side validation.
 const handleSubmit = (e: React.FormEvent) => {
-    var fail = false
+  const router = useRouter()
+  var fail = false
 
-	// Disallow submission to endpoint before validation.
-	e.preventDefault();
+  // Disallow submission to endpoint before validation.
+  e.preventDefault();
 
-	// Reset all messages to default:
-    clearFeedback();
+  // Reset all messages to default:
+  clearFeedback();
+
+  var loc = ""
 
     // Custom Location
-	if (isManualChecked || isFlightChecked) {
-		if (formData.CustomLoc == "") {
-			addFormFeedback("CustomLoc", "Please enter a pickup location.")
-            fail = true
-		} else if (formData.CustomLoc.length < 5) {
-            addFormFeedback("CustomLoc", "Pickup location not detailed enough.")
-            fail = true
-        } else if (formData.CustomLoc.length > 100) {
-            addFormFeedback("CustomLoc", "Pickup location too long.")
-            fail = true
-        }
+  if (isManualChecked || isFlightChecked) {
+	if (formData.CustomLoc == "") {
+		addFormFeedback("CustomLoc", "Please enter a pickup location.")
+		fail = true
+	} else if (formData.CustomLoc.length < 5) {
+		addFormFeedback("CustomLoc", "Pickup location not detailed enough.")
+		fail = true
+	} else if (formData.CustomLoc.length > 100) {
+		addFormFeedback("CustomLoc", "Pickup location too long.")
+		fail = true
+	}
+    
+		loc = formData.CustomLoc
             
 	} else {
         // Common Pickup Location / Dropdown
 		if (formData.CommonLoc == "") {
 			addFormFeedback("CommonLoc", "Please pick one.")
-            fail = true
+      fail = true
 		}
+		loc = formData.CommonLoc
 	}
 
     // Drop-Off Location
@@ -141,6 +150,7 @@ const handleSubmit = (e: React.FormEvent) => {
     // Form Date and Time are bound by selection in the browser and therefore
     // should only be subject to server side validation other than presence and being later than Date.Now().
     
+	  var pickupDateTime = new Date()
 
     if (formData.PickupDate == "") {
         addFormFeedback("PickupDate", "Please select a Date.")
@@ -160,6 +170,8 @@ const handleSubmit = (e: React.FormEvent) => {
             addFormFeedback("PickupTime", " ") // Make both boxes go red, hacky workaround.
             fail = true
         }
+
+		pickupDateTime = targetDateTime
     }
 
     // Phone number
@@ -207,7 +219,9 @@ const handleSubmit = (e: React.FormEvent) => {
 
     // fail == false if all validation succeeds, then post the request.
     if (fail == false) {
-        // Code to POST the request to the API endpoint will go here.
+      const jsonBody = {"user_id": 0, "pickup_location": loc, "dropoff_location": formData.DropoffLoc, "pickup_time": pickupDateTime}
+		  fetch("/api/create_booking", {method: "POST", body: JSON.stringify(jsonBody)})
+      router.push("/") // Refresh page to root (/) page, to reflect changes once implemented.
     }
 };
 
