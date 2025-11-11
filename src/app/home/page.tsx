@@ -30,6 +30,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import Chip from '@mui/material/Chip';
+import BookingPage from "../book/page";
 
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -170,17 +171,32 @@ const page = () => {
 
   const [bookingListData, setBookingListData] = useState<BookingRecord[]>([])
 
-  // Dialog
+  // Cancel booking
+  const handleCancelBooking = (row: BookingRecord) => {
+
+  }
+
+  // View Dialog
   const [bookDetailDialogOpen, setBookDetailDialogOpen] = useState(false)
   const [bookDetail, setBookDetail] = useState<BookingRecord>()
 
-  const handleDialogOpen = (data: BookingRecord) => {
+  const handleViewDialogOpen = (data: BookingRecord) => {
     setBookDetail(data)
     setBookDetailDialogOpen(true);
   };
-  const handleDialogClose = () => {
+  const handleViewDialogClose = () => {
     setBookDetailDialogOpen(false);
   };
+
+  // Edit Dialog
+  const [editBookDialogOpen, setEditBookDialogOpen] = useState(false)
+  const handleEditDialogOpen = (data: BookingRecord) => {
+    setBookDetail(data)
+    setEditBookDialogOpen(true)
+  }
+  const handleEditDialogClose = () => {
+    setEditBookDialogOpen(false)
+  }
 
   return (
     <div className="mt-5">
@@ -216,8 +232,9 @@ const page = () => {
                   {row.booking_status}
                 </TableCell>
                 <TableCell style={{ width: 160 }}>
-                  <Button color="primary" onClick={() => handleDialogOpen(row)}>View</Button>
-                  <Button color="error">Cancel</Button>
+                  <Button color="primary" onClick={() => handleViewDialogOpen(row)}>View</Button>
+                  {row.booking_status === 'Pending' && <Button color="warning" onClick={() => handleEditDialogOpen(row)}>Edit</Button>}
+                  <Button color="error" onClick={() => handleCancelBooking(row)}>Cancel</Button>
                 </TableCell>
               </TableRow>
             ))}
@@ -247,7 +264,7 @@ const page = () => {
         </Table>
       </TableContainer>
       <Dialog
-        onClose={handleDialogClose}
+        onClose={handleViewDialogClose}
         aria-labelledby="customized-dialog-title"
         open={bookDetailDialogOpen}
       >
@@ -256,7 +273,7 @@ const page = () => {
         </DialogTitle>
         <IconButton
           aria-label="close"
-          onClick={handleDialogClose}
+          onClick={handleViewDialogClose}
           sx={(theme) => ({
             position: 'absolute',
             right: 8,
@@ -299,7 +316,37 @@ const page = () => {
           </Stack>
         </DialogContent>
         <DialogActions>
-          <Button autoFocus onClick={handleDialogClose}>
+          <Button autoFocus onClick={handleViewDialogClose}>
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        onClose={handleEditDialogClose}
+        aria-labelledby="customized-dialog-title"
+        open={editBookDialogOpen}
+        maxWidth="md"
+      >
+        <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
+          Edit Booking
+        </DialogTitle>
+        <IconButton
+          aria-label="close"
+          onClick={handleEditDialogClose}
+          sx={(theme) => ({
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: theme.palette.grey[500],
+          })}
+        >
+          <CloseIcon />
+        </IconButton>
+        <DialogContent dividers >
+          <BookingPage />
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus onClick={handleEditDialogClose}>
             Close
           </Button>
         </DialogActions>
