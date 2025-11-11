@@ -4,12 +4,9 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button, TableHead } from "@mui/material";
 import Box from '@mui/material/Box';
-import { tableCellClasses } from '@mui/material/TableCell';
-import { styled } from '@mui/material/styles';
 import { useTheme } from '@mui/material/styles';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
@@ -31,22 +28,9 @@ import Stack from '@mui/material/Stack';
 import Chip from '@mui/material/Chip';
 import BookingPage from "../book/page";
 import CustomizedButton from "@/src/components/CustomizedButton";
+import { StyledTableCell } from "@/src/components/StyledTableCell";
 
-const StyledTableHeadCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: "#f9fafb",
-    border: "2px solid #111827",
-    textAlign: "center",
-    fontWeight: "bold",
-    fontSize: "0.95rem",
-    color: "#111827",
-  },
-  [`&.${tableCellClasses.body}`]: {
-    border: "2px solid #111827",
-    textAlign: "center",
-    fontSize: "0.875rem",
-  },
-}));
+
 
 interface TablePaginationActionsProps {
   count: number;
@@ -135,29 +119,29 @@ const page = () => {
     if (!localStorage.getItem("token")) {
       router.push("login");
     }
-    // getUserBookingList(paginationMeta.page, paginationMeta.pageSize).then((res) => {
-    //   if (res.status === 200) {
-    //     res.json().then((data) => {
-    //       console.log(data);
-    //       setBookingListData(data.bookings);
-    //     });
-    //   }
-    // })
-
-    setBookingListData([{
-      booking_id: 5,
-      booking_status: "Pending",
-      time_created: "2025-11-10T09:42:02.512Z",
-      trip: {
-        dropoff_latitude: 23,
-        dropoff_location: "Physics Building",
-        dropoff_longitude: 2,
-        pickup_latitude: 34,
-        pickup_location: "Queens building",
-        pickup_longitude: 12,
-        trip_id: 1
+    getUserBookingList(paginationMeta.page, paginationMeta.pageSize).then((res) => {
+      if (res.status === 200) {
+        res.json().then((data) => {
+          console.log(data);
+          setBookingListData(data.bookings);
+        });
       }
-    }])
+    })
+
+    // setBookingListData([{
+    //   booking_id: 5,
+    //   booking_status: "Pending",
+    //   time_created: "2025-11-10T09:42:02.512Z",
+    //   trip: {
+    //     dropoff_latitude: 23,
+    //     dropoff_location: "Physics Building",
+    //     dropoff_longitude: 2,
+    //     pickup_latitude: 34,
+    //     pickup_location: "Queens building",
+    //     pickup_longitude: 12,
+    //     trip_id: 1
+    //   }
+    // }])
   }, [])
 
   const handleClick = () => {
@@ -242,21 +226,21 @@ const page = () => {
           >
             <TableHead>
               <TableRow>
-                <StyledTableHeadCell>
+                <StyledTableCell>
                   Time Created
-                </StyledTableHeadCell>
-                <StyledTableHeadCell>
+                </StyledTableCell>
+                <StyledTableCell>
                   From
-                </StyledTableHeadCell>
-                <StyledTableHeadCell>
+                </StyledTableCell>
+                <StyledTableCell>
                   To
-                </StyledTableHeadCell>
-                <StyledTableHeadCell>
+                </StyledTableCell>
+                <StyledTableCell>
                   Booking Status
-                </StyledTableHeadCell>
-                <StyledTableHeadCell>
+                </StyledTableCell>
+                <StyledTableCell>
                   Operation
-                </StyledTableHeadCell>
+                </StyledTableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -269,18 +253,18 @@ const page = () => {
                       transition: "background-color 0.2s",
                     }}
                   >
-                    <StyledTableHeadCell>
+                    <StyledTableCell>
                       {row.time_created
                         ? new Date(row.time_created).toLocaleString()
                         : "N/A"}
-                    </StyledTableHeadCell>
-                    <StyledTableHeadCell>
+                    </StyledTableCell>
+                    <StyledTableCell>
                       {row.trip.pickup_location}
-                    </StyledTableHeadCell>
-                    <StyledTableHeadCell>
+                    </StyledTableCell>
+                    <StyledTableCell>
                       {row.trip.dropoff_location}
-                    </StyledTableHeadCell>
-                    <StyledTableHeadCell>
+                    </StyledTableCell>
+                    <StyledTableCell>
                       <span
                         className={`inline-block px-5 py-1 rounded-full text-xs font-medium ${row.booking_status === "Approved"
                           ? "bg-green-100 text-green-800 border border-green-800"
@@ -291,15 +275,15 @@ const page = () => {
                       >
                         {row.booking_status}
                       </span>
-                    </StyledTableHeadCell>
-                    <StyledTableHeadCell>
+                    </StyledTableCell>
+                    <StyledTableCell>
                       <div className="flex gap-2 justify-center">
 
                         <CustomizedButton click={() => handleViewDialogOpen(row)} type="primary" title="View" />
                         {row.booking_status === 'Pending' && <CustomizedButton click={() => handleEditDialogOpen(row)} type="warning" title="Edit" />}
                         <CustomizedButton click={() => handleCancelBooking(row)} type="error" title="Cancel" />
                       </div>
-                    </StyledTableHeadCell>
+                    </StyledTableCell>
                   </TableRow>
                 ))}
             </TableBody>
