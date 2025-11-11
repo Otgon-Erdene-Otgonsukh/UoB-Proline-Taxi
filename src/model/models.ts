@@ -4,7 +4,7 @@ export type BookingLocation = {
   longitude: string;
 }
 
-export type BookingStatusStr = 'Approve' | 'Pending' | 'Rejected'
+export type BookingStatusStr = 'Approved' | 'Pending' | 'Rejected'
 
 export type Trip = {
   trip_id: number;
@@ -22,8 +22,7 @@ export type BookingRecord = {
   id: number;
   time_created: string;
   trip: Trip;
-  booking_status: 0 | 1 | 2;
-  BookingStatusStr?: BookingStatusStr
+  booking_status: BookingStatusStr;
 }
 
 export function bookingStatusMap(bookingStatus: number): BookingStatusStr {
@@ -32,7 +31,7 @@ export function bookingStatusMap(bookingStatus: number): BookingStatusStr {
     default:
       return 'Pending';
     case 1:
-      return 'Approve';
+      return 'Approved';
     case 2:
       return 'Rejected';
   }
