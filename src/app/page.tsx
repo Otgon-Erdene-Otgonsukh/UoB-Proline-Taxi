@@ -1,8 +1,8 @@
-import Home from "@/src/app/home/page"
+import Land from "@/src/components/Landing_page"
 
 const page = () => {
   return (
-    <div><Home></Home></div>
+    <div><Land></Land></div>
   )
 }
 
