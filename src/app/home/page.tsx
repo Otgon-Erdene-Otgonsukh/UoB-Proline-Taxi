@@ -114,6 +114,7 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
 
 const page = () => {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     if (!localStorage.getItem("token")) {
@@ -124,6 +125,7 @@ const page = () => {
         res.json().then((data) => {
           console.log(data);
           setBookingListData(data.bookings);
+          setIsLoading(false)
         });
       }
     })
@@ -216,6 +218,7 @@ const page = () => {
           </button>
         </div>
 
+      {isLoading ? (<Typography sx={{color:"gray", fontSize: 16, textAlign: "center"}}>Getting your bookings...</Typography>) : bookingListData.length === 0 ? (<Typography sx={{color:"gray", fontSize: 16, textAlign: "center"}}>No bookings to show.</Typography>) : (
         <TableContainer
           component={Paper}
           sx={{ boxShadow: "none", border: "none" }}
@@ -289,14 +292,15 @@ const page = () => {
             </TableBody>
           </Table>
         </TableContainer>
+      ) }
 
         <Dialog
           onClose={handleViewDialogClose}
           aria-labelledby="customized-dialog-title"
           open={bookDetailDialogOpen}
         >
-          <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
-            Book Detail
+          <DialogTitle sx={{ m: 0, p: 2 , fontFamily: "inter", fontWeight: "bold", bgcolor: "#2c2c2c", color: "white", textAlign: "center", fontSize: 28}} id="customized-dialog-title">
+            Booking Detail
           </DialogTitle>
           <IconButton
             aria-label="close"
@@ -310,17 +314,17 @@ const page = () => {
           >
             <CloseIcon />
           </IconButton>
-          <DialogContent dividers >
-            <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
-              <Typography gutterBottom>
+          <DialogContent dividers>
+            <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px'}}>
+              <Typography gutterBottom sx={{fontWeight: "bold"}}>
                 Time Created:
               </Typography>
               <Typography gutterBottom>
-                {bookDetail?.time_created}
+                {bookDetail?.time_created ? new Date(bookDetail?.time_created).toLocaleString() : ""}
               </Typography>
             </Stack>
             <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
-              <Typography gutterBottom>
+              <Typography gutterBottom sx={{fontWeight: "bold"}}>
                 From:
               </Typography>
               <Typography gutterBottom>
@@ -328,7 +332,7 @@ const page = () => {
               </Typography>
             </Stack>
             <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
-              <Typography gutterBottom>
+              <Typography gutterBottom sx={{fontWeight: "bold"}}>
                 To:
               </Typography>
               <Typography gutterBottom>
@@ -336,14 +340,14 @@ const page = () => {
               </Typography>
             </Stack>
             <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
-              <Typography gutterBottom>
-                Book Status:
+              <Typography gutterBottom sx={{fontWeight: "bold"}}>
+                Booking Status:
               </Typography>
-              <Chip color="primary" label={bookDetail?.booking_status} />
+              <Chip color={`${bookDetail?.booking_status === "Approved" ? "success" : bookDetail?.booking_status === "Pending" ? "warning" : "error"}`} label={bookDetail?.booking_status} />
             </Stack>
           </DialogContent>
           <DialogActions>
-            <Button autoFocus onClick={handleViewDialogClose}>
+            <Button autoFocus onClick={handleViewDialogClose} sx={{color: "#2c2c2c", mr: 1}}>
               Close
             </Button>
           </DialogActions>
@@ -354,7 +358,7 @@ const page = () => {
           open={editBookDialogOpen}
           maxWidth="md"
         >
-          <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
+          <DialogTitle sx={{ m: 0, p: 2, fontFamily: "inter", fontWeight: "bold", bgcolor: "#2c2c2c", color: "white", textAlign: "center", fontSize: 28}} id="customized-dialog-title">
             Edit Booking
           </DialogTitle>
           <IconButton
@@ -370,10 +374,10 @@ const page = () => {
             <CloseIcon />
           </IconButton>
           <DialogContent dividers >
-            <BookingPage />
+            <BookingPage/>
           </DialogContent>
           <DialogActions>
-            <Button autoFocus onClick={handleEditDialogClose}>
+            <Button autoFocus onClick={handleEditDialogClose} sx={{color: "#2c2c2c"}}>
               Close
             </Button>
           </DialogActions>
