@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
 import {
     Button,
     createTheme,
@@ -70,9 +70,10 @@ const [formData, setFormData] = useState({
   AdditionalInfo: ""
 });
 
+const router = useRouter()
+
 // Client side validation.
 const handleSubmit = (e: React.FormEvent) => {
-  //const router = useRouter()
   var fail = false
 
   // Disallow submission to endpoint before validation.
@@ -220,7 +221,7 @@ const handleSubmit = (e: React.FormEvent) => {
       const jsonBody = {"user_id": 1, "pickup_location": loc, "dropoff_location": formData.DropoffLoc, "pickup_time": pickupDateTime, "first_name": formData.FirstName, "surname": formData.Surname, "email": formData.Email, "tel_number": formData.Number, "additional_info": formData.AdditionalInfo}
 		  fetch("/api/create_booking", {method: "POST", body: JSON.stringify(jsonBody)}).then((response) =>{
         if (response.status == 200) {
-          //router.push("/") // Refresh page to root (/) page, to reflect changes once implemented.
+          router.push("/") // Refresh page to root (/) page, to reflect changes once implemented.
         } else {
           // Use additional info box to mark error. Will replace with specific errors in the future.
           addFormFeedback("AdditionalInfo", "Form failed to submit. Please try again or check inputs.")
