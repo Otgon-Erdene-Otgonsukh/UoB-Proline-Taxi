@@ -20,7 +20,6 @@ export const Navbar = () => {
       setUsername(storedUsername);
     } 
   }, [])
-  
   return (
     <nav className="bg-[#2C2C2C] text-white w-full p-6 sm:p-4 md:justify-start">
       <div className="flex justify-between items-center">
@@ -103,10 +102,20 @@ export const Navbar = () => {
           </li>
         </ul>
         <div className="pr-6">
-          {username ? (
+          {!username ? (
             <span className="text-lg">Hi, {username}!</span>
           ) : (
-          <Button variant="contained" onClick={handleLoginClick}>Login</Button>)}
+          <Button variant="contained" onClick={handleLoginClick}
+            sx={{
+              backgroundColor: 'white',
+              color: 'black',
+              '&:hover': {
+                backgroundColor: '#d1d5db',
+              },
+            }}
+          >
+            Login
+          </Button>)}
         </div>
       </div>
     </nav>
