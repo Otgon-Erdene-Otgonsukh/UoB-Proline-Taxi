@@ -18,7 +18,7 @@ export const easyGetRequest = (url: string, params: { [key: string]: any }, need
     }
   }
 
-  const request = new Request(`http://localhost:3000/api/${url}?${searchParams.toString()}`, {
+  const request = new Request(`/api/${url}?${searchParams.toString()}`, {
     method: "GET",
     headers: headers,
   });
@@ -38,7 +38,7 @@ export const easyPostRequest = (url: string, data: { [key: string]: any }, needA
     headers.append('token', localStorage.getItem('token')!)
   }
 
-  const request = new Request(`http://localhost:3000/api/${url}`, {
+  const request = new Request(`/api/${url}`, {
     method: "POST",
     body: JSON.stringify(data),
     headers: headers,
