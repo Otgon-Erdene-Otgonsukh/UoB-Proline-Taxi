@@ -17,8 +17,8 @@ model User {
   name         String?       @db.VarChar(100)
   surname      String?       @db.VarChar(100)
   phone_number String?       @db.VarChar(20)
-  time_created BigInt?       @default(dbgenerated("(EXTRACT(epoch FROM now()))::bigint"))
   token        String?       @unique @db.VarChar(256)
+  time_created DateTime?     @default(now()) @db.Timestamp(6)
   department   department?   @relation(fields: [dep_id], references: [dep_id], onUpdate: NoAction)
   booking      booking[]
   user_address user_address?

@@ -74,7 +74,7 @@ const router = useRouter()
 
 // Client side validation.
 const handleSubmit = (e: React.FormEvent) => {
-  var fail = false
+  let fail = false
 
   // Disallow submission to endpoint before validation.
   e.preventDefault();
@@ -82,7 +82,7 @@ const handleSubmit = (e: React.FormEvent) => {
   // Reset all messages to default:
   clearFeedback();
 
-  var loc = ""
+  let loc = ""
 
     // Custom Location
   if (isManualChecked || isFlightChecked) {
@@ -149,7 +149,7 @@ const handleSubmit = (e: React.FormEvent) => {
     // Form Date and Time are bound by selection in the browser and therefore
     // should only be subject to server side validation other than presence and being later than Date.Now().
     
-	  var pickupDateTime = new Date()
+	  let pickupDateTime = new Date()
 
     if (formData.PickupDate == "") {
         addFormFeedback("PickupDate", "Please select a Date.")
