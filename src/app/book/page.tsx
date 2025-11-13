@@ -13,7 +13,7 @@ import {
     FormHelperText
 } from "@mui/material";
 
-export function BookingPage() {
+export default function BookingPage() {
 const commonLocations = [
 	"Queens Building",
 	"Merchant Venturers Building",
@@ -552,5 +552,3 @@ return (
     </div>
   );
 }
-
-export default BookingPage;
