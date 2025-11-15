@@ -112,7 +112,7 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
   );
 }
 
-const page = () => {
+const Page = () => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true)
 
@@ -408,4 +408,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

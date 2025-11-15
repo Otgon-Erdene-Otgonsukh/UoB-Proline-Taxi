@@ -1,5 +1,5 @@
 
-export const easyGetRequest = (url: string, params: { [key: string]: any }, needAuth: boolean): Promise<Response> => {
+export const easyGetRequest = (url: string, params: Record<string, string | number | boolean>, needAuth: boolean): Promise<Response> => {
   const headers = new Headers()
   if (needAuth) {
     const token = localStorage.getItem('token')
@@ -26,7 +26,7 @@ export const easyGetRequest = (url: string, params: { [key: string]: any }, need
   return fetch(request);
 }
 
-export const easyPostRequest = (url: string, data: { [key: string]: any }, needAuth: boolean): Promise<Response> => {
+export const easyPostRequest = (url: string, data: Record<string, unknown>, needAuth: boolean): Promise<Response> => {
   const headers = new Headers()
   if (needAuth) {
     const token = localStorage.getItem('token')
