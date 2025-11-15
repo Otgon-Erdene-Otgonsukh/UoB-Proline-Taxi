@@ -13,7 +13,10 @@ export default async function createBooking(
     surname : string,
     email: string,
     tel_number: string,
-    additional_info: string
+    additional_info: string,
+    via: string,
+    returnTo: string,
+    passenger_num: number,
 )
 {
     // Create a trip for the booking to be bound to.
@@ -26,7 +29,10 @@ export default async function createBooking(
             dropoff_location: dropoffLocation,
             dropoff_latitude: dropoffLatitude,
             dropoff_longitude: dropoffLongitude,
-            pickup_time: pickupTime
+            pickup_time: pickupTime,
+            via: via,
+            passenger_num: passenger_num,
+            return_drop_loc: returnTo
         }
     });
 
