@@ -212,7 +212,7 @@ const Page = () => {
           </h1>
           <button
             onClick={handleClick}
-            className="bg-[#2c2c2c] text-white py-2 px-6 rounded-md hover:bg-[#474747] hover:scale-101 transition-all duration-200 text-sm font-light"
+            className="bg-[#2c2c2c] text-white py-2 px-6 rounded-md hover:bg-[#474747] hover:scale-101 transition-all duration-200 text-sm font-light cursor-pointer"
           >
             + New Booking
           </button>

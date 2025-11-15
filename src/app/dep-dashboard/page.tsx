@@ -71,8 +71,8 @@ export default function DepDashboard() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
-      <div className="bg-white shadow-lg rounded-lg p-6 md:p-8 w-full max-w-6xl mb-8 -mt-2">
+    <div className="flex min-h-screen justify-center pt-24 p-4">
+      <div className="bg-white shadow-lg rounded-lg p-6 md:p-8 w-full max-w-6xl mb-8 h-fit">
         <div>
           <h1 className="text-2xl font-aleo md:text-3xl font-semibold text-shadow-lg/20">
             Department Bookings
