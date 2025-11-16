@@ -127,6 +127,8 @@ const Page = () => {
           setBookingListData(data.bookings);
           setIsLoading(false)
         });
+      } else if (res.status === 201) {
+        router.push('login')
       }
     })
 
@@ -218,88 +220,88 @@ const Page = () => {
           </button>
         </div>
 
-      {isLoading ? (<Typography sx={{color:"gray", fontSize: 16, textAlign: "center"}}>Getting your bookings...</Typography>) : bookingListData.length === 0 ? (<Typography sx={{color:"gray", fontSize: 16, textAlign: "center"}}>No bookings to show.</Typography>) : (
-        <TableContainer
-          component={Paper}
-          sx={{ boxShadow: "none", border: "none" }}
-        >
-          <Table
-            sx={{ minWidth: 500, borderCollapse: "collapse" }}
-            aria-label="custom pagination table"
+        {isLoading ? (<Typography sx={{ color: "gray", fontSize: 16, textAlign: "center" }}>Getting your bookings...</Typography>) : bookingListData.length === 0 ? (<Typography sx={{ color: "gray", fontSize: 16, textAlign: "center" }}>No bookings to show.</Typography>) : (
+          <TableContainer
+            component={Paper}
+            sx={{ boxShadow: "none", border: "none" }}
           >
-            <TableHead>
-              <TableRow>
-                <StyledTableCell>
-                  Time Created
-                </StyledTableCell>
-                <StyledTableCell>
-                  From
-                </StyledTableCell>
-                <StyledTableCell>
-                  To
-                </StyledTableCell>
-                <StyledTableCell>
-                  Booking Status
-                </StyledTableCell>
-                <StyledTableCell>
-                  Operation
-                </StyledTableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {bookingListData &&
-                bookingListData.map((row, index) => (
-                  <TableRow
-                    key={index}
-                    sx={{
-                      "&:hover": { bgcolor: "#f9fafb" },
-                      transition: "background-color 0.2s",
-                    }}
-                  >
-                    <StyledTableCell>
-                      {row.time_created
-                        ? new Date(row.time_created).toLocaleString()
-                        : "N/A"}
-                    </StyledTableCell>
-                    <StyledTableCell>
-                      {row.trip.pickup_location}
-                    </StyledTableCell>
-                    <StyledTableCell>
-                      {row.trip.dropoff_location}
-                    </StyledTableCell>
-                    <StyledTableCell>
-                      <span
-                        className={`inline-block px-5 py-1 rounded-full text-xs font-medium ${row.booking_status === "Approved"
-                          ? "bg-green-100 text-green-800 border border-green-800"
-                          : row.booking_status === "Rejected"
-                            ? "bg-red-100 text-red-800 border border-red-800"
-                            : "bg-yellow-100 text-yellow-800 border border-yellow-800"
-                          }`}
-                      >
-                        {row.booking_status}
-                      </span>
-                    </StyledTableCell>
-                    <StyledTableCell>
-                      <div className="flex gap-2 justify-center">
+            <Table
+              sx={{ minWidth: 500, borderCollapse: "collapse" }}
+              aria-label="custom pagination table"
+            >
+              <TableHead>
+                <TableRow>
+                  <StyledTableCell>
+                    Time Created
+                  </StyledTableCell>
+                  <StyledTableCell>
+                    From
+                  </StyledTableCell>
+                  <StyledTableCell>
+                    To
+                  </StyledTableCell>
+                  <StyledTableCell>
+                    Booking Status
+                  </StyledTableCell>
+                  <StyledTableCell>
+                    Operation
+                  </StyledTableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {bookingListData &&
+                  bookingListData.map((row, index) => (
+                    <TableRow
+                      key={index}
+                      sx={{
+                        "&:hover": { bgcolor: "#f9fafb" },
+                        transition: "background-color 0.2s",
+                      }}
+                    >
+                      <StyledTableCell>
+                        {row.time_created
+                          ? new Date(row.time_created).toLocaleString()
+                          : "N/A"}
+                      </StyledTableCell>
+                      <StyledTableCell>
+                        {row.trip.pickup_location}
+                      </StyledTableCell>
+                      <StyledTableCell>
+                        {row.trip.dropoff_location}
+                      </StyledTableCell>
+                      <StyledTableCell>
+                        <span
+                          className={`inline-block px-5 py-1 rounded-full text-xs font-medium ${row.booking_status === "Approved"
+                            ? "bg-green-100 text-green-800 border border-green-800"
+                            : row.booking_status === "Rejected"
+                              ? "bg-red-100 text-red-800 border border-red-800"
+                              : "bg-yellow-100 text-yellow-800 border border-yellow-800"
+                            }`}
+                        >
+                          {row.booking_status}
+                        </span>
+                      </StyledTableCell>
+                      <StyledTableCell>
+                        <div className="flex gap-2 justify-center">
 
-                        <CustomizedButton click={() => handleViewDialogOpen(row)} type="primary" title="View" />
-                        {row.booking_status === 'Pending' && <CustomizedButton click={() => handleEditDialogOpen(row)} type="warning" title="Edit" />}
-                        <CustomizedButton click={() => handleCancelBooking(row)} type="error" title="Cancel" />
-                      </div>
-                    </StyledTableCell>
-                  </TableRow>
-                ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      ) }
+                          <CustomizedButton click={() => handleViewDialogOpen(row)} type="primary" title="View" />
+                          {row.booking_status === 'Pending' && <CustomizedButton click={() => handleEditDialogOpen(row)} type="warning" title="Edit" />}
+                          <CustomizedButton click={() => handleCancelBooking(row)} type="error" title="Cancel" />
+                        </div>
+                      </StyledTableCell>
+                    </TableRow>
+                  ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
 
         <Dialog
           onClose={handleViewDialogClose}
           aria-labelledby="customized-dialog-title"
           open={bookDetailDialogOpen}
         >
-          <DialogTitle sx={{ m: 0, p: 2 , fontFamily: "inter", fontWeight: "bold", bgcolor: "#2c2c2c", color: "white", textAlign: "center", fontSize: 28}} id="customized-dialog-title">
+          <DialogTitle sx={{ m: 0, p: 2, fontFamily: "inter", fontWeight: "bold", bgcolor: "#2c2c2c", color: "white", textAlign: "center", fontSize: 28 }} id="customized-dialog-title">
             Booking Detail
           </DialogTitle>
           <IconButton
@@ -315,8 +317,8 @@ const Page = () => {
             <CloseIcon />
           </IconButton>
           <DialogContent dividers>
-            <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px'}}>
-              <Typography gutterBottom sx={{fontWeight: "bold"}}>
+            <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
+              <Typography gutterBottom sx={{ fontWeight: "bold" }}>
                 Time Created:
               </Typography>
               <Typography gutterBottom>
@@ -324,7 +326,7 @@ const Page = () => {
               </Typography>
             </Stack>
             <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
-              <Typography gutterBottom sx={{fontWeight: "bold"}}>
+              <Typography gutterBottom sx={{ fontWeight: "bold" }}>
                 From:
               </Typography>
               <Typography gutterBottom>
@@ -332,7 +334,7 @@ const Page = () => {
               </Typography>
             </Stack>
             <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
-              <Typography gutterBottom sx={{fontWeight: "bold"}}>
+              <Typography gutterBottom sx={{ fontWeight: "bold" }}>
                 To:
               </Typography>
               <Typography gutterBottom>
@@ -340,14 +342,14 @@ const Page = () => {
               </Typography>
             </Stack>
             <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
-              <Typography gutterBottom sx={{fontWeight: "bold"}}>
+              <Typography gutterBottom sx={{ fontWeight: "bold" }}>
                 Booking Status:
               </Typography>
               <Chip color={`${bookDetail?.booking_status === "Approved" ? "success" : bookDetail?.booking_status === "Pending" ? "warning" : "error"}`} label={bookDetail?.booking_status} />
             </Stack>
           </DialogContent>
           <DialogActions>
-            <Button autoFocus onClick={handleViewDialogClose} sx={{color: "#2c2c2c", mr: 1}}>
+            <Button autoFocus onClick={handleViewDialogClose} sx={{ color: "#2c2c2c", mr: 1 }}>
               Close
             </Button>
           </DialogActions>
@@ -358,7 +360,7 @@ const Page = () => {
           open={editBookDialogOpen}
           maxWidth="md"
         >
-          <DialogTitle sx={{ m: 0, p: 2, fontFamily: "inter", fontWeight: "bold", bgcolor: "#2c2c2c", color: "white", textAlign: "center", fontSize: 28}} id="customized-dialog-title">
+          <DialogTitle sx={{ m: 0, p: 2, fontFamily: "inter", fontWeight: "bold", bgcolor: "#2c2c2c", color: "white", textAlign: "center", fontSize: 28 }} id="customized-dialog-title">
             Edit Booking
           </DialogTitle>
           <IconButton
@@ -374,10 +376,10 @@ const Page = () => {
             <CloseIcon />
           </IconButton>
           <DialogContent dividers >
-            <BookingPage/>
+            <BookingPage />
           </DialogContent>
           <DialogActions>
-            <Button autoFocus onClick={handleEditDialogClose} sx={{color: "#2c2c2c"}}>
+            <Button autoFocus onClick={handleEditDialogClose} sx={{ color: "#2c2c2c" }}>
               Close
             </Button>
           </DialogActions>
