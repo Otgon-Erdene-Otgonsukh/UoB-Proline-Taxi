@@ -25,7 +25,7 @@ export type BookingRecord = {
   booking_id: number;
   time_created: string;
   trip: Trip;
-  booking_status: 'Approved' | 'Pending' | 'Rejected';
+  booking_status: 'Approved' | 'Pending' | 'Rejected' | 'Cancelled';
 }
 
 export function bookingStatusMap(bookingStatus: number): BookingStatusStr {

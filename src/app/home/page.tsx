@@ -16,7 +16,7 @@ import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
 import { BookingRecord } from "@/src/model/models";
-import { getUserBookingList } from "./requests";
+import { cancelBooking, getUserBookingList } from "./requests";
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -29,6 +29,7 @@ import Chip from '@mui/material/Chip';
 import BookingPage from "../book/page";
 import CustomizedButton from "@/src/components/CustomizedButton";
 import { StyledTableCell } from "@/src/components/StyledTableCell";
+import { Snackbar, Alert } from "@mui/material";
 
 
 
@@ -179,8 +180,57 @@ const Page = () => {
   const [bookingListData, setBookingListData] = useState<BookingRecord[]>([]);
 
   // Cancel booking
-  const handleCancelBooking = (row: BookingRecord) => {
+  const [cancelBookDialogOpen, setCancelBookDialogOpen] = useState(false)
+  const [toCancelBookingId, setToCancelBookingId] = useState<number>()
 
+  const handleCancelBooking = (row: BookingRecord) => {
+    console.log(row);
+    setToCancelBookingId(row.booking_id)
+    setCancelBookDialogOpen(true)
+  }
+
+  const handleCancelDialogClose = () => {
+    setCancelBookDialogOpen(false)
+    setToCancelBookingId(undefined)
+  }
+
+  const handleConfirmCancel = () => {
+    console.log(toCancelBookingId);
+    cancelBooking(toCancelBookingId!).then(res => {
+      setCancelBookDialogOpen(false)
+      if (res.status === 200) {
+        setSnackbarState({
+          open: true,
+          status: 'success',
+          message: 'Successfully Cancelled!'
+        })
+        setBookingListData(bookingListData.map(ele => {
+          if (ele.booking_id === toCancelBookingId) {
+            ele.booking_status = 'Cancelled'
+          }
+          return ele
+        }))
+      } else {
+        setSnackbarState({
+          open: true,
+          status: 'error',
+          message: 'Cancel failed, please try again later!'
+        })
+      }
+    })
+  }
+
+  const [snackbarState, setSnackbarState] = useState({
+    open: false,
+    status: 'success',
+    message: '',
+  })
+
+  const handleCloseSnackbarState = () => {
+    setSnackbarState({
+      ...snackbarState,
+      open: false,
+    })
   }
 
   // View Dialog
@@ -283,10 +333,9 @@ const Page = () => {
                       </StyledTableCell>
                       <StyledTableCell>
                         <div className="flex gap-2 justify-center">
-
                           <CustomizedButton click={() => handleViewDialogOpen(row)} type="primary" title="View" />
                           {row.booking_status === 'Pending' && <CustomizedButton click={() => handleEditDialogOpen(row)} type="warning" title="Edit" />}
-                          <CustomizedButton click={() => handleCancelBooking(row)} type="error" title="Cancel" />
+                          {row.booking_status === 'Pending' && <CustomizedButton click={() => handleCancelBooking(row)} type="error" title="Cancel" />}
                         </div>
                       </StyledTableCell>
                     </TableRow>
@@ -416,7 +465,39 @@ const Page = () => {
             </Button>
           </DialogActions>
         </Dialog>
-
+        <Dialog
+          onClose={handleCancelDialogClose}
+          aria-labelledby="customized-dialog-title"
+          open={cancelBookDialogOpen}
+          maxWidth="md"
+        >
+          <DialogTitle sx={{ m: 0, p: 2, fontFamily: "inter", fontWeight: "bold", bgcolor: "#2c2c2c", color: "white", textAlign: "center", fontSize: 28 }} id="customized-dialog-title">
+            Cancel Booking
+          </DialogTitle>
+          <IconButton
+            aria-label="close"
+            onClick={handleEditDialogClose}
+            sx={(theme) => ({
+              position: 'absolute',
+              right: 8,
+              top: 8,
+              color: theme.palette.grey[500],
+            })}
+          >
+            <CloseIcon />
+          </IconButton>
+          <DialogContent dividers >
+            Are you sure you want to cancel this booking?
+          </DialogContent>
+          <DialogActions>
+            <Button autoFocus onClick={handleCancelDialogClose} sx={{ color: "#2c2c2c" }}>
+              Close
+            </Button>
+            <Button autoFocus onClick={handleConfirmCancel} sx={{ color: "#2c2c2c" }}>
+              Confirm
+            </Button>
+          </DialogActions>
+        </Dialog>
         <div className="flex justify-center mt-4">
           <TablePagination
             component="div"
@@ -438,6 +519,21 @@ const Page = () => {
           />
         </div>
       </div >
+      <Snackbar
+        autoHideDuration={2000}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        open={snackbarState.open}
+        onClose={handleCloseSnackbarState}
+      >
+        <Alert
+          onClose={handleCloseSnackbarState}
+          severity={snackbarState.status === 'success' ? 'success' : 'error'}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {snackbarState.message}
+        </Alert>
+      </Snackbar>
     </div >
   );
 };
