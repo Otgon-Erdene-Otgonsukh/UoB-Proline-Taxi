@@ -335,6 +335,14 @@ const Page = () => {
             </Stack>
             <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
               <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+                Via:
+              </Typography>
+              <Typography gutterBottom>
+                {bookDetail?.trip.via}
+              </Typography>
+            </Stack>
+            <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
+              <Typography gutterBottom sx={{ fontWeight: "bold" }}>
                 To:
               </Typography>
               <Typography gutterBottom>
@@ -345,7 +353,31 @@ const Page = () => {
               <Typography gutterBottom sx={{ fontWeight: "bold" }}>
                 Booking Status:
               </Typography>
-              <Chip color={`${bookDetail?.booking_status === "Approved" ? "success" : bookDetail?.booking_status === "Pending" ? "warning" : "error"}`} label={bookDetail?.booking_status} />
+              <Chip size="small" color={`${bookDetail?.booking_status === "Approved" ? "success" : bookDetail?.booking_status === "Pending" ? "warning" : "error"}`} label={bookDetail?.booking_status} />
+            </Stack>
+            <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
+              <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+                Passenger Number:
+              </Typography>
+              <Typography gutterBottom>
+                {bookDetail?.trip.passenger_num}
+              </Typography>
+            </Stack>
+            <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
+              <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+                Pick Up Time:
+              </Typography>
+              <Typography gutterBottom>
+                {bookDetail?.trip.pickup_time}
+              </Typography>
+            </Stack>
+            <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
+              <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+                Return Drop Location:
+              </Typography>
+              <Typography gutterBottom>
+                {bookDetail?.trip.return_drop_loc}
+              </Typography>
             </Stack>
           </DialogContent>
           <DialogActions>

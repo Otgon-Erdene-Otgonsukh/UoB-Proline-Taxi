@@ -16,6 +16,9 @@ export type Trip = {
   dropoff_latitude: number;
   dropoff_longitude: number;
   pickup_time?: string;
+  passenger_num: number;
+  via: string;
+  return_drop_loc: string;
 }
 
 export type BookingRecord = {
