@@ -1,10 +1,6 @@
 import getPendingBookings from "@/backend/pending_bookings/get_pending_bookings";
 import { NextResponse } from "next/server";
 
-// Handle BigInt serialization
-(BigInt.prototype as any).toJSON = function () {
-  return this.toString();
-};
 
 export async function GET() {
   try {

@@ -45,6 +45,10 @@ A booking and account management platform to streamline how the University of Br
 <pre>
 *2025-UoBsustainableTransport*
 |
+│
+├── *__test__*                                 # Jest tests 
+│    └── ...
+│
 ├── *.github*                                 
 │    ├── ISSUE_TEMPLATE                        # Issue template files
 │    ├── workflows                             # Continuous Integration & Deployment Workflow files

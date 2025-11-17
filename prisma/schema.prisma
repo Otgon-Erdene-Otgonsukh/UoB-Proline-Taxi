@@ -66,6 +66,9 @@ model trip {
   dropoff_latitude  Int?
   dropoff_longitude Int?
   pickup_time       DateTime? @db.Timestamp(6)
+  via               String?
+  passenger_num     Int?
+  return_drop_loc   String?
   booking           booking[]
 }
 

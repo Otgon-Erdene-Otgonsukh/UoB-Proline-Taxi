@@ -16,13 +16,16 @@ export type Trip = {
   dropoff_latitude: number;
   dropoff_longitude: number;
   pickup_time?: string;
+  passenger_num: number;
+  via: string;
+  return_drop_loc: string;
 }
 
 export type BookingRecord = {
   booking_id: number;
   time_created: string;
   trip: Trip;
-  booking_status: 'Approved' | 'Pending' | 'Rejected';
+  booking_status: 'Approved' | 'Pending' | 'Rejected' | 'Cancelled';
 }
 
 export function bookingStatusMap(bookingStatus: number): BookingStatusStr {

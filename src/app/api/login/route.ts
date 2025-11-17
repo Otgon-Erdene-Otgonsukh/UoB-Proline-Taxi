@@ -15,7 +15,8 @@ export async function POST(request: Request) {
     updateUserTokenAccess(email, token)
     return new Response(JSON.stringify({
       message: 'login success',
-      token: token
+      token: token,
+      username: userDetail.username
     }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }

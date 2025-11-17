@@ -17,3 +17,14 @@ export const getUserBookingsAccess = async (userId: number, page: number, pageSi
     take: pageSize
   })
 }
+
+export const cancelBookingsAccess = async (bookingId: number): Promise<booking | null> => {
+  return prisma.booking.update({
+    where: {
+      booking_id: bookingId
+    },
+    data: {
+      booking_status: 'Cancelled'
+    }
+  })
+}

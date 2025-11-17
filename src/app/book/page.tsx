@@ -10,10 +10,14 @@ import {
     MenuItem,
     Select,
     ThemeProvider,
-    FormHelperText
+    FormHelperText,
+    Checkbox,
+    FormControlLabel
 } from "@mui/material";
+import NumberField from "@/src/components/NumberField";
+import { small } from "framer-motion/client";
 
-export function BookingPage() {
+export default function BookingPage() {
 const commonLocations = [
 	"Queens Building",
 	"Merchant Venturers Building",
@@ -25,6 +29,8 @@ const commonLocations = [
 
 const [isManualChecked, setIsManualChecked] = useState(false);
 const [isFlightChecked, setIsFlightChecked] = useState(false);
+const [isViaChecked, setIsViaChecked] = useState(false);
+const [isReturnChecked, setIsReturnChecked] = useState(false);
 
 // Set error messages visible next to fields, default "" (empty) for hide.
 const [formFeedback, setFormFeedback] = useState({
@@ -58,6 +64,8 @@ const addFormFeedback = (field: string, text: string) => {
 const [formData, setFormData] = useState({
 	CommonLoc: "",
 	CustomLoc: "",
+  Via: "",
+  ReturnTo: "",
 	FlightNum: "",
 	Airport: "",
 	DropoffLoc: "",
@@ -67,6 +75,7 @@ const [formData, setFormData] = useState({
 	Surname: "",
 	Number: "",
 	Email: "",
+  Passengers: 1,
   AdditionalInfo: ""
 });
 
@@ -74,7 +83,7 @@ const router = useRouter()
 
 // Client side validation.
 const handleSubmit = (e: React.FormEvent) => {
-  var fail = false
+  let fail = false
 
   // Disallow submission to endpoint before validation.
   e.preventDefault();
@@ -82,7 +91,7 @@ const handleSubmit = (e: React.FormEvent) => {
   // Reset all messages to default:
   clearFeedback();
 
-  var loc = ""
+  let loc = ""
 
     // Custom Location
   if (isManualChecked || isFlightChecked) {
@@ -149,7 +158,7 @@ const handleSubmit = (e: React.FormEvent) => {
     // Form Date and Time are bound by selection in the browser and therefore
     // should only be subject to server side validation other than presence and being later than Date.Now().
     
-	  var pickupDateTime = new Date()
+	  let pickupDateTime = new Date()
 
     if (formData.PickupDate == "") {
         addFormFeedback("PickupDate", "Please select a Date.")
@@ -218,10 +227,10 @@ const handleSubmit = (e: React.FormEvent) => {
 
     // fail == false if all validation succeeds, then post the request.
     if (fail == false) {
-      const jsonBody = {"user_id": 1, "pickup_location": loc, "dropoff_location": formData.DropoffLoc, "pickup_time": pickupDateTime, "first_name": formData.FirstName, "surname": formData.Surname, "email": formData.Email, "tel_number": formData.Number, "additional_info": formData.AdditionalInfo}
+      const jsonBody = {"user_id": 1, "pickup_location": loc, "dropoff_location": formData.DropoffLoc, "pickup_time": pickupDateTime, "first_name": formData.FirstName, "surname": formData.Surname, "email": formData.Email, "tel_number": formData.Number, "additional_info": formData.AdditionalInfo, "via": formData.Via, "returnTo": formData.ReturnTo, "passengers": formData.Passengers}
 		  fetch("/api/create_booking", {method: "POST", body: JSON.stringify(jsonBody)}).then((response) =>{
         if (response.status == 200) {
-          router.push("/confirmed") // Refresh page to root (/) page, to reflect changes once implemented.
+          router.push("/confirmed") // Refresh page to (/confirmed) page, to reflect changes once implemented.
         } else {
           // Use additional info box to mark error. Will replace with specific errors in the future.
           addFormFeedback("AdditionalInfo", "Form failed to submit. Please try again or check inputs.")
@@ -363,7 +372,36 @@ return (
                   />
                   <div className="relative w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-gray-300 peer-checked:bg-[#4a4a4a] peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
                 </label>
+                <label
+                  htmlFor="via"
+                  className="inline-flex items-center cursor-pointer gap-2 ml-2"
+                >
+                  <span className="text-sm font-medium text-gray-900">
+                    Via
+                  </span>
+                  <input
+                    id="via"
+                    type="checkbox"
+                    checked={isViaChecked}
+                    onChange={(e) => setIsViaChecked(e.target.checked)}
+                    className="sr-only peer"
+                  />
+                  <div className="relative w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-gray-300 peer-checked:bg-[#4a4a4a] peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+                </label>
               </div>
+              {(isViaChecked && !isManualChecked) && (
+                <div className="flex flex-col">
+                  <label htmlFor="via" className="mb-1 text-sm">
+                    Via
+                  </label>
+                  <input
+                    id="via"
+                    placeholder="Via..."
+                    className="border-2 rounded px-3 py-2"
+                    onChange={(e) => {setFormData({...formData, Via: e.target.value})}}>
+                  </input>
+                </div>
+              )}
 
               {/* Show manual input field only when manual checkbox is checked */}
               {isManualChecked && (
@@ -378,6 +416,20 @@ return (
 				            onChange={(e) => {setFormData({...formData, CustomLoc: e.target.value});}}
                   ></input>
                   <FormHelperText sx={{color: "oklch(50.5% 0.213 27.518) !important"}} className={`${formFeedback.CustomLoc != "" ? "" : "hidden"}`}>{formFeedback.CustomLoc}</FormHelperText>
+                </div>
+              )}
+
+              {(isManualChecked && isViaChecked) && (
+                 <div className="flex flex-col">
+                  <label htmlFor="via" className="mb-1 text-sm">
+                    Via
+                  </label>
+                  <input
+                    id="via"
+                    placeholder="Via..."
+                    className="border-2 rounded px-3 py-2"
+                    onChange={(e) => {setFormData({...formData, Via: e.target.value})}}>           
+                  </input>
                 </div>
               )}
 
@@ -424,6 +476,27 @@ return (
                 ></input>
                 <FormHelperText sx={{color: "oklch(50.5% 0.213 27.518) !important"}} className={`${formFeedback.DropoffLoc != "" ? "" : "hidden"}`}>{formFeedback.DropoffLoc}</FormHelperText>
               </div>
+              <div>
+                <FormControlLabel control={<Checkbox sx={{color: "#2c2c2c", '&.Mui-checked': {color: "#2c2c2c"}}} checked={isReturnChecked} onChange={(e) => setIsReturnChecked(e.target.checked)}/>} label="Return trip"/>
+              </div>
+              {isReturnChecked && (
+                <div className="flex flex-col gap-4">
+                  <div className="flex flex-col">
+                    <label htmlFor="returnPickUp" className="mb-1 text-sm">
+                      Pick-up location
+                    </label>
+                    <input id="returnPickUp" className="border-2 rounded px-3 py-2" value={(formData.CommonLoc === "") ? formData.CustomLoc : formData.CommonLoc} disabled>
+                    </input>
+                  </div>
+                    <div className="flex flex-col">
+                      <label htmlFor="returnDropOff" className="mb-1 text-sm">
+                        Drop-off location
+                      </label>
+                      <input id="returnDropOff" placeholder="Enter" className="border-2 rounded px-3 py-2" onChange={(e) => {setFormData({...formData, ReturnTo: e.target.value})}}>
+                      </input>
+                    </div>
+                  </div>
+              )}
               <div className="flex flex-col text-sm">
                 <label htmlFor="pickupDate" className="mb-1">
                   Pick-up date and time
@@ -494,17 +567,25 @@ return (
                 </div>
                 <FormHelperText sx={{color: "oklch(50.5% 0.213 27.518) !important"}} className={`${formFeedback.Number != "" ? "" : "hidden"}`}>{formFeedback.Number}</FormHelperText>
               </div>
-              <div className="flex flex-col">
-                <label htmlFor="mail" className="mb-1 text-sm">
-                  Email
-                </label>
-                <input
-                  id="mail"
-                  type="email"
-                  className={`border-2 rounded px-3 py-2 ${formFeedback.Email == "" ? "" : "border-red-700"}`}
-				          onChange={(e) => {setFormData({...formData, Email: e.target.value});}}
-                ></input>
-                <FormHelperText sx={{color: "oklch(50.5% 0.213 27.518) !important"}} className={`${formFeedback.Email != "" ? "" : "hidden"}`}>{formFeedback.Email}</FormHelperText>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <div className="flex flex-col flex-1">
+                  <label htmlFor="mail" className="mb-1 text-sm">
+                    Email
+                  </label>
+                  <input
+                    id="mail"
+                    type="email"
+                    className={`border-2 rounded px-3 py-2 ${formFeedback.Email == "" ? "" : "border-red-700"}`}
+                    onChange={(e) => {setFormData({...formData, Email: e.target.value});}}
+                  ></input>
+                  <FormHelperText sx={{color: "oklch(50.5% 0.213 27.518) !important"}} className={`${formFeedback.Email != "" ? "" : "hidden"}`}>{formFeedback.Email}</FormHelperText>
+                </div>
+                <div className="flex flex-col flex-1">
+                  <label htmlFor="passenger" className="mb-1 text-sm">
+                    Passengers
+                  </label>
+                  <NumberField min={1} max={20} defaultValue={1} size="small" onValueChange={(value) => {setFormData({...formData, Passengers: value !== null ? value : 1})}}></NumberField>
+                </div>
               </div>
               <div className="flex flex-col">
                 <label htmlFor="addInfo" className="mb-1 text-sm">
@@ -552,5 +633,3 @@ return (
     </div>
   );
 }
-
-export default BookingPage;
