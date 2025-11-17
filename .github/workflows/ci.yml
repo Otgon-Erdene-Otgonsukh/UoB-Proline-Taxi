@@ -43,6 +43,9 @@ jobs:
 
       - name: Run typescript compiler for type errors
         run: npx tsc --noEmit # just check for type errors, --noEmit flag prevents tsc from creating .js files
+
+      - name: Run Jest tests
+        run: npm test
       
       - name: Build the next.js app # Make sure the project builds and compiles correctly
         run: npm run build
