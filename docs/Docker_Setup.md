@@ -14,8 +14,9 @@ The linting bypass (ignoreDuringBuilds) is to avoid linting errors, although in 
 
 
 ### Building the Docker container
-Firstly, ensure that the .env file is present with the DATABASE_URL set.
-The build may succeed without first doing this, but you'll need the .env present to be able to run the project.
+> [!IMPORTANT]
+> Ensure that the .env file is present with the DATABASE_URL set.
+> The build may succeed without first doing this, but you'll need the .env present to be able to run the project.
 
 To build the container, navigate to the root directory of the project, then run:
 ```sh
@@ -24,8 +25,9 @@ docker build --build-arg DATABASE_URL="$(grep -Po '(?<=^DATABASE_URL=).*' .env)"
 
 This may take a while.
 
-If you get errors about package versions, or anything that says "This is an issue with npm", try adding the `--no-cache` flag onto the build command.
-You can also force the cleaning of cache by adding `RUN npm cache clean --force` in the "deps" part of the Dockerfile.
+> [!TIP]
+> If you get errors about package versions, or anything that says "This is an issue with npm", try adding the `--no-cache` flag onto the build command.
+> You can also force the cleaning of cache by adding `RUN npm cache clean --force` in the "deps" part of the Dockerfile.
 
 
 ### Running the container
