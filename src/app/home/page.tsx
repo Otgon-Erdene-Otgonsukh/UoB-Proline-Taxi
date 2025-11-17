@@ -16,7 +16,7 @@ import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
 import { BookingRecord } from "@/src/model/models";
-import { getUserBookingList } from "./requests";
+import { cancelBooking, getUserBookingList } from "./requests";
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -29,6 +29,7 @@ import Chip from '@mui/material/Chip';
 import BookingPage from "../book/page";
 import CustomizedButton from "@/src/components/CustomizedButton";
 import { StyledTableCell } from "@/src/components/StyledTableCell";
+import { Snackbar, Alert } from "@mui/material";
 
 
 
@@ -127,6 +128,8 @@ const Page = () => {
           setBookingListData(data.bookings);
           setIsLoading(false)
         });
+      } else if (res.status === 201) {
+        router.push('login')
       }
     })
 
@@ -177,8 +180,57 @@ const Page = () => {
   const [bookingListData, setBookingListData] = useState<BookingRecord[]>([]);
 
   // Cancel booking
-  const handleCancelBooking = (row: BookingRecord) => {
+  const [cancelBookDialogOpen, setCancelBookDialogOpen] = useState(false)
+  const [toCancelBookingId, setToCancelBookingId] = useState<number>()
 
+  const handleCancelBooking = (row: BookingRecord) => {
+    console.log(row);
+    setToCancelBookingId(row.booking_id)
+    setCancelBookDialogOpen(true)
+  }
+
+  const handleCancelDialogClose = () => {
+    setCancelBookDialogOpen(false)
+    setToCancelBookingId(undefined)
+  }
+
+  const handleConfirmCancel = () => {
+    console.log(toCancelBookingId);
+    cancelBooking(toCancelBookingId!).then(res => {
+      setCancelBookDialogOpen(false)
+      if (res.status === 200) {
+        setSnackbarState({
+          open: true,
+          status: 'success',
+          message: 'Successfully Cancelled!'
+        })
+        setBookingListData(bookingListData.map(ele => {
+          if (ele.booking_id === toCancelBookingId) {
+            ele.booking_status = 'Cancelled'
+          }
+          return ele
+        }))
+      } else {
+        setSnackbarState({
+          open: true,
+          status: 'error',
+          message: 'Cancel failed, please try again later!'
+        })
+      }
+    })
+  }
+
+  const [snackbarState, setSnackbarState] = useState({
+    open: false,
+    status: 'success',
+    message: '',
+  })
+
+  const handleCloseSnackbarState = () => {
+    setSnackbarState({
+      ...snackbarState,
+      open: false,
+    })
   }
 
   // View Dialog
@@ -218,88 +270,87 @@ const Page = () => {
           </button>
         </div>
 
-      {isLoading ? (<Typography sx={{color:"gray", fontSize: 16, textAlign: "center"}}>Getting your bookings...</Typography>) : bookingListData.length === 0 ? (<Typography sx={{color:"gray", fontSize: 16, textAlign: "center"}}>No bookings to show.</Typography>) : (
-        <TableContainer
-          component={Paper}
-          sx={{ boxShadow: "none", border: "none" }}
-        >
-          <Table
-            sx={{ minWidth: 500, borderCollapse: "collapse" }}
-            aria-label="custom pagination table"
+        {isLoading ? (<Typography sx={{ color: "gray", fontSize: 16, textAlign: "center" }}>Getting your bookings...</Typography>) : bookingListData.length === 0 ? (<Typography sx={{ color: "gray", fontSize: 16, textAlign: "center" }}>No bookings to show.</Typography>) : (
+          <TableContainer
+            component={Paper}
+            sx={{ boxShadow: "none", border: "none" }}
           >
-            <TableHead>
-              <TableRow>
-                <StyledTableCell>
-                  Time Created
-                </StyledTableCell>
-                <StyledTableCell>
-                  From
-                </StyledTableCell>
-                <StyledTableCell>
-                  To
-                </StyledTableCell>
-                <StyledTableCell>
-                  Booking Status
-                </StyledTableCell>
-                <StyledTableCell>
-                  Operation
-                </StyledTableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {bookingListData &&
-                bookingListData.map((row, index) => (
-                  <TableRow
-                    key={index}
-                    sx={{
-                      "&:hover": { bgcolor: "#f9fafb" },
-                      transition: "background-color 0.2s",
-                    }}
-                  >
-                    <StyledTableCell>
-                      {row.time_created
-                        ? new Date(row.time_created).toLocaleString()
-                        : "N/A"}
-                    </StyledTableCell>
-                    <StyledTableCell>
-                      {row.trip.pickup_location}
-                    </StyledTableCell>
-                    <StyledTableCell>
-                      {row.trip.dropoff_location}
-                    </StyledTableCell>
-                    <StyledTableCell>
-                      <span
-                        className={`inline-block px-5 py-1 rounded-full text-xs font-medium ${row.booking_status === "Approved"
-                          ? "bg-green-100 text-green-800 border border-green-800"
-                          : row.booking_status === "Rejected"
-                            ? "bg-red-100 text-red-800 border border-red-800"
-                            : "bg-yellow-100 text-yellow-800 border border-yellow-800"
-                          }`}
-                      >
-                        {row.booking_status}
-                      </span>
-                    </StyledTableCell>
-                    <StyledTableCell>
-                      <div className="flex gap-2 justify-center">
-
-                        <CustomizedButton click={() => handleViewDialogOpen(row)} type="primary" title="View" />
-                        {row.booking_status === 'Pending' && <CustomizedButton click={() => handleEditDialogOpen(row)} type="warning" title="Edit" />}
-                        <CustomizedButton click={() => handleCancelBooking(row)} type="error" title="Cancel" />
-                      </div>
-                    </StyledTableCell>
-                  </TableRow>
-                ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      ) }
+            <Table
+              sx={{ minWidth: 500, borderCollapse: "collapse" }}
+              aria-label="custom pagination table"
+            >
+              <TableHead>
+                <TableRow>
+                  <StyledTableCell>
+                    Time Created
+                  </StyledTableCell>
+                  <StyledTableCell>
+                    From
+                  </StyledTableCell>
+                  <StyledTableCell>
+                    To
+                  </StyledTableCell>
+                  <StyledTableCell>
+                    Booking Status
+                  </StyledTableCell>
+                  <StyledTableCell>
+                    Operation
+                  </StyledTableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {bookingListData &&
+                  bookingListData.map((row, index) => (
+                    <TableRow
+                      key={index}
+                      sx={{
+                        "&:hover": { bgcolor: "#f9fafb" },
+                        transition: "background-color 0.2s",
+                      }}
+                    >
+                      <StyledTableCell>
+                        {row.time_created
+                          ? new Date(row.time_created).toLocaleString()
+                          : "N/A"}
+                      </StyledTableCell>
+                      <StyledTableCell>
+                        {row.trip.pickup_location}
+                      </StyledTableCell>
+                      <StyledTableCell>
+                        {row.trip.dropoff_location}
+                      </StyledTableCell>
+                      <StyledTableCell>
+                        <span
+                          className={`inline-block px-5 py-1 rounded-full text-xs font-medium ${row.booking_status === "Approved"
+                            ? "bg-green-100 text-green-800 border border-green-800"
+                            : row.booking_status === "Rejected"
+                              ? "bg-red-100 text-red-800 border border-red-800"
+                              : "bg-yellow-100 text-yellow-800 border border-yellow-800"
+                            }`}
+                        >
+                          {row.booking_status}
+                        </span>
+                      </StyledTableCell>
+                      <StyledTableCell>
+                        <div className="flex gap-2 justify-center">
+                          <CustomizedButton click={() => handleViewDialogOpen(row)} type="primary" title="View" />
+                          {row.booking_status === 'Pending' && <CustomizedButton click={() => handleEditDialogOpen(row)} type="warning" title="Edit" />}
+                          {row.booking_status === 'Pending' && <CustomizedButton click={() => handleCancelBooking(row)} type="error" title="Cancel" />}
+                        </div>
+                      </StyledTableCell>
+                    </TableRow>
+                  ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
 
         <Dialog
           onClose={handleViewDialogClose}
           aria-labelledby="customized-dialog-title"
           open={bookDetailDialogOpen}
         >
-          <DialogTitle sx={{ m: 0, p: 2 , fontFamily: "inter", fontWeight: "bold", bgcolor: "#2c2c2c", color: "white", textAlign: "center", fontSize: 28}} id="customized-dialog-title">
+          <DialogTitle sx={{ m: 0, p: 2, fontFamily: "inter", fontWeight: "bold", bgcolor: "#2c2c2c", color: "white", textAlign: "center", fontSize: 28 }} id="customized-dialog-title">
             Booking Detail
           </DialogTitle>
           <IconButton
@@ -315,8 +366,8 @@ const Page = () => {
             <CloseIcon />
           </IconButton>
           <DialogContent dividers>
-            <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px'}}>
-              <Typography gutterBottom sx={{fontWeight: "bold"}}>
+            <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
+              <Typography gutterBottom sx={{ fontWeight: "bold" }}>
                 Time Created:
               </Typography>
               <Typography gutterBottom>
@@ -324,7 +375,7 @@ const Page = () => {
               </Typography>
             </Stack>
             <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
-              <Typography gutterBottom sx={{fontWeight: "bold"}}>
+              <Typography gutterBottom sx={{ fontWeight: "bold" }}>
                 From:
               </Typography>
               <Typography gutterBottom>
@@ -332,7 +383,15 @@ const Page = () => {
               </Typography>
             </Stack>
             <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
-              <Typography gutterBottom sx={{fontWeight: "bold"}}>
+              <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+                Via:
+              </Typography>
+              <Typography gutterBottom>
+                {bookDetail?.trip.via}
+              </Typography>
+            </Stack>
+            <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
+              <Typography gutterBottom sx={{ fontWeight: "bold" }}>
                 To:
               </Typography>
               <Typography gutterBottom>
@@ -340,14 +399,38 @@ const Page = () => {
               </Typography>
             </Stack>
             <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
-              <Typography gutterBottom sx={{fontWeight: "bold"}}>
+              <Typography gutterBottom sx={{ fontWeight: "bold" }}>
                 Booking Status:
               </Typography>
-              <Chip color={`${bookDetail?.booking_status === "Approved" ? "success" : bookDetail?.booking_status === "Pending" ? "warning" : "error"}`} label={bookDetail?.booking_status} />
+              <Chip size="small" color={`${bookDetail?.booking_status === "Approved" ? "success" : bookDetail?.booking_status === "Pending" ? "warning" : "error"}`} label={bookDetail?.booking_status} />
+            </Stack>
+            <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
+              <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+                Passenger Number:
+              </Typography>
+              <Typography gutterBottom>
+                {bookDetail?.trip.passenger_num}
+              </Typography>
+            </Stack>
+            <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
+              <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+                Pick Up Time:
+              </Typography>
+              <Typography gutterBottom>
+                {bookDetail?.trip.pickup_time}
+              </Typography>
+            </Stack>
+            <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
+              <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+                Return Drop Location:
+              </Typography>
+              <Typography gutterBottom>
+                {bookDetail?.trip.return_drop_loc}
+              </Typography>
             </Stack>
           </DialogContent>
           <DialogActions>
-            <Button autoFocus onClick={handleViewDialogClose} sx={{color: "#2c2c2c", mr: 1}}>
+            <Button autoFocus onClick={handleViewDialogClose} sx={{ color: "#2c2c2c", mr: 1 }}>
               Close
             </Button>
           </DialogActions>
@@ -358,7 +441,7 @@ const Page = () => {
           open={editBookDialogOpen}
           maxWidth="md"
         >
-          <DialogTitle sx={{ m: 0, p: 2, fontFamily: "inter", fontWeight: "bold", bgcolor: "#2c2c2c", color: "white", textAlign: "center", fontSize: 28}} id="customized-dialog-title">
+          <DialogTitle sx={{ m: 0, p: 2, fontFamily: "inter", fontWeight: "bold", bgcolor: "#2c2c2c", color: "white", textAlign: "center", fontSize: 28 }} id="customized-dialog-title">
             Edit Booking
           </DialogTitle>
           <IconButton
@@ -374,15 +457,47 @@ const Page = () => {
             <CloseIcon />
           </IconButton>
           <DialogContent dividers >
-            <BookingPage/>
+            <BookingPage />
           </DialogContent>
           <DialogActions>
-            <Button autoFocus onClick={handleEditDialogClose} sx={{color: "#2c2c2c"}}>
+            <Button autoFocus onClick={handleEditDialogClose} sx={{ color: "#2c2c2c" }}>
               Close
             </Button>
           </DialogActions>
         </Dialog>
-
+        <Dialog
+          onClose={handleCancelDialogClose}
+          aria-labelledby="customized-dialog-title"
+          open={cancelBookDialogOpen}
+          maxWidth="md"
+        >
+          <DialogTitle sx={{ m: 0, p: 2, fontFamily: "inter", fontWeight: "bold", bgcolor: "#2c2c2c", color: "white", textAlign: "center", fontSize: 28 }} id="customized-dialog-title">
+            Cancel Booking
+          </DialogTitle>
+          <IconButton
+            aria-label="close"
+            onClick={handleEditDialogClose}
+            sx={(theme) => ({
+              position: 'absolute',
+              right: 8,
+              top: 8,
+              color: theme.palette.grey[500],
+            })}
+          >
+            <CloseIcon />
+          </IconButton>
+          <DialogContent dividers >
+            Are you sure you want to cancel this booking?
+          </DialogContent>
+          <DialogActions>
+            <Button autoFocus onClick={handleCancelDialogClose} sx={{ color: "#2c2c2c" }}>
+              Close
+            </Button>
+            <Button autoFocus onClick={handleConfirmCancel} sx={{ color: "#2c2c2c" }}>
+              Confirm
+            </Button>
+          </DialogActions>
+        </Dialog>
         <div className="flex justify-center mt-4">
           <TablePagination
             component="div"
@@ -404,6 +519,21 @@ const Page = () => {
           />
         </div>
       </div >
+      <Snackbar
+        autoHideDuration={2000}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        open={snackbarState.open}
+        onClose={handleCloseSnackbarState}
+      >
+        <Alert
+          onClose={handleCloseSnackbarState}
+          severity={snackbarState.status === 'success' ? 'success' : 'error'}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {snackbarState.message}
+        </Alert>
+      </Snackbar>
     </div >
   );
 };
