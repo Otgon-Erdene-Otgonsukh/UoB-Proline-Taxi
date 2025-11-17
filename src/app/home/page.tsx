@@ -325,6 +325,7 @@ const Page = () => {
                             ? "bg-green-100 text-green-800 border border-green-800"
                             : row.booking_status === "Rejected"
                               ? "bg-red-100 text-red-800 border border-red-800"
+                              : row.booking_status === "Cancelled" ? "bg-gray-300 text-gray-900 border border-gray-900"
                               : "bg-yellow-100 text-yellow-800 border border-yellow-800"
                             }`}
                         >
@@ -402,7 +403,7 @@ const Page = () => {
               <Typography gutterBottom sx={{ fontWeight: "bold" }}>
                 Booking Status:
               </Typography>
-              <Chip size="small" color={`${bookDetail?.booking_status === "Approved" ? "success" : bookDetail?.booking_status === "Pending" ? "warning" : "error"}`} label={bookDetail?.booking_status} />
+              <Chip size="small" color={`${bookDetail?.booking_status === "Approved" ? "success" : bookDetail?.booking_status === "Pending" ? "warning" : bookDetail?.booking_status === "Cancelled" ? "default" : "error"}`} label={bookDetail?.booking_status} />
             </Stack>
             <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
               <Typography gutterBottom sx={{ fontWeight: "bold" }}>
@@ -417,7 +418,7 @@ const Page = () => {
                 Pick Up Time:
               </Typography>
               <Typography gutterBottom>
-                {bookDetail?.trip.pickup_time}
+                {bookDetail?.trip.pickup_time ? new Date(bookDetail?.trip.pickup_time).toLocaleString() : ""}
               </Typography>
             </Stack>
             <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
