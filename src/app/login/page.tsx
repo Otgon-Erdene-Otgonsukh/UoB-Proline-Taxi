@@ -35,6 +35,7 @@ export default function Log_forgot() {
         } else {
           res.json().then(data => {
             localStorage.setItem('token', data.token)
+            localStorage.setItem('name', data.username)
             setSnackbarState({ open: true, status: 'success' })
             router.push("/home");
           });
