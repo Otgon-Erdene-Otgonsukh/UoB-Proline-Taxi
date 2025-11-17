@@ -1,7 +1,5 @@
 FROM node:25-alpine AS deps
 WORKDIR /app
-# Remove stale/redundant cache files.
-RUN npm cache clean
 # Copy dependency files.
 COPY package.json package-lock.json* ./
 RUN \
