@@ -102,7 +102,7 @@ export const Navbar = () => {
           </li>
         </ul>
         <div className="pr-6">
-          {!username ? (
+          {username ? (
             <span className="text-lg">Hi, {username}!</span>
           ) : (
           <Button variant="contained" onClick={handleLoginClick}
