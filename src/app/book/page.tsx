@@ -75,6 +75,7 @@ const [formData, setFormData] = useState({
 	Surname: "",
 	Number: "",
 	Email: "",
+  department: "",
   Passengers: 1,
   AdditionalInfo: ""
 });
@@ -227,7 +228,7 @@ const handleSubmit = (e: React.FormEvent) => {
 
     // fail == false if all validation succeeds, then post the request.
     if (fail == false) {
-      const jsonBody = {"user_id": 1, "pickup_location": loc, "dropoff_location": formData.DropoffLoc, "pickup_time": pickupDateTime, "first_name": formData.FirstName, "surname": formData.Surname, "email": formData.Email, "tel_number": formData.Number, "additional_info": formData.AdditionalInfo, "via": formData.Via, "returnTo": formData.ReturnTo, "passengers": formData.Passengers}
+      const jsonBody = {"user_id": 1, "pickup_location": loc, "dropoff_location": formData.DropoffLoc, "pickup_time": pickupDateTime, "first_name": formData.FirstName, "surname": formData.Surname, "email": formData.Email, "tel_number": formData.Number, "additional_info": formData.AdditionalInfo, "via": formData.Via, "returnTo": formData.ReturnTo, "passengers": formData.Passengers, "department": formData.department}
 		  fetch("/api/create_booking", {method: "POST", body: JSON.stringify(jsonBody)}).then((response) =>{
         if (response.status == 200) {
           router.push("/confirmed") // Refresh page to (/confirmed) page, to reflect changes once implemented.
@@ -566,6 +567,16 @@ return (
                   />
                 </div>
                 <FormHelperText sx={{color: "oklch(50.5% 0.213 27.518) !important"}} className={`${formFeedback.Number != "" ? "" : "hidden"}`}>{formFeedback.Number}</FormHelperText>
+              </div>
+              <div className="flex flex-col">
+                <label htmlFor="dropLoc" className="mb-1 text-sm">
+                Department
+                </label>
+                <input
+                  id="department"
+                  onChange={(e) => {setFormData({...formData, department: e.target.value});}}
+				          className="border-2 rounded px-3 py-2"
+                ></input>
               </div>
               <div className="flex flex-col sm:flex-row gap-4">
                 <div className="flex flex-col flex-1">
