@@ -18,7 +18,9 @@ Firstly, ensure that the .env file is present with the DATABASE_URL set.
 The build may succeed without first doing this, but you'll need the .env present to be able to run the project.
 
 To build the container, navigate to the root directory of the project, then run:
-`docker build --build-arg DATABASE_URL="$(grep -Po '(?<=^DATABASE_URL=).*' .env)" -t uob-transport .`
+```sh
+docker build --build-arg DATABASE_URL="$(grep -Po '(?<=^DATABASE_URL=).*' .env)" -t uob-transport .
+```
 
 This may take a while.
 
@@ -28,5 +30,7 @@ You can also force the cleaning of cache by adding `RUN npm cache clean --force`
 
 ### Running the container
 Finally, you can run:
-`docker run --env-file .env -p 3000:3000 uob-transport`
+```sh
+docker run --env-file .env -p 3000:3000 uob-transport
+```
 which will run our project which will be accessible at localhost:3000.
