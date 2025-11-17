@@ -12,6 +12,7 @@ To deploy our project, you'll need to update the array in `next.config.ts` to co
 
 The linting bypass (ignoreDuringBuilds) is to avoid linting errors, although in the future we need to ensure no linting errors are present in production.
 
+
 ### Building the Docker container
 Firstly, ensure that the .env file is present with the DATABASE_URL set.
 The build may succeed without first doing this, but you'll need the .env present to be able to run the project.
@@ -23,6 +24,7 @@ This may take a while.
 
 If you get errors about package versions, or anything that says "This is an issue with npm", try adding the `--no-cache` flag onto the build command.
 You can also force the cleaning of cache by adding `RUN npm cache clean --force` in the "deps" part of the Dockerfile.
+
 
 ### Running the container
 Finally, you can run:
