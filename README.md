@@ -141,7 +141,6 @@ Benefit from a streamlined booking process, clear driver communication, and stra
 ## Developer Instructions
 For development, you can get started by cloning the repository, navigating to the root directory of it in the command line, and then do the following to get it running locally:
 
-### Commands to get started
 Installing dependencies:
 ```sh
 npm install
