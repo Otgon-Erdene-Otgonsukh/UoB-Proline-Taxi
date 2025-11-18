@@ -138,6 +138,36 @@ Benefit from a streamlined booking process, clear driver communication, and stra
 
 <img src="/docs/updated-teck-stack.jpg" alt="tech stack diagram"/>
 
+## Developer Instructions
+For development, you can get started by cloning the repository, navigating to the root directory of it in the command line, and then do the following to get it running locally:
+
+### Commands to get started
+Installing dependencies:
+```sh
+npm install
+```
+
+**OPTION 1:** Retrieving and generating the Prisma database (If you have an existing database)
+> [!IMPORTANT]
+> You'll need access to a database with `DATABASE_URL` specified in `.env`. If you do not have a .env file or URL, go to **OPTION 2**.
+```sh
+npx prisma db pull
+npx prisma generate
+```
+
+**OPTION 2:** Creating an empty database and pushing it to your own remote (If you do not have an existing database)
+```sh
+npx prisma migrate dev
+npx prisma generate
+```
+
+```sh
+npm run dev
+```
+
+> [!TIP]
+> If you'd like to run a production version of the app instead, consult the guide to building and running the Docker container in `/docs/Docker_Setup.md`.
+
 ## Team Members
 
 | **Name** | **Email** |
