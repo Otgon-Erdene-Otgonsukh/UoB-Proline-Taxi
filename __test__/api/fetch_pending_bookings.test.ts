@@ -1,7 +1,7 @@
 /**
  * @jest-environment node
  */
-import { GET } from "../src/app/api/get_pending_bookings/route";
+import { GET } from "../../src/app/api/get_pending_bookings/route";
 
 test("check if the res status is good", async () => {
   const res = await GET();
