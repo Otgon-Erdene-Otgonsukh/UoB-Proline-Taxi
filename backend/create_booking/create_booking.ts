@@ -17,6 +17,7 @@ export default async function createBooking(
     via: string,
     returnTo: string,
     passenger_num: number,
+    department: string,
 )
 {
     // Create a trip for the booking to be bound to.
@@ -47,7 +48,8 @@ export default async function createBooking(
             surname: surname,
             email: email,
             tel_number: tel_number,
-            additional_info: additional_info
+            additional_info: additional_info,
+            department: department
         }
     });
 }

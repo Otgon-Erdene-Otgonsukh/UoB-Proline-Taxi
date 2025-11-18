@@ -7,6 +7,8 @@ import {
   DialogContent,
   DialogTitle,
   Button,
+  Typography, 
+  Stack
 } from "@mui/material";
 import type {
   booking,
@@ -195,78 +197,131 @@ export default function DepDashboard() {
           >
             Booking Detail
           </DialogTitle>
-          <DialogContent id="desscription">
-            {selectedBooking && (
-              <>
-                <div className="flex flex-col gap-2 mt-8">
-                  <h1 className="text-xl font-semibold font-inter">
-                    Information about passenger:
-                  </h1>
-                  <h3>
-                    <strong>First name</strong>: {selectedBooking.first_name}
-                  </h3>
-                  <h3>
-                    <strong>Last name</strong>: {selectedBooking.surname}
-                  </h3>
-                  <h3>
-                    <strong>Phone number</strong>:{" "}
-                    {selectedBooking.tel_number}
-                  </h3>
-                  <h3>
-                    <strong>Department</strong>:{" "}
-                    {selectedBooking.User.department.dep_name}
-                  </h3>
-                </div>
-                <div className="flex flex-col gap-2 mt-7">
-                  <h1 className="text-xl font-semibold font-inter">
-                    Information about booking:
-                  </h1>
-                  <h3>
-                    <strong>Time Created</strong>:{" "}
-                    {selectedBooking.time_created
-                      ? new Date(selectedBooking.time_created).toLocaleString()
-                      : "N/A"}
-                  </h3>
-                  <h3>
-                    <strong>From</strong>:{" "}
-                    {selectedBooking.trip.pickup_location}
-                  </h3>
-                  <h3>
-                    <strong>Coordinates</strong>:{" "}
-                    {selectedBooking.trip.pickup_latitude},{" "}
-                    {selectedBooking.trip.pickup_longitude}
-                  </h3>
-                  <h3>
-                    <strong>To</strong>: {selectedBooking.trip.dropoff_location}
-                  </h3>
-                  <h3>
-                    <strong>Coordinates</strong>:{" "}
-                    {selectedBooking.trip.dropoff_latitude},{" "}
-                    {selectedBooking.trip.dropoff_longitude}
-                  </h3>
-                  <h3>
-                    <strong>Additional Info</strong>:{" "}
-                    {selectedBooking.additional_info}
-                  </h3>
-                  <h3>
-                    <strong>Status</strong>:{" "}
-                    {selectedBooking.booking_status === "Approved" ? (
-                      <span className="inline-block px-10 py-1 rounded-full text-xs font-medium border border-green-800 bg-green-200 text-green-800">
-                        Approved
-                      </span>
-                    ) : selectedBooking.booking_status === "Rejected" ? (
-                      <span className="inline-block px-10 py-1 rounded-full text-xs font-medium border border-red-800 bg-red-200 text-red-800">
-                        Rejected
-                      </span>
-                    ) : (
-                      <span className="inline-block px-10 py-1 rounded-full text-xs font-medium border border-yellow-800 bg-yellow-200 text-yellow-800">
-                        Pending
-                      </span>
-                    )}
-                  </h3>
-                </div>
-              </>
-            )}
+         <DialogContent dividers>
+            <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
+              <Typography gutterBottom sx={{ fontWeight: "bold", fontSize: 20 }}>
+                Information about passenger:
+              </Typography>
+            </Stack>
+            <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
+              <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+                First name:
+              </Typography>
+              <Typography gutterBottom>
+                {selectedBooking?.first_name}
+              </Typography>
+            </Stack>
+            <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
+              <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+              Last name:
+              </Typography>
+              <Typography gutterBottom>
+                {selectedBooking?.surname}
+              </Typography>
+            </Stack>
+            <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
+              <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+                Phone number:
+              </Typography>
+              <Typography gutterBottom>
+                {selectedBooking?.tel_number}
+              </Typography>
+            </Stack>
+            <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
+              <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+                Email:
+              </Typography>
+              <Typography gutterBottom>
+                {selectedBooking?.email}
+              </Typography>
+            </Stack>
+            <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
+              <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+                Department:
+              </Typography>
+              <Typography gutterBottom>
+                {selectedBooking?.department}
+              </Typography>
+            </Stack>
+            <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px', mt: 4 }}>
+              <Typography gutterBottom sx={{ fontWeight: "bold", fontSize: 19}}>
+                Information about booking:
+              </Typography>
+            </Stack>
+            <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
+              <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+                Time Created:
+              </Typography>
+              <Typography gutterBottom>
+                {selectedBooking?.time_created ? new Date(selectedBooking?.time_created).toLocaleString() : ""}
+              </Typography>
+            </Stack>
+            <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
+              <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+                From:
+              </Typography>
+              <Typography gutterBottom>
+                {selectedBooking?.trip.pickup_location}
+              </Typography>
+            </Stack>
+            <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
+              <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+                Via:
+              </Typography>
+              <Typography gutterBottom>
+                {selectedBooking?.trip.via}
+              </Typography>
+            </Stack>
+            <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
+              <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+                To:
+              </Typography>
+              <Typography gutterBottom>
+                {selectedBooking?.trip.dropoff_location}
+              </Typography>
+            </Stack>
+            <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
+              <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+                Booking Status:
+              </Typography>
+                {selectedBooking?.booking_status === "Approved" ? (
+                        <span className="inline-block px-10 py-[3px] rounded-full text-xs font-medium border border-green-800 bg-green-200 text-green-800">
+                          Approved
+                        </span>
+                      ) : selectedBooking?.booking_status === "Rejected" ? (
+                        <span className="inline-block px-10 py-[3px] rounded-full text-xs font-medium border border-red-800 bg-red-200 text-red-800">
+                          Rejected
+                        </span>
+                      ) : (
+                        <span className="inline-block px-10 py-[3px] rounded-full text-xs font-medium border border-yellow-800 bg-yellow-200 text-yellow-800">
+                          Pending
+                        </span>
+                      )}
+            </Stack>
+            <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
+              <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+                Passenger Number:
+              </Typography>
+              <Typography gutterBottom>
+                {selectedBooking?.trip.passenger_num}
+              </Typography>
+            </Stack>
+            <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
+              <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+                Pick Up Time:
+              </Typography>
+              <Typography gutterBottom>
+                {selectedBooking?.trip.pickup_time ? new Date(selectedBooking?.trip.pickup_time).toLocaleString() : ""}
+              </Typography>
+            </Stack>
+            <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
+              <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+                Return Drop-off Location:
+              </Typography>
+              <Typography gutterBottom>
+                {selectedBooking?.trip.return_drop_loc}
+              </Typography>
+            </Stack>
           </DialogContent>
           <DialogActions>
             <Button
