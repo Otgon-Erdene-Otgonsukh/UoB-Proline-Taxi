@@ -178,4 +178,4 @@ You should be able to see the app running in your web browser by visiting http:/
 | Ioan Moir (Project Manager) | ok24616@bristol.ac.uk |
 | Otgon-Erdene Otgonsukh | ww23805@bristol.ac.uk |
 | Yidi Ai | nb23869@bristol.ac.uk |
-| Erik Maltby (Client Liason) | bg24935@bristol.ac.uk |
+| Erik Maltby (Client Liaison) | bg24935@bristol.ac.uk |
