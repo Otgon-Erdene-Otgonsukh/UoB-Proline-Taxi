@@ -1,14 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import SearchAppBar from "@/src/components/SearchBar";
 import {
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   Button,
-  Typography, 
-  Stack
+  Typography,
+  Stack,
 } from "@mui/material";
 import type {
   booking,
@@ -26,6 +27,8 @@ type BookingWithTrip = booking & {
 export default function DepDashboard() {
   const [pendingBookings, setPendingBookings] = useState<BookingWithTrip[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [noMatchingResult, setNoMatchingResult] = useState(false);
 
   useEffect(() => {
     fetch("api/get_pending_bookings")
@@ -35,6 +38,22 @@ export default function DepDashboard() {
         setIsLoading(false);
       });
   }, []);
+
+  // Filter bookings based on search
+  const filteredBookings = pendingBookings.filter((e) => {
+    if (/^[0-9]/.test(search)) {
+      return e.tel_number?.includes(search);
+    } else if (search.includes("@")) {
+      return e.email?.toLowerCase().includes(search.toLowerCase());
+    } else {
+      return e.first_name?.toLowerCase().startsWith(search.toLowerCase()) || e.surname?.toLowerCase().startsWith(search.toLowerCase());
+    }
+  });
+
+  // Update noMatchingResult based on filtered results
+  useEffect(() => {
+    setNoMatchingResult(filteredBookings.length === 0 && search !== "");
+  }, [filteredBookings.length, search]);
 
   const [selectedBooking, setSelectedBooking] =
     useState<BookingWithTrip | null>(null);
@@ -75,15 +94,22 @@ export default function DepDashboard() {
   return (
     <div className="flex min-h-screen justify-center pt-24 p-4">
       <div className="bg-white shadow-lg rounded-lg p-6 md:p-8 w-full max-w-6xl mb-8 h-fit">
-        <div>
+        <div className="flex justify-between items-center">
           <h1 className="text-2xl font-aleo md:text-3xl font-semibold text-shadow-lg/20">
             Department Bookings
           </h1>
+          <SearchAppBar
+            onChange={(e) => {
+              setSearch(e);
+            }}
+          ></SearchAppBar>
         </div>
-        {pendingBookings.length === 0 ? (
+        {pendingBookings.length === 0 || noMatchingResult ? (
           <div className="text-center py-15 font-inter text-gray-400">
             {isLoading
               ? "Loading..."
+              : noMatchingResult
+              ? "No matching booking."
               : "There are no bookings awaiting approval."}
           </div>
         ) : (
@@ -106,7 +132,7 @@ export default function DepDashboard() {
                 </tr>
               </thead>
               <tbody>
-                {pendingBookings.map((e) => {
+                {filteredBookings.map((e) => {
                   return (
                     <tr
                       key={e.booking_id}
@@ -197,13 +223,30 @@ export default function DepDashboard() {
           >
             Booking Detail
           </DialogTitle>
-         <DialogContent dividers>
-            <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
-              <Typography gutterBottom sx={{ fontWeight: "bold", fontSize: 20 }}>
+          <DialogContent dividers>
+            <Stack
+              direction="row"
+              sx={{
+                justifyContent: "space-between",
+                alignItems: "center",
+                width: "400px",
+              }}
+            >
+              <Typography
+                gutterBottom
+                sx={{ fontWeight: "bold", fontSize: 20 }}
+              >
                 Information about passenger:
               </Typography>
             </Stack>
-            <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
+            <Stack
+              direction="row"
+              sx={{
+                justifyContent: "space-between",
+                alignItems: "center",
+                width: "400px",
+              }}
+            >
               <Typography gutterBottom sx={{ fontWeight: "bold" }}>
                 First name:
               </Typography>
@@ -211,15 +254,27 @@ export default function DepDashboard() {
                 {selectedBooking?.first_name}
               </Typography>
             </Stack>
-            <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
+            <Stack
+              direction="row"
+              sx={{
+                justifyContent: "space-between",
+                alignItems: "center",
+                width: "400px",
+              }}
+            >
               <Typography gutterBottom sx={{ fontWeight: "bold" }}>
-              Last name:
+                Last name:
               </Typography>
-              <Typography gutterBottom>
-                {selectedBooking?.surname}
-              </Typography>
+              <Typography gutterBottom>{selectedBooking?.surname}</Typography>
             </Stack>
-            <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
+            <Stack
+              direction="row"
+              sx={{
+                justifyContent: "space-between",
+                alignItems: "center",
+                width: "400px",
+              }}
+            >
               <Typography gutterBottom sx={{ fontWeight: "bold" }}>
                 Phone number:
               </Typography>
@@ -227,15 +282,27 @@ export default function DepDashboard() {
                 {selectedBooking?.tel_number}
               </Typography>
             </Stack>
-            <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
+            <Stack
+              direction="row"
+              sx={{
+                justifyContent: "space-between",
+                alignItems: "center",
+                width: "400px",
+              }}
+            >
               <Typography gutterBottom sx={{ fontWeight: "bold" }}>
                 Email:
               </Typography>
-              <Typography gutterBottom>
-                {selectedBooking?.email}
-              </Typography>
+              <Typography gutterBottom>{selectedBooking?.email}</Typography>
             </Stack>
-            <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
+            <Stack
+              direction="row"
+              sx={{
+                justifyContent: "space-between",
+                alignItems: "center",
+                width: "400px",
+              }}
+            >
               <Typography gutterBottom sx={{ fontWeight: "bold" }}>
                 Department:
               </Typography>
@@ -243,20 +310,47 @@ export default function DepDashboard() {
                 {selectedBooking?.department}
               </Typography>
             </Stack>
-            <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px', mt: 4 }}>
-              <Typography gutterBottom sx={{ fontWeight: "bold", fontSize: 19}}>
+            <Stack
+              direction="row"
+              sx={{
+                justifyContent: "space-between",
+                alignItems: "center",
+                width: "400px",
+                mt: 4,
+              }}
+            >
+              <Typography
+                gutterBottom
+                sx={{ fontWeight: "bold", fontSize: 19 }}
+              >
                 Information about booking:
               </Typography>
             </Stack>
-            <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
+            <Stack
+              direction="row"
+              sx={{
+                justifyContent: "space-between",
+                alignItems: "center",
+                width: "400px",
+              }}
+            >
               <Typography gutterBottom sx={{ fontWeight: "bold" }}>
                 Time Created:
               </Typography>
               <Typography gutterBottom>
-                {selectedBooking?.time_created ? new Date(selectedBooking?.time_created).toLocaleString() : ""}
+                {selectedBooking?.time_created
+                  ? new Date(selectedBooking?.time_created).toLocaleString()
+                  : ""}
               </Typography>
             </Stack>
-            <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
+            <Stack
+              direction="row"
+              sx={{
+                justifyContent: "space-between",
+                alignItems: "center",
+                width: "400px",
+              }}
+            >
               <Typography gutterBottom sx={{ fontWeight: "bold" }}>
                 From:
               </Typography>
@@ -264,15 +358,27 @@ export default function DepDashboard() {
                 {selectedBooking?.trip.pickup_location}
               </Typography>
             </Stack>
-            <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
+            <Stack
+              direction="row"
+              sx={{
+                justifyContent: "space-between",
+                alignItems: "center",
+                width: "400px",
+              }}
+            >
               <Typography gutterBottom sx={{ fontWeight: "bold" }}>
                 Via:
               </Typography>
-              <Typography gutterBottom>
-                {selectedBooking?.trip.via}
-              </Typography>
+              <Typography gutterBottom>{selectedBooking?.trip.via}</Typography>
             </Stack>
-            <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
+            <Stack
+              direction="row"
+              sx={{
+                justifyContent: "space-between",
+                alignItems: "center",
+                width: "400px",
+              }}
+            >
               <Typography gutterBottom sx={{ fontWeight: "bold" }}>
                 To:
               </Typography>
@@ -280,25 +386,39 @@ export default function DepDashboard() {
                 {selectedBooking?.trip.dropoff_location}
               </Typography>
             </Stack>
-            <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
+            <Stack
+              direction="row"
+              sx={{
+                justifyContent: "space-between",
+                alignItems: "center",
+                width: "400px",
+              }}
+            >
               <Typography gutterBottom sx={{ fontWeight: "bold" }}>
                 Booking Status:
               </Typography>
-                {selectedBooking?.booking_status === "Approved" ? (
-                        <span className="inline-block px-10 py-[3px] rounded-full text-xs font-medium border border-green-800 bg-green-200 text-green-800">
-                          Approved
-                        </span>
-                      ) : selectedBooking?.booking_status === "Rejected" ? (
-                        <span className="inline-block px-10 py-[3px] rounded-full text-xs font-medium border border-red-800 bg-red-200 text-red-800">
-                          Rejected
-                        </span>
-                      ) : (
-                        <span className="inline-block px-10 py-[3px] rounded-full text-xs font-medium border border-yellow-800 bg-yellow-200 text-yellow-800">
-                          Pending
-                        </span>
-                      )}
+              {selectedBooking?.booking_status === "Approved" ? (
+                <span className="inline-block px-10 py-[3px] rounded-full text-xs font-medium border border-green-800 bg-green-200 text-green-800">
+                  Approved
+                </span>
+              ) : selectedBooking?.booking_status === "Rejected" ? (
+                <span className="inline-block px-10 py-[3px] rounded-full text-xs font-medium border border-red-800 bg-red-200 text-red-800">
+                  Rejected
+                </span>
+              ) : (
+                <span className="inline-block px-10 py-[3px] rounded-full text-xs font-medium border border-yellow-800 bg-yellow-200 text-yellow-800">
+                  Pending
+                </span>
+              )}
             </Stack>
-            <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
+            <Stack
+              direction="row"
+              sx={{
+                justifyContent: "space-between",
+                alignItems: "center",
+                width: "400px",
+              }}
+            >
               <Typography gutterBottom sx={{ fontWeight: "bold" }}>
                 Passenger Number:
               </Typography>
@@ -306,15 +426,31 @@ export default function DepDashboard() {
                 {selectedBooking?.trip.passenger_num}
               </Typography>
             </Stack>
-            <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
+            <Stack
+              direction="row"
+              sx={{
+                justifyContent: "space-between",
+                alignItems: "center",
+                width: "400px",
+              }}
+            >
               <Typography gutterBottom sx={{ fontWeight: "bold" }}>
                 Pick Up Time:
               </Typography>
               <Typography gutterBottom>
-                {selectedBooking?.trip.pickup_time ? new Date(selectedBooking?.trip.pickup_time).toLocaleString() : ""}
+                {selectedBooking?.trip.pickup_time
+                  ? new Date(selectedBooking?.trip.pickup_time).toLocaleString()
+                  : ""}
               </Typography>
             </Stack>
-            <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', width: '400px' }}>
+            <Stack
+              direction="row"
+              sx={{
+                justifyContent: "space-between",
+                alignItems: "center",
+                width: "400px",
+              }}
+            >
               <Typography gutterBottom sx={{ fontWeight: "bold" }}>
                 Return Drop-off Location:
               </Typography>
