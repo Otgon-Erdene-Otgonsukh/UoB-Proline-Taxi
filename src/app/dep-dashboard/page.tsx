@@ -10,6 +10,12 @@ import {
   Button,
   Typography,
   Stack,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  createTheme,
+  ThemeProvider,
 } from "@mui/material";
 import type {
   booking,
@@ -29,6 +35,50 @@ export default function DepDashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [noMatchingResult, setNoMatchingResult] = useState(false);
+  const [searchType, setSearchType] = useState("");
+  const [selectedBooking, setSelectedBooking] =
+    useState<BookingWithTrip | null>(null);
+
+  const inputTheme = createTheme({
+    //creating a custom theme outside the component
+    components: {
+      MuiOutlinedInput: {
+        styleOverrides: {
+          root: {
+            borderRadius: "0.375rem", // rounded
+            fontSize: "0.875rem", // text-sm
+            color: "#111827", // gray-900 text color
+            "& fieldset": {
+              borderWidth: "2px",
+              borderColor: "#111827",
+            },
+          },
+        },
+      },
+      MuiSelect: {
+        styleOverrides: {
+          root: {
+            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+              borderColor: "#111827", // gray-900 when select is focused
+              borderWidth: "2px",
+            },
+          },
+        },
+      },
+      MuiInputLabel: {
+        //input label handling(default is blue)
+        styleOverrides: {
+          root: {
+            fontSize: "0.875rem",
+            color: "#111827",
+            "&.Mui-focused": {
+              color: "#111827",
+            },
+          },
+        },
+      },
+    },
+  });
 
   useEffect(() => {
     fetch("api/get_pending_bookings")
@@ -41,22 +91,35 @@ export default function DepDashboard() {
 
   // Filter bookings based on search
   const filteredBookings = pendingBookings.filter((e) => {
-    if (/^[0-9]/.test(search)) {
-      return e.tel_number?.includes(search);
-    } else if (search.includes("@")) {
+    if (searchType === "Phone number") {
+      return e.tel_number?.startsWith(search);
+    } else if (searchType === "Email") {
       return e.email?.toLowerCase().includes(search.toLowerCase());
+    } else if (searchType === "Passengers") {
+      return search === "" ? e : e.trip.passenger_num === Number(search);
+    } else if (searchType === "Location") {
+      return (
+        e.trip.pickup_location
+          ?.toLowerCase()
+          .startsWith(search.toLowerCase()) ||
+        e.trip.dropoff_location
+          ?.toLowerCase()
+          .startsWith(search.toLowerCase()) ||
+        e.trip.via?.toLowerCase().startsWith(search.toLowerCase()) ||
+        e.trip.return_drop_loc?.toLowerCase().startsWith(search.toLowerCase())
+      );
     } else {
-      return e.first_name?.toLowerCase().startsWith(search.toLowerCase()) || e.surname?.toLowerCase().startsWith(search.toLowerCase());
+      return (
+        e.first_name?.toLowerCase().startsWith(search.toLowerCase()) ||
+        e.surname?.toLowerCase().startsWith(search.toLowerCase())
+      );
     }
   });
 
   // Update noMatchingResult based on filtered results
   useEffect(() => {
     setNoMatchingResult(filteredBookings.length === 0 && search !== "");
-  }, [filteredBookings.length, search]);
-
-  const [selectedBooking, setSelectedBooking] =
-    useState<BookingWithTrip | null>(null);
+  }, [search]);
 
   const handleViewOpen = (booking: BookingWithTrip) => {
     setSelectedBooking(booking);
@@ -98,11 +161,42 @@ export default function DepDashboard() {
           <h1 className="text-2xl font-aleo md:text-3xl font-semibold text-shadow-lg/20">
             Department Bookings
           </h1>
-          <SearchAppBar
-            onChange={(e) => {
-              setSearch(e);
-            }}
-          ></SearchAppBar>
+          <div className="flex gap-4">
+            <ThemeProvider theme={inputTheme}>
+              <FormControl sx={{ minWidth: 200 }}>
+                <InputLabel>Search By</InputLabel>
+                <Select
+                  label="Search By"
+                  id="searchType"
+                  defaultValue=""
+                  onChange={(e) => {
+                    setSearchType(e.target.value);
+                  }}
+                >
+                  <MenuItem key="0" value="Email">
+                    Email
+                  </MenuItem>
+                  <MenuItem key="1" value="Phone number">
+                    Phone number
+                  </MenuItem>
+                  <MenuItem key="2" value="Location">
+                    Location
+                  </MenuItem>
+                  <MenuItem key="3" value="Passengers">
+                    Passenger count
+                  </MenuItem>
+                  <MenuItem key="4" value="Name">
+                    Passenger name
+                  </MenuItem>
+                </Select>
+              </FormControl>
+            </ThemeProvider>
+            <SearchAppBar
+              onChange={(e) => {
+                setSearch(e);
+              }}
+            ></SearchAppBar>
+          </div>
         </div>
         {pendingBookings.length === 0 || noMatchingResult ? (
           <div className="text-center py-15 font-inter text-gray-400">
