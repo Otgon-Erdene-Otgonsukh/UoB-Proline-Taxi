@@ -477,7 +477,7 @@ const Page = () => {
           </DialogTitle>
           <IconButton
             aria-label="close"
-            onClick={handleEditDialogClose}
+            onClick={handleCancelDialogClose}
             sx={(theme) => ({
               position: 'absolute',
               right: 8,
@@ -485,7 +485,7 @@ const Page = () => {
               color: theme.palette.grey[500],
             })}
           >
-            <CloseIcon />
+            <CloseIcon/>
           </IconButton>
           <DialogContent dividers >
             Are you sure you want to cancel this booking?
