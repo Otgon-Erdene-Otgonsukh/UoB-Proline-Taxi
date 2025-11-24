@@ -9,11 +9,12 @@
 ](https://tailwindcss.com)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=PostgreSQL&logoColor=white&color=blue)
 ](https://www.postgresql.org)
-[![Mui](https://img.shields.io/badge/MUI-007FFF?style=for-the-badge&logo=MUI&color=white)
-](https://mui.com)
+[![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=Docker&logoColor=white)](https://www.docker.com/)
 [![Neon](https://img.shields.io/badge/Neon-00E599?style=for-the-badge&logo=neon&logoColor=white)](https://neon.tech)
 [![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=for-the-badge&logo=Prisma)
 ](https://www.prisma.io/)
+[![Jest](https://img.shields.io/badge/Jest-C21325?style=for-the-badge&logo=Jest)](https://jestjs.io/)
+
 
 
 
