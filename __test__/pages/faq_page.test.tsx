@@ -1,7 +1,6 @@
 import "@testing-library/jest-dom";
 import { screen, render } from "@testing-library/react";
 import FAQ from "@/src/app/faq/page";
-import DropDown from "@/src/components/Dropdown_info_box";
 
 describe("Faq page renders with all elements", () => {
   beforeEach(() => {
