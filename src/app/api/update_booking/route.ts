@@ -7,8 +7,9 @@ export async function POST(req: Request) {
 
     const bookingId: number = body.bookingId;
     const newStatus: string = body.newStatus;
+    const poNumber: string = body.po;
 
-    await updateStatus(bookingId, newStatus);
+    await updateStatus(bookingId, newStatus, poNumber);
 
     return NextResponse.json(
       { success: true, message: "Booking status updated" },
