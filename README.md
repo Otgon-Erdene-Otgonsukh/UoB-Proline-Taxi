@@ -48,8 +48,11 @@ A booking and account management platform to streamline how the University of Br
 |
 │
 ├── *__test__*                                 # Jest tests 
-│    └── ...
-│
+│    ├── api                                   # API tests
+│    │    └── ...                              
+│    └── pages                                 # Page rendering tests
+│         └── ...                               
+│ 
 ├── *.github*                                 
 │    ├── ISSUE_TEMPLATE                        # Issue template files
 │    ├── workflows                             # Continuous Integration & Deployment Workflow files

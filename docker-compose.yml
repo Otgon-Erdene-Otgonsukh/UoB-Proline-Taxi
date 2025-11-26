@@ -1,0 +1,11 @@
+services:
+  app:
+    build:
+      context: .
+      args:
+        DATABASE_URL: ${DATABASE_URL}
+    image: uob-sustainable-transport
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
