@@ -15,7 +15,6 @@ import {
     FormControlLabel
 } from "@mui/material";
 import NumberField from "@/src/components/NumberField";
-import { small } from "framer-motion/client";
 
 export default function BookingPage() {
 const commonLocations = [
