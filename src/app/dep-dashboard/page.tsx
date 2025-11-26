@@ -2,6 +2,9 @@
 
 import { useState, useEffect } from "react";
 import SearchAppBar from "@/src/components/SearchBar";
+import NumbersIcon from "@mui/icons-material/Numbers";
+import ReceiptIcon from "@mui/icons-material/Receipt";
+import FindInPageIcon from "@mui/icons-material/FindInPage";
 import {
   Dialog,
   DialogActions,
@@ -16,6 +19,9 @@ import {
   MenuItem,
   createTheme,
   ThemeProvider,
+  DialogContentText,
+  TextField,
+  InputAdornment,
 } from "@mui/material";
 import type {
   booking,
@@ -38,6 +44,12 @@ export default function DepDashboard() {
   const [searchType, setSearchType] = useState("");
   const [selectedBooking, setSelectedBooking] =
     useState<BookingWithTrip | null>(null);
+  const [poDialog, setPoDialog] = useState(false);
+  const [poNumber, setPoNumber] = useState("");
+  const [poValidity, setPoValidity] = useState(false);
+  const [poEmpty, setPoEmpty] = useState(false);
+  const [poTooLong, setPoTooLong] = useState(false);
+  const [pendingBookingId, setPendingBookingId] = useState<number | null>(null);
 
   const inputTheme = createTheme({
     //creating a custom theme outside the component
@@ -129,17 +141,53 @@ export default function DepDashboard() {
     setSelectedBooking(null);
   };
 
-  // mapping over the booking records until id matches and update the status
+  const handlePoClose = () => {
+    setPoDialog(!poDialog);
+  };
+
+  const handlePoAttach = () => {
+    if (poNumber.length === 0) {
+      setPoValidity(true);
+      setPoEmpty(true);
+    } else if (poNumber.length > 30) {
+      setPoValidity(true);
+      setPoTooLong(true);
+    } else {
+      setPoValidity(false);
+      setPoDialog(false);
+
+      // Complete the approval
+      if (pendingBookingId !== null) {
+        setPendingBookings((prev) =>
+          prev.map((b) =>
+            b.booking_id === pendingBookingId
+              ? {
+                  ...b,
+                  booking_status: "Approved",
+                  trip: { ...b.trip, PO: poNumber },
+                }
+              : b
+          )
+        );
+        fetch("api/update_booking", {
+          method: "POST",
+          body: JSON.stringify({
+            bookingId: pendingBookingId,
+            newStatus: "Approved",
+            po: poNumber,
+          }),
+        });
+
+        // Reset states
+        setPendingBookingId(null);
+        setPoNumber("");
+      }
+    }
+  };
+
   const handleApprove = (bookingId: number) => {
-    setPendingBookings((prev) =>
-      prev.map((b) =>
-        b.booking_id === bookingId ? { ...b, booking_status: "Approved" } : b
-      )
-    );
-    fetch("api/update_booking", {
-      method: "POST",
-      body: JSON.stringify({ bookingId: bookingId, newStatus: "Approved" }),
-    });
+    setPendingBookingId(bookingId);
+    setPoDialog(true);
   };
 
   const handleReject = (bookingId: number) => {
@@ -252,8 +300,14 @@ export default function DepDashboard() {
                             >
                               View
                             </button>
-                            <span className="inline-block px-10 py-1 rounded-full text-xs font-medium bg-green-200 text-green-800">
+                            <span className="inline-block px-5 py-1 rounded-full text-xs font-medium border border-green-800 bg-green-200 text-green-800">
                               Approved
+                            </span>
+                            <span className="inline-block px-5 py-1 rounded-full text-xs font-medium border border-gray-800 bg-gray-200 text-gray-800">
+                              {e.trip.PO}
+                              <ReceiptIcon
+                                sx={{ fontSize: 20, ml: 1, mr: -1 }}
+                              ></ReceiptIcon>
                             </span>
                           </div>
                         ) : e.booking_status === "Rejected" ? (
@@ -264,7 +318,7 @@ export default function DepDashboard() {
                             >
                               View
                             </button>
-                            <span className="inline-block px-10 py-1 rounded-full text-xs font-medium bg-red-200 text-red-800">
+                            <span className="inline-block px-5 py-1 rounded-full text-xs font-medium border border-red-800 bg-red-200 text-red-800">
                               Rejected
                             </span>
                           </div>
@@ -313,9 +367,13 @@ export default function DepDashboard() {
               fontWeight: "bold",
               font: "aleo",
               bgcolor: "#2c2c2c",
+              fontFamily: "aleo",
             }}
           >
             Booking Detail
+            <FindInPageIcon
+              sx={{ fontSize: 35, mb: 1, ml: 1, mr: -1 }}
+            ></FindInPageIcon>
           </DialogTitle>
           <DialogContent dividers>
             <Stack
@@ -552,6 +610,21 @@ export default function DepDashboard() {
                 {selectedBooking?.trip.return_drop_loc}
               </Typography>
             </Stack>
+            {selectedBooking?.trip.PO !== null && (
+              <Stack
+                direction="row"
+                sx={{
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  width: "400px",
+                }}
+              >
+                <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+                  PO number:
+                </Typography>
+                <Typography gutterBottom>{selectedBooking?.trip.PO}</Typography>
+              </Stack>
+            )}
           </DialogContent>
           <DialogActions>
             <Button
@@ -564,12 +637,115 @@ export default function DepDashboard() {
                 ":hover": {
                   bgcolor: "#2c2c2c",
                   color: "white",
-                  transition: "all",
-                  transitionDuration: 200,
                 },
+                transition: "all 300ms",
               }}
             >
               Close
+            </Button>
+          </DialogActions>
+        </Dialog>
+        <Dialog open={poDialog} onClose={handlePoClose}>
+          <DialogTitle
+            sx={{
+              color: "white",
+              textAlign: "center",
+              fontSize: 25,
+              fontWeight: "bold",
+              font: "aleo",
+              bgcolor: "#2c2c2c",
+              fontFamily: "aleo",
+            }}
+          >
+            Attach PO number
+            <ReceiptIcon sx={{ ml: 1, mr: -1 }}></ReceiptIcon>
+          </DialogTitle>
+          <DialogContent sx={{ mt: 3 }}>
+            <DialogContentText
+              sx={{
+                fontFamily: "inter",
+                fontWeight: "bold",
+                maxWidth: 350,
+                textAlign: "center",
+                fontSize: 16,
+              }}
+            >
+              Please enter the PO number below to approve the booking.
+            </DialogContentText>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (!poValidity) {
+                  handlePoAttach();
+                }
+              }}
+              id="poForm"
+            >
+              <TextField
+                autoFocus
+                margin="dense"
+                id="po"
+                name="po"
+                label="PO number"
+                type="text"
+                fullWidth
+                variant="standard"
+                error={poValidity}
+                helperText={
+                  poEmpty
+                    ? "Enter a PO number"
+                    : poTooLong
+                    ? "PO number is too long"
+                    : ""
+                }
+                sx={{
+                  "& .MuiInput-underline:after": {
+                    borderBottomColor: "#2c2c2c",
+                  },
+                  "& .MuiInputLabel-root.Mui-focused": {
+                    color: "#2c2c2c",
+                  },
+                }}
+                onChange={(e) => {
+                  setPoNumber(e.target.value);
+                  setPoValidity(false);
+                  setPoEmpty(false);
+                  setPoTooLong(false);
+                }}
+                slotProps={{
+                  input: {
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <NumbersIcon />
+                      </InputAdornment>
+                    ),
+                  },
+                }}
+              />
+            </form>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              sx={{
+                color: "#2c2c2c",
+                transition: "all 300ms",
+                ":hover": { bgcolor: "#2c2c2c", color: "white" },
+              }}
+              onClick={handlePoClose}
+            >
+              Close
+            </Button>
+            <Button
+              type="submit"
+              form="poForm"
+              sx={{
+                mr: 2,
+                color: "#2c2c2c",
+                transition: "all 300ms",
+                ":hover": { bgcolor: "#2c2c2c", color: "white" },
+              }}
+            >
+              Attach
             </Button>
           </DialogActions>
         </Dialog>
