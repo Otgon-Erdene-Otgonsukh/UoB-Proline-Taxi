@@ -70,6 +70,7 @@ model trip {
   via               String?
   passenger_num     Int?
   return_drop_loc   String?
+  PO                String?
   booking           booking[]
 }
 
