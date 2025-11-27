@@ -12,7 +12,7 @@ test("approve and reject work", async () => {
   // Setup mock to resolve successfully
   (updateStatus as jest.Mock).mockResolvedValue(undefined);
 
-  const body = { bookingId: 11, newStatus: "Rejected" };
+  const body = { bookingId: 11, newStatus: "Rejected", po: "PO-111"};
   const req = new Request("http://localhost:3000/api/update_booking", {
     method: "POST",
     body: JSON.stringify(body),
@@ -26,7 +26,7 @@ test("approve and reject work", async () => {
   expect(res.status).toBe(200);
 
   // Verify the function was called with correct arguments
-  expect(updateStatus).toHaveBeenCalledWith(11, "Rejected");
+  expect(updateStatus).toHaveBeenCalledWith(11, "Rejected", "PO-111");
   expect(updateStatus).toHaveBeenCalledTimes(1);
 });
 
