@@ -1,6 +1,6 @@
 # **UoB Sustainable Transport – Smart taxi & chauffeur booking Platform**
 
-<img src="/public/logo.png" alt="logo text with image of a car" width="400"></img>
+<img src="uob_transport_app/public/logo.png" alt="logo text with image of a car" width="400"></img>
 
 [![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=Next.js&color=black)](https://nextjs.org)
 [![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=React&color=white)](https://react.dev)
