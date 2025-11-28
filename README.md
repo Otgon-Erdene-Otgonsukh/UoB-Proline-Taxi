@@ -166,7 +166,7 @@ npx prisma generate
 ```
 \
 **Generating NextAuth Secret Key**\
-This will be used for clients to maintain sessions on the site.
+This will be used for NextAuth session JWTs on the website, effectively to keep track of who's who.
 ```sh
 npx auth secret
 ```
