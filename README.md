@@ -15,9 +15,6 @@
 [![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=for-the-badge&logo=Prisma)
 ](https://www.prisma.io/)
 
-
-
-
 ## Table of Contents
 
 - [Project Overview](#project-overview)
@@ -42,24 +39,14 @@ A booking and account management platform to streamline how the University of Br
 - Centralised invoicing: booking history and faculty-specific invoices.
 
 ## Project Structure
+
 <pre>
 *2025-UoBsustainableTransport*
-|
 │
-├── *__test__*                                 # Jest tests 
-│    ├── api                                   # API tests
-│    │    └── ...                              
-│    └── pages                                 # Page rendering tests
-│         └── ...                               
-│ 
 ├── *.github*                                 
 │    ├── ISSUE_TEMPLATE                        # Issue template files
 │    ├── workflows                             # Continuous Integration & Deployment Workflow files
 │    └── pull_request_template.md    
-│
-├── *backend*                                  # Prisma functions
-│    └── ...
-│
 │
 ├── *docs*                                     # Documentation directory  
 │    ├── clientMeetings/                       # All client meeting materials
@@ -67,17 +54,25 @@ A booking and account management platform to streamline how the University of Br
 │    │    └── clientMeetingNotes1.md
 │    └── design/                               # All design documentation/Figma 
 │
-├── prisma
-│    └── schema.prisma                         # Prisma schema for database
-│
-│
-├── public/                                    # Public assets
-|         └── ...
-
-├── *src*                                      # Source code directory
-│    ├── app/                                  # Next.js App directory (main application/pages)
+├── *uob_transport_app*                        # Main application directory
+│    │
+│    ├── *__test__*                            # Jest tests 
+│    │    ├── api                              # API tests
+│    │    │    └── ...                              
+│    │    └── pages                            # Page rendering tests
+│    │         └── ...                               
+│    │
+│    ├── *app*                                 # Next.js App directory (main application/pages)
+│    │    ├── about/                           # About page route
+│    │    │    └── page.tsx
+│    │    ├── api/                             # API routes
+│    │    │    └── ...
 │    │    ├── book/                            # Booking page route
 │    │    │    └── page.tsx                    # Booking form component
+│    │    ├── confirmed/                       # Booking confirmation page route
+│    │    │    └── page.tsx
+│    │    ├── dep-dashboard/                   # Department dashboard page route
+│    │    │    └── page.tsx
 │    │    ├── faq/                             # FAQ page route
 │    │    │    └── page.tsx
 │    │    ├── forgot/                          # Forgot password page route
@@ -90,27 +85,43 @@ A booking and account management platform to streamline how the University of Br
 │    │    ├── layout.tsx                       # Root layout 
 │    │    └── page.tsx                         # Landing page
 │    │
-│    └── components/                           # Reusable React components
-│         ├── Dropdown_info_box.tsx
-│         ├── Landing_page.tsx                
-│         ├── Navbar.tsx
-|         └── ...
-│    
-│    
-|
-├── *Configuration Files*
-├── eslint.config.mjs                          # ESLint configuration file
-├── next.config.ts                             # Next.js configuration file
-├── next-env.d.ts                              # Next.js TypeScript declarations
-├── package.json                               # Project dependencies and scripts
-├── postcss.config.mjs                         # PostCSS configuration file
-├── tsconfig.json                              # TypeScript configuration file
-|
+│    ├── *backend*                             # Prisma functions
+│    │    └── ...
+│    │
+│    ├── *components*                          # Reusable React components
+│    │    ├── Dropdown_info_box.tsx
+│    │    ├── Landing_page.tsx                
+│    │    ├── Navbar.tsx
+│    │    └── ...
+│    │
+│    ├── *generated*                           # Prisma generated files
+│    │    └── prisma/                          
+│    │
+│    ├── *model*                               # Data models
+│    │    └── ...
+│    │
+│    ├── *prisma*
+│    │    └── schema.prisma                    # Prisma schema for database
+│    │
+│    ├── *public*                              # Public assets
+│    │    └── ...
+│    │
+│    ├── *utils*                               # Utility functions
+│    │    └── ...
+│    │
+│    ├── *Configuration Files*
+│    ├── Dockerfile                            # Docker configuration
+│    ├── docker-compose.yml                    # Docker Compose configuration
+│    ├── eslint.config.mjs                     # ESLint configuration file
+│    ├── jest.config.ts                        # Jest testing configuration
+│    ├── next.config.ts                        # Next.js configuration file
+│    ├── package.json                          # Project dependencies and scripts
+│    ├── postcss.config.mjs                    # PostCSS configuration file
+│    ├── prisma.config.ts                      # Prisma configuration
+│    └── tsconfig.json                         # TypeScript configuration file
+│
 └── README.md                                  # Project documentation
 </pre>
-
-
-
 
 ## Stakeholders
 
@@ -164,7 +175,7 @@ npx prisma generate
 npx prisma migrate dev
 npx prisma generate
 ```
-\
+
 And finally running the project locally:
 ```sh
 npm run dev
@@ -176,9 +187,9 @@ You should be able to see the app running in your web browser by visiting http:/
 
 ## Team Members
 
-| **Name** | **Email** |
-|-----------|-----------|
-| Ioan Moir (Project Manager) | ok24616@bristol.ac.uk |
-| Otgon-Erdene Otgonsukh | ww23805@bristol.ac.uk |
-| Yidi Ai | nb23869@bristol.ac.uk |
+| **Name**                     | **Email**             |
+| ---------------------------- | --------------------- |
+| Ioan Moir (Project Manager)  | ok24616@bristol.ac.uk |
+| Otgon-Erdene Otgonsukh       | ww23805@bristol.ac.uk |
+| Yidi Ai                      | nb23869@bristol.ac.uk |
 | Erik Maltby (Client Liaison) | bg24935@bristol.ac.uk |
