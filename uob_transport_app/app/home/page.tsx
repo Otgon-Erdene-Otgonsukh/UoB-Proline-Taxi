@@ -120,7 +120,8 @@ const Page = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!session) {
+    console.log(status)
+    if (status === "unauthenticated") {
       router.push("/login");
       return;
     }
@@ -150,7 +151,7 @@ const Page = () => {
     //     trip_id: 1
     //   }
     // }])
-  }, []);
+  }, [status]);
 
   const handleClick = () => {
     router.push("/book");
@@ -259,6 +260,11 @@ const Page = () => {
   const handleEditDialogClose = () => {
     setEditBookDialogOpen(false);
   };
+
+  // Do nothing if we get a status. Await for this check to be carried out in useEffect.
+  if (status === "loading" || status === "unauthenticated") {
+    return null;
+  }
 
   return (
     <div className="flex justify-center font-inter p-4">

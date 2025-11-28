@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { getUserBookingsAccess } from "@/backend/access/booking_access";
-import { auth } from "@/src/auth"; 
+import { auth } from "@/auth"; 
 
 export async function GET(
   request: NextRequest,

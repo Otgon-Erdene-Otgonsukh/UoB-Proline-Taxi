@@ -23,7 +23,7 @@ const config: runtime.GetPrismaClientConfig = {
       "value": "prisma-client"
     },
     "output": {
-      "value": "/root/LegitProject/2025-UoBsustainableTransport/uob_transport_app/generated/prisma",
+      "value": "/Users/ioanmoir/Documents/GitHub/2025-UoBsustainableTransport/uob_transport_app/generated/prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -32,12 +32,12 @@ const config: runtime.GetPrismaClientConfig = {
     "binaryTargets": [
       {
         "fromEnvVar": null,
-        "value": "debian-openssl-3.0.x",
+        "value": "darwin-arm64",
         "native": true
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/root/LegitProject/2025-UoBsustainableTransport/uob_transport_app/prisma/schema.prisma",
+    "sourceFilePath": "/Users/ioanmoir/Documents/GitHub/2025-UoBsustainableTransport/uob_transport_app/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativePath": "../../prisma",
