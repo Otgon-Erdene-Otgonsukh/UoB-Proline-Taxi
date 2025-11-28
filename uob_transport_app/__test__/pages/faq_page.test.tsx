@@ -1,11 +1,6 @@
 import "@testing-library/jest-dom";
 import { screen, render } from "@testing-library/react";
-<<<<<<< HEAD:__test__/pages/faq_page.test.tsx
 import FAQ from "@/src/app/faq/page";
-=======
-import FAQ from "@/app/faq/page";
-import DropDown from "@/components/Dropdown_info_box";
->>>>>>> project-restructure:uob_transport_app/__test__/pages/faq_page.test.tsx
 
 describe("Faq page renders with all elements", () => {
   beforeEach(() => {
