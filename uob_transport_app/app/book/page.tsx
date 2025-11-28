@@ -587,9 +587,7 @@ export default function BookingPage() {
                       id="returnPickUp"
                       className="border-2 rounded px-3 py-2"
                       value={
-                        formData.CommonLoc === ""
-                          ? formData.CustomLoc
-                          : formData.CommonLoc
+                        formData.DropoffLoc
                       }
                       disabled
                     ></input>
@@ -648,9 +646,12 @@ export default function BookingPage() {
                   {formFeedback.PickupTime}
                 </FormHelperText>
               </div>
+              <div>
+                <h3 className="font-bold">Lead passenger details:</h3>
+              </div>
               <div className="flex flex-col">
                 <label htmlFor="name" className="mb-1 text-sm">
-                  Name
+                  First name
                 </label>
                 <input
                   id="name"
@@ -671,7 +672,7 @@ export default function BookingPage() {
               </div>
               <div className="flex flex-col">
                 <label htmlFor="surname" className="mb-1 text-sm">
-                  Surname
+                  Last name
                 </label>
                 <input
                   id="surname"
