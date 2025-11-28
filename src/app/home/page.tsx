@@ -481,7 +481,7 @@ const Page = () => {
           </DialogTitle>
           <IconButton
             aria-label="close"
-            onClick={handleEditDialogClose}
+            onClick={handleCancelDialogClose}
             sx={(theme) => ({
               position: 'absolute',
               right: 8,
