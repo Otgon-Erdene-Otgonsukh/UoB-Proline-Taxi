@@ -1,6 +1,6 @@
 import "@testing-library/jest-dom";
 import { screen, render } from "@testing-library/react";
-import FAQ from "@/src/app/faq/page";
+import FAQ from "@/app/faq/page";
 
 describe("Faq page renders with all elements", () => {
   beforeEach(() => {

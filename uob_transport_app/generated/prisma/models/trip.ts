@@ -59,6 +59,7 @@ export type TripMinAggregateOutputType = {
   via: string | null
   passenger_num: number | null
   return_drop_loc: string | null
+  PO: string | null
 }
 
 export type TripMaxAggregateOutputType = {
@@ -74,6 +75,7 @@ export type TripMaxAggregateOutputType = {
   via: string | null
   passenger_num: number | null
   return_drop_loc: string | null
+  PO: string | null
 }
 
 export type TripCountAggregateOutputType = {
@@ -89,6 +91,7 @@ export type TripCountAggregateOutputType = {
   via: number
   passenger_num: number
   return_drop_loc: number
+  PO: number
   _all: number
 }
 
@@ -126,6 +129,7 @@ export type TripMinAggregateInputType = {
   via?: true
   passenger_num?: true
   return_drop_loc?: true
+  PO?: true
 }
 
 export type TripMaxAggregateInputType = {
@@ -141,6 +145,7 @@ export type TripMaxAggregateInputType = {
   via?: true
   passenger_num?: true
   return_drop_loc?: true
+  PO?: true
 }
 
 export type TripCountAggregateInputType = {
@@ -156,6 +161,7 @@ export type TripCountAggregateInputType = {
   via?: true
   passenger_num?: true
   return_drop_loc?: true
+  PO?: true
   _all?: true
 }
 
@@ -258,6 +264,7 @@ export type TripGroupByOutputType = {
   via: string | null
   passenger_num: number | null
   return_drop_loc: string | null
+  PO: string | null
   _count: TripCountAggregateOutputType | null
   _avg: TripAvgAggregateOutputType | null
   _sum: TripSumAggregateOutputType | null
@@ -296,6 +303,7 @@ export type tripWhereInput = {
   via?: Prisma.StringNullableFilter<"trip"> | string | null
   passenger_num?: Prisma.IntNullableFilter<"trip"> | number | null
   return_drop_loc?: Prisma.StringNullableFilter<"trip"> | string | null
+  PO?: Prisma.StringNullableFilter<"trip"> | string | null
   booking?: Prisma.BookingListRelationFilter
 }
 
@@ -312,6 +320,7 @@ export type tripOrderByWithRelationInput = {
   via?: Prisma.SortOrderInput | Prisma.SortOrder
   passenger_num?: Prisma.SortOrderInput | Prisma.SortOrder
   return_drop_loc?: Prisma.SortOrderInput | Prisma.SortOrder
+  PO?: Prisma.SortOrderInput | Prisma.SortOrder
   booking?: Prisma.bookingOrderByRelationAggregateInput
 }
 
@@ -331,6 +340,7 @@ export type tripWhereUniqueInput = Prisma.AtLeast<{
   via?: Prisma.StringNullableFilter<"trip"> | string | null
   passenger_num?: Prisma.IntNullableFilter<"trip"> | number | null
   return_drop_loc?: Prisma.StringNullableFilter<"trip"> | string | null
+  PO?: Prisma.StringNullableFilter<"trip"> | string | null
   booking?: Prisma.BookingListRelationFilter
 }, "trip_id">
 
@@ -347,6 +357,7 @@ export type tripOrderByWithAggregationInput = {
   via?: Prisma.SortOrderInput | Prisma.SortOrder
   passenger_num?: Prisma.SortOrderInput | Prisma.SortOrder
   return_drop_loc?: Prisma.SortOrderInput | Prisma.SortOrder
+  PO?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.tripCountOrderByAggregateInput
   _avg?: Prisma.tripAvgOrderByAggregateInput
   _max?: Prisma.tripMaxOrderByAggregateInput
@@ -370,6 +381,7 @@ export type tripScalarWhereWithAggregatesInput = {
   via?: Prisma.StringNullableWithAggregatesFilter<"trip"> | string | null
   passenger_num?: Prisma.IntNullableWithAggregatesFilter<"trip"> | number | null
   return_drop_loc?: Prisma.StringNullableWithAggregatesFilter<"trip"> | string | null
+  PO?: Prisma.StringNullableWithAggregatesFilter<"trip"> | string | null
 }
 
 export type tripCreateInput = {
@@ -384,6 +396,7 @@ export type tripCreateInput = {
   via?: string | null
   passenger_num?: number | null
   return_drop_loc?: string | null
+  PO?: string | null
   booking?: Prisma.bookingCreateNestedManyWithoutTripInput
 }
 
@@ -400,6 +413,7 @@ export type tripUncheckedCreateInput = {
   via?: string | null
   passenger_num?: number | null
   return_drop_loc?: string | null
+  PO?: string | null
   booking?: Prisma.bookingUncheckedCreateNestedManyWithoutTripInput
 }
 
@@ -415,6 +429,7 @@ export type tripUpdateInput = {
   via?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   passenger_num?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   return_drop_loc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  PO?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   booking?: Prisma.bookingUpdateManyWithoutTripNestedInput
 }
 
@@ -431,6 +446,7 @@ export type tripUncheckedUpdateInput = {
   via?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   passenger_num?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   return_drop_loc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  PO?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   booking?: Prisma.bookingUncheckedUpdateManyWithoutTripNestedInput
 }
 
@@ -447,6 +463,7 @@ export type tripCreateManyInput = {
   via?: string | null
   passenger_num?: number | null
   return_drop_loc?: string | null
+  PO?: string | null
 }
 
 export type tripUpdateManyMutationInput = {
@@ -461,6 +478,7 @@ export type tripUpdateManyMutationInput = {
   via?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   passenger_num?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   return_drop_loc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  PO?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type tripUncheckedUpdateManyInput = {
@@ -476,6 +494,7 @@ export type tripUncheckedUpdateManyInput = {
   via?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   passenger_num?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   return_drop_loc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  PO?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type TripNullableScalarRelationFilter = {
@@ -496,6 +515,7 @@ export type tripCountOrderByAggregateInput = {
   via?: Prisma.SortOrder
   passenger_num?: Prisma.SortOrder
   return_drop_loc?: Prisma.SortOrder
+  PO?: Prisma.SortOrder
 }
 
 export type tripAvgOrderByAggregateInput = {
@@ -521,6 +541,7 @@ export type tripMaxOrderByAggregateInput = {
   via?: Prisma.SortOrder
   passenger_num?: Prisma.SortOrder
   return_drop_loc?: Prisma.SortOrder
+  PO?: Prisma.SortOrder
 }
 
 export type tripMinOrderByAggregateInput = {
@@ -536,6 +557,7 @@ export type tripMinOrderByAggregateInput = {
   via?: Prisma.SortOrder
   passenger_num?: Prisma.SortOrder
   return_drop_loc?: Prisma.SortOrder
+  PO?: Prisma.SortOrder
 }
 
 export type tripSumOrderByAggregateInput = {
@@ -576,6 +598,7 @@ export type tripCreateWithoutBookingInput = {
   via?: string | null
   passenger_num?: number | null
   return_drop_loc?: string | null
+  PO?: string | null
 }
 
 export type tripUncheckedCreateWithoutBookingInput = {
@@ -591,6 +614,7 @@ export type tripUncheckedCreateWithoutBookingInput = {
   via?: string | null
   passenger_num?: number | null
   return_drop_loc?: string | null
+  PO?: string | null
 }
 
 export type tripCreateOrConnectWithoutBookingInput = {
@@ -621,6 +645,7 @@ export type tripUpdateWithoutBookingInput = {
   via?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   passenger_num?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   return_drop_loc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  PO?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type tripUncheckedUpdateWithoutBookingInput = {
@@ -636,6 +661,7 @@ export type tripUncheckedUpdateWithoutBookingInput = {
   via?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   passenger_num?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   return_drop_loc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  PO?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -682,6 +708,7 @@ export type tripSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   via?: boolean
   passenger_num?: boolean
   return_drop_loc?: boolean
+  PO?: boolean
   booking?: boolean | Prisma.trip$bookingArgs<ExtArgs>
   _count?: boolean | Prisma.TripCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["trip"]>
@@ -699,6 +726,7 @@ export type tripSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   via?: boolean
   passenger_num?: boolean
   return_drop_loc?: boolean
+  PO?: boolean
 }, ExtArgs["result"]["trip"]>
 
 export type tripSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -714,6 +742,7 @@ export type tripSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   via?: boolean
   passenger_num?: boolean
   return_drop_loc?: boolean
+  PO?: boolean
 }, ExtArgs["result"]["trip"]>
 
 export type tripSelectScalar = {
@@ -729,9 +758,10 @@ export type tripSelectScalar = {
   via?: boolean
   passenger_num?: boolean
   return_drop_loc?: boolean
+  PO?: boolean
 }
 
-export type tripOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"trip_id" | "icabbi_booking_id" | "pickup_location" | "pickup_latitude" | "pickup_longitude" | "dropoff_location" | "dropoff_latitude" | "dropoff_longitude" | "pickup_time" | "via" | "passenger_num" | "return_drop_loc", ExtArgs["result"]["trip"]>
+export type tripOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"trip_id" | "icabbi_booking_id" | "pickup_location" | "pickup_latitude" | "pickup_longitude" | "dropoff_location" | "dropoff_latitude" | "dropoff_longitude" | "pickup_time" | "via" | "passenger_num" | "return_drop_loc" | "PO", ExtArgs["result"]["trip"]>
 export type tripInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   booking?: boolean | Prisma.trip$bookingArgs<ExtArgs>
   _count?: boolean | Prisma.TripCountOutputTypeDefaultArgs<ExtArgs>
@@ -757,6 +787,7 @@ export type $tripPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     via: string | null
     passenger_num: number | null
     return_drop_loc: string | null
+    PO: string | null
   }, ExtArgs["result"]["trip"]>
   composites: {}
 }
@@ -1193,6 +1224,7 @@ export interface tripFieldRefs {
   readonly via: Prisma.FieldRef<"trip", 'String'>
   readonly passenger_num: Prisma.FieldRef<"trip", 'Int'>
   readonly return_drop_loc: Prisma.FieldRef<"trip", 'String'>
+  readonly PO: Prisma.FieldRef<"trip", 'String'>
 }
     
 

@@ -961,7 +961,8 @@ export const TripScalarFieldEnum = {
   pickup_time: 'pickup_time',
   via: 'via',
   passenger_num: 'passenger_num',
-  return_drop_loc: 'return_drop_loc'
+  return_drop_loc: 'return_drop_loc',
+  PO: 'PO'
 } as const
 
 export type TripScalarFieldEnum = (typeof TripScalarFieldEnum)[keyof typeof TripScalarFieldEnum]

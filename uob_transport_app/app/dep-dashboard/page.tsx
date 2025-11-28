@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import SearchAppBar from "@/src/components/SearchBar";
+import SearchAppBar from "@/components/SearchBar";
 import NumbersIcon from "@mui/icons-material/Numbers";
 import ReceiptIcon from "@mui/icons-material/Receipt";
 import FindInPageIcon from "@mui/icons-material/FindInPage";
