@@ -3,11 +3,11 @@ export const easyGetRequest = (url: string, params: Record<string, string | numb
   const headers = new Headers()
   if (needAuth) {
     const token = localStorage.getItem('token')
-    if (!token) {
-      return new Promise((_, reject) => {
-        reject('Login needed')
-      })
-    }
+    //if (!token) {
+    //  return new Promise((_, reject) => {
+    //    reject('Login needed')
+    //  })
+    //}
     headers.append('token', localStorage.getItem('token')!)
   }
 
@@ -30,11 +30,11 @@ export const easyPostRequest = (url: string, data: Record<string, unknown>, need
   const headers = new Headers()
   if (needAuth) {
     const token = localStorage.getItem('token')
-    if (!token) {
-      return new Promise((_, reject) => {
-        reject('Login needed')
-      })
-    }
+    //if (!token) {
+    //  return new Promise((_, reject) => {
+    //    reject('Login needed')
+    //  })
+    //}
     headers.append('token', localStorage.getItem('token')!)
   }
 

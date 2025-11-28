@@ -4,25 +4,19 @@ import Link from "next/link";
 import Image from "next/image";
 import Button from '@mui/material/Button';
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 
 export const Navbar = () => {
   const router = useRouter();
   // Get NextAuth Session.
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
 
   const handleLoginClick = () => {
     router.push("/login");
   }
 
-  const [username, setUsername] = useState<string | null>(null);
-  useEffect(() => {
-    // Set logged in message to include username.
-    if (session) {
-      setUsername(session.user.name)
-    }
-  }, [])
+  console.log(session)
+
   return (
     <nav className="bg-[#2C2C2C] text-white w-full p-6 sm:p-4 md:justify-start">
       <div className="flex justify-between items-center">
@@ -105,8 +99,8 @@ export const Navbar = () => {
           </li>
         </ul>
         <div className="pr-6">
-          {username ? (
-            <span className="text-lg">Hi, {username}!</span>
+          {session ? (
+            <span className="text-lg">Hi, {session.user.name}!</span>
           ) : (
           <Button variant="contained" onClick={handleLoginClick}
             sx={{

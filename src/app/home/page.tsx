@@ -134,8 +134,6 @@ const Page = () => {
           setBookingListData(data.bookings);
           setIsLoading(false)
         });
-      } else if (res.status === 201) {
-        router.push('login')
       }
     })
 
