@@ -22,6 +22,8 @@ import {
   DialogContentText,
   TextField,
   InputAdornment,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import type {
   booking,
@@ -50,6 +52,7 @@ export default function DepDashboard() {
   const [poEmpty, setPoEmpty] = useState(false);
   const [poTooLong, setPoTooLong] = useState(false);
   const [pendingBookingId, setPendingBookingId] = useState<number | null>(null);
+  const [snackBar, setSnackBar] = useState(false);
 
   const inputTheme = createTheme({
     //creating a custom theme outside the component
@@ -155,6 +158,7 @@ export default function DepDashboard() {
     } else {
       setPoValidity(false);
       setPoDialog(false);
+      setSnackBar(true);
 
       // Complete the approval
       if (pendingBookingId !== null) {
@@ -388,7 +392,7 @@ export default function DepDashboard() {
                 gutterBottom
                 sx={{ fontWeight: "bold", fontSize: 20 }}
               >
-                Information about passenger:
+                Information about lead passenger:
               </Typography>
             </Stack>
             <Stack
@@ -510,19 +514,23 @@ export default function DepDashboard() {
                 {selectedBooking?.trip.pickup_location}
               </Typography>
             </Stack>
-            <Stack
-              direction="row"
-              sx={{
-                justifyContent: "space-between",
-                alignItems: "center",
-                width: "400px",
-              }}
-            >
-              <Typography gutterBottom sx={{ fontWeight: "bold" }}>
-                Via:
-              </Typography>
-              <Typography gutterBottom>{selectedBooking?.trip.via}</Typography>
-            </Stack>
+            {selectedBooking?.trip.via && (
+              <Stack
+                direction="row"
+                sx={{
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  width: "400px",
+                }}
+              >
+                <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+                  Via:
+                </Typography>
+                <Typography gutterBottom>
+                  {selectedBooking?.trip.via}
+                </Typography>
+              </Stack>
+            )}
             <Stack
               direction="row"
               sx={{
@@ -595,21 +603,23 @@ export default function DepDashboard() {
                   : ""}
               </Typography>
             </Stack>
-            <Stack
-              direction="row"
-              sx={{
-                justifyContent: "space-between",
-                alignItems: "center",
-                width: "400px",
-              }}
-            >
-              <Typography gutterBottom sx={{ fontWeight: "bold" }}>
-                Return Drop-off Location:
-              </Typography>
-              <Typography gutterBottom>
-                {selectedBooking?.trip.return_drop_loc}
-              </Typography>
-            </Stack>
+            {selectedBooking?.trip.return_drop_loc && (
+              <Stack
+                direction="row"
+                sx={{
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  width: "400px",
+                }}
+              >
+                <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+                  Return Drop-off Location:
+                </Typography>
+                <Typography gutterBottom sx={{textAlign: "right"}}>
+                  {selectedBooking?.trip.return_drop_loc}
+                </Typography>
+              </Stack>
+            )}
             {selectedBooking?.trip.PO !== null && (
               <Stack
                 direction="row"
@@ -625,6 +635,21 @@ export default function DepDashboard() {
                 <Typography gutterBottom>{selectedBooking?.trip.PO}</Typography>
               </Stack>
             )}
+            <Stack
+                direction="row"
+                sx={{
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  width: "400px",
+                }}
+              >
+                <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+                  Additional info:
+                </Typography>
+                <Typography gutterBottom sx={{textAlign: "right"}}>
+                  {selectedBooking?.additional_info}
+                </Typography>
+              </Stack>
           </DialogContent>
           <DialogActions>
             <Button
@@ -749,6 +774,24 @@ export default function DepDashboard() {
             </Button>
           </DialogActions>
         </Dialog>
+        <Snackbar
+          open={snackBar}
+          autoHideDuration={4000}
+          onClose={() => {
+            setSnackBar(!snackBar);
+          }}
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        >
+          <Alert
+            onClose={() => {
+              setSnackBar(!snackBar);
+            }}
+            severity="success"
+            variant="filled"
+          >
+            PO number has been successfully attached!
+          </Alert>
+        </Snackbar>
       </div>
     </div>
   );
