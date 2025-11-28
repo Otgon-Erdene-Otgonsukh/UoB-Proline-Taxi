@@ -1,5 +1,4 @@
 import { NextRequest } from "next/server";
-import { loginRequired } from '../utils/login'
 import { getUserBookingsAccess } from "@/backend/access/booking_access";
 import { auth } from "@/src/auth"; 
 
