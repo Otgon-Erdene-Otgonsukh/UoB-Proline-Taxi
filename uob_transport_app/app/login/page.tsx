@@ -15,6 +15,7 @@ import EmailIcon from "@mui/icons-material/Email";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { Snackbar, Alert } from "@mui/material";
+import { signIn } from "next-auth/react"
 import { userLogin } from "./request";
 
 export default function Log_forgot() {
@@ -28,17 +29,19 @@ export default function Log_forgot() {
     setMailEmpty(isMailEmpty);
     setPassEmpty(isPassEmpty);
 
+    
     if (!isMailEmpty && !isPassEmpty) {
-      userLogin(mail, password).then(res => {
+      // Use NextAuth for authentication, stores cookie automatically.
+      signIn('credentials', {
+        redirect: false, // Force NExtAuth not to redirect.
+        email: mail,
+        password: password,
+      }).then(res => {
         if (res.status !== 200) {
           setSnackbarState({ open: true, status: 'fail' })
         } else {
-          res.json().then(data => {
-            localStorage.setItem('token', data.token)
-            localStorage.setItem('name', data.username)
-            setSnackbarState({ open: true, status: 'success' })
-            router.push("/home");
-          });
+          setSnackbarState({ open: true, status: 'success' })
+          router.push("/home");
         }
       })
     }

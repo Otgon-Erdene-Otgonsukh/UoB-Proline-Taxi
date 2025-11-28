@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 import { Button, TableHead } from "@mui/material";
 import Box from "@mui/material/Box";
 import { useTheme } from "@mui/material/styles";
@@ -113,25 +114,28 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
 }
 
 const Page = () => {
+  // Get NextAuth Session.
+  const { data: session, status } = useSession();
+
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!localStorage.getItem("token")) {
-      router.push("login");
+    console.log(status)
+    if (status === "unauthenticated") {
+      router.push("/login");
+      return;
     }
-    getUserBookingList(paginationMeta.page, paginationMeta.pageSize).then(
-      (res) => {
-        if (res.status === 200) {
-          res.json().then((data) => {
-            console.log(data);
-            setBookingListData(data.bookings);
-            setIsLoading(false);
-          });
-        } else if (res.status === 201) {
-          router.push("login");
-        }
+
+    getUserBookingList(paginationMeta.page, paginationMeta.pageSize).then((res) => {
+      if (res.status === 200) {
+        res.json().then((data) => {
+          console.log(data);
+          setBookingListData(data.bookings);
+          setIsLoading(false)
+        });
       }
+    }
     );
 
     // setBookingListData([{
@@ -148,7 +152,7 @@ const Page = () => {
     //     trip_id: 1
     //   }
     // }])
-  }, []);
+  }, [status]);
 
   const handleClick = () => {
     router.push("/book");
@@ -257,6 +261,11 @@ const Page = () => {
   const handleEditDialogClose = () => {
     setEditBookDialogOpen(false);
   };
+
+  // Do nothing if we get a status. Await for this check to be carried out in useEffect.
+  if (status === "loading" || status === "unauthenticated") {
+    return null;
+  }
 
   return (
     <div className="flex justify-center font-inter p-4">
