@@ -8,6 +8,12 @@ jest.mock("next/navigation", () => ({ // created a fake useRouter function to re
   }),
 }));
 
+jest.mock("next-auth/react", () => ({ // Same as above, avoids causing dependency issues with testing.
+  useSession: () => ({
+    push: jest.fn(),
+  }),
+}));
+
 describe("make sure the links are there", () => {
     render(<Navbar/>)
 
