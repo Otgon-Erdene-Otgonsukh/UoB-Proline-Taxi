@@ -176,7 +176,16 @@ npx prisma generate
 npx prisma migrate dev
 npx prisma generate
 ```
-
+\
+**Generating NextAuth Secret Key**\
+This will be used for NextAuth session JWTs on the website, effectively to keep track of who's who.
+```sh
+npx auth secret
+```
+\
+> [!IMPORTANT]
+> You may need to move the secret key from the .env.local file it generates into .env, allowing the project and docker containers to access it.
+\
 And finally running the project locally:
 ```sh
 npm run dev
