@@ -122,10 +122,10 @@ const Page = () => {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    if (!session) {
-      router.push("/login");
-      return;
-    }
+    //if (!session) {
+    //  router.push("/login");
+    //  return;
+    //}
 
     getUserBookingList(paginationMeta.page, paginationMeta.pageSize).then((res) => {
       if (res.status === 200) {

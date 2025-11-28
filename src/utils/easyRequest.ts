@@ -1,5 +1,5 @@
 
-export const easyGetRequest = (url: string, params: Record<string, string | number | boolean>, needAuth: boolean): Promise<Response> => {
+export const easyGetRequest = (url: string, params: Record<string, string | number | boolean>): Promise<Response> => {
   const searchParams = new URLSearchParams();
   for (const key in params) {
     if (params.hasOwnProperty(key)) {
@@ -14,7 +14,7 @@ export const easyGetRequest = (url: string, params: Record<string, string | numb
   return fetch(request);
 }
 
-export const easyPostRequest = (url: string, data: Record<string, unknown>, needAuth: boolean): Promise<Response> => {
+export const easyPostRequest = (url: string, data: Record<string, unknown>): Promise<Response> => {
   const request = new Request(`/api/${url}`, {
     method: "POST",
     body: JSON.stringify(data),

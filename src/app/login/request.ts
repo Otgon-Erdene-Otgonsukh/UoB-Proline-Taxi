@@ -4,5 +4,5 @@ export const userLogin = async (email: string, password: string): Promise<Respon
   return easyPostRequest('login', {
     email,
     password
-  }, false)
+  })
 }

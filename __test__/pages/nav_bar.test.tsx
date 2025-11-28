@@ -1,6 +1,6 @@
+import { Navbar } from "@/src/components/Navbar";
 import "@testing-library/jest-dom";
-import { screen, render } from "@testing-library/react";
-import { Navbar }  from "@/src/components/Navbar";
+import { render, screen } from "@testing-library/react";
 
 jest.mock("next/navigation", () => ({ // created a fake useRouter function to replace the Next router that is used in the navbar to avoid dependency issues since the tests do not run in next environment
   useRouter: () => ({
