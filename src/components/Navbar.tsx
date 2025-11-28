@@ -15,8 +15,6 @@ export const Navbar = () => {
     router.push("/login");
   }
 
-  console.log(session)
-
   return (
     <nav className="bg-[#2C2C2C] text-white w-full p-6 sm:p-4 md:justify-start">
       <div className="flex justify-between items-center">

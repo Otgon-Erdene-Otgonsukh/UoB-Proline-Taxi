@@ -1,12 +1,13 @@
 import { NextRequest } from "next/server";
 import { loginRequired } from '../utils/login'
 import { getUserBookingsAccess } from "@/backend/access/booking_access";
+import { auth } from "@/src/auth"; 
 
 export async function GET(
   request: NextRequest,
 ) {
-  const userDetail = await loginRequired(request)
-  if (!userDetail) {
+  const session = await auth();
+  if (!session) {
     return new Response(JSON.stringify({
       message: 'login required'
     }), {
@@ -20,7 +21,7 @@ export async function GET(
   const pageSize = searchParams.get('pageSize');
 
   if (page && pageSize) {
-    const bookings = await getUserBookingsAccess(userDetail.user_id, parseInt(page), parseInt(pageSize))
+    const bookings = await getUserBookingsAccess(session.user.user_id, parseInt(page), parseInt(pageSize))
 
     return new Response(JSON.stringify({
       bookings
