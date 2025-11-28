@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 import { Button, TableHead } from "@mui/material";
 import Box from '@mui/material/Box';
 import { useTheme } from '@mui/material/styles';
@@ -114,13 +115,18 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
 }
 
 const Page = () => {
+  // Get NextAuth Session.
+  const { data: session, status } = useSession();
+
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    if (!localStorage.getItem("token")) {
-      router.push("login");
+    if (!session) {
+      router.push("/login");
+      return;
     }
+
     getUserBookingList(paginationMeta.page, paginationMeta.pageSize).then((res) => {
       if (res.status === 200) {
         res.json().then((data) => {

@@ -5,9 +5,12 @@ import Image from "next/image";
 import Button from '@mui/material/Button';
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 
 export const Navbar = () => {
   const router = useRouter();
+  // Get NextAuth Session.
+  const { data: session, status } = useSession();
 
   const handleLoginClick = () => {
     router.push("/login");
@@ -15,10 +18,10 @@ export const Navbar = () => {
 
   const [username, setUsername] = useState<string | null>(null);
   useEffect(() => {
-    const storedUsername = localStorage.getItem('name');
-    if (storedUsername) {
-      setUsername(storedUsername);
-    } 
+    // Set logged in message to include username.
+    if (session) {
+      setUsername(session.user.name)
+    }
   }, [])
   return (
     <nav className="bg-[#2C2C2C] text-white w-full p-6 sm:p-4 md:justify-start">
