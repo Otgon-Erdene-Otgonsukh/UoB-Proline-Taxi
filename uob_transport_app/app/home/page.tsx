@@ -15,6 +15,7 @@ import Paper from "@mui/material/Paper";
 import FirstPageIcon from "@mui/icons-material/FirstPage";
 import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
+import FindInPageIcon from "@mui/icons-material/FindInPage";
 import LastPageIcon from "@mui/icons-material/LastPage";
 import { BookingRecord } from "@/model/models";
 import { cancelBooking, getUserBookingList } from "./requests";
@@ -294,7 +295,7 @@ const Page = () => {
             >
               <TableHead>
                 <TableRow>
-                  <StyledTableCell>Time Created</StyledTableCell>
+                  <StyledTableCell>Pick-up Time</StyledTableCell>
                   <StyledTableCell>From</StyledTableCell>
                   <StyledTableCell>To</StyledTableCell>
                   <StyledTableCell>Booking Status</StyledTableCell>
@@ -312,8 +313,8 @@ const Page = () => {
                       }}
                     >
                       <StyledTableCell>
-                        {row.time_created
-                          ? new Date(row.time_created).toLocaleString()
+                        {row.trip.pickup_time
+                          ? new Date(row.trip.pickup_time).toLocaleString()
                           : "N/A"}
                       </StyledTableCell>
                       <StyledTableCell>
@@ -375,7 +376,7 @@ const Page = () => {
             sx={{
               m: 0,
               p: 2,
-              fontFamily: "inter",
+              fontFamily: "aleo",
               fontWeight: "bold",
               bgcolor: "#2c2c2c",
               color: "white",
@@ -385,6 +386,9 @@ const Page = () => {
             id="customized-dialog-title"
           >
             Booking Detail
+            <FindInPageIcon
+              sx={{ fontSize: 35, mb: 1, ml: 1, mr: -1 }}
+            ></FindInPageIcon>
           </DialogTitle>
           <IconButton
             aria-label="close"
@@ -431,19 +435,21 @@ const Page = () => {
                 {bookDetail?.trip.pickup_location}
               </Typography>
             </Stack>
-            <Stack
-              direction="row"
-              sx={{
-                justifyContent: "space-between",
-                alignItems: "center",
-                width: "400px",
-              }}
-            >
-              <Typography gutterBottom sx={{ fontWeight: "bold" }}>
-                Via:
-              </Typography>
-              <Typography gutterBottom>{bookDetail?.trip.via}</Typography>
-            </Stack>
+            {bookDetail?.trip.via && (
+              <Stack
+                direction="row"
+                sx={{
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  width: "400px",
+                }}
+              >
+                <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+                  Via:
+                </Typography>
+                <Typography gutterBottom>{bookDetail?.trip.via}</Typography>
+              </Stack>
+            )}
             <Stack
               direction="row"
               sx={{
@@ -515,27 +521,48 @@ const Page = () => {
                   : ""}
               </Typography>
             </Stack>
-            <Stack
-              direction="row"
-              sx={{
-                justifyContent: "space-between",
-                alignItems: "center",
-                width: "400px",
-              }}
-            >
-              <Typography gutterBottom sx={{ fontWeight: "bold" }}>
-                Return Drop Location:
-              </Typography>
-              <Typography gutterBottom>
-                {bookDetail?.trip.return_drop_loc}
-              </Typography>
-            </Stack>
+            {bookDetail?.trip.return_drop_loc && (
+              <Stack
+                direction="row"
+                sx={{
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  width: "400px",
+                }}
+              >
+                <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+                  Return Drop-off Location:
+                </Typography>
+                <Typography gutterBottom>
+                  {bookDetail?.trip.return_drop_loc}
+                </Typography>
+              </Stack>
+            )}
+            {bookDetail?.trip.PO && (
+              <Stack
+                direction="row"
+                sx={{
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  width: "400px",
+                }}
+              >
+                <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+                  PO number:
+                </Typography>
+                <Typography gutterBottom>{bookDetail?.trip.PO}</Typography>
+              </Stack>
+            )}
           </DialogContent>
           <DialogActions>
             <Button
-              autoFocus
+              sx={{
+                color: "#2c2c2c",
+                mr: 1,
+                transition: "all 250ms",
+                ":hover": { bgcolor: "#2c2c2c", color: "white" },
+              }}
               onClick={handleViewDialogClose}
-              sx={{ color: "#2c2c2c", mr: 1 }}
             >
               Close
             </Button>
@@ -579,9 +606,13 @@ const Page = () => {
           </DialogContent>
           <DialogActions>
             <Button
-              autoFocus
-              onClick={handleEditDialogClose}
-              sx={{ color: "#2c2c2c" }}
+              sx={{
+                color: "#2c2c2c",
+                transition: "all 300ms",
+                mr: 1,
+                ":hover": { bgcolor: "#2c2c2c", color: "white" },
+              }}
+              onClick={handleCancelDialogClose}
             >
               Close
             </Button>
@@ -597,7 +628,7 @@ const Page = () => {
             sx={{
               m: 0,
               p: 2,
-              fontFamily: "inter",
+              fontFamily: "aleo",
               fontWeight: "bold",
               bgcolor: "#2c2c2c",
               color: "white",
@@ -620,21 +651,28 @@ const Page = () => {
           >
             <CloseIcon />
           </IconButton>
-          <DialogContent dividers>
+          <DialogContent dividers sx={{fontFamily: "inter"}}>
             Are you sure you want to cancel this booking?
           </DialogContent>
           <DialogActions>
             <Button
-              autoFocus
+              sx={{
+                color: "#2c2c2c",
+                transition: "all 300ms",
+                ":hover": { bgcolor: "#2c2c2c", color: "white" },
+              }}
               onClick={handleCancelDialogClose}
-              sx={{ color: "#2c2c2c" }}
             >
               Close
             </Button>
             <Button
-              autoFocus
+              sx={{
+                color: "#2c2c2c",
+                transition: "all 300ms",
+                mr: 1,
+                ":hover": { bgcolor: "#2c2c2c", color: "white" },
+              }}
               onClick={handleConfirmCancel}
-              sx={{ color: "#2c2c2c" }}
             >
               Confirm
             </Button>
