@@ -136,21 +136,6 @@ const Page = () => {
       }
     }
     );
-
-    // setBookingListData([{
-    //   booking_id: 5,
-    //   booking_status: "Pending",
-    //   time_created: "2025-11-10T09:42:02.512Z",
-    //   trip: {
-    //     dropoff_latitude: 23,
-    //     dropoff_location: "Physics Building",
-    //     dropoff_longitude: 2,
-    //     pickup_latitude: 34,
-    //     pickup_location: "Queens building",
-    //     pickup_longitude: 12,
-    //     trip_id: 1
-    //   }
-    // }])
   }, [status]);
 
   const handleClick = () => {
