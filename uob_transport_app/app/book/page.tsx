@@ -94,7 +94,7 @@ export default function BookingPage() {
     let loc = "";
 
     // Custom Location
-    if (isManualChecked || isFlightChecked) {
+    if (isManualChecked) {
       if (formData.CustomLoc == "") {
         addFormFeedback("CustomLoc", "Please enter a pickup location.");
         fail = true;
@@ -248,6 +248,8 @@ export default function BookingPage() {
         returnTo: formData.ReturnTo,
         passengers: formData.Passengers,
         department: formData.department,
+        airport: formData.Airport,
+        flight_num: formData.FlightNum,
       };
       fetch("/api/create_booking", {
         method: "POST",
