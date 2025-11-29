@@ -114,13 +114,12 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
 
 const Page = () => {
   // Get NextAuth Session.
-  const { data: session, status } = useSession();
+  const { status } = useSession();
 
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    console.log(status)
     if (status === "unauthenticated") {
       router.push("/login");
       return;
@@ -129,28 +128,13 @@ const Page = () => {
     getUserBookingList(paginationMeta.page, paginationMeta.pageSize).then((res) => {
       if (res.status === 200) {
         res.json().then((data) => {
-          console.log(data);
           setBookingListData(data.bookings);
+          setBookingListCount(data.totalNum)
           setIsLoading(false)
         });
       }
-    }
-    );
+    });
 
-    // setBookingListData([{
-    //   booking_id: 5,
-    //   booking_status: "Pending",
-    //   time_created: "2025-11-10T09:42:02.512Z",
-    //   trip: {
-    //     dropoff_latitude: 23,
-    //     dropoff_location: "Physics Building",
-    //     dropoff_longitude: 2,
-    //     pickup_latitude: 34,
-    //     pickup_location: "Queens building",
-    //     pickup_longitude: 12,
-    //     trip_id: 1
-    //   }
-    // }])
   }, [status]);
 
   const handleClick = () => {
@@ -166,10 +150,21 @@ const Page = () => {
     event: React.MouseEvent<HTMLButtonElement> | null,
     newPage: number
   ) => {
-    setPaginationMeta({
-      ...paginationMeta,
-      page: newPage,
+    setIsLoading(true)
+    getUserBookingList(newPage, paginationMeta.pageSize).then((res) => {
+      if (res.status === 200) {
+        res.json().then((data) => {
+          setBookingListData(data.bookings);
+          setBookingListCount(data.totalNum)
+          setIsLoading(false)
+          setPaginationMeta({
+            ...paginationMeta,
+            page: newPage,
+          });
+        });
+      }
     });
+
   };
 
   const handleChangePageSize = (
@@ -182,13 +177,13 @@ const Page = () => {
   };
 
   const [bookingListData, setBookingListData] = useState<BookingRecord[]>([]);
+  const [bookingListCount, setBookingListCount] = useState(0);
 
   // Cancel booking
   const [cancelBookDialogOpen, setCancelBookDialogOpen] = useState(false);
   const [toCancelBookingId, setToCancelBookingId] = useState<number>();
 
   const handleCancelBooking = (row: BookingRecord) => {
-    console.log(row);
     setToCancelBookingId(row.booking_id);
     setCancelBookDialogOpen(true);
   };
@@ -199,7 +194,6 @@ const Page = () => {
   };
 
   const handleConfirmCancel = () => {
-    console.log(toCancelBookingId);
     cancelBooking(toCancelBookingId!).then((res) => {
       setCancelBookDialogOpen(false);
       if (res.status === 200) {
@@ -330,15 +324,14 @@ const Page = () => {
                       </StyledTableCell>
                       <StyledTableCell>
                         <span
-                          className={`inline-block px-5 py-1 rounded-full text-xs font-medium ${
-                            row.booking_status === "Approved"
-                              ? "bg-green-100 text-green-800 border border-green-800"
-                              : row.booking_status === "Rejected"
+                          className={`inline-block px-5 py-1 rounded-full text-xs font-medium ${row.booking_status === "Approved"
+                            ? "bg-green-100 text-green-800 border border-green-800"
+                            : row.booking_status === "Rejected"
                               ? "bg-red-100 text-red-800 border border-red-800"
                               : row.booking_status === "Cancelled"
-                              ? "bg-gray-300 text-gray-900 border border-gray-900"
-                              : "bg-yellow-100 text-yellow-800 border border-yellow-800"
-                          }`}
+                                ? "bg-gray-300 text-gray-900 border border-gray-900"
+                                : "bg-yellow-100 text-yellow-800 border border-yellow-800"
+                            }`}
                         >
                           {row.booking_status}
                         </span>
@@ -479,15 +472,14 @@ const Page = () => {
               </Typography>
               <Chip
                 size="small"
-                color={`${
-                  bookDetail?.booking_status === "Approved"
-                    ? "success"
-                    : bookDetail?.booking_status === "Pending"
+                color={`${bookDetail?.booking_status === "Approved"
+                  ? "success"
+                  : bookDetail?.booking_status === "Pending"
                     ? "warning"
                     : bookDetail?.booking_status === "Cancelled"
-                    ? "default"
-                    : "error"
-                }`}
+                      ? "default"
+                      : "error"
+                  }`}
                 label={bookDetail?.booking_status}
               />
             </Stack>
@@ -652,7 +644,7 @@ const Page = () => {
           <TablePagination
             component="div"
             rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
-            count={bookingListData.length}
+            count={bookingListCount}
             rowsPerPage={paginationMeta.pageSize}
             page={paginationMeta.page}
             slotProps={{

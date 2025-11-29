@@ -28,3 +28,11 @@ export const cancelBookingsAccess = async (bookingId: number): Promise<booking |
     }
   })
 }
+
+export const getUserBookingsCountAccess = async (userId: number): Promise<number> => {
+  return prisma.booking.count({
+    where: {
+      user_id: userId,
+    },
+  })
+}
