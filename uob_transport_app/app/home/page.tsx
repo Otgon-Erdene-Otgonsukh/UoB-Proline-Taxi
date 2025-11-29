@@ -135,8 +135,7 @@ const Page = () => {
           setIsLoading(false)
         });
       }
-    }
-    );
+    });
 
     // const fakeBookingListData: BookingRecord[] = []
 
@@ -179,10 +178,22 @@ const Page = () => {
     event: React.MouseEvent<HTMLButtonElement> | null,
     newPage: number
   ) => {
-    setPaginationMeta({
-      ...paginationMeta,
-      page: newPage,
+    setIsLoading(true)
+    getUserBookingList(newPage, paginationMeta.pageSize).then((res) => {
+      if (res.status === 200) {
+        res.json().then((data) => {
+          console.log(data);
+          setBookingListData(data.bookings);
+          setBookingListCount(data.totalNum)
+          setIsLoading(false)
+          setPaginationMeta({
+            ...paginationMeta,
+            page: newPage,
+          });
+        });
+      }
     });
+
   };
 
   const handleChangePageSize = (
