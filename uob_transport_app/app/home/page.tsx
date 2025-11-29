@@ -131,26 +131,39 @@ const Page = () => {
         res.json().then((data) => {
           console.log(data);
           setBookingListData(data.bookings);
+          setBookingListCount(data.totalNum)
           setIsLoading(false)
         });
       }
     }
     );
 
-    // setBookingListData([{
-    //   booking_id: 5,
-    //   booking_status: "Pending",
-    //   time_created: "2025-11-10T09:42:02.512Z",
-    //   trip: {
-    //     dropoff_latitude: 23,
-    //     dropoff_location: "Physics Building",
-    //     dropoff_longitude: 2,
-    //     pickup_latitude: 34,
-    //     pickup_location: "Queens building",
-    //     pickup_longitude: 12,
-    //     trip_id: 1
-    //   }
-    // }])
+    // const fakeBookingListData: BookingRecord[] = []
+
+    // for (let index = 0; index < 10; index++) {
+    //   fakeBookingListData.push({
+    //     booking_id: index,
+    //     booking_status: "Pending",
+    //     time_created: "2025-11-10T09:42:02.512Z",
+    //     trip: {
+    //       dropoff_latitude: 23,
+    //       dropoff_location: "Physics Building",
+    //       dropoff_longitude: 2,
+    //       pickup_latitude: 34,
+    //       pickup_location: "Queens building",
+    //       pickup_longitude: 12,
+    //       trip_id: 1,
+    //       passenger_num: 2,
+    //       via: '',
+    //       return_drop_loc: ''
+    //     }
+    //   })
+    // }
+
+    // setBookingListData(fakeBookingListData)
+    // setIsLoading(false)
+    // setBookingListCount(20)
+
   }, [status]);
 
   const handleClick = () => {
@@ -182,6 +195,7 @@ const Page = () => {
   };
 
   const [bookingListData, setBookingListData] = useState<BookingRecord[]>([]);
+  const [bookingListCount, setBookingListCount] = useState(0);
 
   // Cancel booking
   const [cancelBookDialogOpen, setCancelBookDialogOpen] = useState(false);
@@ -650,7 +664,7 @@ const Page = () => {
           <TablePagination
             component="div"
             rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
-            count={bookingListData.length}
+            count={bookingListCount}
             rowsPerPage={paginationMeta.pageSize}
             page={paginationMeta.page}
             slotProps={{
