@@ -120,7 +120,6 @@ const Page = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    console.log(status)
     if (status === "unauthenticated") {
       router.push("/login");
       return;
@@ -129,7 +128,6 @@ const Page = () => {
     getUserBookingList(paginationMeta.page, paginationMeta.pageSize).then((res) => {
       if (res.status === 200) {
         res.json().then((data) => {
-          console.log(data);
           setBookingListData(data.bookings);
           setBookingListCount(data.totalNum)
           setIsLoading(false)
@@ -182,7 +180,6 @@ const Page = () => {
     getUserBookingList(newPage, paginationMeta.pageSize).then((res) => {
       if (res.status === 200) {
         res.json().then((data) => {
-          console.log(data);
           setBookingListData(data.bookings);
           setBookingListCount(data.totalNum)
           setIsLoading(false)
@@ -213,7 +210,6 @@ const Page = () => {
   const [toCancelBookingId, setToCancelBookingId] = useState<number>();
 
   const handleCancelBooking = (row: BookingRecord) => {
-    console.log(row);
     setToCancelBookingId(row.booking_id);
     setCancelBookDialogOpen(true);
   };
@@ -224,7 +220,6 @@ const Page = () => {
   };
 
   const handleConfirmCancel = () => {
-    console.log(toCancelBookingId);
     cancelBooking(toCancelBookingId!).then((res) => {
       setCancelBookDialogOpen(false);
       if (res.status === 200) {
