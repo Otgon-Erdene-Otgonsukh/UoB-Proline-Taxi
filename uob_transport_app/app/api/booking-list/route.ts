@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
-import { getUserBookingsAccess } from "@/backend/access/booking_access";
-import { auth } from "@/auth"; 
+import { getUserBookingsAccess, getUserBookingsCountAccess } from "@/backend/access/booking_access";
+import { auth } from "@/auth";
 
 export async function GET(
   request: NextRequest,
@@ -22,8 +22,11 @@ export async function GET(
   if (page && pageSize) {
     const bookings = await getUserBookingsAccess(session.user.user_id, parseInt(page), parseInt(pageSize))
 
+    const totalNum = await getUserBookingsCountAccess(session.user.user_id)
+
     return new Response(JSON.stringify({
-      bookings
+      bookings,
+      totalNum,
     }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
