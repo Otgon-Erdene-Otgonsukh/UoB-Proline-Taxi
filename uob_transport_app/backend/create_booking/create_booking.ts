@@ -18,9 +18,9 @@ export default async function createBooking(
     returnTo: string,
     passenger_num: number,
     department: string,
-    flight_num: string,
     airport: string,
-)
+    flight_num: string,
+    )
 {
     // Create a trip for the booking to be bound to.
     const trip = await prisma.trip.create({

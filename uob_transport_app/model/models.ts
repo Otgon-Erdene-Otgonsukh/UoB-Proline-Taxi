@@ -20,6 +20,8 @@ export type Trip = {
   via: string;
   return_drop_loc: string;
   PO: string;
+  airport: string;
+  flight_num: string;
 }
 
 export type BookingRecord = {
