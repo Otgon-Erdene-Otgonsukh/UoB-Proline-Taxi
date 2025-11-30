@@ -3,6 +3,15 @@ import { createTransport } from "nodemailer"
 
 // const resend = new Nodemailer();
 
+export async function GET(request: NextRequest) {
+  const searchParams = request.nextUrl.searchParams;
+
+  const uuid = searchParams.get('uuid');
+
+  // TODO
+
+}
+
 export async function POST(request: NextRequest) {
   const requestJson = await request.json()
   const toEmail = requestJson['email']
