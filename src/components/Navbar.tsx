@@ -81,7 +81,7 @@ export const Navbar = () => {
               className={"text-lg hover:text-gray-300 relative group"}
             >
               {page.name}
-              <span className={`absolute -bottom-0.5 left-0 h-0.5 bg-white transition-all duration-300 ${isActive(page.path) ? 'w-full' : 'w-0 group-hover:w-full group-hover:bg-gray-300'}`}></span>
+              <span className={`absolute -bottom-0.5 left-1/2 h-0.5 bg-white transition-all duration-300 transform -translate-x-1/2 ${isActive(page.path) ? 'w-full' : 'w-0 group-hover:w-full group-hover:bg-gray-300'}`}></span>
             </Link>
           </li>
         ))}
