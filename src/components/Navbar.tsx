@@ -74,18 +74,18 @@ export const Navbar = () => {
         </div>
         {/* Links */}
         <ul className="hidden lg:flex lg:items-center gap-9">
-          {pages.map((page, index) => (
-            <li key={index}>
-              <Link
-                href={page.path}
-                className={`text-lg hover:text-gray-300 relative group ${isActive(page.path) ? <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white"></span>: ''}`}
-              >
-                {page.name}
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white transition-all duration-300 group-hover:w-full"></span>
-              </Link>
-            </li>
-          ))}
-        </ul>
+        {pages.map((page, index) => (
+          <li key={index}>
+            <Link
+              href={page.path}
+              className={"text-lg hover:text-gray-300 relative group"}
+            >
+              {page.name}
+              <span className={"absolute bottom-0 left-0 h-0.5 bg-white transition-all duration-300 ${isActive(page.path) ? 'w-full' : 'w-0 group-hover:w-full'}"}></span>
+            </Link>
+          </li>
+        ))}
+      </ul>
         <div className="pr-6">
           {username ? (
             <span className="text-lg">Hi, {username}!</span>
