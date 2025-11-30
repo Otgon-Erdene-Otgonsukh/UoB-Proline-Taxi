@@ -7,8 +7,6 @@ export async function POST(request: NextRequest) {
   const requestJson = await request.json()
   const toEmail = requestJson['email']
 
-  console.log(toEmail);
-
   const transporter = createTransport({
     host: 'smtp.gmail.com',
     port: 587,
@@ -22,8 +20,8 @@ export async function POST(request: NextRequest) {
     await transporter.sendMail({
       from: process.env.EMAIL_USERNAME,
       to: toEmail,
-      subject: 'Hello world',
-      text: 'message',
+      subject: 'Reset Password',
+      text: 'Please go to the following link to reset the password:\n',
       replyTo: process.env.EMAIL_USERNAME,
     })
     return new Response(JSON.stringify({
