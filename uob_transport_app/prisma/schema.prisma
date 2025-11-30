@@ -72,6 +72,8 @@ model trip {
   return_drop_loc   String?
   PO                String?
   booking           booking[]
+  airport           String?
+  flight_num        String?
 }
 
 model user_address {
@@ -80,4 +82,11 @@ model user_address {
   latitude  Int?
   longitude Int?
   User      User    @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model user_reset {
+  id           Int        @id @default(autoincrement())
+  user_id      Int
+  uuid         String     @db.VarChar(32)
+  expired_at   DateTime   @db.Date
 }
