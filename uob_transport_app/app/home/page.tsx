@@ -318,7 +318,9 @@ const Page = () => {
                           : "N/A"}
                       </StyledTableCell>
                       <StyledTableCell>
-                        {(row.trip.airport === "" || row.trip.airport === null) ? row.trip.pickup_location : row.trip.airport}
+                        {row.trip.airport === "" || row.trip.airport === null
+                          ? row.trip.pickup_location
+                          : row.trip.airport}
                       </StyledTableCell>
                       <StyledTableCell>
                         {row.trip.dropoff_location}
@@ -433,7 +435,8 @@ const Page = () => {
                 From:
               </Typography>
               <Typography gutterBottom>
-                {bookDetail?.trip.airport === ""
+                {bookDetail?.trip.airport === "" ||
+                bookDetail?.trip.airport === null
                   ? bookDetail?.trip.pickup_location
                   : bookDetail?.trip.airport}
               </Typography>
@@ -572,6 +575,23 @@ const Page = () => {
                   PO number:
                 </Typography>
                 <Typography gutterBottom>{bookDetail?.trip.PO}</Typography>
+              </Stack>
+            )}
+            {bookDetail?.additional_info && (
+              <Stack
+                direction="row"
+                sx={{
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  width: "400px",
+                }}
+              >
+                <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+                  Additional info:
+                </Typography>
+                <Typography gutterBottom sx={{ textAlign: "right" }}>
+                  {bookDetail?.additional_info}
+                </Typography>
               </Stack>
             )}
           </DialogContent>

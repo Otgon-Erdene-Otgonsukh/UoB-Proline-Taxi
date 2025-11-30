@@ -26,6 +26,7 @@ export type Trip = {
 
 export type BookingRecord = {
   booking_id: number;
+  additional_info: string;
   time_created: string;
   trip: Trip;
   booking_status: 'Approved' | 'Pending' | 'Rejected' | 'Cancelled';
