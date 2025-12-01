@@ -1,6 +1,6 @@
 # **UoB Sustainable Transport – Smart taxi & chauffeur booking Platform**
 
-<img src="/public/logo.png" alt="logo text with image of a car" width="400"></img>
+<img src="uob_transport_app/public/logo.png" alt="logo text with image of a car" width="400"></img>
 
 [![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=Next.js&color=black)](https://nextjs.org)
 [![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=React&color=white)](https://react.dev)
@@ -9,13 +9,11 @@
 ](https://tailwindcss.com)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=PostgreSQL&logoColor=white&color=blue)
 ](https://www.postgresql.org)
-[![Mui](https://img.shields.io/badge/MUI-007FFF?style=for-the-badge&logo=MUI&color=white)
-](https://mui.com)
+[![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=Docker&logoColor=white)](https://www.docker.com/)
 [![Neon](https://img.shields.io/badge/Neon-00E599?style=for-the-badge&logo=neon&logoColor=white)](https://neon.tech)
 [![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=for-the-badge&logo=Prisma)
 ](https://www.prisma.io/)
-
-
+[![Jest](https://img.shields.io/badge/Jest-C21325?style=for-the-badge&logo=Jest)](https://jestjs.io/)
 
 
 ## Table of Contents
@@ -42,21 +40,14 @@ A booking and account management platform to streamline how the University of Br
 - Centralised invoicing: booking history and faculty-specific invoices.
 
 ## Project Structure
+
 <pre>
 *2025-UoBsustainableTransport*
-|
-│
-├── *__test__*                                 # Jest tests 
-│    └── ...
 │
 ├── *.github*                                 
 │    ├── ISSUE_TEMPLATE                        # Issue template files
 │    ├── workflows                             # Continuous Integration & Deployment Workflow files
 │    └── pull_request_template.md    
-│
-├── *backend*                                  # Prisma functions
-│    └── ...
-│
 │
 ├── *docs*                                     # Documentation directory  
 │    ├── clientMeetings/                       # All client meeting materials
@@ -64,17 +55,25 @@ A booking and account management platform to streamline how the University of Br
 │    │    └── clientMeetingNotes1.md
 │    └── design/                               # All design documentation/Figma 
 │
-├── prisma
-│    └── schema.prisma                         # Prisma schema for database
-│
-│
-├── public/                                    # Public assets
-|         └── ...
-
-├── *src*                                      # Source code directory
-│    ├── app/                                  # Next.js App directory (main application/pages)
+├── *uob_transport_app*                        # Main application directory
+│    │
+│    ├── *__test__*                            # Jest tests 
+│    │    ├── api                              # API tests
+│    │    │    └── ...                              
+│    │    └── pages                            # Page rendering tests
+│    │         └── ...                               
+│    │
+│    ├── *app*                                 # Next.js App directory (main application/pages)
+│    │    ├── about/                           # About page route
+│    │    │    └── page.tsx
+│    │    ├── api/                             # API routes
+│    │    │    └── ...
 │    │    ├── book/                            # Booking page route
 │    │    │    └── page.tsx                    # Booking form component
+│    │    ├── confirmed/                       # Booking confirmation page route
+│    │    │    └── page.tsx
+│    │    ├── dep-dashboard/                   # Department dashboard page route
+│    │    │    └── page.tsx
 │    │    ├── faq/                             # FAQ page route
 │    │    │    └── page.tsx
 │    │    ├── forgot/                          # Forgot password page route
@@ -87,27 +86,43 @@ A booking and account management platform to streamline how the University of Br
 │    │    ├── layout.tsx                       # Root layout 
 │    │    └── page.tsx                         # Landing page
 │    │
-│    └── components/                           # Reusable React components
-│         ├── Dropdown_info_box.tsx
-│         ├── Landing_page.tsx                
-│         ├── Navbar.tsx
-|         └── ...
-│    
-│    
-|
-├── *Configuration Files*
-├── eslint.config.mjs                          # ESLint configuration file
-├── next.config.ts                             # Next.js configuration file
-├── next-env.d.ts                              # Next.js TypeScript declarations
-├── package.json                               # Project dependencies and scripts
-├── postcss.config.mjs                         # PostCSS configuration file
-├── tsconfig.json                              # TypeScript configuration file
-|
+│    ├── *backend*                             # Prisma functions
+│    │    └── ...
+│    │
+│    ├── *components*                          # Reusable React components
+│    │    ├── Dropdown_info_box.tsx
+│    │    ├── Landing_page.tsx                
+│    │    ├── Navbar.tsx
+│    │    └── ...
+│    │
+│    ├── *generated*                           # Prisma generated files
+│    │    └── prisma/                          
+│    │
+│    ├── *model*                               # Data models
+│    │    └── ...
+│    │
+│    ├── *prisma*
+│    │    └── schema.prisma                    # Prisma schema for database
+│    │
+│    ├── *public*                              # Public assets
+│    │    └── ...
+│    │
+│    ├── *utils*                               # Utility functions
+│    │    └── ...
+│    │
+│    ├── *Configuration Files*
+│    ├── Dockerfile                            # Docker configuration
+│    ├── docker-compose.yml                    # Docker Compose configuration
+│    ├── eslint.config.mjs                     # ESLint configuration file
+│    ├── jest.config.ts                        # Jest testing configuration
+│    ├── next.config.ts                        # Next.js configuration file
+│    ├── package.json                          # Project dependencies and scripts
+│    ├── postcss.config.mjs                    # PostCSS configuration file
+│    ├── prisma.config.ts                      # Prisma configuration
+│    └── tsconfig.json                         # TypeScript configuration file
+│
 └── README.md                                  # Project documentation
 </pre>
-
-
-
 
 ## Stakeholders
 
@@ -162,6 +177,15 @@ npx prisma migrate dev
 npx prisma generate
 ```
 \
+**Generating NextAuth Secret Key**\
+This will be used for NextAuth session JWTs on the website, effectively to keep track of who's who.
+```sh
+npx auth secret
+```
+\
+> [!IMPORTANT]
+> You may need to move the secret key from the .env.local file it generates into .env, allowing the project and docker containers to access it.
+\
 And finally running the project locally:
 ```sh
 npm run dev
@@ -173,9 +197,9 @@ You should be able to see the app running in your web browser by visiting http:/
 
 ## Team Members
 
-| **Name** | **Email** |
-|-----------|-----------|
-| Ioan Moir (Project Manager) | ok24616@bristol.ac.uk |
-| Otgon-Erdene Otgonsukh | ww23805@bristol.ac.uk |
-| Yidi Ai | nb23869@bristol.ac.uk |
+| **Name**                     | **Email**             |
+| ---------------------------- | --------------------- |
+| Ioan Moir (Project Manager)  | ok24616@bristol.ac.uk |
+| Otgon-Erdene Otgonsukh       | ww23805@bristol.ac.uk |
+| Yidi Ai                      | nb23869@bristol.ac.uk |
 | Erik Maltby (Client Liaison) | bg24935@bristol.ac.uk |
