@@ -21,3 +21,11 @@ export const getUserResetAccess = async (email: string): Promise<user_reset | nu
     },
   })
 }
+
+export const deleteUserResetAccess = async (id: number): Promise<user_reset | null> => {
+  return prisma.user_reset.delete({
+    where: {
+      id,
+    },
+  })
+}
