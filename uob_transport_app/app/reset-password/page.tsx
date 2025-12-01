@@ -12,19 +12,32 @@ import {
 } from "@mui/material";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import Visibility from "@mui/icons-material/Visibility";
+import { getUserResetByUuid } from "./request";
+import { user_reset } from "@/generated/prisma/client";
 
 const Page = () => {
   const searchParams = useSearchParams();
   const uuid = searchParams.get('uuid')
 
-  if (!uuid) {
-    // TODO get user reset record by uuid and check if expired
-  }
-
+  const [pageValid, setPageValid] = useState(true)
+  const [userReset, setUserReset] = useState<user_reset>()
 
   useEffect(() => {
 
-    // get user detail by uuid
+    if (uuid) {
+      // TODO get user reset record by uuid and check if expired
+      getUserResetByUuid(uuid).then(res => {
+        if (res.status !== 200) {
+          setPageValid(false)
+        } else {
+          res.json().then((data) => {
+            setUserReset(data)
+          })
+        }
+      })
+    } else {
+      setPageValid(false)
+    }
 
   }, []);
 
@@ -56,7 +69,7 @@ const Page = () => {
     }
   }
 
-  return (
+  return pageValid ? (
     <div className="flex min-h-screen justify-center items-center font-inter p-4">
       <Paper
         elevation={3}
@@ -232,6 +245,10 @@ const Page = () => {
           </Button>
         </Box>
       </Paper>
+    </div>
+  ) : (
+    <div className="flex min-h-screen justify-center items-center font-inter p-4">
+      <h1 className="inline-block mr-1 pr-1 font-medium font-aleo">404 | This page has been expired</h1>
     </div>
   )
 
