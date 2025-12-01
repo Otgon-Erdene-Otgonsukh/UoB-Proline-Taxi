@@ -1,16 +1,31 @@
-import { createUserResetAccess, deleteUserResetAccess, getUserResetAccess } from "@/backend/access/user_reset_access";
+import { createUserResetAccess, deleteUserResetAccess, getUserResetAccess, getUserResetByUuidAccess } from "@/backend/access/user_reset_access";
 import { generateUuid } from "@/backend/utils/uuid";
 import { NextRequest } from "next/server";
 import { createTransport } from "nodemailer"
 
-// const resend = new Nodemailer();
-
+// get user reset record by uuid
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
 
   const uuid = searchParams.get('uuid');
 
   // TODO
+  if (!uuid) {
+    return new Response(JSON.stringify({
+      message: 'Invalid params'
+    }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+  const userReset = await getUserResetByUuidAccess(uuid)
+
+  return new Response(JSON.stringify({
+    userReset
+  }), {
+    status: 200,
+    headers: { 'Content-Type': 'application/json' },
+  });
 
 }
 
