@@ -12,6 +12,7 @@ import {
 import { useState } from "react";
 import EmailIcon from "@mui/icons-material/Email";
 import SendIcon from "@mui/icons-material/Send";
+import { sendResetEmail } from "./reqeust";
 
 export default function Forgot() {
   //simple client side validation
@@ -21,24 +22,56 @@ export default function Forgot() {
     //reseting all previous submission states
     setInvalidMail(false);
     setMailEmpty(false);
-    setShowSuccess(false);
+    handleCloseAlterMessage()
 
     if (mail.length == 0) {
       setMailEmpty(true);
-      setShowSuccess(false);
       return;
     } else if (!mail.includes("@")) {
       //checking if the input is a valid mail
       setInvalidMail(true);
-      setShowSuccess(false);
       return;
     } else {
-      setShowSuccess(true);
+      sendResetEmail(mail).then(res => {
+        if (res.status === 200) {
+          res.json().then(data => {
+            console.log(data);
+            setAlterMessageMeta({
+              show: true,
+              status: 'success',
+              message: 'Code sent successfully! Check your email.'
+            })
+          })
+        } else {
+          res.json().then(data => {
+            console.log(data);
+            setAlterMessageMeta({
+              show: true,
+              status: 'error',
+              message: data.message,
+            })
+          })
+        }
+      })
     }
   };
 
   const [mailEmpty, setMailEmpty] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
+  const [alertMessageMeta, setAlterMessageMeta] = useState<{
+    show: boolean,
+    status: 'success' | 'error',
+    message: string
+  }>({
+    show: false,
+    status: 'success',
+    message: ''
+  });
+  const handleCloseAlterMessage = () => {
+    setAlterMessageMeta({
+      ...alertMessageMeta,
+      show: false,
+    })
+  }
   const [invalidMail, setInvalidMail] = useState(false);
   const [mail, setMail] = useState("");
 
@@ -88,13 +121,13 @@ export default function Forgot() {
             p: { xs: 4, sm: 5, md: 6 },
           }}
         >
-          {showSuccess && (
+          {alertMessageMeta.show && (
             <Alert
-              severity="success"
-              onClose={() => setShowSuccess(false)}
+              severity={alertMessageMeta.status}
+              onClose={handleCloseAlterMessage}
               sx={{ borderRadius: "0.375rem" }}
             >
-              Code sent successfully! Check your email.
+              {alertMessageMeta.message}
             </Alert>
           )}
 
@@ -107,8 +140,8 @@ export default function Forgot() {
               mailEmpty
                 ? "Enter email the code to be sent!"
                 : invalidMail
-                ? "Please enter a valid email address!"
-                : ""
+                  ? "Please enter a valid email address!"
+                  : ""
             }
             value={mail}
             onChange={(e) => {
