@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
     return new Response(JSON.stringify({
       message: 'Invalid params'
     }), {
-      status: 200,
+      status: 201,
       headers: { 'Content-Type': 'application/json' },
     });
   }
@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
   return new Response(JSON.stringify({
     userReset
   }), {
-    status: 200,
+    status: userReset === null ? 201 : 200,
     headers: { 'Content-Type': 'application/json' },
   });
 
