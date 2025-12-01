@@ -5,3 +5,10 @@ export const getUserResetByUuid = async (uuid: string): Promise<Response> => {
     uuid,
   })
 }
+
+export const resetPassword = async (uuid: string, password: string): Promise<Response> => {
+  return easyPostRequest('reset-password', {
+    uuid,
+    password
+  })
+}

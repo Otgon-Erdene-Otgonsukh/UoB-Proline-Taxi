@@ -1,5 +1,5 @@
 "use client";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useState } from "react";
 import {
   Box,
@@ -9,15 +9,18 @@ import {
   Paper,
   InputAdornment,
   IconButton,
+  Snackbar,
+  Alert
 } from "@mui/material";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import Visibility from "@mui/icons-material/Visibility";
-import { getUserResetByUuid } from "./request";
+import { getUserResetByUuid, resetPassword } from "./request";
 import { user_reset } from "@/generated/prisma/client";
 
 const Page = () => {
   const searchParams = useSearchParams();
   const uuid = searchParams.get('uuid')
+  const router = useRouter();
 
   const [pageValid, setPageValid] = useState(true)
   const [userReset, setUserReset] = useState<user_reset>()
@@ -64,8 +67,34 @@ const Page = () => {
     setPassEmpty(isPassEmpty);
     setConfirmPassError(isConfirmPassWrong)
     if (!isPassEmpty && !isConfirmPassWrong) {
-      // TODO backend reset password
+      resetPassword(uuid!, password).then(res => {
+        if (res.status === 200) {
+          setSnackbarState({
+            open: true,
+            status: 'success'
+          })
+          router.push('/login')
+        } else {
+          setSnackbarState({
+            open: true,
+            status: 'fail'
+          })
+        }
+      })
+
     }
+  }
+
+  const [snackbarState, setSnackbarState] = useState({
+    open: false,
+    status: 'success'
+  })
+
+  const handleCloseSnackbarState = () => {
+    setSnackbarState({
+      ...snackbarState,
+      open: false,
+    })
   }
 
   return pageValid ? (
@@ -244,6 +273,21 @@ const Page = () => {
           </Button>
         </Box>
       </Paper>
+      <Snackbar
+        autoHideDuration={2000}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        open={snackbarState.open}
+        onClose={handleCloseSnackbarState}
+      >
+        <Alert
+          onClose={handleCloseSnackbarState}
+          severity={snackbarState.status === 'success' ? 'success' : 'error'}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {snackbarState.status === 'success' ? 'Reset Password Success!' : 'Reset password failed! Try again later!'}
+        </Alert>
+      </Snackbar>
     </div>
   ) : (
     <div className="flex min-h-screen justify-center items-center font-inter p-4">
