@@ -49,3 +49,11 @@ export const getUserByTokenAccess = async (token: string): Promise<User | null> 
     }
   })
 }
+
+export const getUserByEmailAccess = async (email: string): Promise<User | null> => {
+  return prisma.user.findUnique({
+    where: {
+      email
+    }
+  })
+}
