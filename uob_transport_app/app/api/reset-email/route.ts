@@ -1,3 +1,4 @@
+import { getUserByEmailAccess } from "@/backend/access/user_access";
 import { createUserResetAccess, deleteUserResetAccess, getUserResetAccess, getUserResetByUuidAccess } from "@/backend/access/user_reset_access";
 import { generateUuid } from "@/backend/utils/uuid";
 import { NextRequest } from "next/server";
@@ -9,7 +10,6 @@ export async function GET(request: NextRequest) {
 
   const uuid = searchParams.get('uuid');
 
-  // TODO
   if (!uuid) {
     return new Response(JSON.stringify({
       message: 'Invalid params'
@@ -38,6 +38,16 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   const requestJson = await request.json()
   const toEmail = requestJson['email']
+
+  const user = await getUserByEmailAccess(toEmail)
+  if (!user) {
+    return new Response(JSON.stringify({
+      message: 'User does not exist, please confirm the email you entered.'
+    }), {
+      status: 201,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
 
   const uuid = generateUuid()
 
@@ -82,7 +92,7 @@ export async function POST(request: NextRequest) {
       return new Response(JSON.stringify({
         message: 'send email failed, try again later'
       }), {
-        status: 200,
+        status: 201,
         headers: { 'Content-Type': 'application/json' },
       });
     }
