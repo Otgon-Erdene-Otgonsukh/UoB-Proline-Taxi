@@ -24,7 +24,6 @@ export async function POST(request: NextRequest) {
 
   // TODO Check if there already has a field in the UserReset Table
   const userReset = await createUserResetAccess(toEmail, uuid)
-  console.log(userReset);
 
   const transporter = createTransport({
     host: 'smtp.gmail.com',
@@ -41,7 +40,7 @@ export async function POST(request: NextRequest) {
         from: process.env.EMAIL_USERNAME,
         to: toEmail,
         subject: 'Reset Password',
-        text: `Please go to the following link to reset the password: \nhttp://localhost:3000/home/reset-password?uuid=${userReset.uuid} \nThe link expired at ${userReset.expired_at}`,
+        text: `Please go to the following link to reset the password: \n\nhttp://localhost:3000/home/reset-password?uuid=${userReset.uuid} \n\nThe link expired at ${userReset.expired_at}`,
         replyTo: process.env.EMAIL_USERNAME,
       })
       return new Response(JSON.stringify({
