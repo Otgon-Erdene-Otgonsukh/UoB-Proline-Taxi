@@ -18,7 +18,13 @@ export async function GET(request: NextRequest) {
       headers: { 'Content-Type': 'application/json' },
     });
   }
-  const userReset = await getUserResetByUuidAccess(uuid)
+  let userReset = await getUserResetByUuidAccess(uuid)
+
+  if (userReset && userReset.expired_at < new Date()) {
+    // expired, delete this record
+    await deleteUserResetAccess(userReset.id)
+    userReset = null
+  }
 
   return new Response(JSON.stringify({
     userReset
