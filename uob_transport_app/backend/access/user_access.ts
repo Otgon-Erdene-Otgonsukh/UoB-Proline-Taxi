@@ -31,10 +31,10 @@ export const updateUserTokenAccess = async (email: string, token: string): Promi
   })
 }
 
-export const updateUserPassowrdAccess = async (user_id: number, password: string): Promise<User | null> => {
+export const updateUserPassowrdAccess = async (email: string, password: string): Promise<User | null> => {
   return prisma.user.update({
     where: {
-      user_id
+      email
     },
     data: {
       password
