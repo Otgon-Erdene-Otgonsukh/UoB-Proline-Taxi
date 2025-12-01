@@ -25,7 +25,6 @@ const Page = () => {
   useEffect(() => {
 
     if (uuid) {
-      // TODO get user reset record by uuid and check if expired
       getUserResetByUuid(uuid).then(res => {
         if (res.status !== 200) {
           setPageValid(false)
