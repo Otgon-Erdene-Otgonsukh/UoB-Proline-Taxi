@@ -86,7 +86,7 @@ model user_address {
 
 model user_reset {
   id           Int        @id @default(autoincrement())
-  email        String     @db.VarChar(255)
+  email        String     @db.VarChar(255) @unique
   uuid         String     @db.VarChar(64)
   expired_at   DateTime   @db.Timestamp(6)
 }
