@@ -1,4 +1,4 @@
-import { createUserResetAccess } from "@/backend/access/user_reset_access";
+import { createUserResetAccess, deleteUserResetAccess, getUserResetAccess } from "@/backend/access/user_reset_access";
 import { generateUuid } from "@/backend/utils/uuid";
 import { NextRequest } from "next/server";
 import { createTransport } from "nodemailer"
@@ -19,22 +19,30 @@ export async function POST(request: NextRequest) {
   const toEmail = requestJson['email']
 
   const uuid = generateUuid()
-  console.log(toEmail);
-  console.log(uuid);
 
-  // TODO Check if there already has a field in the UserReset Table
-  const userReset = await createUserResetAccess(toEmail, uuid)
-
-  const transporter = createTransport({
-    host: 'smtp.gmail.com',
-    port: 587,
-    auth: {
-      user: process.env.EMAIL_USERNAME,
-      pass: process.env.EMAIL_PASSWORD
+  let userReset = await getUserResetAccess(toEmail)
+  if (userReset) {
+    if (userReset.expired_at < new Date()) {
+      // has expired, delete and create a new one the record
+      await deleteUserResetAccess(userReset.id)
+      userReset = await createUserResetAccess(toEmail, uuid)
+    } else {
+      // not expired, just send the email
     }
-  })
+  } else {
+    // no userReset record, dreate a new one
+    userReset = await createUserResetAccess(toEmail, uuid)
+  }
 
   if (userReset) {
+    const transporter = createTransport({
+      host: 'smtp.gmail.com',
+      port: 587,
+      auth: {
+        user: process.env.EMAIL_USERNAME,
+        pass: process.env.EMAIL_PASSWORD
+      }
+    })
     try {
       await transporter.sendMail({
         from: process.env.EMAIL_USERNAME,
@@ -57,13 +65,6 @@ export async function POST(request: NextRequest) {
         headers: { 'Content-Type': 'application/json' },
       });
     }
-  } else {
-    return new Response(JSON.stringify({
-      message: 'send email failed, try again later'
-    }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
   }
 
 }
