@@ -6,6 +6,7 @@ jest.mock("next/navigation", () => ({ // created a fake useRouter function to re
   useRouter: () => ({
     push: jest.fn(),
   }),
+  usePathname: () => "/",
 }));
 
 jest.mock("next-auth/react", () => ({ // Same as above, avoids causing dependency issues with testing.
