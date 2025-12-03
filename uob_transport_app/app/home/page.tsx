@@ -690,7 +690,7 @@ const Page = () => {
               color: theme.palette.grey[500],
             })}
           >
-            <CloseIcon />
+            <CloseIcon/>
           </IconButton>
           <DialogContent dividers sx={{ fontFamily: "inter" }}>
             Are you sure you want to cancel this booking?
