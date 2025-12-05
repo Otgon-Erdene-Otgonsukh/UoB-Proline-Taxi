@@ -242,3 +242,4 @@ next-env.d.ts
 # production
 /build
 /uob_transport_app/generated/prisma
+/generated/prisma
