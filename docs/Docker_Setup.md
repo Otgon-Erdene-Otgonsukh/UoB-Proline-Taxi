@@ -1,38 +1,19 @@
 # Deploying the project's Docker Container
-### Changing the build type to Production
-To deploy our project, you'll need to update the array in `next.config.ts` to contain:
-```ts
-{
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  output: 'standalone',
-}
-```
-
-The linting bypass (ignoreDuringBuilds) is to avoid linting errors, although in the future we need to ensure no linting errors are present in production.
-
-
-### Building the Docker container
 > [!IMPORTANT]
-> Ensure that the .env file is present with the DATABASE_URL set.
+> Ensure that the .env file is present with the DATABASE_URL set, in uob_transport_app.
 > The build may succeed without first doing this, but you'll need the .env present to be able to run the project.
 
 To build the container, navigate to the root directory of the project, then run:
 ```sh
-docker build --build-arg DATABASE_URL="$(grep -Po '(?<=^DATABASE_URL=).*' .env)" -t uob-transport .
+cd uob_transport_app
+docker compose up
 ```
 
 This may take a while.
 
 > [!TIP]
-> If you get errors about package versions, or anything that says "This is an issue with npm", try adding the `--no-cache` flag onto the build command.
-> You can also force the cleaning of cache by adding `RUN npm cache clean --force` in the "deps" part of the Dockerfile.
+> If you get an error saying compose is not a module of docker, try installing docker-compose-v2 from your package manager.
 
 
-### Running the container
-Finally, you can run:
-```sh
-docker run --env-file .env -p 3000:3000 uob-transport
-```
-which will run our project which will be accessible at localhost:3000.
+### Accessing the container
+The project should be accessible at localhost:3000 when the container comes online.
