@@ -1,4 +1,5 @@
 //import NextAuth from "next-auth";
+import NextAuth from "next-auth"
 
 // Custom user object for some cosmetic parts of the page such as welcome messages.
 
