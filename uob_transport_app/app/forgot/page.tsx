@@ -48,7 +48,7 @@ export default function Forgot() {
             setAlterMessageMeta({
               show: true,
               status: 'error',
-              message: data.message,
+              message: 'If you did not receive an email, please check your spam folder, or check the email you entered and try again.',
             })
           })
         }
