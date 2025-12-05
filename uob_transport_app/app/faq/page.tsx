@@ -1,6 +1,7 @@
 "use client"; // Needed for useState.
 
 import DdInfoBox from "@/components/Dropdown_info_box";
+import Image from "next/image";
 import { useState } from "react"; // For updates to UI when items are changed/clicked.
 
 export default function FAQPage() {
@@ -55,14 +56,14 @@ export default function FAQPage() {
             Contact Proline Taxi
           </h1>
           <div className="mt-5 lg:mt-10 mb-12 flex flex-row gap-8 pl-8">
-            <img src="/map.png" width="80" height="80"></img>
+            <Image src="/map.png" alt="map logo" width="80" height="80" data-testid="logos"></Image>
             <h2 className="text-xl font-medium pt-5">
               17 Kings Head Ln, Bishopsworth, <br /> Bristol BS13 7DB
             </h2>
           </div>
 
           <div className="mb-12 flex flex-row gap-15">
-            <img src="/Group.png" width="50" height="50"></img>
+            <Image src="/Group.png" alt="Logo" width="50" height="50" data-testid="logos"></Image>
             <div>
               <h2 className="text-xl font-bold">
                 <a href="tel:+447904459504">+44 7904 459 504</a>
@@ -71,9 +72,9 @@ export default function FAQPage() {
             </div>
           </div>
 
-          <div className="flex flex-row gap-11">
-            <img src="/mail.png"></img>
-            <h2 className="text-xl font-medium pt-8 pr-8">
+          <div className="flex flex-row gap-15">
+            <Image src="/mail.png" alt="mail envelope logo" width="53" height="53" data-testid="logos"></Image>
+            <h2 className="text-xl font-medium pt-8 pr-2">
               <a href="mailto:sales@prolinetaxi.com">sales@prolinetaxi.com</a>
             </h2>
           </div>
