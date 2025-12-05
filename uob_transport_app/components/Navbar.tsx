@@ -71,8 +71,9 @@ export const Navbar = () => {
           <li key={index}>
             <Link
               href={page.path}
-              className={"text-lg hover:text-gray-300 relative group"}
+              className={"text-lg hover:text-gray-300 relative group flex items-center gap-2"}
             >
+              <Image src={`${index === 0 ? "/Home-cropped.svg" : index === 1 ? "/dashboard.svg" : index === 2 ? "/Info.svg" : "/help.svg"}`} className={`${(index === 1 || index === 0) && "mb-1 w-[14px] h-[14px]"}`} width={15} height={15} alt="Tab logos"></Image>
               {page.name}
               <span className={`absolute -bottom-0.5 left-1/2 h-0.5 bg-white transition-all duration-300 transform -translate-x-1/2 ${isActive(page.path) ? 'w-full' : 'w-0 group-hover:w-full group-hover:bg-gray-300'}`}></span>
             </Link>
@@ -81,7 +82,7 @@ export const Navbar = () => {
       </ul>
         <div className="pr-6">
           {session ? (
-            <span className="text-lg">Hi, {session.user.name}!</span>
+            <span className="text-lg">Hi, {session.user?.name}!</span>
           ) : (
           <Button variant="contained" onClick={handleLoginClick}
             sx={{
