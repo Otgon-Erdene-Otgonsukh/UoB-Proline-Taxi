@@ -9,19 +9,20 @@ datasource db {
 }
 
 model User {
-  user_id      Int           @id @default(autoincrement())
-  username     String        @db.VarChar(100)
-  dep_id       Int?
-  email        String        @unique @db.VarChar(255)
-  password     String        @db.VarChar(255)
-  name         String?       @db.VarChar(100)
-  surname      String?       @db.VarChar(100)
-  phone_number String?       @db.VarChar(20)
-  token        String?       @unique @db.VarChar(256)
-  time_created DateTime?     @default(now()) @db.Timestamp(6)
-  department   department?   @relation(fields: [dep_id], references: [dep_id], onUpdate: NoAction)
-  booking      booking[]
-  user_address user_address?
+  user_id       Int           @id @default(autoincrement())
+  username      String        @db.VarChar(100)
+  dep_id        Int?
+  email         String        @unique @db.VarChar(255)
+  password      String        @db.VarChar(255)
+  name          String?       @db.VarChar(100)
+  surname       String?       @db.VarChar(100)
+  phone_number  String?       @db.VarChar(20)
+  token         String?       @unique @db.VarChar(256)
+  time_created  DateTime?     @default(now()) @db.Timestamp(6)
+  password_salt String?
+  department    department?   @relation(fields: [dep_id], references: [dep_id], onUpdate: NoAction)
+  booking       booking[]
+  user_address  user_address?
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
@@ -71,6 +72,8 @@ model trip {
   passenger_num     Int?
   return_drop_loc   String?
   PO                String?
+  airport           String?
+  flight_num        String?
   booking           booking[]
 }
 
@@ -80,4 +83,11 @@ model user_address {
   latitude  Int?
   longitude Int?
   User      User    @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model user_reset {
+  id         Int      @id @default(autoincrement())
+  uuid       String   @unique @db.VarChar(64)
+  expired_at DateTime @db.Timestamp(6)
+  email      String   @unique @db.VarChar(255)
 }
