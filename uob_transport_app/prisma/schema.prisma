@@ -83,3 +83,10 @@ model user_address {
   longitude Int?
   User      User    @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
 }
+
+model user_reset {
+  id         Int      @id @default(autoincrement())
+  uuid       String   @unique @db.VarChar(64)
+  expired_at DateTime @db.Timestamp(6)
+  email      String   @unique @db.VarChar(255)
+}
