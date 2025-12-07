@@ -51,7 +51,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         // Adding username + other data to the session.
         async jwt({ token, user }) {
             if (user) {
-                token.name = user.name
+                token.name = user.name;
+                token.id = user.id;
             }
             return token;
         },
@@ -59,6 +60,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         async session({ session, token }) {
             if (token?.firstname) {
                 session.user.name = token.name as string;
+                session.user.user_id = token.id as number;
             }
             return session;
         }
