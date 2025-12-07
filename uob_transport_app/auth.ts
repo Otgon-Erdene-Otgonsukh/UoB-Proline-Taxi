@@ -3,6 +3,7 @@ import Credentials from "next-auth/providers/credentials"
 // Re-use existing function implemented by Yidi
 import { searchUserAccess } from "@/backend/access/user_access";
 import { User } from '@/generated/prisma/browser';
+import bcrypt from "bcryptjs"
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
     providers: [
@@ -24,23 +25,25 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 }
 
                 const userDetail: User | null = await searchUserAccess(email);
-                console.log(userDetail);
 
+                if (userDetail) {
+                    // Compare the password against the hashed + salted password against the DB.
+                    if (bcrypt.compareSync(password, userDetail.password)) {
+                        // Stripped down user object / info to transform into the JWT by NextAuth.
+                        // We do not want the entire user object as it would be quite large and pointless.
+                        return {
+                            user_id: userDetail.user_id,
+                            username: userDetail.username,
+                            name: userDetail.name,
+                            email: userDetail.email,
+                        };
+                        
+                    }
 
-                // When we implement password hashing, it will happen here.
-                if (userDetail && userDetail.password === credentials.password) {
-                    // Stripped down user object / info to transform into the JWT by NextAuth.
-                    // We do not want the entire user object as it would be quite large and pointless.
-                    return {
-                        user_id: userDetail.user_id,
-                        username: userDetail.username,
-                        name: userDetail.name,
-                        email: userDetail.email,
-                    };
-                } else {
-                    // Error to show if credentials are incorrect.
-                    throw new Error("Invalid credentials.")
                 }
+
+               // Error to show if credentials are incorrect.
+                throw new Error("Invalid credentials.")
             },
         }),
     ],
