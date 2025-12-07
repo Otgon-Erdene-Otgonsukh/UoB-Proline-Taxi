@@ -11,6 +11,7 @@ import {
   InputAdornment,
   IconButton,
 } from "@mui/material";
+import Link from "next/link";
 import EmailIcon from "@mui/icons-material/Email";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
@@ -93,7 +94,7 @@ export default function Log_forgot() {
       <Paper
         elevation={3}
         sx={{
-          maxWidth: 500,
+          maxWidth: 450,
           width: "100%",
           borderRadius: 5,
           mt: 10,
@@ -267,6 +268,7 @@ export default function Log_forgot() {
           >
             LOG IN
           </Button>
+          <Typography sx={{textAlign: "center"}}>Don't have an account? <Link href="/register" className="text-blue-600">Sign up</Link></Typography>
         </Box>
       </Paper>
     </div>
