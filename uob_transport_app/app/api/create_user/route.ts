@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@/generated/prisma/client";
+import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
@@ -13,6 +14,9 @@ export async function POST(req: Request) {
   const lastName = request.lastName;
   const role = request.role;
   const phoneNumber = request.phoneNumber;
+
+  const hashRounds = 10;
+  const hashedPassword = await bcrypt.hash(password, hashRounds);
 
   try {
     // if the department already exists, appoint the existing dep_id
@@ -41,7 +45,7 @@ export async function POST(req: Request) {
           phone_number: phoneNumber,
           role: role,
           email: mail,
-          password: password,
+          password: hashedPassword,
         },
       });
     } else {
@@ -54,7 +58,7 @@ export async function POST(req: Request) {
           phone_number: phoneNumber,
           role: role,
           email: mail,
-          password: password,
+          password: hashedPassword,
         },
       });
     }

@@ -22,7 +22,6 @@ import LocalPhoneIcon from "@mui/icons-material/LocalPhone";
 import ApartmentIcon from "@mui/icons-material/Apartment";
 import Image from "next/image";
 import { useState } from "react";
-import bcrypt from "bcryptjs";
 import { redirect } from "next/navigation";
 
 export default function Register() {
@@ -50,7 +49,6 @@ export default function Register() {
   const [phoneCode, setPhoneCode] = useState("+44");
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const saltRounds = 10;
 
   const inputTheme = createTheme({
     components: {
@@ -144,10 +142,9 @@ export default function Register() {
     }
 
     if (!hasError) {
-      const hashedPassword = await bcrypt.hash(password, saltRounds);
       const body = {
         mail: mail,
-        password: hashedPassword,
+        password: password,
         firstName: firstName,
         lastName: lastName,
         department: department,
