@@ -27,7 +27,6 @@ import ApartmentIcon from "@mui/icons-material/Apartment";
 import Image from "next/image";
 import { useState } from "react";
 import { redirect } from "next/navigation";
-import { Preview } from "@mui/icons-material";
 
 export default function Register() {
   const [normalUser, setNormalUser] = useState(false);

@@ -273,7 +273,7 @@ export default function Log_forgot() {
           >
            { loadingBar ? <CircularProgress color="inherit" size="30px"/> : "LOG IN" }
           </Button>
-          <Typography sx={{textAlign: "center", mb: -2}}>Don't have an account? <Link href="/register" className="text-blue-600">Sign up</Link></Typography>
+          <Typography sx={{textAlign: "center", mb: -2}}>Don&apos;t have an account? <Link href="/register" className="text-blue-600">Sign up</Link></Typography>
         </Box>
       </Paper>
     </div>
