@@ -29,6 +29,7 @@ export async function POST(req: Request) {
       },
     });
 
+    // if the department is not in the database, create one
     if (department === null) {
       const newDepartment = await prisma.department.create({
         data: {
@@ -37,7 +38,6 @@ export async function POST(req: Request) {
       });
       await prisma.user.create({
         data: {
-          user_id: 4,
           dep_id: newDepartment.dep_id,
           username: username,
           name: firstName,

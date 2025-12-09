@@ -13,6 +13,7 @@ import {
   FormHelperText,
   Checkbox,
   FormControlLabel,
+  CircularProgress
 } from "@mui/material";
 import NumberField from "@/components/NumberField";
 import { useSession } from "next-auth/react";
@@ -39,6 +40,7 @@ export default function BookingPage() {
   const [isViaChecked, setIsViaChecked] = useState(false);
   const [isReturnChecked, setIsReturnChecked] = useState(false);
   const [phoneCode, setPhoneCode] = useState("+44");
+  const [loadingBar, setLoadingBar] = useState(false);
 
   // Set error messages visible next to fields, default "" (empty) for hide.
   const [formFeedback, setFormFeedback] = useState({
@@ -243,6 +245,7 @@ export default function BookingPage() {
 
     // fail == false if all validation succeeds, then post the request.
     if (fail == false) {
+      setLoadingBar(true);
       const jsonBody = {
         user_id: session.data?.user.user_id,
         pickup_location: loc,
@@ -830,7 +833,7 @@ export default function BookingPage() {
                     fontSize: "0.875rem",
                   }}
                 >
-                  Confirm Booking
+                  {loadingBar ? <CircularProgress color="inherit" size="30px"/> : "Confirm Booking"}
                 </Button>
               </div>
             </div>

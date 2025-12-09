@@ -10,6 +10,10 @@ import {
   Button,
   createTheme,
   ThemeProvider,
+  CircularProgress,
+  Snackbar,
+  Alert,
+  AlertProps
 } from "@mui/material";
 import EmailIcon from "@mui/icons-material/Email";
 import Visibility from "@mui/icons-material/Visibility";
@@ -23,6 +27,7 @@ import ApartmentIcon from "@mui/icons-material/Apartment";
 import Image from "next/image";
 import { useState } from "react";
 import { redirect } from "next/navigation";
+import { Preview } from "@mui/icons-material";
 
 export default function Register() {
   const [normalUser, setNormalUser] = useState(false);
@@ -47,6 +52,8 @@ export default function Register() {
   const [phoneNumberEmpty, setPhoneNumberEmpty] = useState(false);
   const [departmentEmpty, setDepartmentEmpty] = useState(false);
   const [phoneCode, setPhoneCode] = useState("+44");
+  const [loadingBar, setLoadingBar] = useState(false);
+  const [snackState, setSnackState] = useState({open: false, severity: ""});
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -142,6 +149,7 @@ export default function Register() {
     }
 
     if (!hasError) {
+      setLoadingBar(true);
       const body = {
         mail: mail,
         password: password,
@@ -160,7 +168,11 @@ export default function Register() {
         .then((res) => res.json())
         .then((data) => {
           if (data.status === 200) {
+            setSnackState({open: true, severity: "success"});
             redirect("/login");
+          } else {
+            setLoadingBar(false);
+            setSnackState({open: true, severity: "error"});
           }
         });
     }
@@ -573,13 +585,19 @@ export default function Register() {
                     transition: "all 0.2s",
                   }}
                 >
-                  Sign up
+                  {loadingBar ? <CircularProgress color="inherit" size="30px"/> : "Sign up"}
                 </Button>
               </form>
             </ThemeProvider>
           </div>
         </div>
       </div>
+      <Snackbar open={snackState.open} onClose={() => {setSnackState({open: false, severity: ""})}} autoHideDuration={6000} anchorOrigin={{vertical: "top", horizontal: "center"}}>
+        <Alert severity={snackState.severity as AlertProps["severity"]} variant="filled">
+            {snackState.severity === "success" ? "Account successfully created" : "Failed to create an account"}
+        </Alert>
+      </Snackbar>
     </div>
+    
   );
 }
