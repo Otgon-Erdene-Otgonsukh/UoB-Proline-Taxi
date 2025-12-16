@@ -126,16 +126,17 @@ const Page = () => {
       return;
     }
 
-    getUserBookingList(paginationMeta.page, paginationMeta.pageSize).then((res) => {
-      if (res.status === 200) {
-        res.json().then((data) => {
-          setBookingListData(data.bookings);
-          setBookingListCount(data.totalNum)
-          setIsLoading(false)
-        });
+    getUserBookingList(paginationMeta.page, paginationMeta.pageSize).then(
+      (res) => {
+        if (res.status === 200) {
+          res.json().then((data) => {
+            setBookingListData(data.bookings);
+            setBookingListCount(data.totalNum);
+            setIsLoading(false);
+          });
+        }
       }
-    });
-
+    );
   }, [status]);
 
   const handleClick = () => {
@@ -151,13 +152,13 @@ const Page = () => {
     event: React.MouseEvent<HTMLButtonElement> | null,
     newPage: number
   ) => {
-    setIsLoading(true)
+    setIsLoading(true);
     getUserBookingList(newPage, paginationMeta.pageSize).then((res) => {
       if (res.status === 200) {
         res.json().then((data) => {
           setBookingListData(data.bookings);
-          setBookingListCount(data.totalNum)
-          setIsLoading(false)
+          setBookingListCount(data.totalNum);
+          setIsLoading(false);
           setPaginationMeta({
             ...paginationMeta,
             page: newPage,
@@ -165,7 +166,6 @@ const Page = () => {
         });
       }
     });
-
   };
 
   const handleChangePageSize = (
@@ -318,21 +318,24 @@ const Page = () => {
                           : "N/A"}
                       </StyledTableCell>
                       <StyledTableCell>
-                        {row.trip.pickup_location}
+                        {row.trip.airport === "" || row.trip.airport === null
+                          ? row.trip.pickup_location
+                          : row.trip.airport}
                       </StyledTableCell>
                       <StyledTableCell>
                         {row.trip.dropoff_location}
                       </StyledTableCell>
                       <StyledTableCell>
                         <span
-                          className={`inline-block px-5 py-1 rounded-full text-xs font-medium ${row.booking_status === "Approved"
-                            ? "bg-green-100 text-green-800 border border-green-800"
-                            : row.booking_status === "Rejected"
+                          className={`inline-block px-5 py-1 rounded-full text-xs font-medium ${
+                            row.booking_status === "Approved"
+                              ? "bg-green-100 text-green-800 border border-green-800"
+                              : row.booking_status === "Rejected"
                               ? "bg-red-100 text-red-800 border border-red-800"
                               : row.booking_status === "Cancelled"
-                                ? "bg-gray-300 text-gray-900 border border-gray-900"
-                                : "bg-yellow-100 text-yellow-800 border border-yellow-800"
-                            }`}
+                              ? "bg-gray-300 text-gray-900 border border-gray-900"
+                              : "bg-yellow-100 text-yellow-800 border border-yellow-800"
+                          }`}
                         >
                           {row.booking_status}
                         </span>
@@ -432,9 +435,29 @@ const Page = () => {
                 From:
               </Typography>
               <Typography gutterBottom>
-                {bookDetail?.trip.pickup_location}
+                {bookDetail?.trip.airport === "" ||
+                bookDetail?.trip.airport === null
+                  ? bookDetail?.trip.pickup_location
+                  : bookDetail?.trip.airport}
               </Typography>
             </Stack>
+            {bookDetail?.trip.flight_num && (
+              <Stack
+                direction="row"
+                sx={{
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  width: "400px",
+                }}
+              >
+                <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+                  Flight number:
+                </Typography>
+                <Typography gutterBottom>
+                  {bookDetail.trip.flight_num}
+                </Typography>
+              </Stack>
+            )}
             {bookDetail?.trip.via && (
               <Stack
                 direction="row"
@@ -478,14 +501,15 @@ const Page = () => {
               </Typography>
               <Chip
                 size="small"
-                color={`${bookDetail?.booking_status === "Approved"
-                  ? "success"
-                  : bookDetail?.booking_status === "Pending"
+                color={`${
+                  bookDetail?.booking_status === "Approved"
+                    ? "success"
+                    : bookDetail?.booking_status === "Pending"
                     ? "warning"
                     : bookDetail?.booking_status === "Cancelled"
-                      ? "default"
-                      : "error"
-                  }`}
+                    ? "default"
+                    : "error"
+                }`}
                 label={bookDetail?.booking_status}
               />
             </Stack>
@@ -551,6 +575,23 @@ const Page = () => {
                   PO number:
                 </Typography>
                 <Typography gutterBottom>{bookDetail?.trip.PO}</Typography>
+              </Stack>
+            )}
+            {bookDetail?.additional_info && (
+              <Stack
+                direction="row"
+                sx={{
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  width: "400px",
+                }}
+              >
+                <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+                  Additional info:
+                </Typography>
+                <Typography gutterBottom sx={{ textAlign: "right" }}>
+                  {bookDetail?.additional_info}
+                </Typography>
               </Stack>
             )}
           </DialogContent>
@@ -651,7 +692,7 @@ const Page = () => {
           >
             <CloseIcon/>
           </IconButton>
-          <DialogContent dividers sx={{fontFamily: "inter"}}>
+          <DialogContent dividers sx={{ fontFamily: "inter" }}>
             Are you sure you want to cancel this booking?
           </DialogContent>
           <DialogActions>
