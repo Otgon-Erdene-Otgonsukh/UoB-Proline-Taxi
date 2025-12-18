@@ -18,7 +18,6 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { Snackbar, Alert } from "@mui/material";
 import { signIn } from "next-auth/react"
-import { userLogin } from "./request";
 
 export default function Log_forgot() {
   const router = useRouter();
