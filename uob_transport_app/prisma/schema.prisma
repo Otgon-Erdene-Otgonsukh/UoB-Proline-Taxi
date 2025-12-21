@@ -74,8 +74,6 @@ model trip {
   airport           String?
   flight_num        String?
   booking           booking[]
-  airport           String?
-  flight_num        String?
 }
 
 model user_address {
