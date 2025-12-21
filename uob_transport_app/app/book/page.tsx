@@ -17,6 +17,7 @@ import {
 } from "@mui/material";
 import NumberField from "@/components/NumberField";
 import { useSession } from "next-auth/react";
+import Image from "next/image";
 
 export default function BookingPage() {
   const commonLocations = [
@@ -859,7 +860,7 @@ export default function BookingPage() {
 
         {/* Image Section */}
         <div className="hidden lg:block lg:w-1/2">
-          <img
+          <Image
             src="/emptymap.png"
             alt="Map"
             className="w-full h-full object-cover border-l-3 border-[#2c2c2c]"

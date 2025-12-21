@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "jest"
+    "test": "jest --silent"
   },
   "dependencies": {
     "@base-ui-components/react": "^1.0.0-beta.4",

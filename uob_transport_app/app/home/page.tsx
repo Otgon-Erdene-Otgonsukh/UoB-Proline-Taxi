@@ -119,6 +119,10 @@ const Page = () => {
 
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
+  const [paginationMeta, setPaginationMeta] = useState({
+    page: 0,
+    pageSize: 10,
+  });
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -137,16 +141,11 @@ const Page = () => {
         }
       }
     );
-  }, [status]);
+  }, [status, paginationMeta.page, paginationMeta.pageSize, router]);
 
   const handleClick = () => {
     router.push("/book");
   };
-
-  const [paginationMeta, setPaginationMeta] = useState({
-    page: 0,
-    pageSize: 10,
-  });
 
   const handleChangePage = (
     event: React.MouseEvent<HTMLButtonElement> | null,

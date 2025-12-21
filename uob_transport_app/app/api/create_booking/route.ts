@@ -25,7 +25,7 @@ export async function POST(request: Request) {
         await createBooking(user_id, pickup_loc, null, null, dropoff_loc, null, null, pickup_time, first_name, surname, email, tel_number, additional_info, via, returnTo, passenger_num, department, airport, flight_num);
         return NextResponse.json({ status: 200 });
     } catch (error) {
-        console.log(error)
+        console.error("There was an error when creating a booking.", error)
         return NextResponse.json(
         { error: "There was a problem creating this booking." },
         { status: 500 }

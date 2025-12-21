@@ -2,7 +2,7 @@ import { tableCellClasses } from '@mui/material/TableCell';
 import { styled } from '@mui/material/styles';
 import TableCell from '@mui/material/TableCell';
 
-export const StyledTableCell = styled(TableCell)(({ theme }) => ({
+export const StyledTableCell = styled(TableCell)(() => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: "#f9fafb",
     border: "2px solid #111827",
