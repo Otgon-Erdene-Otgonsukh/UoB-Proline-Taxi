@@ -182,7 +182,8 @@ This will be used for NextAuth session JWTs on the website, effectively to keep 
 ```sh
 npx auth secret
 ```
-\
+<br/>
+
 > [!IMPORTANT]
 > You may need to move the secret key from the .env.local file it generates into .env, allowing the project and docker containers to access it.
 \
