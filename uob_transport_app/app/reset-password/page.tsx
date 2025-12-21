@@ -1,5 +1,5 @@
 "use client";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useState } from "react";
 import {
   Box,
@@ -17,9 +17,13 @@ import Visibility from "@mui/icons-material/Visibility";
 import { getUserResetByUuid, resetPassword } from "./request";
 import { user_reset } from "@/generated/prisma/client";
 
-const Page = () => {
-  const searchParams = useSearchParams();
-  const uuid = searchParams.get('uuid')
+const Page = ({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string };
+}) => {
+  const uuid = searchParams.uuid
+  console.log(uuid)
   const router = useRouter();
 
   const [pageValid, setPageValid] = useState(true)
