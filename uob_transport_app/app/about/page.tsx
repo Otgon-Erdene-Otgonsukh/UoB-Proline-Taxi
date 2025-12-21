@@ -7,6 +7,7 @@ import {
   DirectionsCar,
 } from "@mui/icons-material";
 import StarsIcon from "@mui/icons-material/Stars";
+import Image from "next/image";
 
 export default function AboutPage() {
   return (
@@ -15,12 +16,13 @@ export default function AboutPage() {
       <div className="md:w-3/5 flex flex-col items-center justify-center">
         <div className="shadow-lg/20 rounded-md w-full h-full p-15 ml-4 mt-3 mb-5 border-2 border-[#2c2c2c]">
           <div className="flex flex-col md:flex-row items-center justify-between">
-            <img
+            <Image
               src="/aboutlogo.png"
               width="300"
               height="30"
               className="md:-ml-10 mr-4 mix-blend-darken ml-2"
-            ></img>
+              alt="Collab photo of UoB university logo and the Proline taxi logo"
+            ></Image>
             <div className="flex flex-col gap-2">
               <h1 className="text-2xl font-bold text-gray-800 font-aleo text-center md:text-start text-shadow-lg/10">
                 Proline Taxi | University of Bristol

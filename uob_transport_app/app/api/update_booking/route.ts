@@ -16,6 +16,7 @@ export async function POST(req: Request) {
       { status: 200 }
     );
   } catch (error) {
+    console.error("There was an error when updating bookings.", error);
     return NextResponse.json(
       { success: false, error: "Failed to update booking status" },
       { status: 500 }

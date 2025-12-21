@@ -7,6 +7,7 @@ export async function GET() {
     const pendingBookings = await getPendingBookings();
     return NextResponse.json(pendingBookings, { status: 200 });
   } catch (error) {
+    console.error("There was an error fetching pending bookings.", error);
     return NextResponse.json(
       { error: "There was a problem fetching bookings." },
       { status: 500 }

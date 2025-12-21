@@ -29,7 +29,10 @@ describe("Faq page renders with all elements", () => {
   });
 
   test("images load correctly", () => {
-    const images = screen.getAllByRole("img");
+    const images = screen.getAllByTestId("logos");
     expect(images.length).toBe(3);
+    images.forEach(img => {
+      expect(img).toBeVisible();
+    });
   });
 });
