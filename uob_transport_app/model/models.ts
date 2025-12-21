@@ -19,10 +19,14 @@ export type Trip = {
   passenger_num: number;
   via: string;
   return_drop_loc: string;
+  PO: string;
+  airport: string;
+  flight_num: string;
 }
 
 export type BookingRecord = {
   booking_id: number;
+  additional_info: string;
   time_created: string;
   trip: Trip;
   booking_status: 'Approved' | 'Pending' | 'Rejected' | 'Cancelled';

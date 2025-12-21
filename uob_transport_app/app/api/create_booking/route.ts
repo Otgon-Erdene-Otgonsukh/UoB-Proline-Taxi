@@ -18,9 +18,11 @@ export async function POST(request: Request) {
         const returnTo = request_json["returnTo"].toString()
         const passenger_num = request_json["passengers"]
         const department = request_json["department"].toString()
+        const flight_num = request_json["flight_num"].toString()
+        const airport = request_json["airport"].toString()
 
         // Lat/lon fields are null as we introduce lat/lon automatically later on / vice versa.
-        await createBooking(user_id, pickup_loc, null, null, dropoff_loc, null, null, pickup_time, first_name, surname, email, tel_number, additional_info, via, returnTo, passenger_num, department);
+        await createBooking(user_id, pickup_loc, null, null, dropoff_loc, null, null, pickup_time, first_name, surname, email, tel_number, additional_info, via, returnTo, passenger_num, department, airport, flight_num);
         return NextResponse.json({ status: 200 });
     } catch (error) {
         console.log(error)
