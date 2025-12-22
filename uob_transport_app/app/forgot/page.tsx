@@ -33,25 +33,14 @@ export default function Forgot() {
       return;
     } else {
       sendResetEmail(mail).then(res => {
-        if (res.status === 200) {
-          res.json().then(data => {
-            console.log(data);
-            setAlterMessageMeta({
-              show: true,
-              status: 'success',
-              message: 'Code sent successfully! Check your email.'
-            })
+        res.json().then(data => {
+          console.log(data);
+          setAlterMessageMeta({
+            show: true,
+            status: 'success',
+            message: 'If you did not receive an email, please check your spam folder, or check the email you entered and try again.'
           })
-        } else {
-          res.json().then(data => {
-            console.log(data);
-            setAlterMessageMeta({
-              show: true,
-              status: 'error',
-              message: 'If you did not receive an email, please check your spam folder, or check the email you entered and try again.',
-            })
-          })
-        }
+        })
       })
     }
   };

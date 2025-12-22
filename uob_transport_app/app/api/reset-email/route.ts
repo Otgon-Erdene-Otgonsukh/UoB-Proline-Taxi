@@ -42,9 +42,9 @@ export async function POST(request: NextRequest) {
   const user = await getUserByEmailAccess(toEmail)
   if (!user) {
     return new Response(JSON.stringify({
-      message: 'User does not exist, please confirm the email you entered.'
+      message: 'If the email address exists, then the password reset link has been sent. If you did not receive it, please check your spam folder or check the email you entered'
     }), {
-      status: 201,
+      status: 200,
       headers: { 'Content-Type': 'application/json' },
     });
   }
@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
         replyTo: process.env.EMAIL_USERNAME,
       })
       return new Response(JSON.stringify({
-        message: 'send success'
+        message: 'If the email address exists, then the password reset link has been sent. If you did not receive it, please check your spam folder or check the email you entered'
       }), {
         status: 200,
         headers: { 'Content-Type': 'application/json' },
