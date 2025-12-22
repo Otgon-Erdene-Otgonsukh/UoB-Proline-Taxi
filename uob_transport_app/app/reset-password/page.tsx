@@ -1,7 +1,6 @@
 "use client";
-
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useSearchParams, useRouter, } from "next/navigation";
+import { ChangeEvent, useEffect, useState, Suspense } from "react";
 import {
   Box,
   Button,
@@ -10,54 +9,82 @@ import {
   Paper,
   InputAdornment,
   IconButton,
+  Snackbar,
+  Alert
 } from "@mui/material";
-import EmailIcon from "@mui/icons-material/Email";
-import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import { Snackbar, Alert } from "@mui/material";
-import { signIn } from "next-auth/react"
+import Visibility from "@mui/icons-material/Visibility";
+import { getUserResetByUuid, resetPassword } from "./request";
+import { user_reset } from "@/generated/prisma/client";
 
-export default function Log_forgot() {
+const Page = () => {
+  const searchParams = useSearchParams();
+  const uuid = searchParams.get('uuid')
+  console.log(uuid);
+
   const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const isMailEmpty = mail.length == 0;
-    const isPassEmpty = password.length == 0;
+  const [pageValid, setPageValid] = useState(true)
+  const [userReset, setUserReset] = useState<user_reset>()
 
-    setMailEmpty(isMailEmpty);
-    setPassEmpty(isPassEmpty);
+  useEffect(() => {
 
-    
-    if (!isMailEmpty && !isPassEmpty) {
-      // Use NextAuth for authentication, stores cookie automatically.
-      signIn('credentials', {
-        redirect: false, // Force NExtAuth not to redirect.
-        email: mail,
-        password: password,
-      }).then(res => {
+    if (uuid) {
+      getUserResetByUuid(uuid).then(res => {
         if (res.status !== 200) {
-          setSnackbarState({ open: true, status: 'fail' })
+          setPageValid(false)
         } else {
-          setSnackbarState({ open: true, status: 'success' })
-          router.push("/home");
+          res.json().then((data) => {
+            setUserReset(data)
+          })
         }
       })
+    } else {
+      setPageValid(false)
     }
-  };
 
-  const [showPassword, setShowPassword] = useState(false);
-  const [mail, setMail] = useState("");
-  const [password, setPassword] = useState("");
-  const [mailEmpty, setMailEmpty] = useState(false);
+  }, []);
+
   const [passEmpty, setPassEmpty] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [password, setPassword] = useState("");
+  const [confirmPassError, setConfirmPassError] = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
 
-  const handleForgotClick = () => {
-    router.push("/forgot");
+  const handleConfirmPasswordChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setConfirmPassword(e.target.value);
+    setConfirmPassError(e.target.value !== password)
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const isPassEmpty = password.length == 0;
+    const isConfirmPassWrong = confirmPassword !== password;
+
+    setPassEmpty(isPassEmpty);
+    setConfirmPassError(isConfirmPassWrong)
+    if (!isPassEmpty && !isConfirmPassWrong) {
+      resetPassword(uuid!, password).then(res => {
+        if (res.status === 200) {
+          setSnackbarState({
+            open: true,
+            status: 'success'
+          })
+          router.push('/login')
+        } else {
+          setSnackbarState({
+            open: true,
+            status: 'fail'
+          })
+        }
+      })
+
+    }
   }
 
   const [snackbarState, setSnackbarState] = useState({
@@ -72,23 +99,8 @@ export default function Log_forgot() {
     })
   }
 
-  return (
+  return pageValid ? (
     <div className="flex min-h-screen justify-center items-center font-inter p-4">
-      <Snackbar
-        autoHideDuration={2000}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-        open={snackbarState.open}
-        onClose={handleCloseSnackbarState}
-      >
-        <Alert
-          onClose={handleCloseSnackbarState}
-          severity={snackbarState.status === 'success' ? 'success' : 'error'}
-          variant="filled"
-          sx={{ width: '100%' }}
-        >
-          {snackbarState.status === 'success' ? 'Login success!' : 'Login failed! Try again'}
-        </Alert>
-      </Snackbar>
       <Paper
         elevation={3}
         sx={{
@@ -117,7 +129,7 @@ export default function Log_forgot() {
               fontFamily: "aleo",
             }}
           >
-            LOG IN
+            RESET PASSWORD
           </Typography>
         </Box>
 
@@ -130,51 +142,7 @@ export default function Log_forgot() {
             gap: 3,
             p: { xs: 4, sm: 5, md: 6 },
           }}
-        >          <TextField
-            fullWidth
-            error={mailEmpty}
-            helperText={mailEmpty ? "Enter email!" : ""}
-            label="Email"
-            id="email"
-            type="email"
-            value={mail}
-            onChange={(e) => {
-              setMail(e.target.value);
-            }}
-            sx={{
-              "& .MuiOutlinedInput-root": {
-                borderRadius: "0.375rem",
-                "& fieldset": {
-                  borderWidth: "2px",
-                  borderColor: "#111827",
-                },
-                "&:hover fieldset": {
-                  borderColor: "#111827",
-                },
-                "&.Mui-focused fieldset": {
-                  borderWidth: "2px",
-                  borderColor: "#111827",
-                },
-              },
-              "& .MuiInputLabel-root": {
-                fontSize: "0.875rem",
-                color: "#111827",
-                "&.Mui-focused": {
-                  color: "#111827",
-                },
-              },
-            }}
-            slotProps={{
-              input: {
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <EmailIcon sx={{ color: "#111827" }} />
-                  </InputAdornment>
-                ),
-              },
-            }}
-          />
-
+        >
           <TextField
             fullWidth
             error={passEmpty}
@@ -231,20 +199,59 @@ export default function Log_forgot() {
             }}
           />
 
-          <Box sx={{ textAlign: "left"}}>
-            <Button variant="text" onClick={handleForgotClick}
-              sx={{
-                fontSize: "0.875rem",
-                textTransform: "capitalize",
-                color: "#111827",
-                "&:hover": {
-                  color: "#374151",
+          <TextField
+            fullWidth
+            error={confirmPassError}
+            helperText={confirmPassError ? "Confirm password should be the same as the password" : ""}
+            label="Confirm password"
+            id="password"
+            type={showPassword ? "text" : "password"}
+            value={confirmPassword}
+            onChange={handleConfirmPasswordChange}
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                borderRadius: "0.375rem",
+                "& fieldset": {
+                  borderWidth: "2px",
+                  borderColor: "#111827",
                 },
-              }}
-            >
-              Forgot password?
-            </Button>
-          </Box>
+                "&:hover fieldset": {
+                  borderColor: "#111827",
+                },
+                "&.Mui-focused fieldset": {
+                  borderWidth: "2px",
+                  borderColor: "#111827",
+                },
+              },
+              "& .MuiInputLabel-root": {
+                fontSize: "0.875rem",
+                color: "#111827",
+                "&.Mui-focused": {
+                  color: "#111827",
+                },
+              },
+            }}
+            slotProps={{
+              input: {
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label={
+                        showPassword
+                          ? "hide the password"
+                          : "display the password"
+                      }
+                      onClick={handleClickShowPassword}
+                      edge="end"
+                      sx={{ color: "#111827", mr: -1 }}
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              },
+            }}
+          />
 
           <Button
             fullWidth
@@ -264,10 +271,32 @@ export default function Log_forgot() {
               transition: "all 0.2s",
             }}
           >
-            LOG IN
+            RESET PASSWORD
           </Button>
         </Box>
       </Paper>
+      <Snackbar
+        autoHideDuration={2000}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        open={snackbarState.open}
+        onClose={handleCloseSnackbarState}
+      >
+        <Alert
+          onClose={handleCloseSnackbarState}
+          severity={snackbarState.status === 'success' ? 'success' : 'error'}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {snackbarState.status === 'success' ? 'Reset Password Success!' : 'Reset password failed! Try again later!'}
+        </Alert>
+      </Snackbar>
     </div>
-  );
+  ) : (
+    <div className="flex min-h-screen justify-center items-center font-inter p-4">
+      <h1 className="inline-block mr-1 pr-1 font-medium font-aleo">404 | This page has been expired</h1>
+    </div>
+  )
+
 }
+
+export default Page;

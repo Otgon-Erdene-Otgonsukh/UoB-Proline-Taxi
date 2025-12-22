@@ -1,4 +1,4 @@
-export function uuid() {
+export function generateUuid() {
   let uuidValue = "", k, randomValue;
   for (k = 0; k < 32; k++) {
     randomValue = Math.random() * 16 | 0;

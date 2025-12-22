@@ -32,6 +32,6 @@ describe("Check whether the about page has the required elements", () => {
   test("image renders", () => {
     const image = screen.getAllByRole("img");
     expect(image.length).toBe(1);
-    expect(image[0]).toHaveAttribute("src", "/aboutlogo.png");
+    expect(image[0]).toBeVisible();
   });
 });

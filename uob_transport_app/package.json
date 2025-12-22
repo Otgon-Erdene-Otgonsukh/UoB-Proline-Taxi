@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "jest"
+    "test": "jest --silent"
   },
   "dependencies": {
     "@base-ui-components/react": "^1.0.0-beta.4",
@@ -20,6 +20,7 @@
     "framer-motion": "^12.23.24",
     "next": "^15.5.7",
     "next-auth": "^5.0.0-beta.30",
+    "nodemailer": "^7.0.11",
     "react": "19.1.0",
     "react-dom": "19.1.0"
   },
