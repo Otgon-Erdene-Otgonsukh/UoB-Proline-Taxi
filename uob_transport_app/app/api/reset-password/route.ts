@@ -1,6 +1,6 @@
 import { updateUserPassowrdAccess } from "@/backend/access/user_access";
 import { getUserResetByUuidAccess, deleteUserResetAccess } from "@/backend/access/user_reset_access";
-
+import bcrypt from "bcryptjs"
 import { NextRequest } from "next/server";
 
 export async function POST(request: NextRequest) {
