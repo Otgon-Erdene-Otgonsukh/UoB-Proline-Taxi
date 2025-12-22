@@ -8,10 +8,31 @@ export async function POST(request: NextRequest) {
   const uuid = requestJson['uuid']
   const newPassword = requestJson['password']
 
+  // Server side validaion length check.
+  if (newPassword.length < 1) {
+    return new Response(JSON.stringify({
+      message: 'Password too short.'
+    }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  } else if (newPassword.length > 64) {
+    return new Response(JSON.stringify({
+      message: 'Password too long.'
+    }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  // Hash the inputted password.
+  const hashRounds = 10;
+  const hashedPassword = await bcrypt.hash(newPassword, hashRounds);
+
   const userReset = await getUserResetByUuidAccess(uuid)
 
   if (userReset && userReset.expired_at > new Date()) {
-    await updateUserPassowrdAccess(userReset.email, newPassword)
+    await updateUserPassowrdAccess(userReset.email, hashedPassword)
     // delete the user reset record when the password has been changed
     await deleteUserResetAccess(userReset.id)
     return new Response(JSON.stringify({
