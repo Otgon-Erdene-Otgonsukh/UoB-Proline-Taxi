@@ -42,7 +42,7 @@ export default async function createBooking(
     });
 
     // Create a booking entry.
-    const booking = await prisma.booking.create({
+    await prisma.booking.create({
         data: {
             user_id: userID,
             trip_id: trip.trip_id,

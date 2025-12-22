@@ -25,6 +25,7 @@ export async function POST(request: NextRequest) {
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {
+    console.error('Error canceling booking:', error);
     return new Response(JSON.stringify({
       message: 'update failed, please try again later'
     }), {

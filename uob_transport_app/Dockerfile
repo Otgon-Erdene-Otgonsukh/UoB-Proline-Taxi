@@ -14,10 +14,6 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Pass env vars needed for build (Neon / Prisma)
-ARG DATABASE_URL
-ENV DATABASE_URL=${DATABASE_URL}
-
 # Generate Prisma schema and files.
 RUN npx prisma generate
 
