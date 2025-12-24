@@ -108,3 +108,14 @@ jest.mock("module to be mocked", () => ({
 }))
 ```
 The above code snippet mocks the module and replaces one of the methods in the module `functions_in_the_module` with a mock function `jest.fn()`. Thus we can now decide what the behaviour of the function should be and test it agains that.
+
+## Github Actions (CI/CD)
+[![Static Badge](https://img.shields.io/badge/Github%20Actions-2088FF?style=for-the-badge&logo=Github%20Actions&logoColor=white)
+](https://docs.github.com/en/actions/get-started/understand-github-actions)
+
+Github Actions is a platform that is integrated into github that allows developers to implement and automate their CI/CD workflow right in github. This is done through creating a `workflows` folder in `/.github` directory, in which the workflow `.yml` files that trigger the github actions workflow are located. Further information of the structure and format of these workflow files can be found in the github actions docs page which can be accessed by clicking on the badge above.
+### CI (Continuous Integration)
+The `ci.yml` we have is composed of several steps including locating cache for faster rebuilds, linting, running the jest tests and building the project. It is triggered (can be observed <a href="https://github.com/spe-uob/2025-UoBsustainableTransport/actions">here</a>) when changes are pushed or when PR is created to both `main` and `dev` branches. Basically, these workflows when triggered, creates a VM and accesses the repository and installs the dependencies and runs all the defined steps in order. It is equivalent to us just running the steps one by one in our terminals to test if the project is working as intended, github actions allows us to automate that process.
+
+> [!IMPORTANT]
+> Note that when a PR is created, the workflow file that is triggered and run is the one on the PR branch and not the one on `dev` or `main`.
