@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, redirect } from "next/navigation";
 import {
   Button,
   createTheme,
@@ -13,8 +13,10 @@ import {
   FormHelperText,
   Checkbox,
   FormControlLabel,
+  CircularProgress
 } from "@mui/material";
 import NumberField from "@/components/NumberField";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 
 export default function BookingPage() {
@@ -27,10 +29,19 @@ export default function BookingPage() {
     "Physics Building",
   ];
 
+  const session = useSession();
+
+  if (!session) {
+    // protected page
+    redirect("/login");
+  }
+
   const [isManualChecked, setIsManualChecked] = useState(false);
   const [isFlightChecked, setIsFlightChecked] = useState(false);
   const [isViaChecked, setIsViaChecked] = useState(false);
   const [isReturnChecked, setIsReturnChecked] = useState(false);
+  const [phoneCode, setPhoneCode] = useState("+44");
+  const [loadingBar, setLoadingBar] = useState(false);
 
   // Set error messages visible next to fields, default "" (empty) for hide.
   const [formFeedback, setFormFeedback] = useState({
@@ -235,15 +246,16 @@ export default function BookingPage() {
 
     // fail == false if all validation succeeds, then post the request.
     if (fail == false) {
+      setLoadingBar(true);
       const jsonBody = {
-        user_id: 1,
+        user_id: session.data?.user.user_id,
         pickup_location: loc,
         dropoff_location: formData.DropoffLoc,
         pickup_time: pickupDateTime,
         first_name: formData.FirstName,
         surname: formData.Surname,
         email: formData.Email,
-        tel_number: formData.Number,
+        tel_number: phoneCode + " " + formData.Number,
         additional_info: formData.AdditionalInfo,
         via: formData.Via,
         returnTo: formData.ReturnTo,
@@ -399,7 +411,7 @@ export default function BookingPage() {
                     onChange={(e) => setIsManualChecked(e.target.checked)}
                     className="sr-only peer"
                   />
-                  <div className="relative w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-gray-300 peer-checked:bg-[#4a4a4a] peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+                  <div className="relative w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-gray-300 peer-checked:bg-[#4a4a4a] peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
                 </label>
                 <label
                   htmlFor="flight"
@@ -415,7 +427,7 @@ export default function BookingPage() {
                     onChange={(e) => setIsFlightChecked(e.target.checked)}
                     className="sr-only peer"
                   />
-                  <div className="relative w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-gray-300 peer-checked:bg-[#4a4a4a] peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+                  <div className="relative w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-gray-300 peer-checked:bg-[#4a4a4a] peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
                 </label>
                 <label
                   htmlFor="via"
@@ -429,7 +441,7 @@ export default function BookingPage() {
                     onChange={(e) => setIsViaChecked(e.target.checked)}
                     className="sr-only peer"
                   />
-                  <div className="relative w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-gray-300 peer-checked:bg-[#4a4a4a] peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+                  <div className="relative w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-gray-300 peer-checked:bg-[#4a4a4a] peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
                 </label>
               </div>
               {isViaChecked && !isManualChecked && !isFlightChecked && (
@@ -712,7 +724,12 @@ export default function BookingPage() {
                   Phone number
                 </label>
                 <div className="flex gap-2">
-                  <select className="border-2 rounded px-2 py-2">
+                  <select
+                    className="border-2 rounded px-2 py-2"
+                    onChange={(e) => {
+                      setPhoneCode(e.target.value);
+                    }}
+                  >
                     <option value="+44">+44 (UK)</option>
                     <option value="+1">+1 (US/CA)</option>
                     <option value="+91">+91 (IN)</option>
@@ -799,7 +816,7 @@ export default function BookingPage() {
                 </label>
                 <textarea
                   id="addInfo"
-                  className={`border-2 rounded px-3 py-2 min-h-[80px] ${
+                  className={`border-2 rounded px-3 py-2 min-h-20 ${
                     formFeedback.AdditionalInfo == "" ? "" : "border-red-700"
                   }`}
                   onChange={(e) => {
@@ -834,7 +851,7 @@ export default function BookingPage() {
                     fontSize: "0.875rem",
                   }}
                 >
-                  Confirm Booking
+                  {loadingBar ? <CircularProgress color="inherit" size="30px"/> : "Confirm Booking"}
                 </Button>
               </div>
             </div>

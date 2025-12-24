@@ -200,6 +200,7 @@ dist
 
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
+.vscode
 
 # yarn v3
 .pnp.*
@@ -242,3 +243,4 @@ next-env.d.ts
 # production
 /build
 /uob_transport_app/generated/prisma
+/generated/prisma
