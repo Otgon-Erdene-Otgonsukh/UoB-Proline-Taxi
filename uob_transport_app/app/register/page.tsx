@@ -25,10 +25,19 @@ import CheckIcon from "@mui/icons-material/Check";
 import LocalPhoneIcon from "@mui/icons-material/LocalPhone";
 import ApartmentIcon from "@mui/icons-material/Apartment";
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
 import { redirect } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 export default function Register() {
+
+  const session = useSession();
+
+  if(session.data) { // if user is logged in, protect this route
+    redirect("/home");
+  }
+
   const [normalUser, setNormalUser] = useState(false);
   const [financeStaff, setFinanceStaff] = useState(false);
   const [proLineStaff, setProLineStaff] = useState(false);
@@ -600,6 +609,7 @@ export default function Register() {
                 >
                   {loadingBar ? <CircularProgress data-testid="loadingBar" color="inherit" size="30px"/> : "Sign up"}
                 </Button>
+                <span id="login redirect" className="font-inter text-sm text-center">Already have an account?<Link href="/login" className="text-blue-500"> Log in.</Link></span>
               </form>
             </ThemeProvider>
           </div>
