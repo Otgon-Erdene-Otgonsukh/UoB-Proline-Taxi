@@ -82,4 +82,29 @@ npx prisma db push
 ## Jest for Testing
 [![Jest](https://img.shields.io/badge/Jest-C21325?style=for-the-badge&logo=Jest)](https://jestjs.io/)
 
+Jest is a javascript testing framework that provides convenient methods to test React components and Node server side code behaviours. Jest provides two main testing environments and those are:
 
+ - Node (API testing)
+ - Jsdom (default) (Component render testing)
+
+The test files of the project is stored in a special `__test__` directory and are categorized into two sub-folders `/api` for api tests and `/pages` for component rendering tests.
+
+### Component rendering tests
+The testing library provides 5 main functions that helps with rendering tests and those are `expect`, `screen`, `render`, `describe` and `test`. The first three are used to render a component into the virtual dom which is basically a test browser that jest operates in, and `screen` is used to extract certain html elements from the dom to be tested for with `expect`. The last two are used to organize the test files to maintain structure. Use `describe` to bundle together multiple `test` functions to be displayed in a clean group when `npm test` command is executed to run all tests.
+### API tests
+Since the `fetch` function which is provided by node.js is needed to simulate API calls, we need to change the jest testing environment from the default jsdom to node. This can be done by declaring the test environment at the top of api test files with:
+``` ts
+/**
+ * @jest-environment node
+ */
+```
+Now all the features and functions provided by node is available to be used in the test. 
+
+### Mocking for Unit tests
+Since we are mainly focusing on unit tests, to test the api endpoints, we need to mock the modules or prisma functions that is needed to create fake versions of those we can control the behaviour. Thus basically, we have to provide fake versions of the modules that are imported and used by the API. Thus we use:
+``` ts
+jest.mock("module to be mocked", () => ({
+    functions_in_the_module: jest.fn()
+}))
+```
+The above code snippet mocks the module and replaces one of the methods in the module `functions_in_the_module` with a mock function `jest.fn()`. Thus we can now decide what the behaviour of the function should be and test it agains that.
