@@ -119,3 +119,38 @@ The `ci.yml` we have is composed of several steps including locating cache for f
 
 > [!IMPORTANT]
 > Note that when a PR is created, the workflow file that is triggered and run is the one on the PR branch and not the one on `dev` or `main`.
+
+## Auth.js
+For user authentication and session management, we used Auth.js which integrates well with next.js projects and provides automatic cookie management, easy sign in and sign out functionalities. 
+
+### `/auth.ts` file
+This file contains the main function that is used to create the `signOut`, `signIn` and `auth` functions which makes the processes easier. There are also callback functions to set the jwt and session data to the necessary user details that are used to be displayed in the page for example.
+
+### `AUTH_SECRET` environment variable
+This is a must have environment variable that can be created by running:
+
+``` sh
+npx auth secret
+```
+This command creates a `.env.local` file with the variable in it and you should copy it and move it to your local  `.env` file. This secret key is used to encrypt the JWT to prevent people from tampering with the token and breaking active session cookies stored in the browser.
+
+### Accessing session data
+To extract information from the active session, if you want to access the session from a client-side page, the `useSession` hook from the module `next-auth/react` returns the active session object from the browser cookie storage. The actual session data is accessed by:
+
+``` ts
+const sessionObj = useSession();
+const session = sessionObj.data;
+// or alternatively
+// const { data: session } = useSession();
+const username = session.user.name; 
+...
+```
+As for accessing session from a server side component, we can use the provided `auth` function from the file `@/auth` that was discussed above. The session is extracted as follows:
+
+``` ts
+const session = await auth(); // auth is an asynchronous function
+const username = session.user.name;
+```
+
+> [!TIP]
+> The object structure of the session object and what information is stored within it can be found in the file `/types/next-auth.d.ts`.
