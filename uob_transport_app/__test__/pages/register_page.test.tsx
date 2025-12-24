@@ -3,6 +3,16 @@ import { screen, render, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import Register from "@/app/register/page";
 
+jest.mock("next/navigation", () => ({
+  redirect: jest.fn()
+}))
+
+jest.mock("next-auth/react", () => ({
+  useSession: jest.fn(() => ({
+    data: true,
+  }))
+}))
+
 describe("Register page rendering test", () => {
   beforeEach(() => {
     render(<Register />);
