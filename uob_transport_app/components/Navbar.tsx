@@ -13,6 +13,11 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import Logout from '@mui/icons-material/Logout';
 import Avatar from '@mui/material/Avatar';
 import Divider from '@mui/material/Divider';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 
 export const Navbar = () => {
   const router = useRouter();
@@ -41,9 +46,18 @@ export const Navbar = () => {
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
+
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  const [signoutDialogOpen, setSignoutDialogOpen] = useState(false)
+  const handleLogout = () => {
+    setSignoutDialogOpen(true)
+  }
+  const handleCloseSignoutDialog = () => {
+    setSignoutDialogOpen(false)
+  }
 
   return (
     <nav className="bg-[#2C2C2C] text-white w-full p-6 sm:p-4 md:justify-start">
@@ -143,13 +157,34 @@ export const Navbar = () => {
                   Profile
                 </MenuItem>
                 <Divider />
-                <MenuItem onClick={handleClose}>
+                <MenuItem onClick={handleLogout}>
                   <ListItemIcon>
                     <Logout fontSize="small" />
                   </ListItemIcon>
                   Logout
                 </MenuItem>
               </Menu>
+              <Dialog
+                open={signoutDialogOpen}
+                onClose={handleCloseSignoutDialog}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+              >
+                <DialogTitle id="alert-dialog-title">
+                  {"Sign out confirmation"}
+                </DialogTitle>
+                <DialogContent>
+                  <DialogContentText id="alert-dialog-description">
+                    Are you sure you want to sign out?
+                  </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={handleCloseSignoutDialog}>Cancel</Button>
+                  <Button onClick={handleCloseSignoutDialog} autoFocus>
+                    Yes
+                  </Button>
+                </DialogActions>
+              </Dialog>
             </div>
           ) : (
             <Button variant="contained" onClick={handleLoginClick}
