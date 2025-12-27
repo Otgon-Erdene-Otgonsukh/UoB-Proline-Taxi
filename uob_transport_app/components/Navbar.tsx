@@ -12,6 +12,7 @@ import { useSession } from "next-auth/react";
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Logout from '@mui/icons-material/Logout';
 import Avatar from '@mui/material/Avatar';
+import Divider from '@mui/material/Divider';
 
 export const Navbar = () => {
   const router = useRouter();
@@ -141,6 +142,7 @@ export const Navbar = () => {
                   <Avatar />
                   Profile
                 </MenuItem>
+                <Divider />
                 <MenuItem onClick={handleClose}>
                   <ListItemIcon>
                     <Logout fontSize="small" />
