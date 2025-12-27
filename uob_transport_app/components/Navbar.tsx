@@ -47,7 +47,7 @@ export const Navbar = () => {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleClose = () => {
+  const handleCloseMenu = () => {
     setAnchorEl(null);
   };
 
@@ -57,6 +57,9 @@ export const Navbar = () => {
   }
   const handleCloseSignoutDialog = () => {
     setSignoutDialogOpen(false)
+  }
+  const handleSignout = () => {
+
   }
 
   return (
@@ -120,7 +123,7 @@ export const Navbar = () => {
                 id="basic-menu"
                 anchorEl={anchorEl}
                 open={open}
-                onClose={handleClose}
+                onClose={handleCloseMenu}
                 slotProps={{
                   paper: {
                     elevation: 0,
@@ -152,7 +155,7 @@ export const Navbar = () => {
                 transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
               >
-                <MenuItem onClick={handleClose}>
+                <MenuItem onClick={handleCloseMenu}>
                   <Avatar />
                   Profile
                 </MenuItem>
@@ -180,9 +183,7 @@ export const Navbar = () => {
                 </DialogContent>
                 <DialogActions>
                   <Button onClick={handleCloseSignoutDialog}>Cancel</Button>
-                  <Button onClick={handleCloseSignoutDialog} autoFocus>
-                    Yes
-                  </Button>
+                  <Button onClick={handleSignout} autoFocus>Yes</Button>
                 </DialogActions>
               </Dialog>
             </div>
