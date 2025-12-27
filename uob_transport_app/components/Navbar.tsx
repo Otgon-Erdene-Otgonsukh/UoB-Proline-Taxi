@@ -52,7 +52,7 @@ export const Navbar = () => {
   };
 
   const [signoutDialogOpen, setSignoutDialogOpen] = useState(false)
-  const handleLogout = () => {
+  const handleOpenSiagnoutDialog = () => {
     setSignoutDialogOpen(true)
   }
   const handleCloseSignoutDialog = () => {
@@ -157,7 +157,7 @@ export const Navbar = () => {
                   Profile
                 </MenuItem>
                 <Divider />
-                <MenuItem onClick={handleLogout}>
+                <MenuItem onClick={handleOpenSiagnoutDialog}>
                   <ListItemIcon>
                     <Logout fontSize="small" />
                   </ListItemIcon>
