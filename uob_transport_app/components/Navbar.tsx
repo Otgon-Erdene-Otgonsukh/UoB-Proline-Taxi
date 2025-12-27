@@ -3,6 +3,9 @@
 import Link from "next/link";
 import Image from "next/image";
 import Button from '@mui/material/Button';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import { useState } from 'react'
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
@@ -27,6 +30,17 @@ export const Navbar = () => {
   const isActive = (path: string) => {
     return currentPath === path;
   }
+
+  // Dropdown menu when click on the welcome message
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
   return (
     <nav className="bg-[#2C2C2C] text-white w-full p-6 sm:p-4 md:justify-start">
       <div className="flex justify-between items-center">
@@ -67,34 +81,51 @@ export const Navbar = () => {
         </div>
         {/* Links */}
         <ul className="hidden lg:flex lg:items-center gap-12">
-        {pages.map((page, index) => (
-          <li key={index}>
-            <Link
-              href={page.path}
-              className={"text-lg hover:text-gray-300 relative group flex items-center gap-2"}
-            >
-              <Image src={`${index === 0 ? "/Home-cropped.svg" : index === 1 ? "/dashboard.svg" : index === 2 ? "/Info.svg" : "/help.svg"}`} className={`${(index === 1 || index === 0) && "mb-1 w-[14px] h-[14px]"}`} width={15} height={15} alt="Tab logos"></Image>
-              {page.name}
-              <span className={`absolute -bottom-0.5 left-1/2 h-0.5 bg-white transition-all duration-300 transform -translate-x-1/2 ${isActive(page.path) ? 'w-full' : 'w-0 group-hover:w-full group-hover:bg-gray-300'}`}></span>
-            </Link>
-          </li>
-        ))}
-      </ul>
+          {pages.map((page, index) => (
+            <li key={index}>
+              <Link
+                href={page.path}
+                className={"text-lg hover:text-gray-300 relative group flex items-center gap-2"}
+              >
+                <Image src={`${index === 0 ? "/Home-cropped.svg" : index === 1 ? "/dashboard.svg" : index === 2 ? "/Info.svg" : "/help.svg"}`} className={`${(index === 1 || index === 0) && "mb-1 w-[14px] h-[14px]"}`} width={15} height={15} alt="Tab logos"></Image>
+                {page.name}
+                <span className={`absolute -bottom-0.5 left-1/2 h-0.5 bg-white transition-all duration-300 transform -translate-x-1/2 ${isActive(page.path) ? 'w-full' : 'w-0 group-hover:w-full group-hover:bg-gray-300'}`}></span>
+              </Link>
+            </li>
+          ))}
+        </ul>
         <div className="pr-6">
           {session ? (
-            <span className="text-lg">Hi, {session.user?.name}!</span>
+            <div>
+              <Button className="text-lg" onClick={handleClick}>Hi, {session.user?.name}!</Button>
+              <Menu
+                id="basic-menu"
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
+                slotProps={{
+                  list: {
+                    'aria-labelledby': 'basic-button',
+                  },
+                }}
+              >
+                <MenuItem onClick={handleClose}>Profile</MenuItem>
+                <MenuItem onClick={handleClose}>My account</MenuItem>
+                <MenuItem onClick={handleClose}>Logout</MenuItem>
+              </Menu>
+            </div>
           ) : (
-          <Button variant="contained" onClick={handleLoginClick}
-            sx={{
-              backgroundColor: 'white',
-              color: 'black',
-              '&:hover': {
-                backgroundColor: '#d1d5db',
-              },
-            }}
-          >
-            Login
-          </Button>)}
+            <Button variant="contained" onClick={handleLoginClick}
+              sx={{
+                backgroundColor: 'white',
+                color: 'black',
+                '&:hover': {
+                  backgroundColor: '#d1d5db',
+                },
+              }}
+            >
+              Login
+            </Button>)}
         </div>
       </div>
     </nav>
