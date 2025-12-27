@@ -8,7 +8,7 @@ import MenuItem from '@mui/material/MenuItem';
 import { useState } from 'react'
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Logout from '@mui/icons-material/Logout';
 import Avatar from '@mui/material/Avatar';
@@ -59,7 +59,7 @@ export const Navbar = () => {
     setSignoutDialogOpen(false)
   }
   const handleSignout = () => {
-
+    signOut({ callbackUrl: '/home ' })
   }
 
   return (
