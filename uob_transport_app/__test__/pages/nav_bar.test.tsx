@@ -2,12 +2,17 @@ import { Navbar } from "@/components/Navbar";
 import "@testing-library/jest-dom";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { useSession } from "next-auth/react";
+import type { ReactNode } from "react";
+import type { SignOutParams } from "next-auth/react";
 
 // ---- mocks ----
 // mock next/link
 jest.mock("next/link", () => ({
   __esModule: true,
-  default: ({ href, children }: any) => <a href={href}>{children}</a>,
+  default: ({ href, children }: {
+    href: string;
+    children: ReactNode;
+  }) => <a href={href}>{children}</a>,
 }));
 
 // mock next/navigation
@@ -23,7 +28,7 @@ jest.mock("next/navigation", () => ({
 const signOutMock = jest.fn();
 jest.mock("next-auth/react", () => ({
   useSession: jest.fn(),
-  signOut: (args: any) => signOutMock(args),
+  signOut: (args: SignOutParams) => signOutMock(args),
 }));
 
 describe("Navbar", () => {
