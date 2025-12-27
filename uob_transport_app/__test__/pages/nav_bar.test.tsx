@@ -94,6 +94,31 @@ describe("Navbar", () => {
     });
   });
 
+  test("opens sign-out confirmation dialog when clicking Logout", async () => {
+    (useSession as jest.Mock).mockReturnValue({
+      data: {
+        user: {
+          name: "Alice",
+        },
+      },
+    });
+
+    render(<Navbar />);
+
+    fireEvent.click(screen.getByText("Hi, Alice!"));
+
+    const logoutItem = await screen.findByText("Logout");
+    fireEvent.click(logoutItem);
+
+    expect(
+      await screen.findByText("Sign out confirmation")
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("Are you sure you want to sign out?")
+    ).toBeInTheDocument();
+  });
+
 });
 
 
