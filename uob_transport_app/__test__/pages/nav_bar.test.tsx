@@ -1,6 +1,6 @@
 import { Navbar } from "@/components/Navbar";
 import "@testing-library/jest-dom";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { useSession } from "next-auth/react";
 
 // ---- mocks ----
@@ -48,6 +48,17 @@ describe("Navbar", () => {
 
     const loginButton = screen.getByRole("button", { name: /login/i });
     expect(loginButton).toBeInTheDocument();
+  });
+
+  test("clicking login button redirects to /login", () => {
+    (useSession as jest.Mock).mockReturnValue({ data: null });
+
+    render(<Navbar />);
+
+    const loginButton = screen.getByRole("button", { name: /login/i });
+    fireEvent.click(loginButton);
+
+    expect(pushMock).toHaveBeenCalledWith("/login");
   });
 
 });
