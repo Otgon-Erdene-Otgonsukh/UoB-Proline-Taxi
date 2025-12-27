@@ -61,6 +61,20 @@ describe("Navbar", () => {
     expect(pushMock).toHaveBeenCalledWith("/login");
   });
 
+  test("renders user menu when session exists", () => {
+    (useSession as jest.Mock).mockReturnValue({
+      data: {
+        user: {
+          name: "Alice",
+        },
+      },
+    });
+
+    render(<Navbar />);
+
+    expect(screen.getByText("Hi, Alice!")).toBeInTheDocument();
+  });
+
 });
 
 
