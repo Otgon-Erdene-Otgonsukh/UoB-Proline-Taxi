@@ -75,7 +75,7 @@ describe("Navbar", () => {
     expect(screen.getByText("Hi, Alice!")).toBeInTheDocument();
   });
 
-  test("opens dropdown menu when clicking on user greeting", async () => {
+  test("opens dropdown menu when clicking on welcome page", async () => {
     (useSession as jest.Mock).mockReturnValue({
       data: {
         user: {
