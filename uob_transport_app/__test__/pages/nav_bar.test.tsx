@@ -1,6 +1,6 @@
 import { Navbar } from "@/components/Navbar";
 import "@testing-library/jest-dom";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { useSession } from "next-auth/react";
 
 // ---- mocks ----
@@ -73,6 +73,25 @@ describe("Navbar", () => {
     render(<Navbar />);
 
     expect(screen.getByText("Hi, Alice!")).toBeInTheDocument();
+  });
+
+  test("opens dropdown menu when clicking on user greeting", async () => {
+    (useSession as jest.Mock).mockReturnValue({
+      data: {
+        user: {
+          name: "Alice",
+        },
+      },
+    });
+
+    render(<Navbar />);
+
+    fireEvent.click(screen.getByText("Hi, Alice!"));
+
+    await waitFor(() => {
+      expect(screen.getByText("Profile")).toBeInTheDocument();
+      expect(screen.getByText("Logout")).toBeInTheDocument();
+    });
   });
 
 });
