@@ -119,6 +119,23 @@ describe("Navbar", () => {
     ).toBeInTheDocument();
   });
 
+  test("confirms sign out when clicking Yes", async () => {
+    (useSession as jest.Mock).mockReturnValue({
+      data: {
+        user: {
+          name: "Alice",
+        },
+      },
+    });
+
+    render(<Navbar />);
+
+    fireEvent.click(screen.getByText("Hi, Alice!"));
+    fireEvent.click(await screen.findByText("Logout"));
+    fireEvent.click(await screen.findByRole("button", { name: "Yes" }));
+
+    expect(signOutMock).toHaveBeenCalledWith({ callbackUrl: "/home " });
+  });
 });
 
 
