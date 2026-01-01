@@ -13,7 +13,7 @@ import {
   CircularProgress,
   Snackbar,
   Alert,
-  AlertProps
+  AlertProps,
 } from "@mui/material";
 import EmailIcon from "@mui/icons-material/Email";
 import Visibility from "@mui/icons-material/Visibility";
@@ -31,10 +31,10 @@ import { redirect } from "next/navigation";
 import { useSession } from "next-auth/react";
 
 export default function Register() {
-
   const session = useSession();
 
-  if(session.data) { // if user is logged in, protect this route
+  if (session.data) {
+    // if user is logged in, protect this route
     redirect("/home");
   }
 
@@ -59,9 +59,11 @@ export default function Register() {
   const [usernameEmpty, setUsernameEmpty] = useState(false);
   const [phoneNumberEmpty, setPhoneNumberEmpty] = useState(false);
   const [departmentEmpty, setDepartmentEmpty] = useState(false);
+  const [prolineMailError, setProlineMailError] = useState(false);
+  const [financeStaffMailError, setFinanceStaffMailError] = useState(false);
   const [phoneCode, setPhoneCode] = useState("+44");
   const [loadingBar, setLoadingBar] = useState(false);
-  const [snackState, setSnackState] = useState({open: false, severity: ""});
+  const [snackState, setSnackState] = useState({ open: false, severity: "" });
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -111,8 +113,20 @@ export default function Register() {
 
     let hasError = false;
 
-    if (emailRegex.test(mail) === false && mail.length !== 0) {
+    if (emailRegex.test(mail) === false && mail.length !== 0 && normalUser) {
       setEmailError(true);
+      hasError = true;
+    }
+    if (financeStaff && !mail.endsWith("@bristol.ac.uk") && mail.length !== 0) {
+      setFinanceStaffMailError(true);
+      hasError = true;
+    }
+    if (
+      proLineStaff &&
+      !mail.endsWith("@prolinetaxi.com") &&
+      mail.length !== 0
+    ) {
+      setProlineMailError(true);
       hasError = true;
     }
     if (mail.length === 0) {
@@ -143,7 +157,7 @@ export default function Register() {
       setPhoneNumberEmpty(true);
       hasError = true;
     }
-    if (department.length === 0) {
+    if (department.length === 0 && (normalUser || financeStaff)) {
       setDepartmentEmpty(true);
       hasError = true;
     }
@@ -175,12 +189,17 @@ export default function Register() {
       fetch("api/create_user", { method: "POST", body: JSON.stringify(body) })
         .then((res) => res.json())
         .then((data) => {
-          if (data.status === 200) {
-            setSnackState({open: true, severity: "success"});
-            redirect("/login");
+          if (data.status === 200 && normalUser) {
+            setSnackState({ open: true, severity: "success" });
+            setTimeout(() => {
+              // Giving time to display the success message to inform the user
+              redirect("/login");
+            }, 3000);
+          } else if (data.status === 200 && (financeStaff || proLineStaff)) {
+            redirect("/register-req");
           } else {
             setLoadingBar(false);
-            setSnackState({open: true, severity: "error"});
+            setSnackState({ open: true, severity: "error" });
           }
         });
     }
@@ -307,8 +326,13 @@ export default function Register() {
                 </div>
                 <TextField
                   fullWidth
+                  disabled={proLineStaff ? true : false}
                   error={departmentEmpty}
-                  helperText={departmentEmpty ? "Please enter department" : ""}
+                  helperText={
+                    departmentEmpty
+                      ? "Please enter department"
+                      : "For ProLine staffs, please ignore this field."
+                  }
                   label="Department"
                   id="department"
                   type="text"
@@ -328,12 +352,21 @@ export default function Register() {
                 />
                 <TextField
                   fullWidth
-                  error={emailError || emailEmpty}
+                  error={
+                    emailError ||
+                    emailEmpty ||
+                    prolineMailError ||
+                    financeStaffMailError
+                  }
                   helperText={
                     emailError
                       ? "Enter a valid email"
                       : emailEmpty
                       ? "Please enter an email"
+                      : prolineMailError
+                      ? "Enter a valid company email"
+                      : financeStaffMailError
+                      ? "Enter a valid university email"
                       : ""
                   }
                   label="Email"
@@ -343,6 +376,8 @@ export default function Register() {
                     setMail(e.target.value);
                     setEmailError(false);
                     setEmailEmpty(false);
+                    setFinanceStaffMailError(false);
+                    setProlineMailError(false);
                   }}
                   slotProps={{
                     input: {
@@ -533,6 +568,7 @@ export default function Register() {
                       }}
                       onClick={() => {
                         setProLineStaff(!proLineStaff);
+                        setDepartmentEmpty(false);
                         setNormalUser(false);
                         setFinanceStaff(false);
                         setNoRole(false);
@@ -593,20 +629,44 @@ export default function Register() {
                     transition: "all 0.2s",
                   }}
                 >
-                  {loadingBar ? <CircularProgress color="inherit" size="30px"/> : "Sign up"}
+                  {loadingBar ? (
+                    <CircularProgress color="inherit" size="30px" />
+                  ) : (
+                    "Sign up"
+                  )}
                 </Button>
-                <span id="login redirect" className="font-inter text-sm text-center">Already have an account?<Link href="/login" className="text-blue-500"> Log in.</Link></span>
+                <span
+                  id="login redirect"
+                  className="font-inter text-sm text-center"
+                >
+                  Already have an account?
+                  <Link href="/login" className="text-blue-500">
+                    {" "}
+                    Log in.
+                  </Link>
+                </span>
               </form>
             </ThemeProvider>
           </div>
         </div>
       </div>
-      <Snackbar open={snackState.open} onClose={() => {setSnackState({open: false, severity: ""})}} autoHideDuration={6000} anchorOrigin={{vertical: "top", horizontal: "center"}}>
-        <Alert severity={snackState.severity as AlertProps["severity"]} variant="filled">
-            {snackState.severity === "success" ? "Account successfully created" : "Failed to create an account"}
+      <Snackbar
+        open={snackState.open}
+        onClose={() => {
+          setSnackState({ open: false, severity: "" });
+        }}
+        autoHideDuration={6000}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          severity={snackState.severity as AlertProps["severity"]}
+          variant="filled"
+        >
+          {snackState.severity === "success"
+            ? "Account successfully created"
+            : "Failed to create an account"}
         </Alert>
       </Snackbar>
     </div>
-    
   );
 }
