@@ -59,7 +59,7 @@ export const Navbar = () => {
     setSignoutDialogOpen(false)
   }
   const handleSignout = () => {
-    signOut({ callbackUrl: '/home ' })
+    signOut({ callbackUrl: '/ ' })
   }
 
   return (
