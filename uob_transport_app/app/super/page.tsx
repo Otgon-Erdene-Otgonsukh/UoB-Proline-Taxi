@@ -11,6 +11,7 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import { StyledTableCell } from "@/components/StyledTableCell";
+import { UserRecord } from "@/model/models";
 
 const userStatusToIntMap = {
   pending: 0,
@@ -87,7 +88,7 @@ const Page = () => {
   };
 
 
-  const [pendingUsersData, setPendingUsersData] = useState<User[]>([]);
+  const [pendingUsersData, setPendingUsersData] = useState<UserRecord[]>([]);
 
   return (
     <div className="flex justify-center font-inter p-4">
