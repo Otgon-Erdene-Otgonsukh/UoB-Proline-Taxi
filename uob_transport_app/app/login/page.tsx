@@ -10,7 +10,9 @@ import {
   Paper,
   InputAdornment,
   IconButton,
+  CircularProgress
 } from "@mui/material";
+import Link from "next/link";
 import EmailIcon from "@mui/icons-material/Email";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
@@ -30,6 +32,7 @@ export default function Log_forgot() {
 
     
     if (!isMailEmpty && !isPassEmpty) {
+      setLoadingBar(true);
       // Use NextAuth for authentication, stores cookie automatically.
       signIn('credentials', {
         redirect: false, // Force NExtAuth not to redirect.
@@ -51,6 +54,7 @@ export default function Log_forgot() {
   const [password, setPassword] = useState("");
   const [mailEmpty, setMailEmpty] = useState(false);
   const [passEmpty, setPassEmpty] = useState(false);
+  const [loadingBar, setLoadingBar] = useState(false);
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
@@ -92,7 +96,7 @@ export default function Log_forgot() {
       <Paper
         elevation={3}
         sx={{
-          maxWidth: 500,
+          maxWidth: 450,
           width: "100%",
           borderRadius: 5,
           mt: 10,
@@ -127,7 +131,7 @@ export default function Log_forgot() {
           sx={{
             display: "flex",
             flexDirection: "column",
-            gap: 3,
+            gap: 2.5,
             p: { xs: 4, sm: 5, md: 6 },
           }}
         >          <TextField
@@ -240,6 +244,8 @@ export default function Log_forgot() {
                 "&:hover": {
                   color: "#374151",
                 },
+                mb: -1,
+                mt: -1
               }}
             >
               Forgot password?
@@ -264,8 +270,9 @@ export default function Log_forgot() {
               transition: "all 0.2s",
             }}
           >
-            LOG IN
+           { loadingBar ? <CircularProgress color="inherit" size="30px"/> : "LOG IN" }
           </Button>
+          <Typography sx={{textAlign: "center", mb: -2}}>Don&apos;t have an account? <Link href="/register" className="text-blue-600">Sign up</Link></Typography>
         </Box>
       </Paper>
     </div>
