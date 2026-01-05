@@ -254,12 +254,29 @@ export default function Register() {
               width={320}
               height={150}
             ></Image>
-            <h1 className="text-white p-5 font-inter font-extralight text-center leading-relaxed text-[18px]">
-              <strong className="font-bold">Register </strong>as a regular user,
-              ProLine staff member, or university finance staff.{" "}
-              <strong className="font-bold">Choose</strong> the option that best
-              matches your intended use!
-            </h1>
+            <div className="text-white p-5 font-inter text-center leading-relaxed">
+              <h1 className="text-[21px] font-bold mb-3">
+                Account Registration Process
+              </h1>
+              <p className="text-[16px] font-light leading-relaxed">
+                <span className="block mb-2">
+                  <strong className="font-semibold">1. Choose</strong> your role
+                  below
+                </span>
+                <span className="block mb-2">
+                  <strong className="font-semibold">2. Submit</strong> your
+                  registration request
+                </span>
+                <span className="block mb-2">
+                  <strong className="font-semibold">3. Wait</strong> for admin
+                  approval
+                </span>
+                <span className="block">
+                  <strong className="font-semibold">4. Access</strong> your
+                  account once granted permission
+                </span>
+              </p>
+            </div>
           </div>
           <div
             id="right"
