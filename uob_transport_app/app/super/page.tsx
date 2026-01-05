@@ -3,24 +3,34 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { TableHead } from "@mui/material";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableContainer from "@mui/material/TableContainer";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import Typography from "@mui/material/Typography";
 import { StyledTableCell } from "@/components/StyledTableCell";
 import { UserRecord } from "@/model/models";
 import CustomizedButton from "@/components/CustomizedButton";
-import TablePagination from "@mui/material/TablePagination";
-import IconButton from "@mui/material/IconButton";
-import LastPageIcon from "@mui/icons-material/LastPage";
-import FirstPageIcon from "@mui/icons-material/FirstPage";
-import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
-import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
-import Box from "@mui/material/Box";
 import { useTheme } from "@mui/material/styles";
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  Paper,
+  IconButton,
+  TablePagination,
+  Table,
+  TableHead,
+  TableBody,
+  TableContainer,
+  TableRow,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl
+} from "@mui/material";
+import {
+  KeyboardArrowLeft,
+  KeyboardArrowRight,
+  LastPage,
+  FirstPage
+} from "@mui/icons-material"
 
 const userStatusToIntMap = {
   pending: 0,
@@ -73,7 +83,7 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
         disabled={page === 0}
         aria-label="first page"
       >
-        {theme.direction === "rtl" ? <LastPageIcon /> : <FirstPageIcon />}
+        {theme.direction === "rtl" ? <LastPage /> : <FirstPage />}
       </IconButton>
       <IconButton
         onClick={handleBackButtonClick}
@@ -102,7 +112,7 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
         disabled={page >= Math.ceil(count / rowsPerPage) - 1}
         aria-label="last page"
       >
-        {theme.direction === "rtl" ? <FirstPageIcon /> : <LastPageIcon />}
+        {theme.direction === "rtl" ? <FirstPage /> : <LastPage />}
       </IconButton>
     </Box>
   );
@@ -165,6 +175,18 @@ const Page = () => {
     });
   };
 
+  // search form
+  type SearchFormProps = {
+    name?: string,
+    user_status: number
+  }
+  const [searchFormInput, setSearchFormInput] = useState<SearchFormProps>({
+    user_status: userStatusToIntMap.pending
+  })
+  const handleSubmitSearchForm = () => {
+
+  }
+
   const handleViewDialogOpen = (row: UserRecord) => {
     console.log(row);
   }
@@ -184,12 +206,82 @@ const Page = () => {
           <h1 className="font-aleo text-2xl sm:text-3xl font-semibold text-shadow-lg/20">
             Pending Users
           </h1>
-          <button
-            onClick={handleClick}
-            className="bg-[#2c2c2c] text-white py-2 px-6 rounded-md hover:bg-[#474747] hover:scale-101 transition-all duration-200 text-sm font-light cursor-pointer"
+          <Box
+            component="form"
+            onSubmit={handleSubmitSearchForm}
+            sx={{
+              display: "flex",
+              gap: 2.5,
+            }}
           >
-            + New User
-          </button>
+            <TextField
+              fullWidth
+              label="Name"
+              id="searchNameInput"
+              value={searchFormInput.name}
+              onChange={(e) => { setSearchFormInput({ ...searchFormInput, name: e.target.value }); }}
+              size="small"
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: "0.375rem",
+                  "& fieldset": {
+                    borderWidth: "2px",
+                    borderColor: "#111827",
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "#111827",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderWidth: "2px",
+                    borderColor: "#111827",
+                  },
+                },
+                "& .MuiInputLabel-root": {
+                  fontSize: "0.875rem",
+                  color: "#111827",
+                  "&.Mui-focused": {
+                    color: "#111827",
+                  },
+                },
+                minWidth: 150
+              }}
+            />
+            <FormControl sx={{ minWidth: 150 }}>
+              <InputLabel id="searchUserStatusInput">User Status</InputLabel>
+              <Select
+                label="UserStatus"
+                id="searchUserStatusInput"
+                value={searchFormInput.user_status}
+                onChange={(e) => { setSearchFormInput({ ...searchFormInput, user_status: e.target.value }); }}
+                size="small"
+              >
+                <MenuItem value={userStatusToIntMap.pending}>{userStatusToStrMap[userStatusToIntMap.pending]}</MenuItem>
+                <MenuItem value={userStatusToIntMap.normal}>{userStatusToStrMap[userStatusToIntMap.normal]}</MenuItem>
+                <MenuItem value={userStatusToIntMap.rejected}>{userStatusToStrMap[userStatusToIntMap.rejected]}</MenuItem>
+              </Select>
+            </FormControl>
+
+            <Button
+              fullWidth
+              type="submit"
+              variant="contained"
+              sx={{
+                bgcolor: "#2c2c2c",
+                color: "white",
+                borderRadius: "0.375rem",
+                fontSize: "0.875rem",
+                fontWeight: 300,
+                "&:hover": {
+                  bgcolor: "#414040",
+                  transform: "scale(1.01)",
+                },
+                transition: "all 0.2s",
+              }}
+              size="small"
+            >
+              Search
+            </Button>
+          </Box>
         </div>
 
         {isLoading ? (
