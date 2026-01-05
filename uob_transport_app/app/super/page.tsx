@@ -12,6 +12,7 @@ import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import { StyledTableCell } from "@/components/StyledTableCell";
 import { UserRecord } from "@/model/models";
+import CustomizedButton from "@/components/CustomizedButton";
 
 const userStatusToIntMap = {
   pending: 0,
@@ -68,28 +69,19 @@ const Page = () => {
     router.push("/book");
   };
 
-  const handleChangePage = (
-    event: React.MouseEvent<HTMLButtonElement> | null,
-    newPage: number
-  ) => {
-    setIsLoading(true);
-    // getUserBookingList(newPage, paginationMeta.pageSize).then((res) => {
-    //   if (res.status === 200) {
-    //     res.json().then((data) => {
-    //       setBookingListData(data.bookings);
-    //       setBookingListCount(data.totalNum);
-    //       setIsLoading(false);
-    //       setPaginationMeta({
-    //         ...paginationMeta,
-    //         page: newPage,
-    //       });
-    //     });
-    //   }
-    // });
+  const [pendingUsersData, setPendingUsersData] = useState<UserRecord[]>([]);
+
+  const handleViewDialogOpen = (row: UserRecord) => {
+    console.log(row);
+  }
+
+  const handleEditDialogOpen = (row: UserRecord) => {
+    console.log(row);
   };
 
-
-  const [pendingUsersData, setPendingUsersData] = useState<UserRecord[]>([]);
+  const handleRejectUserRegister = (row: UserRecord) => {
+    console.log(row);
+  };
 
   return (
     <div className="flex justify-center font-inter p-4">
@@ -132,6 +124,7 @@ const Page = () => {
                   <StyledTableCell>Department</StyledTableCell>
                   <StyledTableCell>Role</StyledTableCell>
                   <StyledTableCell>User Status</StyledTableCell>
+                  <StyledTableCell>Operation</StyledTableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -163,6 +156,28 @@ const Page = () => {
                         >
                           {userStatusToStrMap[row.user_status]}
                         </span>
+                      </StyledTableCell>
+                      <StyledTableCell>
+                        <div className="flex gap-2 justify-center">
+                          <CustomizedButton
+                            click={() => handleViewDialogOpen(row)}
+                            type="primary"
+                            title="View"
+                          />
+                          {/* super admin can edit user under any circumstances */}
+                          <CustomizedButton
+                            click={() => handleEditDialogOpen(row)}
+                            type="warning"
+                            title="Edit"
+                          />
+                          {row.user_status === userStatusToIntMap.pending && (
+                            <CustomizedButton
+                              click={() => handleRejectUserRegister(row)}
+                              type="error"
+                              title="Reject"
+                            />
+                          )}
+                        </div>
                       </StyledTableCell>
                     </TableRow>
                   ))}
