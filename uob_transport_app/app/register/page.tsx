@@ -385,6 +385,23 @@ export default function Register() {
                   }}
                   disabled={proLineStaff}
                   options={departments}
+                  slotProps={{
+                    paper: {
+                      sx: {
+                        border: "2px solid #2c2c2c",
+                        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                        mt: 0.5,
+                        "& .MuiAutocomplete-option": {
+                          "&:hover": {
+                            backgroundColor: "#f3f4f6",
+                          },
+                          '&[aria-selected="true"]': {
+                            backgroundColor: "#e5e7eb !important",
+                          },
+                        },
+                      },
+                    },
+                  }}
                   renderInput={(params) => (
                     <TextField
                       {...params}
