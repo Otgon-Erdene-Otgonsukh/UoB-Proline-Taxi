@@ -21,7 +21,7 @@ jest.mock("next/navigation", () => ({
   useRouter: () => ({
     push: pushMock,
   }),
-  usePathname: () => "/home",
+  usePathname: () => "/",
 }));
 
 // mock next-auth
@@ -140,6 +140,6 @@ describe("Navbar", () => {
     fireEvent.click(await screen.findByText("Logout"));
     fireEvent.click(await screen.findByRole("button", { name: "Yes" }));
 
-    expect(signOutMock).toHaveBeenCalledWith({ callbackUrl: "/home " });
+    expect(signOutMock).toHaveBeenCalledWith({ callbackUrl: "/" });
   });
 });
