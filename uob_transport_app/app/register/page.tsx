@@ -14,6 +14,7 @@ import {
   Snackbar,
   Alert,
   AlertProps,
+  Autocomplete,
 } from "@mui/material";
 import EmailIcon from "@mui/icons-material/Email";
 import Visibility from "@mui/icons-material/Visibility";
@@ -32,6 +33,39 @@ import { useSession } from "next-auth/react";
 
 export default function Register() {
   const session = useSession();
+
+  const departments = [
+    "Centre for Academic Language and Development",
+    "Centre for Innovation and Entrepreneurship",
+    "Arts",
+    "Economics",
+    "Education",
+    "Humanities",
+    "Modern Languages",
+    "Policy Studies",
+    "Sociology, Politics and International Studies",
+    "Business",
+    "Law",
+    "Dental",
+    "Medical",
+    "Veterinary",
+    "Health Professions Education",
+    "Anatomy",
+    "Biochemistry",
+    "Biological Sciences",
+    "Cellular and Molecular Medicine",
+    "Physiology, Pharmacology and Neuroscience",
+    "Psychological Science",
+    "Chemistry",
+    "Civil, Aerospace, and Design Engineering",
+    "Computer Science",
+    "Earth Sciences",
+    "Electrical, Electronic and Mechanical Engineering",
+    "Engineering Mathematics and Technology",
+    "Geographical Sciences",
+    "Mathematics",
+    "Physics",
+  ];
 
   if (session.data) {
     // if user is logged in, protect this route
@@ -324,32 +358,29 @@ export default function Register() {
                     }}
                   />
                 </div>
-                <TextField
-                  fullWidth
-                  disabled={proLineStaff ? true : false}
-                  error={departmentEmpty}
-                  helperText={
-                    departmentEmpty
-                      ? "Please enter department"
-                      : "For ProLine staffs, please ignore this field."
-                  }
-                  label="Department"
-                  id="department"
-                  type="text"
-                  onChange={(e) => {
-                    setDepartment(e.target.value);
+                <Autocomplete
+                  disablePortal
+                  value={department}
+                  inputValue={department}
+                  onInputChange={(_, dep) => {
+                    setDepartment(dep);
                     setDepartmentEmpty(false);
                   }}
-                  slotProps={{
-                    input: {
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <ApartmentIcon sx={{ color: "#111827" }} />
-                        </InputAdornment>
-                      ),
-                    },
-                  }}
-                />
+                  disabled={proLineStaff}
+                  options={departments}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Department"
+                      error={departmentEmpty}
+                      helperText={
+                        departmentEmpty
+                          ? "Select a department"
+                          : "Proline staff, please ignore this field"
+                      }
+                    ></TextField>
+                  )}
+                ></Autocomplete>
                 <TextField
                   fullWidth
                   error={
@@ -568,6 +599,7 @@ export default function Register() {
                       }}
                       onClick={() => {
                         setProLineStaff(!proLineStaff);
+                        setDepartment("");
                         setDepartmentEmpty(false);
                         setNormalUser(false);
                         setFinanceStaff(false);
