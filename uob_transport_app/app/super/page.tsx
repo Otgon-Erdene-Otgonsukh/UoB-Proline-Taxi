@@ -18,6 +18,7 @@ const userStatusToIntMap = {
   normal: 1,
   rejected: 2
 }
+const userStatusToStrMap = ['pending', 'normal', 'rejected']
 
 const Page = () => {
   // Get NextAuth Session.
@@ -160,7 +161,7 @@ const Page = () => {
                                 : "bg-yellow-100 text-yellow-800 border border-yellow-800"
                             }`}
                         >
-                          {row.user_status}
+                          {userStatusToStrMap[row.user_status]}
                         </span>
                       </StyledTableCell>
                     </TableRow>

@@ -43,3 +43,15 @@ export function bookingStatusMap(bookingStatus: number): BookingStatusStr {
       return 'Rejected';
   }
 }
+
+export type UserRecord = {
+  time_created: string;
+  user_id: string;
+  department: any;
+  email: string;
+  name: string;
+  surname: string;
+  phone_number: string;
+  role: string;
+  user_status: number;
+}
