@@ -214,7 +214,7 @@ const Page = () => {
       <div className="bg-white shadow-lg/20 rounded-lg p-6 md:p-8 w-full max-w-6xl my-15 mt-20">
         <div className="flex justify-between items-center mb-6">
           <h1 className="font-aleo text-2xl sm:text-3xl font-semibold text-shadow-lg/20">
-            Pending Users
+            User Management
           </h1>
           <Box
             component="form"
