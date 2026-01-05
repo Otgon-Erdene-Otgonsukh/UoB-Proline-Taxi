@@ -38,6 +38,12 @@ const userStatusToIntMap = {
   rejected: 2
 }
 const userStatusToStrMap = ['pending', 'normal', 'rejected']
+const roleStrMap = {
+  normalUser: 'normal_user',
+  financeStaff: 'finance_staff',
+  prolineStaff: 'proline_staff'
+}
+const role = [roleStrMap.normalUser, roleStrMap.financeStaff, roleStrMap.prolineStaff]
 
 interface TablePaginationActionsProps {
   count: number;
@@ -178,10 +184,12 @@ const Page = () => {
   // search form
   type SearchFormProps = {
     name?: string,
-    user_status: number
+    user_status: number,
+    role: string,
   }
   const [searchFormInput, setSearchFormInput] = useState<SearchFormProps>({
-    user_status: userStatusToIntMap.pending
+    user_status: userStatusToIntMap.pending,
+    role: roleStrMap.normalUser
   })
   const handleSubmitSearchForm = () => {
 
@@ -246,6 +254,20 @@ const Page = () => {
                 minWidth: 150
               }}
             />
+            <FormControl sx={{ minWidth: 150 }}>
+              <InputLabel id="searchUserStatusInput">Role</InputLabel>
+              <Select
+                label="UserStatus"
+                id="searchUserStatusInput"
+                value={searchFormInput.role}
+                onChange={(e) => { setSearchFormInput({ ...searchFormInput, role: e.target.value }); }}
+                size="small"
+              >
+                {role.map(e => {
+                  return <MenuItem value={e}>{e}</MenuItem>
+                })}
+              </Select>
+            </FormControl>
             <FormControl sx={{ minWidth: 150 }}>
               <InputLabel id="searchUserStatusInput">User Status</InputLabel>
               <Select
