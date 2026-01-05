@@ -191,7 +191,9 @@ const Page = () => {
     user_status: userStatusToIntMap.pending,
     role: roleStrMap.normalUser
   })
-  const handleSubmitSearchForm = () => {
+  const handleSubmitSearchForm = (e: React.FormEvent) => {
+    e.preventDefault()
+    console.log('submit');
 
   }
 
@@ -259,7 +261,6 @@ const Page = () => {
                 <MenuItem value={userStatusToIntMap.rejected}>{userStatusToStrMap[userStatusToIntMap.rejected]}</MenuItem>
               </Select>
             </FormControl>
-
             <Button
               fullWidth
               type="submit"
