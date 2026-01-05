@@ -229,30 +229,7 @@ const Page = () => {
               value={searchFormInput.name}
               onChange={(e) => { setSearchFormInput({ ...searchFormInput, name: e.target.value }); }}
               size="small"
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  borderRadius: "0.375rem",
-                  "& fieldset": {
-                    borderWidth: "2px",
-                    borderColor: "#111827",
-                  },
-                  "&:hover fieldset": {
-                    borderColor: "#111827",
-                  },
-                  "&.Mui-focused fieldset": {
-                    borderWidth: "2px",
-                    borderColor: "#111827",
-                  },
-                },
-                "& .MuiInputLabel-root": {
-                  fontSize: "0.875rem",
-                  color: "#111827",
-                  "&.Mui-focused": {
-                    color: "#111827",
-                  },
-                },
-                minWidth: 150
-              }}
+              sx={{ minWidth: 150 }}
             />
             <FormControl sx={{ minWidth: 150 }}>
               <InputLabel id="searchUserStatusInput">Role</InputLabel>
