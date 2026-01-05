@@ -13,6 +13,14 @@ import Typography from "@mui/material/Typography";
 import { StyledTableCell } from "@/components/StyledTableCell";
 import { UserRecord } from "@/model/models";
 import CustomizedButton from "@/components/CustomizedButton";
+import TablePagination from "@mui/material/TablePagination";
+import IconButton from "@mui/material/IconButton";
+import LastPageIcon from "@mui/icons-material/LastPage";
+import FirstPageIcon from "@mui/icons-material/FirstPage";
+import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
+import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
+import Box from "@mui/material/Box";
+import { useTheme } from "@mui/material/styles";
 
 const userStatusToIntMap = {
   pending: 0,
@@ -21,12 +29,98 @@ const userStatusToIntMap = {
 }
 const userStatusToStrMap = ['pending', 'normal', 'rejected']
 
+interface TablePaginationActionsProps {
+  count: number;
+  page: number;
+  rowsPerPage: number;
+  onPageChange: (
+    event: React.MouseEvent<HTMLButtonElement>,
+    newPage: number
+  ) => void;
+}
+function TablePaginationActions(props: TablePaginationActionsProps) {
+  const theme = useTheme();
+  const { count, page, rowsPerPage, onPageChange } = props;
+
+  const handleFirstPageButtonClick = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    onPageChange(event, 0);
+  };
+
+  const handleBackButtonClick = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    onPageChange(event, page - 1);
+  };
+
+  const handleNextButtonClick = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    onPageChange(event, page + 1);
+  };
+
+  const handleLastPageButtonClick = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
+  };
+
+  return (
+    <Box sx={{ flexShrink: 0, ml: 2.5 }}>
+      <IconButton
+        onClick={handleFirstPageButtonClick}
+        disabled={page === 0}
+        aria-label="first page"
+      >
+        {theme.direction === "rtl" ? <LastPageIcon /> : <FirstPageIcon />}
+      </IconButton>
+      <IconButton
+        onClick={handleBackButtonClick}
+        disabled={page === 0}
+        aria-label="previous page"
+      >
+        {theme.direction === "rtl" ? (
+          <KeyboardArrowRight />
+        ) : (
+          <KeyboardArrowLeft />
+        )}
+      </IconButton>
+      <IconButton
+        onClick={handleNextButtonClick}
+        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+        aria-label="next page"
+      >
+        {theme.direction === "rtl" ? (
+          <KeyboardArrowLeft />
+        ) : (
+          <KeyboardArrowRight />
+        )}
+      </IconButton>
+      <IconButton
+        onClick={handleLastPageButtonClick}
+        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+        aria-label="last page"
+      >
+        {theme.direction === "rtl" ? <FirstPageIcon /> : <LastPageIcon />}
+      </IconButton>
+    </Box>
+  );
+}
+
 const Page = () => {
   // Get NextAuth Session.
   const { status } = useSession();
 
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
+
+  const handleClick = () => {
+    router.push("/book");
+  };
+
+  const [pendingUsersData, setPendingUsersData] = useState<UserRecord[]>([]);
+  const [pendingUserCount, setPendingUserCount] = useState(0)
   const [paginationMeta, setPaginationMeta] = useState({
     page: 0,
     pageSize: 10,
@@ -38,17 +132,6 @@ const Page = () => {
     //   return;
     // }
 
-    // getUserBookingList(paginationMeta.page, paginationMeta.pageSize).then(
-    //   (res) => {
-    //     if (res.status === 200) {
-    //       res.json().then((data) => {
-    //         setBookingListData(data.bookings);
-    //         setBookingListCount(data.totalNum);
-    //         setIsLoading(false);
-    //       });
-    //     }
-    //   }
-    // );
     setIsLoading(false);
     setPendingUsersData([{
       time_created: '2024',
@@ -65,11 +148,22 @@ const Page = () => {
     }])
   }, [status, paginationMeta.page, paginationMeta.pageSize, router]);
 
-  const handleClick = () => {
-    router.push("/book");
+  const handleChangePage = (
+    event: React.MouseEvent<HTMLButtonElement> | null,
+    newPage: number
+  ) => {
+    setIsLoading(true);
+    console.log(newPage);
   };
 
-  const [pendingUsersData, setPendingUsersData] = useState<UserRecord[]>([]);
+  const handleChangePageSize = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setPaginationMeta({
+      page: 0,
+      pageSize: parseInt(event.target.value, 10),
+    });
+  };
 
   const handleViewDialogOpen = (row: UserRecord) => {
     console.log(row);
@@ -185,6 +279,26 @@ const Page = () => {
             </Table>
           </TableContainer>
         )}
+        <div className="flex justify-center mt-4">
+          <TablePagination
+            component="div"
+            rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
+            count={pendingUserCount}
+            rowsPerPage={paginationMeta.pageSize}
+            page={paginationMeta.page}
+            slotProps={{
+              select: {
+                inputProps: {
+                  "aria-label": "rows per page",
+                },
+                native: true,
+              },
+            }}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangePageSize}
+            ActionsComponent={TablePaginationActions}
+          />
+        </div>
       </div>
     </div>
   );
