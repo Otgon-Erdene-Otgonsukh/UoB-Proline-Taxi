@@ -195,7 +195,20 @@ const Page = () => {
   const handleSubmitSearchForm = (e: React.FormEvent) => {
     e.preventDefault()
     console.log('submit');
-
+    setIsLoading(true)
+    getUsersAsAdmin({
+      name: undefined,
+      ...searchFormInput,
+      page: paginationMeta.page,
+      pageSize: paginationMeta.pageSize
+    }).then(res => {
+      if (res.status === 200) {
+        res.json().then(data => {
+          setPendingUsersData(data.userList)
+          setIsLoading(false)
+        })
+      }
+    })
   }
 
   const handleViewDialogOpen = (row: UserRecord) => {
