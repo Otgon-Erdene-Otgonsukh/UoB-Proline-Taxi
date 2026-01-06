@@ -59,14 +59,20 @@ export const getUserByEmailAccess = async (email: string): Promise<User | null> 
 }
 
 export const getUserListAccess = async (page: number, pageSize: number, name?: string, role?: string, userStatus?: number): Promise<User[] | null> => {
+  const query: { [key: string]: any } = {}
+  if (name) {
+    query['name'] = {
+      contains: name
+    }
+  }
+  if (role) {
+    query['role'] = role
+  }
+  if (userStatus) {
+    query['user_status'] = userStatus
+  }
   return prisma.user.findMany({
-    where: {
-      name: {
-        contains: name
-      },
-      role,
-      user_status: userStatus
-    },
+    where: query,
     include: {
       department: true
     },
