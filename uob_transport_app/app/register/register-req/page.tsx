@@ -73,7 +73,7 @@ export default function RegRequestSent() {
               <ContactSupportIcon sx={{ fontSize: 36, color: "#ea580c" }} />
             </div>
             <h2 className="font-inter text-lg font-bold text-gray-800">
-              What's Next?
+              What&apos;s Next?
             </h2>
             <p className="font-inter text-sm text-gray-600 leading-relaxed">
               You will receive an email notification if your request is
