@@ -177,6 +177,7 @@ const Page = () => {
     role: string,
   }
   const [searchFormInput, setSearchFormInput] = useState<SearchFormProps>({
+    name: '',
     user_status: userStatusToIntMap.pending,
     role: roleStrMap.normalUser
   })
