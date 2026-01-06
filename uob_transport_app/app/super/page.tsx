@@ -143,10 +143,10 @@ const Page = () => {
   });
 
   useEffect(() => {
-    // if (status === "unauthenticated") {
-    //   router.push("/login");
-    //   return;
-    // }
+    if (status === "unauthenticated") {
+      router.push("/login");
+      return;
+    }
 
     setIsLoading(false);
     setPendingUsersData([{
