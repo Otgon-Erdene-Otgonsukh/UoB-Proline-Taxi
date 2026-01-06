@@ -65,6 +65,9 @@ export const getUserListAccess = async (page: number, pageSize: number, name?: s
       role,
       user_status: userStatus
     },
+    include: {
+      department: true
+    },
     orderBy: {
       time_created: 'desc'
     },
