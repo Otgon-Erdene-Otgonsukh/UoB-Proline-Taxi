@@ -158,6 +158,7 @@ const Page = () => {
       if (res.status === 200) {
         res.json().then(data => {
           setPendingUsersData(data.userList)
+          setPendingUserCount(data.userCount)
           setIsLoading(false)
         })
       }
@@ -205,6 +206,7 @@ const Page = () => {
       if (res.status === 200) {
         res.json().then(data => {
           setPendingUsersData(data.userList)
+          setPendingUserCount(data.userCount)
           setIsLoading(false)
         })
       }
