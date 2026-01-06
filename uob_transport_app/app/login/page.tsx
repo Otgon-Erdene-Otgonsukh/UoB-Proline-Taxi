@@ -39,10 +39,11 @@ export default function Log_forgot() {
         email: mail,
         password: password,
       }).then(res => {
-        if (res.status !== 200) {
-          setSnackbarState({ open: true, status: 'fail' })
+        if (res.error) {
+          setSnackbarState({ open: true, status: 'fail' });
+          setLoadingBar(false);
         } else {
-          setSnackbarState({ open: true, status: 'success' })
+          setSnackbarState({ open: true, status: 'success' });
           router.push("/home");
         }
       })
@@ -96,7 +97,7 @@ export default function Log_forgot() {
       <Paper
         elevation={3}
         sx={{
-          maxWidth: 450,
+          maxWidth: 430,
           width: "100%",
           borderRadius: 5,
           mt: 10,
