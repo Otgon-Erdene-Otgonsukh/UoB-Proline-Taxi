@@ -6,15 +6,30 @@ const prisma = new PrismaClient();
 
 export async function POST(req: Request) {
   const request = await req.json();
-  const mail = request.mail;
-  const password = request.password;
-  const username = request.username;
-  const departmentName = request.department;
-  const firstName = request.firstName;
-  const lastName = request.lastName;
-  const role = request.role;
-  const phoneNumber = request.phoneNumber;
+  const mail: string = request.mail;
+  const password: string = request.password;
+  const username: string = request.username;
+  const departmentName: string = request.department;
+  const firstName: string = request.firstName;
+  const lastName: string = request.lastName;
+  const role: string = request.role;
+  const phoneNumber: string = request.phoneNumber;
 
+  // Server side role and mail validation
+  if (
+    (!mail.endsWith("@prolinetaxi.com") && role === "proline_staff") ||
+    (!mail.endsWith("@bristol.ac.uk") && role === "finance_staff") ||
+    (departmentName.length === 0 &&
+      (role === "normal_user" || role === "finance_staff")) ||
+    (role == "proline_staff" && departmentName.length !== 0)
+  ) {
+    return NextResponse.json({
+      status: 500,
+      message: "There was an error creating an user",
+    });
+  }
+
+  // hashing
   const hashRounds = 10;
   const hashedPassword = await bcrypt.hash(password, hashRounds);
 
@@ -29,8 +44,20 @@ export async function POST(req: Request) {
       },
     });
 
-    // if the department is not in the database, create one
-    if (department === null) {
+    if (role === "proline_staff") {
+      // for proline staff reg-requests, no department is created, only user entry
+      await prisma.user.create({
+        data: {
+          username: username,
+          name: firstName,
+          surname: lastName,
+          phone_number: phoneNumber,
+          role: role,
+          email: mail,
+          password: hashedPassword,
+        },
+      });
+    } else if (department === null) {
       const newDepartment = await prisma.department.create({
         data: {
           dep_name: departmentName,
@@ -44,6 +71,7 @@ export async function POST(req: Request) {
           surname: lastName,
           phone_number: phoneNumber,
           role: role,
+          user_status: role === "normal_user" ? 1 : 0,
           email: mail,
           password: hashedPassword,
         },
@@ -57,6 +85,7 @@ export async function POST(req: Request) {
           surname: lastName,
           phone_number: phoneNumber,
           role: role,
+          user_status: role === "normal_user" ? 1 : 0,
           email: mail,
           password: hashedPassword,
         },
