@@ -148,30 +148,15 @@ const Page = () => {
       router.push("/login");
       return;
     }
-
-    getUsersAsAdmin({
-      name: undefined,
-      ...searchFormInput,
-      page: paginationMeta.page,
-      pageSize: paginationMeta.pageSize
-    }).then(res => {
-      if (res.status === 200) {
-        res.json().then(data => {
-          setPendingUsersData(data.userList)
-          setPendingUserCount(data.userCount)
-          setIsLoading(false)
-        })
-      }
-    })
-
-  }, [status, paginationMeta.page, paginationMeta.pageSize, router]);
+    _rerenderTable()
+  }, [status]);
 
   const handleChangePage = (
     event: React.MouseEvent<HTMLButtonElement> | null,
     newPage: number
   ) => {
     setIsLoading(true);
-    console.log(newPage);
+    _rerenderTable()
   };
 
   const handleChangePageSize = (
@@ -181,6 +166,8 @@ const Page = () => {
       page: 0,
       pageSize: parseInt(event.target.value, 10),
     });
+    setIsLoading(true)
+    _rerenderTable()
   };
 
   // search form
@@ -197,20 +184,7 @@ const Page = () => {
     e.preventDefault()
     console.log('submit');
     setIsLoading(true)
-    getUsersAsAdmin({
-      name: undefined,
-      ...searchFormInput,
-      page: paginationMeta.page,
-      pageSize: paginationMeta.pageSize
-    }).then(res => {
-      if (res.status === 200) {
-        res.json().then(data => {
-          setPendingUsersData(data.userList)
-          setPendingUserCount(data.userCount)
-          setIsLoading(false)
-        })
-      }
-    })
+    _rerenderTable()
   }
 
   const handleViewDialogOpen = (row: UserRecord) => {
@@ -228,6 +202,23 @@ const Page = () => {
   const handleRejectUserRegister = (row: UserRecord) => {
     console.log(row);
   };
+
+  const _rerenderTable = () => {
+    getUsersAsAdmin({
+      name: undefined,
+      ...searchFormInput,
+      page: paginationMeta.page,
+      pageSize: paginationMeta.pageSize
+    }).then(res => {
+      if (res.status === 200) {
+        res.json().then(data => {
+          setPendingUsersData(data.userList)
+          setPendingUserCount(data.userCount)
+          setIsLoading(false)
+        })
+      }
+    })
+  }
 
   return (
     <div className="flex justify-center font-inter p-4">
