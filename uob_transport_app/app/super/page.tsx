@@ -328,7 +328,7 @@ const Page = () => {
                       <StyledTableCell>{row.name + ' ' + row.surname}</StyledTableCell>
                       <StyledTableCell>{row.email}</StyledTableCell>
                       <StyledTableCell>{row.phone_number}</StyledTableCell>
-                      <StyledTableCell>{row.department?.name}</StyledTableCell>
+                      <StyledTableCell>{row.department.dep_name}</StyledTableCell>
                       <StyledTableCell>{row.role}</StyledTableCell>
                       <StyledTableCell>
                         <span

@@ -1,3 +1,6 @@
+import { department } from "@/generated/prisma/client";
+import { DepartmentAggregateArgs, DepartmentAvgAggregateInputType } from "@/generated/prisma/models";
+
 export type BookingLocation = {
   name: string;
   latitude: string;
@@ -47,7 +50,7 @@ export function bookingStatusMap(bookingStatus: number): BookingStatusStr {
 export type UserRecord = {
   time_created: string;
   user_id: string;
-  department: any;
+  department: department;
   email: string;
   name: string;
   surname: string;
