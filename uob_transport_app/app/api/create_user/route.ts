@@ -4,6 +4,39 @@ import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
+const departments = [
+    "Centre for Academic Language and Development",
+    "Centre for Innovation and Entrepreneurship",
+    "Arts",
+    "Economics",
+    "Education",
+    "Humanities",
+    "Modern Languages",
+    "Policy Studies",
+    "Sociology, Politics and International Studies",
+    "Business",
+    "Law",
+    "Dental",
+    "Medical",
+    "Veterinary",
+    "Health Professions Education",
+    "Anatomy",
+    "Biochemistry",
+    "Biological Sciences",
+    "Cellular and Molecular Medicine",
+    "Physiology, Pharmacology and Neuroscience",
+    "Psychological Science",
+    "Chemistry",
+    "Civil, Aerospace, and Design Engineering",
+    "Computer Science",
+    "Earth Sciences",
+    "Electrical, Electronic and Mechanical Engineering",
+    "Engineering Mathematics and Technology",
+    "Geographical Sciences",
+    "Mathematics",
+    "Physics",
+  ];
+
 export async function POST(req: Request) {
   const request = await req.json();
   const mail: string = request.mail;
@@ -21,7 +54,8 @@ export async function POST(req: Request) {
     (!mail.endsWith("@bristol.ac.uk") && role === "finance_staff") ||
     (departmentName.length === 0 &&
       (role === "normal_user" || role === "finance_staff")) ||
-    (role == "proline_staff" && departmentName.length !== 0)
+    (role == "proline_staff" && departmentName.length !== 0) ||
+    (!departments.includes(departmentName))
   ) {
     return NextResponse.json({
       status: 500,
