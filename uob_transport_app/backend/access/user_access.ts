@@ -77,3 +77,21 @@ export const getUserListAccess = async (page: number, pageSize: number, name?: s
     take: pageSize
   })
 }
+
+export const getUserCountAccess = async (name?: string, role?: string, userStatus?: number): Promise<number | null> => {
+  const query: { [key: string]: any } = {}
+  if (name) {
+    query['name'] = {
+      contains: name
+    }
+  }
+  if (role) {
+    query['role'] = role
+  }
+  if (userStatus) {
+    query['user_status'] = userStatus
+  }
+  return prisma.user.count({
+    where: query,
+  })
+}
