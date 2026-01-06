@@ -57,3 +57,18 @@ export const getUserByEmailAccess = async (email: string): Promise<User | null> 
     }
   })
 }
+
+export const getUserListAccess = async (page: number, pageSize: number, name?: string, role?: string, userStatus?: number): Promise<User[] | null> => {
+  return prisma.user.findMany({
+    where: {
+      name,
+      role,
+      user_status: userStatus
+    },
+    orderBy: {
+      time_created: 'desc'
+    },
+    skip: page * pageSize,
+    take: pageSize
+  })
+}
