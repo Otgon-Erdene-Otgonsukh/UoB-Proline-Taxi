@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@/generated/prisma/client";
 import { auth } from "@/auth";
-import { getUserListAccess } from "@/backend/access/user_access";
+import { getUserListAccess, getUserCountAccess } from "@/backend/access/user_access";
 
 const prisma = new PrismaClient();
 
@@ -34,9 +34,11 @@ export async function GET(request: NextRequest) {
   }
 
   const userList = await getUserListAccess(parseInt(page), parseInt(pageSize), name, role, userStatus ? parseInt(userStatus) : undefined)
+  const userCount = await getUserCountAccess(name, role, userStatus ? parseInt(userStatus) : undefined)
 
   return new Response(JSON.stringify({
     userList,
+    userCount
   }), {
     status: 200,
     headers: { 'Content-Type': 'application/json' },
