@@ -147,6 +147,7 @@ export default function Log_forgot() {
             onChange={(e) => {
               setMail(e.target.value);
               setWrong(false);
+              setMailEmpty(false);
             }}
             sx={{
               "& .MuiOutlinedInput-root": {
@@ -193,6 +194,7 @@ export default function Log_forgot() {
             onChange={(e) => {
               setPassword(e.target.value);
               setWrong(false);
+              setPassEmpty(false);
             }}
             sx={{
               "& .MuiOutlinedInput-root": {
