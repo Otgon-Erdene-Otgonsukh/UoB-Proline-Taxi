@@ -31,6 +31,7 @@ import {
   LastPage,
   FirstPage
 } from "@mui/icons-material"
+import { getUsersAsAdmin } from "./request";
 
 const userStatusToIntMap = {
   pending: 0,
@@ -148,20 +149,20 @@ const Page = () => {
       return;
     }
 
-    setIsLoading(false);
-    setPendingUsersData([{
-      time_created: '2024',
-      user_id: '1',
-      name: 'abc',
-      surname: 'edf',
-      email: '',
-      department: {
-        name: 'Mathematics'
-      },
-      phone_number: '',
-      role: 'admin',
-      user_status: 0
-    }])
+    getUsersAsAdmin({
+      name: undefined,
+      ...searchFormInput,
+      page: paginationMeta.page,
+      pageSize: paginationMeta.pageSize
+    }).then(res => {
+      if (res.status === 200) {
+        res.json().then(data => {
+          setPendingUsersData(data.userList)
+          setIsLoading(false)
+        })
+      }
+    })
+
   }, [status, paginationMeta.page, paginationMeta.pageSize, router]);
 
   const handleChangePage = (
@@ -327,7 +328,7 @@ const Page = () => {
                       <StyledTableCell>{row.name + ' ' + row.surname}</StyledTableCell>
                       <StyledTableCell>{row.email}</StyledTableCell>
                       <StyledTableCell>{row.phone_number}</StyledTableCell>
-                      <StyledTableCell>{row.department.name}</StyledTableCell>
+                      <StyledTableCell>{row.department?.name}</StyledTableCell>
                       <StyledTableCell>{row.role}</StyledTableCell>
                       <StyledTableCell>
                         <span
