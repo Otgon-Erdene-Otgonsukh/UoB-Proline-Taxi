@@ -40,7 +40,7 @@ export default function Log_forgot() {
         password: password,
       }).then(res => {
         if (res.error) {
-          setSnackbarState({ open: true, status: 'fail' });
+          setWrong(true);
           setLoadingBar(false);
         } else {
           setSnackbarState({ open: true, status: 'success' });
@@ -56,6 +56,7 @@ export default function Log_forgot() {
   const [mailEmpty, setMailEmpty] = useState(false);
   const [passEmpty, setPassEmpty] = useState(false);
   const [loadingBar, setLoadingBar] = useState(false);
+  const [wrong, setWrong] = useState(false);
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
@@ -145,6 +146,7 @@ export default function Log_forgot() {
             value={mail}
             onChange={(e) => {
               setMail(e.target.value);
+              setWrong(false);
             }}
             sx={{
               "& .MuiOutlinedInput-root": {
@@ -190,6 +192,7 @@ export default function Log_forgot() {
             value={password}
             onChange={(e) => {
               setPassword(e.target.value);
+              setWrong(false);
             }}
             sx={{
               "& .MuiOutlinedInput-root": {
@@ -235,7 +238,7 @@ export default function Log_forgot() {
               },
             }}
           />
-
+          {wrong && <Alert severity="error">Incorrect mail or password. Please enter the correct details or wait for your account approval.</Alert>}
           <Box sx={{ textAlign: "left"}}>
             <Button variant="text" onClick={handleForgotClick}
               sx={{
