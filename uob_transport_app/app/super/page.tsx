@@ -221,6 +221,10 @@ const Page = () => {
     console.log(row);
   };
 
+  const handleAcceptUserRegister = (row: UserRecord) => {
+    console.log(row);
+  };
+
   const handleRejectUserRegister = (row: UserRecord) => {
     console.log(row);
   };
@@ -372,6 +376,13 @@ const Page = () => {
                             type="warning"
                             title="Edit"
                           />
+                          {row.user_status === userStatusToIntMap.pending && (
+                            <CustomizedButton
+                              click={() => handleAcceptUserRegister(row)}
+                              type="primary"
+                              title="Accept"
+                            />
+                          )}
                           {row.user_status === userStatusToIntMap.pending && (
                             <CustomizedButton
                               click={() => handleRejectUserRegister(row)}
