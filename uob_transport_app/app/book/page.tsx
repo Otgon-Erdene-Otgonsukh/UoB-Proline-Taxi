@@ -175,7 +175,7 @@ export default function BookingPage() {
     // should only be subject to server side validation other than presence and being later than Date.Now().
 
     let pickupDateTime = new Date();
-    let returnDateTime = new Date(formData.ReturnDate);
+    const returnDateTime = new Date(formData.ReturnDate);
     const [h, m] = formData.ReturnTime.split(":").map(Number);
     returnDateTime.setHours(h, m, 0, 0);
 
