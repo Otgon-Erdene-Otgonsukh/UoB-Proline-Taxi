@@ -14,6 +14,8 @@ import {
   Checkbox,
   FormControlLabel,
   CircularProgress,
+  Autocomplete,
+  TextField,
 } from "@mui/material";
 import NumberField from "@/components/NumberField";
 import { useSession } from "next-auth/react";
@@ -42,6 +44,7 @@ export default function BookingPage() {
   const [isReturnChecked, setIsReturnChecked] = useState(false);
   const [phoneCode, setPhoneCode] = useState("+44");
   const [loadingBar, setLoadingBar] = useState(false);
+  const [departmentEmpty, setDepartmentEmpty] = useState(false);
 
   // Set error messages visible next to fields, default "" (empty) for hide.
   const [formFeedback, setFormFeedback] = useState({
@@ -58,6 +61,39 @@ export default function BookingPage() {
     Email: "",
     AdditionalInfo: "",
   });
+
+  const departments = [
+    "Centre for Academic Language and Development",
+    "Centre for Innovation and Entrepreneurship",
+    "Arts",
+    "Economics",
+    "Education",
+    "Humanities",
+    "Modern Languages",
+    "Policy Studies",
+    "Sociology, Politics and International Studies",
+    "Business",
+    "Law",
+    "Dental",
+    "Medical",
+    "Veterinary",
+    "Health Professions Education",
+    "Anatomy",
+    "Biochemistry",
+    "Biological Sciences",
+    "Cellular and Molecular Medicine",
+    "Physiology, Pharmacology and Neuroscience",
+    "Psychological Science",
+    "Chemistry",
+    "Civil, Aerospace, and Design Engineering",
+    "Computer Science",
+    "Earth Sciences",
+    "Electrical, Electronic and Mechanical Engineering",
+    "Engineering Mathematics and Technology",
+    "Geographical Sciences",
+    "Mathematics",
+    "Physics",
+  ];
 
   const clearFeedback = () => {
     const dict = { ...formFeedback };
@@ -128,6 +164,12 @@ export default function BookingPage() {
         fail = true;
       }
       loc = formData.CommonLoc;
+    }
+
+    // Department check
+    if (formData.department.length === 0) {
+      setDepartmentEmpty(true);
+      fail = true;
     }
 
     // Drop-Off Location
@@ -795,18 +837,44 @@ export default function BookingPage() {
                   {formFeedback.Number}
                 </FormHelperText>
               </div>
-              <div className="flex flex-col">
-                <label htmlFor="dropLoc" className="mb-1 text-sm">
-                  Department
-                </label>
-                <input
-                  id="department"
-                  onChange={(e) => {
-                    setFormData({ ...formData, department: e.target.value });
+              <ThemeProvider theme={inputTheme}>
+                <Autocomplete
+                  sx={{ my: 1 }}
+                  disablePortal
+                  value={formData.department}
+                  inputValue={formData.department}
+                  onInputChange={(_, dep) => {
+                    setFormData({ ...formData, department: dep });
+                    setDepartmentEmpty(false);
                   }}
-                  className="border-2 rounded px-3 py-2"
-                ></input>
-              </div>
+                  options={departments}
+                  slotProps={{
+                    paper: {
+                      sx: {
+                        border: "2px solid #2c2c2c",
+                        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                        mt: 0.5,
+                        "& .MuiAutocomplete-option": {
+                          "&:hover": {
+                            backgroundColor: "#f3f4f6",
+                          },
+                          '&[aria-selected="true"]': {
+                            backgroundColor: "#e5e7eb !important",
+                          },
+                        },
+                      },
+                    },
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Department"
+                      error={departmentEmpty}
+                      helperText={departmentEmpty && "Select a department."}
+                    />
+                  )}
+                />
+              </ThemeProvider>
               <div className="flex flex-col sm:flex-row gap-4">
                 <div className="flex flex-col flex-1">
                   <label htmlFor="mail" className="mb-1 text-sm">

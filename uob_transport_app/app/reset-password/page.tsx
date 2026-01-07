@@ -1,6 +1,6 @@
 "use client";
 import { useSearchParams, useRouter, } from "next/navigation";
-import { ChangeEvent, useEffect, useState, Suspense } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -43,7 +43,7 @@ const Page = () => {
       setPageValid(false)
     }
 
-  }, []);
+  }, [uuid]);
 
   const [passEmpty, setPassEmpty] = useState(false);
   const [showPassword, setShowPassword] = useState(false);

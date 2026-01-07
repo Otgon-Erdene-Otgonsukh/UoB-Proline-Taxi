@@ -20,17 +20,6 @@ export const searchUserAccess = async (email: string): Promise<User | null> => {
   })
 }
 
-export const updateUserTokenAccess = async (email: string, token: string): Promise<User | null> => {
-  return prisma.user.update({
-    where: {
-      email
-    },
-    data: {
-      token: token
-    }
-  })
-}
-
 export const updateUserPassowrdAccess = async (email: string, password: string): Promise<User | null> => {
   return prisma.user.update({
     where: {
@@ -38,14 +27,6 @@ export const updateUserPassowrdAccess = async (email: string, password: string):
     },
     data: {
       password
-    }
-  })
-}
-
-export const getUserByTokenAccess = async (token: string): Promise<User | null> => {
-  return prisma.user.findUnique({
-    where: {
-      token
     }
   })
 }
