@@ -59,7 +59,7 @@ export const getUserByEmailAccess = async (email: string): Promise<User | null> 
 }
 
 export const getUserListAccess = async (page: number, pageSize: number, name?: string, role?: string, userStatus?: number): Promise<User[] | null> => {
-  const query: { [key: string]: any } = {}
+  const query: { [key: string]: string | number | object } = {}
   if (name) {
     query['name'] = {
       contains: name
@@ -85,7 +85,7 @@ export const getUserListAccess = async (page: number, pageSize: number, name?: s
 }
 
 export const getUserCountAccess = async (name?: string, role?: string, userStatus?: number): Promise<number | null> => {
-  const query: { [key: string]: any } = {}
+  const query: { [key: string]: string | number | object } = {}
   if (name) {
     query['name'] = {
       contains: name

@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
         status: 200,
         headers: { 'Content-Type': 'application/json' },
       });
-    } catch (error) {
+    } catch (_) {
       return new Response(JSON.stringify({
         message: 'send email failed, try again later'
       }), {

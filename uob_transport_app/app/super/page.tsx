@@ -132,10 +132,6 @@ const Page = () => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
 
-  const handleClick = () => {
-    router.push("/book");
-  };
-
   const [pendingUsersData, setPendingUsersData] = useState<UserRecord[]>([]);
   const [pendingUserCount, setPendingUserCount] = useState(0)
   const [paginationMeta, setPaginationMeta] = useState({
@@ -148,13 +144,15 @@ const Page = () => {
       router.push("/login");
       return;
     }
-    _rerenderTable()
-  }, [status]);
 
-  const handleChangePage = (
-    event: React.MouseEvent<HTMLButtonElement> | null,
-    newPage: number
-  ) => {
+    _rerenderTable()
+  }, [status, router,]);
+
+  const handleChangePage = (_: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+    setPaginationMeta({
+      ...paginationMeta,
+      page: newPage
+    })
     setIsLoading(true);
     _rerenderTable()
   };
@@ -255,7 +253,7 @@ const Page = () => {
                 size="small"
               >
                 {role.map(e => {
-                  return <MenuItem value={e}>{e}</MenuItem>
+                  return <MenuItem value={e} key={e}>{e}</MenuItem>
                 })}
               </Select>
             </FormControl>

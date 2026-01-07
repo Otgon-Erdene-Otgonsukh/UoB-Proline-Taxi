@@ -1,5 +1,4 @@
 import { department } from "@/generated/prisma/client";
-import { DepartmentAggregateArgs, DepartmentAvgAggregateInputType } from "@/generated/prisma/models";
 
 export type BookingLocation = {
   name: string;

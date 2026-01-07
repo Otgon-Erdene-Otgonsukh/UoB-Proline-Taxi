@@ -1,4 +1,4 @@
-import { easyPostRequest, easyGetRequest } from "@/utils/easyRequest";
+import { easyGetRequest } from "@/utils/easyRequest";
 
 export const getUsersAsAdmin = async (searchParams: {
   name?: string,
@@ -7,7 +7,7 @@ export const getUsersAsAdmin = async (searchParams: {
   page: number,
   pageSize: number
 }): Promise<Response> => {
-  const getParams: { [key: string]: any } = {}
+  const getParams: { [key: string]: string | number } = {}
   for (const [key, value] of Object.entries(searchParams)) {
     if (value !== undefined) {
       getParams[key] = value
