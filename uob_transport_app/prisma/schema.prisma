@@ -17,9 +17,9 @@ model User {
   name         String?       @db.VarChar(100)
   surname      String?       @db.VarChar(100)
   phone_number String?       @db.VarChar(20)
-  token        String?       @unique @db.VarChar(256)
   time_created DateTime?     @default(now()) @db.Timestamp(6)
-  role         String?
+  role         String?       @db.VarChar(255)
+  user_status  Int           @default(0)
   department   department?   @relation(fields: [dep_id], references: [dep_id], onUpdate: NoAction)
   booking      booking[]
   user_address user_address?
@@ -59,22 +59,23 @@ model departmentusermap {
 }
 
 model trip {
-  trip_id           Int       @id @default(autoincrement())
-  icabbi_booking_id Int?
-  pickup_location   String?
-  pickup_latitude   Int?
-  pickup_longitude  Int?
-  dropoff_location  String?
-  dropoff_latitude  Int?
-  dropoff_longitude Int?
-  pickup_time       DateTime? @db.Timestamp(6)
-  via               String?
-  passenger_num     Int?
-  return_drop_loc   String?
-  PO                String?
-  airport           String?
-  flight_num        String?
-  booking           booking[]
+  trip_id            Int       @id @default(autoincrement())
+  icabbi_booking_id  Int?
+  pickup_location    String?
+  pickup_latitude    Int?
+  pickup_longitude   Int?
+  dropoff_location   String?
+  dropoff_latitude   Int?
+  dropoff_longitude  Int?
+  pickup_time        DateTime? @db.Timestamp(6)
+  via                String?
+  passenger_num      Int?
+  return_drop_loc    String?
+  PO                 String?
+  airport            String?
+  flight_num         String?
+  return_pickup_time DateTime? @db.Timestamp(6)
+  booking            booking[]
 }
 
 model user_address {
@@ -86,8 +87,8 @@ model user_address {
 }
 
 model user_reset {
-  id           Int        @id @default(autoincrement())
-  email        String     @db.VarChar(255) @unique
-  uuid         String     @db.VarChar(64) @unique
-  expired_at   DateTime   @db.Timestamp(6)
+  id         Int      @id @default(autoincrement())
+  uuid       String   @unique @db.VarChar(64)
+  expired_at DateTime @db.Timestamp(6)
+  email      String   @unique @db.VarChar(255)
 }
