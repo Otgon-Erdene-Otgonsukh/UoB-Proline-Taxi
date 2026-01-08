@@ -407,8 +407,8 @@ const Page = () => {
           />
         </div>
       </div>
-      {userDetail && <ViewDialog viewData={userDetail} dialogOpen={viewDialogOpen} handleDialogClose={() => setViewDialogOpen(false)}></ViewDialog>}
-      {userDetail && <EditDialog editData={userDetail} dialogOpen={editDialogOpen} handleDialogClose={() => setEditDialogOpen(false)}></EditDialog>}
+      {userDetail && <ViewDialog viewData={userDetail} dialogOpen={viewDialogOpen} handleDialogClose={() => { setViewDialogOpen(false); setUserDetail(undefined) }} />}
+      {userDetail && <EditDialog editData={userDetail} dialogOpen={editDialogOpen} handleDialogClose={() => { setEditDialogOpen(false); setUserDetail(undefined) }} />}
     </div>
   );
 };
