@@ -1,8 +1,11 @@
+import { useState } from "react";
 import {
   Dialog,
   DialogTitle,
   DialogContent,
   IconButton,
+  Box,
+  TextField,
 } from "@mui/material";
 import {
   Close as CloseIcon,
@@ -11,6 +14,13 @@ import {
 import { UserRecord } from "@/model/models";
 
 const Page = ({ editData, dialogOpen, handleDialogClose }: { editData: UserRecord, dialogOpen: boolean, handleDialogClose: () => void }) => {
+
+  const [formInput, setFormInput] = useState<UserRecord>(editData)
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    console.log('submit');
+  }
 
   return (<div>
     <Dialog
@@ -57,7 +67,24 @@ const Page = ({ editData, dialogOpen, handleDialogClose }: { editData: UserRecor
         <CloseIcon />
       </IconButton>
       <DialogContent>
-
+        <Box
+          component="form"
+          onSubmit={handleSubmit}
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 2.5,
+          }}
+        >
+          <TextField
+            fullWidth
+            label="Name"
+            id="nameInput"
+            value={formInput.name}
+            onChange={(e) => { setFormInput({ ...formInput, name: e.target.value }); }}
+            sx={{ minWidth: 150 }}
+          />
+        </Box>
       </DialogContent>
     </Dialog>
   </div>)
