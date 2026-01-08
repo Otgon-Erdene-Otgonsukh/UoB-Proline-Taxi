@@ -8,6 +8,7 @@ import {
   Button,
   Typography,
   IconButton,
+  Divider,
 } from "@mui/material";
 import {
   Close as CloseIcon,
@@ -15,8 +16,13 @@ import {
 } from "@mui/icons-material"
 import { UserRecord } from "@/model/models";
 import { userStatusToIntMap, userStatusToStrMap } from "../../super/constants";
+import CustomizedButton from "@/components/CustomizedButton";
 
 const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: UserRecord, dialogOpen: boolean, handleDialogClose: () => void }) => {
+
+  const handleViewBookings = () => {
+    console.log("view bookings clicked");
+  }
 
   return (<div>
     <Dialog
@@ -97,14 +103,6 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: UserRecor
         </Stack>
         <Stack>
           <Typography gutterBottom sx={{ fontWeight: "bold" }}>
-            Department:
-          </Typography>
-          <Typography gutterBottom>
-            {viewData?.department.dep_name}
-          </Typography>
-        </Stack>
-        <Stack>
-          <Typography gutterBottom sx={{ fontWeight: "bold" }}>
             Role:
           </Typography>
           <Typography gutterBottom>
@@ -127,6 +125,40 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: UserRecor
               }`}
             label={userStatusToStrMap[viewData?.user_status]}
           />
+        </Stack>
+        <Divider sx={{ my: 2 }} />
+        <Stack>
+          <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+            Department:
+          </Typography>
+          <Typography gutterBottom>
+            {viewData?.department.dep_name}
+          </Typography>
+        </Stack>
+        <Divider sx={{ my: 2 }} />
+        <Stack>
+          <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+            Bookings:
+          </Typography>
+          <Typography gutterBottom>
+            <CustomizedButton
+              click={handleViewBookings}
+              type="primary"
+              title="View"
+            />
+          </Typography>
+        </Stack>
+        <Stack>
+          <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+            Saved Addresses:
+          </Typography>
+          <Typography gutterBottom>
+            <CustomizedButton
+              click={handleViewBookings}
+              type="primary"
+              title="View"
+            />
+          </Typography>
         </Stack>
       </DialogContent>
       <DialogActions>
