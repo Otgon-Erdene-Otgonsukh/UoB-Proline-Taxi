@@ -68,7 +68,12 @@ const Page = ({ editData, dialogOpen, handleDialogClose }: { editData: UserRecor
   })
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+    e.preventDefault();
+
+    if (formInput.name.length === 0 || formInput.email.length === 0 || formInput.email.includes("@") === false || formInput.phoneNumber.length === 0) {
+      return;
+    }
+
     const toUpdateData: UserRecord = {
       user_id: editData.user_id,
       time_created: editData.time_created,
@@ -108,8 +113,6 @@ const Page = ({ editData, dialogOpen, handleDialogClose }: { editData: UserRecor
       setMailEmpty(false);
     }
   }
-
-  const [phoneNumberEmpty, setPhoneNumberEmpty] = useState(false);
 
   const [departments, setDepartments] = useState<UserRecord["department"][]>([])
 
@@ -180,6 +183,10 @@ const Page = ({ editData, dialogOpen, handleDialogClose }: { editData: UserRecor
             fullWidth
             label="Name"
             id="nameInput"
+            error={formInput.name.length === 0}
+            helperText={
+              formInput.name.length === 0 ? "Name cannot be empty" : ""
+            }
             value={formInput.name}
             onChange={(e) => { setFormInput({ ...formInput, name: e.target.value }); }}
             sx={{ minWidth: 150 }}
@@ -222,9 +229,9 @@ const Page = ({ editData, dialogOpen, handleDialogClose }: { editData: UserRecor
             </Select>
             <TextField
               fullWidth
-              error={phoneNumberEmpty}
+              error={formInput.phoneNumber.length === 0}
               helperText={
-                phoneNumberEmpty ? "Please enter phone number" : ""
+                formInput.phoneNumber.length === 0 ? "Please enter phone number" : ""
               }
               value={formInput.phoneNumber}
               label="Phone Number"
