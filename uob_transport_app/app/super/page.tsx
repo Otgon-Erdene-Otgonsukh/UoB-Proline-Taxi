@@ -33,9 +33,8 @@ import {
 } from "@mui/icons-material"
 import { getUsersAsAdmin } from "./request";
 import ViewDialog from "./userManageComponents/viewDialog";
-import { userStatusToIntMap, userStatusToStrMap, roleStrMap } from "./constants";
-
-const roles = [roleStrMap.normalUser, roleStrMap.financeStaff, roleStrMap.prolineStaff]
+import EditDialog from "./userManageComponents/eidtDialog";
+import { userStatusToIntMap, userStatusToStrMap, roleStrMap, roles } from "./constants";
 
 interface TablePaginationActionsProps {
   count: number;
@@ -186,8 +185,11 @@ const Page = () => {
     setViewDialogOpen(true);
   }
 
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
   const handleEditDialogOpen = (row: UserRecord) => {
     console.log(row);
+    setUserDetail(row)
+    setEditDialogOpen(true);
   };
 
   const handleAcceptUserRegister = (row: UserRecord) => {
@@ -406,6 +408,7 @@ const Page = () => {
         </div>
       </div>
       {userDetail && <ViewDialog viewData={userDetail} dialogOpen={viewDialogOpen} handleDialogClose={() => setViewDialogOpen(false)}></ViewDialog>}
+      {userDetail && <EditDialog editData={userDetail} dialogOpen={editDialogOpen} handleDialogClose={() => setEditDialogOpen(false)}></EditDialog>}
     </div>
   );
 };

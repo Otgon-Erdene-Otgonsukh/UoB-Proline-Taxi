@@ -6,6 +6,10 @@ import {
   IconButton,
   Box,
   TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
   InputAdornment
 } from "@mui/material";
 import {
@@ -14,6 +18,7 @@ import {
   Email as EmailIcon
 } from "@mui/icons-material"
 import { UserRecord } from "@/model/models";
+import { roles } from "../../super/constants";
 
 const Page = ({ editData, dialogOpen, handleDialogClose }: { editData: UserRecord, dialogOpen: boolean, handleDialogClose: () => void }) => {
 
@@ -129,6 +134,19 @@ const Page = ({ editData, dialogOpen, handleDialogClose }: { editData: UserRecor
               }
             }}
           />
+          <FormControl sx={{ minWidth: 150 }}>
+            <InputLabel id="searchUserStatusInput">Role</InputLabel>
+            <Select
+              label="UserStatus"
+              id="searchUserStatusInput"
+              value={formInput.role}
+              onChange={(e) => { setFormInput({ ...formInput, role: e.target.value }); }}
+            >
+              {roles.map(e => {
+                return <MenuItem value={e} key={e}>{e}</MenuItem>
+              })}
+            </Select>
+          </FormControl>
         </Box>
       </DialogContent>
     </Dialog>

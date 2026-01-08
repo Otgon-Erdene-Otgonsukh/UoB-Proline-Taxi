@@ -11,3 +11,5 @@ export const roleStrMap = {
   financeStaff: 'finance_staff',
   prolineStaff: 'proline_staff'
 }
+
+export const roles = [roleStrMap.normalUser, roleStrMap.financeStaff, roleStrMap.prolineStaff]
