@@ -47,6 +47,7 @@ type UserFormInputType = {
   phoneNumber: string,
   role: string,
   userStatus: number,
+  dep_id: number,
 }
 
 const Page = ({ editData, dialogOpen, handleDialogClose }: { editData: UserRecord, dialogOpen: boolean, handleDialogClose: () => void }) => {
@@ -58,6 +59,7 @@ const Page = ({ editData, dialogOpen, handleDialogClose }: { editData: UserRecor
     phoneNumber: editData.phone_number.split(" ")[1] || "",
     role: editData.role,
     userStatus: editData.user_status,
+    dep_id: editData.department.dep_id,
   })
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -84,6 +86,7 @@ const Page = ({ editData, dialogOpen, handleDialogClose }: { editData: UserRecor
 
   const [phoneNumberEmpty, setPhoneNumberEmpty] = useState(false);
 
+  const departments = useState<UserRecord["department"][]>([])
 
   return (<div>
     <Dialog
@@ -208,10 +211,10 @@ const Page = ({ editData, dialogOpen, handleDialogClose }: { editData: UserRecor
             />
           </div>
           <FormControl sx={{ minWidth: 150 }}>
-            <InputLabel id="searchUserStatusInput">Role</InputLabel>
+            <InputLabel id="roleInput">Role</InputLabel>
             <Select
-              label="UserStatus"
-              id="searchUserStatusInput"
+              label="Role"
+              id="roleInput"
               value={formInput.role}
               onChange={(e) => { setFormInput({ ...formInput, role: e.target.value }); }}
             >
@@ -221,16 +224,28 @@ const Page = ({ editData, dialogOpen, handleDialogClose }: { editData: UserRecor
             </Select>
           </FormControl>
           <FormControl sx={{ minWidth: 150 }}>
-            <InputLabel id="searchUserStatusInput">User Status</InputLabel>
+            <InputLabel id="userStatusInput">User Status</InputLabel>
             <Select
               label="UserStatus"
-              id="searchUserStatusInput"
+              id="userStatusInput"
               value={formInput.userStatus}
               onChange={(e) => { setFormInput({ ...formInput, userStatus: e.target.value }); }}
             >
               <MenuItem value={userStatusToIntMap.pending}>{userStatusToStrMap[userStatusToIntMap.pending]}</MenuItem>
               <MenuItem value={userStatusToIntMap.normal}>{userStatusToStrMap[userStatusToIntMap.normal]}</MenuItem>
               <MenuItem value={userStatusToIntMap.rejected}>{userStatusToStrMap[userStatusToIntMap.rejected]}</MenuItem>
+            </Select>
+          </FormControl><FormControl sx={{ minWidth: 150 }}>
+            <InputLabel id="departmentInput">Department</InputLabel>
+            <Select
+              label="Department"
+              id="departmentInput"
+              value={formInput.dep_id}
+              onChange={(e) => { setFormInput({ ...formInput, dep_id: e.target.value }); }}
+            >
+              {departments.map(e => {
+                return <MenuItem value={e.dep_id} key={e.dep_id}>{e.dep_name}</MenuItem>
+              })}
             </Select>
           </FormControl>
         </Box>
