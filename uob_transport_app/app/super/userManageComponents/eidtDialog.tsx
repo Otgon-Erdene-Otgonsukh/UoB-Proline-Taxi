@@ -11,6 +11,8 @@ import {
   Select,
   MenuItem,
   InputAdornment,
+  DialogActions,
+  Button,
 } from "@mui/material";
 import {
   Close as CloseIcon,
@@ -248,6 +250,38 @@ const Page = ({ editData, dialogOpen, handleDialogClose }: { editData: UserRecor
               })}
             </Select>
           </FormControl>
+          <div className="flex justify-around gap-4">
+            <Button
+              fullWidth
+              type="submit"
+              variant="contained"
+              sx={{
+                bgcolor: "#2c2c2c",
+                py: 1.5,
+                mt: 1,
+                "&:hover": { bgcolor: "#414040", transform: "scale(1.01)" },
+                fontSize: { xs: "0.7rem", sm: "0.875rem" },
+                borderRadius: "0.375rem",
+                transition: "transform 0.2s",
+              }}
+            >
+              Save
+            </Button>
+            <Button
+              fullWidth
+              onClick={handleDialogClose}
+              sx={{
+                color: "#2c2c2c",
+                py: 1.5,
+                mt: 1,
+                fontSize: { xs: "0.7rem", sm: "0.875rem" },
+                borderRadius: "0.375rem",
+                transition: "transform 0.2s",
+              }}
+            >
+              Cancel
+            </Button>
+          </div>
         </Box>
       </DialogContent>
     </Dialog>
