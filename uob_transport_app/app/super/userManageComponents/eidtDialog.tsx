@@ -6,10 +6,12 @@ import {
   IconButton,
   Box,
   TextField,
+  InputAdornment
 } from "@mui/material";
 import {
   Close as CloseIcon,
   FindInPage as FindInPageIcon,
+  Email as EmailIcon
 } from "@mui/icons-material"
 import { UserRecord } from "@/model/models";
 
@@ -21,6 +23,24 @@ const Page = ({ editData, dialogOpen, handleDialogClose }: { editData: UserRecor
     e.preventDefault()
     console.log('submit');
   }
+
+  const [mailEmpty, setMailEmpty] = useState(false);
+  const [invalidMail, setInvalidMail] = useState(false);
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormInput({ ...formInput, email: e.target.value })
+    if (e.target.value.length === 0) {
+      setMailEmpty(true);
+      setInvalidMail(false);
+    } else if (!e.target.value.includes("@")) {
+      setInvalidMail(true);
+      setMailEmpty(false);
+    } else {
+      setInvalidMail(false);
+      setMailEmpty(false);
+    }
+  }
+
 
   return (<div>
     <Dialog
@@ -83,6 +103,31 @@ const Page = ({ editData, dialogOpen, handleDialogClose }: { editData: UserRecor
             value={formInput.name}
             onChange={(e) => { setFormInput({ ...formInput, name: e.target.value }); }}
             sx={{ minWidth: 150 }}
+          />
+          <TextField
+            fullWidth
+            label="Email"
+            id="emailInput"
+            error={mailEmpty || invalidMail}
+            value={formInput.email}
+            onChange={handleEmailChange}
+            sx={{ minWidth: 150 }}
+            helperText={
+              mailEmpty
+                ? "Enter email the code to be sent!"
+                : invalidMail
+                  ? "Please enter a valid email address!"
+                  : ""
+            }
+            slotProps={{
+              input: {
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <EmailIcon sx={{ color: "#111827" }} />
+                  </InputAdornment>
+                ),
+              }
+            }}
           />
         </Box>
       </DialogContent>
