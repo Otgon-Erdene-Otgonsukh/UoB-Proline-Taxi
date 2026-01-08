@@ -23,7 +23,6 @@ import {
 import { UserRecord } from "@/model/models";
 import { userStatusToIntMap, userStatusToStrMap } from "../../super/constants";
 import { roles } from "../../super/constants";
-import { getDepartmentsList } from "../requests";
 import { department } from "@/generated/prisma/client";
 import { updateUserAsAdmin } from "../request";
 
@@ -55,7 +54,7 @@ type UserFormInputType = {
   department: department,
 }
 
-const Page = ({ editData, dialogOpen, handleDialogClose }: { editData: UserRecord, dialogOpen: boolean, handleDialogClose: () => void }) => {
+const Page = ({ editData, dialogOpen, handleDialogClose, departmentList }: { editData: UserRecord, dialogOpen: boolean, handleDialogClose: () => void, departmentList: department[] }) => {
 
   const [formInput, setFormInput] = useState<UserFormInputType>({
     name: editData.name,
@@ -113,17 +112,6 @@ const Page = ({ editData, dialogOpen, handleDialogClose }: { editData: UserRecor
       setMailEmpty(false);
     }
   }
-
-  const [departments, setDepartments] = useState<UserRecord["department"][]>([])
-
-  useEffect(() => {
-    getDepartmentsList().then(async (res) => {
-      if (res.status === 200) {
-        const data = await res.json();
-        setDepartments(data);
-      }
-    })
-  }, [])
 
   return (<div>
     <Dialog
@@ -279,7 +267,7 @@ const Page = ({ editData, dialogOpen, handleDialogClose }: { editData: UserRecor
           </FormControl><FormControl sx={{ minWidth: 150 }}>
             <Autocomplete
               disablePortal
-              options={departments}
+              options={departmentList}
               getOptionLabel={(option) => option.dep_name}
               renderInput={(params) => <TextField {...params} label="Departments" />}
               value={formInput.department}

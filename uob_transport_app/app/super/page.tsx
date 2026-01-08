@@ -35,6 +35,7 @@ import { getUsersAsAdmin } from "./request";
 import ViewDialog from "./userManageComponents/viewDialog";
 import EditDialog from "./userManageComponents/eidtDialog";
 import { userStatusToIntMap, userStatusToStrMap, roleStrMap, roles } from "./constants";
+import { getDepartmentsList } from "./requests";
 
 interface TablePaginationActionsProps {
   count: number;
@@ -129,6 +130,8 @@ const Page = () => {
     pageSize: 10,
   });
 
+  const [departments, setDepartments] = useState<UserRecord["department"][]>([])
+
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/login");
@@ -136,6 +139,13 @@ const Page = () => {
     }
 
     _rerenderTable()
+
+    getDepartmentsList().then(async res => {
+      if (res.status === 200) {
+        const data = await res.json();
+        setDepartments(data);
+      }
+    })
   }, [status, router,]);
 
   const handleChangePage = (_: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
@@ -408,7 +418,7 @@ const Page = () => {
         </div>
       </div>
       {userDetail && <ViewDialog viewData={userDetail} dialogOpen={viewDialogOpen} handleDialogClose={() => { setViewDialogOpen(false); setUserDetail(undefined) }} />}
-      {userDetail && <EditDialog editData={userDetail} dialogOpen={editDialogOpen} handleDialogClose={() => { setEditDialogOpen(false); setUserDetail(undefined) }} />}
+      {userDetail && <EditDialog editData={userDetail} dialogOpen={editDialogOpen} handleDialogClose={() => { setEditDialogOpen(false); setUserDetail(undefined) }} departmentList={departments} />}
     </div>
   );
 };
