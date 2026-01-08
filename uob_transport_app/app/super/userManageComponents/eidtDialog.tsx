@@ -18,6 +18,7 @@ import {
   Email as EmailIcon
 } from "@mui/icons-material"
 import { UserRecord } from "@/model/models";
+import { userStatusToIntMap, userStatusToStrMap } from "../../super/constants";
 import { roles } from "../../super/constants";
 
 const Page = ({ editData, dialogOpen, handleDialogClose }: { editData: UserRecord, dialogOpen: boolean, handleDialogClose: () => void }) => {
@@ -145,6 +146,19 @@ const Page = ({ editData, dialogOpen, handleDialogClose }: { editData: UserRecor
               {roles.map(e => {
                 return <MenuItem value={e} key={e}>{e}</MenuItem>
               })}
+            </Select>
+          </FormControl>
+          <FormControl sx={{ minWidth: 150 }}>
+            <InputLabel id="searchUserStatusInput">User Status</InputLabel>
+            <Select
+              label="UserStatus"
+              id="searchUserStatusInput"
+              value={formInput.user_status}
+              onChange={(e) => { setFormInput({ ...formInput, user_status: e.target.value }); }}
+            >
+              <MenuItem value={userStatusToIntMap.pending}>{userStatusToStrMap[userStatusToIntMap.pending]}</MenuItem>
+              <MenuItem value={userStatusToIntMap.normal}>{userStatusToStrMap[userStatusToIntMap.normal]}</MenuItem>
+              <MenuItem value={userStatusToIntMap.rejected}>{userStatusToStrMap[userStatusToIntMap.rejected]}</MenuItem>
             </Select>
           </FormControl>
         </Box>
