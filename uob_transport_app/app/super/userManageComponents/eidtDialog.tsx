@@ -86,7 +86,7 @@ const Page = ({ editData, dialogOpen, handleDialogClose }: { editData: UserRecor
 
   const [phoneNumberEmpty, setPhoneNumberEmpty] = useState(false);
 
-  const departments = useState<UserRecord["department"][]>([])
+  const [departments, setDepartments] = useState<UserRecord["department"][]>([])
 
   return (<div>
     <Dialog
