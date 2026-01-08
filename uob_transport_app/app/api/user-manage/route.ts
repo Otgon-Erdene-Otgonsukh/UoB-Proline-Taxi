@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { auth } from "@/auth";
-import { getUserListAccess, getUserCountAccess } from "@/backend/access/user_access";
+import { getUserListAccess, getUserCountAccess, updateUserAccess } from "@/backend/access/user_access";
+import { UserRecord } from "@/model/models";
 
 export async function GET(request: NextRequest) {
 
@@ -40,4 +41,38 @@ export async function GET(request: NextRequest) {
     status: 200,
     headers: { 'Content-Type': 'application/json' },
   });
+}
+
+export async function POST(request: NextRequest) {
+  // TODO Check super admin
+  const requestJson = await request.json()
+  const userData = requestJson.userData
+
+  const userId = userData.user_id
+
+  const updateResult = await updateUserAccess(userId!, {
+    name: userData.name!,
+    email: userData.email,
+    phone_number: userData.phone_number!,
+    role: userData.role!,
+    user_status: userData.user_status,
+    department: userData.department,
+  })
+
+  if (updateResult) {
+    return new Response(JSON.stringify({
+      message: 'update user success'
+    }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  } else {
+    return new Response(JSON.stringify({
+      message: 'update user failed'
+    }), {
+      status: 201,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
 }

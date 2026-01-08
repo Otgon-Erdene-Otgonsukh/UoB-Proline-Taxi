@@ -1,4 +1,4 @@
-import { PrismaClient, User } from '@/generated/prisma/client'
+import { department, PrismaClient, User } from '@/generated/prisma/client'
 
 const prisma = new PrismaClient()
 
@@ -99,5 +99,21 @@ export const getUserCountAccess = async (name?: string, role?: string, userStatu
   }
   return prisma.user.count({
     where: query,
+  })
+}
+
+export const updateUserAccess = async (userId: number, updateData: { [key: string]: string | number | object }): Promise<User | null> => {
+  return prisma.user.update({
+    where: {
+      user_id: userId
+    },
+    data: {
+      ...updateData,
+      department: updateData['department'] ? {
+        connect: {
+          dep_id: (updateData['department'] as department).dep_id
+        }
+      } : undefined
+    }
   })
 }
