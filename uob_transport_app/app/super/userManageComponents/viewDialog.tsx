@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -19,18 +18,19 @@ import { userStatusToIntMap, userStatusToStrMap } from "../../super/constants";
 
 const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: UserRecord, dialogOpen: boolean, handleDialogClose: () => void }) => {
 
-  // const [dialogOpen, setDialogOpen] = useState(false);
-
-  // const handleDialogClose = () => {
-  //   setDialogOpen(false);
-  // }
-
-
   return (<div>
     <Dialog
       onClose={handleDialogClose}
       aria-labelledby="customized-dialog-title"
       open={dialogOpen}
+      sx={{
+        "& .MuiStack-root": {
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+          width: "400px",
+        }
+      }}
     >
       <DialogTitle
         sx={{
@@ -63,14 +63,7 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: UserRecor
         <CloseIcon />
       </IconButton>
       <DialogContent dividers>
-        <Stack
-          direction="row"
-          sx={{
-            justifyContent: "space-between",
-            alignItems: "center",
-            width: "400px",
-          }}
-        >
+        <Stack>
           <Typography gutterBottom sx={{ fontWeight: "bold" }}>
             Time Created:
           </Typography>
@@ -80,14 +73,7 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: UserRecor
               : ""}
           </Typography>
         </Stack>
-        <Stack
-          direction="row"
-          sx={{
-            justifyContent: "space-between",
-            alignItems: "center",
-            width: "400px",
-          }}
-        >
+        <Stack>
           <Typography gutterBottom sx={{ fontWeight: "bold" }}>
             Name:
           </Typography>
@@ -95,14 +81,7 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: UserRecor
             {viewData.name + ' ' + viewData.surname}
           </Typography>
         </Stack>
-        <Stack
-          direction="row"
-          sx={{
-            justifyContent: "space-between",
-            alignItems: "center",
-            width: "400px",
-          }}
-        >
+        <Stack>
           <Typography gutterBottom sx={{ fontWeight: "bold" }}>
             email
           </Typography>
@@ -110,27 +89,13 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: UserRecor
             {viewData.email}
           </Typography>
         </Stack>
-        <Stack
-          direction="row"
-          sx={{
-            justifyContent: "space-between",
-            alignItems: "center",
-            width: "400px",
-          }}
-        >
+        <Stack>
           <Typography gutterBottom sx={{ fontWeight: "bold" }}>
             Phone Number:
           </Typography>
           <Typography gutterBottom>{viewData?.phone_number}</Typography>
         </Stack>
-        <Stack
-          direction="row"
-          sx={{
-            justifyContent: "space-between",
-            alignItems: "center",
-            width: "400px",
-          }}
-        >
+        <Stack>
           <Typography gutterBottom sx={{ fontWeight: "bold" }}>
             Department:
           </Typography>
@@ -138,14 +103,7 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: UserRecor
             {viewData?.department.dep_name}
           </Typography>
         </Stack>
-        <Stack
-          direction="row"
-          sx={{
-            justifyContent: "space-between",
-            alignItems: "center",
-            width: "400px",
-          }}
-        >
+        <Stack>
           <Typography gutterBottom sx={{ fontWeight: "bold" }}>
             Role:
           </Typography>
@@ -153,14 +111,7 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: UserRecor
             {viewData?.role}
           </Typography>
         </Stack>
-        <Stack
-          direction="row"
-          sx={{
-            justifyContent: "space-between",
-            alignItems: "center",
-            width: "400px",
-          }}
-        >
+        <Stack>
           <Typography gutterBottom sx={{ fontWeight: "bold" }}>
             User Status:
           </Typography>
