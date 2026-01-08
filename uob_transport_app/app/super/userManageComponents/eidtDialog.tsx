@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -11,8 +11,8 @@ import {
   Select,
   MenuItem,
   InputAdornment,
-  DialogActions,
   Button,
+  Autocomplete,
 } from "@mui/material";
 import {
   Close as CloseIcon,
@@ -23,6 +23,8 @@ import {
 import { UserRecord } from "@/model/models";
 import { userStatusToIntMap, userStatusToStrMap } from "../../super/constants";
 import { roles } from "../../super/constants";
+import { getDepartmentsList } from "../requests";
+import { department } from "@/generated/prisma/client";
 
 const countryCodeList = [{
   code: "+44", label: "UK"
@@ -49,7 +51,7 @@ type UserFormInputType = {
   phoneNumber: string,
   role: string,
   userStatus: number,
-  dep_id: number,
+  department: department,
 }
 
 const Page = ({ editData, dialogOpen, handleDialogClose }: { editData: UserRecord, dialogOpen: boolean, handleDialogClose: () => void }) => {
@@ -61,7 +63,7 @@ const Page = ({ editData, dialogOpen, handleDialogClose }: { editData: UserRecor
     phoneNumber: editData.phone_number.split(" ")[1] || "",
     role: editData.role,
     userStatus: editData.user_status,
-    dep_id: editData.department.dep_id,
+    department: editData.department,
   })
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -89,6 +91,15 @@ const Page = ({ editData, dialogOpen, handleDialogClose }: { editData: UserRecor
   const [phoneNumberEmpty, setPhoneNumberEmpty] = useState(false);
 
   const [departments, setDepartments] = useState<UserRecord["department"][]>([])
+
+  useEffect(() => {
+    getDepartmentsList().then(async (res) => {
+      if (res.status === 200) {
+        const data = await res.json();
+        setDepartments(data);
+      }
+    })
+  }, [])
 
   return (<div>
     <Dialog
@@ -238,17 +249,13 @@ const Page = ({ editData, dialogOpen, handleDialogClose }: { editData: UserRecor
               <MenuItem value={userStatusToIntMap.rejected}>{userStatusToStrMap[userStatusToIntMap.rejected]}</MenuItem>
             </Select>
           </FormControl><FormControl sx={{ minWidth: 150 }}>
-            <InputLabel id="departmentInput">Department</InputLabel>
-            <Select
-              label="Department"
-              id="departmentInput"
-              value={formInput.dep_id}
-              onChange={(e) => { setFormInput({ ...formInput, dep_id: e.target.value }); }}
-            >
-              {departments.map(e => {
-                return <MenuItem value={e.dep_id} key={e.dep_id}>{e.dep_name}</MenuItem>
-              })}
-            </Select>
+            <Autocomplete
+              disablePortal
+              options={departments}
+              getOptionLabel={(option) => option.dep_name}
+              renderInput={(params) => <TextField {...params} label="Departments" />}
+              value={editData.department}
+            />
           </FormControl>
           <div className="flex justify-around gap-4">
             <Button
