@@ -10,20 +10,55 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  InputAdornment
+  InputAdornment,
 } from "@mui/material";
 import {
   Close as CloseIcon,
   FindInPage as FindInPageIcon,
-  Email as EmailIcon
+  Email as EmailIcon,
+  LocalPhone as LocalPhoneIcon
 } from "@mui/icons-material"
 import { UserRecord } from "@/model/models";
 import { userStatusToIntMap, userStatusToStrMap } from "../../super/constants";
 import { roles } from "../../super/constants";
 
+const countryCodeList = [{
+  code: "+44", label: "UK"
+}, {
+  code: "+1", label: "US/CA"
+}, {
+  code: "+91", label: "IN"
+}, {
+  code: "+86", label: "CN"
+}, {
+  code: "+61", label: "AU"
+}, {
+  code: "+33", label: "FR"
+}, {
+  code: "+49", label: "DE"
+}, {
+  code: "+81", label: "JP"
+}];
+
+type UserFormInputType = {
+  name: string,
+  email: string,
+  countryCode: string,
+  phoneNumber: string,
+  role: string,
+  userStatus: number,
+}
+
 const Page = ({ editData, dialogOpen, handleDialogClose }: { editData: UserRecord, dialogOpen: boolean, handleDialogClose: () => void }) => {
 
-  const [formInput, setFormInput] = useState<UserRecord>(editData)
+  const [formInput, setFormInput] = useState<UserFormInputType>({
+    name: editData.name,
+    email: editData.email,
+    countryCode: editData.phone_number.split(" ")[0] || "",
+    phoneNumber: editData.phone_number.split(" ")[1] || "",
+    role: editData.role,
+    userStatus: editData.user_status,
+  })
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -46,6 +81,8 @@ const Page = ({ editData, dialogOpen, handleDialogClose }: { editData: UserRecor
       setMailEmpty(false);
     }
   }
+
+  const [phoneNumberEmpty, setPhoneNumberEmpty] = useState(false);
 
 
   return (<div>
@@ -135,6 +172,41 @@ const Page = ({ editData, dialogOpen, handleDialogClose }: { editData: UserRecor
               }
             }}
           />
+          <div className="flex gap-3">
+            <Select
+              label=""
+              id="phoneInput"
+              value={formInput.countryCode}
+              onChange={(e) => { setFormInput({ ...formInput, countryCode: e.target.value }); }}
+            >
+              {countryCodeList.map(e => {
+                return <MenuItem value={e.code} key={e.code}>{e.label + '(' + e.code + ')'}</MenuItem>
+              })}
+            </Select>
+            <TextField
+              fullWidth
+              error={phoneNumberEmpty}
+              helperText={
+                phoneNumberEmpty ? "Please enter phone number" : ""
+              }
+              value={formInput.phoneNumber}
+              label="Phone Number"
+              id="phoneNumber"
+              type="tel"
+              onChange={(e) => {
+                setFormInput({ ...formInput, phoneNumber: e.target.value });
+              }}
+              slotProps={{
+                input: {
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <LocalPhoneIcon sx={{ color: "#111827" }} />
+                    </InputAdornment>
+                  ),
+                },
+              }}
+            />
+          </div>
           <FormControl sx={{ minWidth: 150 }}>
             <InputLabel id="searchUserStatusInput">Role</InputLabel>
             <Select
@@ -153,8 +225,8 @@ const Page = ({ editData, dialogOpen, handleDialogClose }: { editData: UserRecor
             <Select
               label="UserStatus"
               id="searchUserStatusInput"
-              value={formInput.user_status}
-              onChange={(e) => { setFormInput({ ...formInput, user_status: e.target.value }); }}
+              value={formInput.userStatus}
+              onChange={(e) => { setFormInput({ ...formInput, userStatus: e.target.value }); }}
             >
               <MenuItem value={userStatusToIntMap.pending}>{userStatusToStrMap[userStatusToIntMap.pending]}</MenuItem>
               <MenuItem value={userStatusToIntMap.normal}>{userStatusToStrMap[userStatusToIntMap.normal]}</MenuItem>
