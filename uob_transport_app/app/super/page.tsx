@@ -32,19 +32,10 @@ import {
   FirstPage
 } from "@mui/icons-material"
 import { getUsersAsAdmin } from "./request";
+import ViewDialog from "./userManageComponents/viewDialog";
+import { userStatusToIntMap, userStatusToStrMap, roleStrMap } from "./constants";
 
-const userStatusToIntMap = {
-  pending: 0,
-  normal: 1,
-  rejected: 2
-}
-const userStatusToStrMap = ['pending', 'normal', 'rejected']
-const roleStrMap = {
-  normalUser: 'normal_user',
-  financeStaff: 'finance_staff',
-  prolineStaff: 'proline_staff'
-}
-const role = [roleStrMap.normalUser, roleStrMap.financeStaff, roleStrMap.prolineStaff]
+const roles = [roleStrMap.normalUser, roleStrMap.financeStaff, roleStrMap.prolineStaff]
 
 interface TablePaginationActionsProps {
   count: number;
@@ -186,8 +177,13 @@ const Page = () => {
     _rerenderTable()
   }
 
+  const [userDetail, setUserDetail] = useState<UserRecord>()
+  const [viewDialogOpen, setViewDialogOpen] = useState(false);
+
   const handleViewDialogOpen = (row: UserRecord) => {
     console.log(row);
+    setUserDetail(row)
+    setViewDialogOpen(true);
   }
 
   const handleEditDialogOpen = (row: UserRecord) => {
@@ -252,7 +248,7 @@ const Page = () => {
                 onChange={(e) => { setSearchFormInput({ ...searchFormInput, role: e.target.value }); }}
                 size="small"
               >
-                {role.map(e => {
+                {roles.map(e => {
                   return <MenuItem value={e} key={e}>{e}</MenuItem>
                 })}
               </Select>
@@ -409,6 +405,7 @@ const Page = () => {
           />
         </div>
       </div>
+      {userDetail && <ViewDialog viewData={userDetail} dialogOpen={viewDialogOpen} handleDialogClose={() => setViewDialogOpen(false)}></ViewDialog>}
     </div>
   );
 };
