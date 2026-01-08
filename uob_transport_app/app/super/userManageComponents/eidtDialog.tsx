@@ -25,6 +25,7 @@ import { userStatusToIntMap, userStatusToStrMap } from "../../super/constants";
 import { roles } from "../../super/constants";
 import { getDepartmentsList } from "../requests";
 import { department } from "@/generated/prisma/client";
+import { updateUserAsAdmin } from "../request";
 
 const countryCodeList = [{
   code: "+44", label: "UK"
@@ -68,7 +69,27 @@ const Page = ({ editData, dialogOpen, handleDialogClose }: { editData: UserRecor
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    console.log('submit');
+    const toUpdateData: UserRecord = {
+      user_id: editData.user_id,
+      time_created: editData.time_created,
+      name: formInput.name,
+      surname: editData.surname, // TODO not need
+      email: formInput.email,
+      phone_number: formInput.countryCode + " " + formInput.phoneNumber,
+      role: formInput.role,
+      user_status: formInput.userStatus,
+      department: formInput.department,
+    }
+    console.log(toUpdateData);
+
+    // TODO Check input valid
+    updateUserAsAdmin(toUpdateData).then((res) => {
+      if (res.status === 200) {
+        handleDialogClose();
+      } else {
+        alert("Update user failed");
+      }
+    })
   }
 
   const [mailEmpty, setMailEmpty] = useState(false);
@@ -254,7 +275,8 @@ const Page = ({ editData, dialogOpen, handleDialogClose }: { editData: UserRecor
               options={departments}
               getOptionLabel={(option) => option.dep_name}
               renderInput={(params) => <TextField {...params} label="Departments" />}
-              value={editData.department}
+              value={formInput.department}
+              onChange={(_, newValue) => { setFormInput({ ...formInput, department: newValue! }) }}
             />
           </FormControl>
           <div className="flex justify-around gap-4">
