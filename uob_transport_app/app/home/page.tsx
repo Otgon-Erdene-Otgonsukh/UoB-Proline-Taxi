@@ -56,17 +56,7 @@ const Page = () => {
       return;
     }
 
-    getUserBookingList(paginationMeta.page, paginationMeta.pageSize).then(
-      (res) => {
-        if (res.status === 200) {
-          res.json().then((data) => {
-            setBookingListData(data.bookings);
-            setBookingListCount(data.totalNum);
-            setIsLoading(false);
-          });
-        }
-      }
-    );
+    _getBookingListData()
   }, [status, paginationMeta.page, paginationMeta.pageSize, router]);
 
   const handleClick = () => {
@@ -74,23 +64,15 @@ const Page = () => {
   };
 
   const handleChangePage = (
-    event: React.MouseEvent<HTMLButtonElement> | null,
+    _: React.MouseEvent<HTMLButtonElement> | null,
     newPage: number
   ) => {
     setIsLoading(true);
-    getUserBookingList(newPage, paginationMeta.pageSize).then((res) => {
-      if (res.status === 200) {
-        res.json().then((data) => {
-          setBookingListData(data.bookings);
-          setBookingListCount(data.totalNum);
-          setIsLoading(false);
-          setPaginationMeta({
-            ...paginationMeta,
-            page: newPage,
-          });
-        });
-      }
+    setPaginationMeta({
+      ...paginationMeta,
+      page: newPage,
     });
+    _getBookingListData()
   };
 
   const handleChangePageSize = (
@@ -197,9 +179,19 @@ const Page = () => {
 
   const handleSubmitSearchForm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
+    console.log(searchFormInput);
+  }
 
-    setIsLoading(true);
+  const _getBookingListData = () => {
+    getUserBookingList(paginationMeta.page, paginationMeta.pageSize).then((res) => {
+      if (res.status === 200) {
+        res.json().then((data) => {
+          setBookingListData(data.bookings);
+          setBookingListCount(data.totalNum);
+          setIsLoading(false);
+        });
+      }
+    });
   }
 
   // Do nothing if we get a status. Await for this check to be carried out in useEffect.
