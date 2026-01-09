@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
 
   if (userReset) {
     const transporter = createTransport({
-      host: 'smtp.gmail.com',
+      host: process.env.SMTP_SERVER ? process.env.SMTP_SERVER : 'smtp.gmail.com',
       port: 587,
       auth: {
         user: process.env.EMAIL_USERNAME,
