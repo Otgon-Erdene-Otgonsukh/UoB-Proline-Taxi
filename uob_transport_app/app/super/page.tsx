@@ -202,6 +202,15 @@ const Page = () => {
     setEditDialogOpen(true);
   };
 
+  const handleEditDialogClose = (isEdited: boolean) => {
+    setEditDialogOpen(false);
+    // after edit dialog closed, rerender table to get updated data
+    if (isEdited) {
+      setIsLoading(true)
+      _rerenderTable()
+    }
+  }
+
   const handleAcceptUserRegister = (row: UserRecord) => {
     console.log(row);
   };
@@ -418,7 +427,7 @@ const Page = () => {
         </div>
       </div>
       {userDetail && <ViewDialog viewData={userDetail} dialogOpen={viewDialogOpen} handleDialogClose={() => { setViewDialogOpen(false); }} />}
-      {userDetail && <EditDialog key={userDetail.user_id} editData={userDetail} dialogOpen={editDialogOpen} handleDialogClose={() => { setEditDialogOpen(false); }} departmentList={departments} />}
+      {userDetail && <EditDialog key={userDetail.user_id} editData={userDetail} dialogOpen={editDialogOpen} handleDialogClose={handleEditDialogClose} departmentList={departments} />}
     </div>
   );
 };

@@ -56,7 +56,7 @@ type UserFormInputType = {
   department: department,
 }
 
-const Page = ({ editData, dialogOpen, handleDialogClose, departmentList }: { editData: UserRecord, dialogOpen: boolean, handleDialogClose: () => void, departmentList: department[] }) => {
+const Page = ({ editData, dialogOpen, handleDialogClose, departmentList }: { editData: UserRecord, dialogOpen: boolean, handleDialogClose: (isEdited: boolean) => void, departmentList: department[] }) => {
 
   const [formInput, setFormInput] = useState<UserFormInputType>({
     name: editData.name,
@@ -92,7 +92,7 @@ const Page = ({ editData, dialogOpen, handleDialogClose, departmentList }: { edi
     updateUserAsAdmin(toUpdateData).then((res) => {
       if (res.status === 200) {
         setSnackbarState({ open: true, status: 'success' })
-        handleDialogClose();
+        handleDialogClose(true);
       } else {
         setSnackbarState({ open: true, status: 'error' })
       }
@@ -130,7 +130,7 @@ const Page = ({ editData, dialogOpen, handleDialogClose, departmentList }: { edi
 
   return (<div>
     <Dialog
-      onClose={handleDialogClose}
+      onClose={() => handleDialogClose(false)}
       aria-labelledby="customized-dialog-title"
       open={dialogOpen}
       sx={{
@@ -162,7 +162,7 @@ const Page = ({ editData, dialogOpen, handleDialogClose, departmentList }: { edi
       </DialogTitle>
       <IconButton
         aria-label="close"
-        onClick={handleDialogClose}
+        onClick={() => handleDialogClose(false)}
         sx={(theme) => ({
           position: "absolute",
           right: 8,
@@ -308,7 +308,7 @@ const Page = ({ editData, dialogOpen, handleDialogClose, departmentList }: { edi
             </Button>
             <Button
               fullWidth
-              onClick={handleDialogClose}
+              onClick={() => handleDialogClose(false)}
               sx={{
                 color: "#2c2c2c",
                 py: 1.5,
