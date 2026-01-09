@@ -32,6 +32,7 @@ import BookingPage from "../book/page";
 import CustomizedButton from "@/components/CustomizedButton";
 import { StyledTableCell } from "@/components/StyledTableCell";
 import { Snackbar, Alert } from "@mui/material";
+import ConfirmDialog from "@/components/confirmDIalog";
 
 interface TablePaginationActionsProps {
   count: number;
@@ -326,15 +327,14 @@ const Page = () => {
                       </StyledTableCell>
                       <StyledTableCell>
                         <span
-                          className={`inline-block px-5 py-1 rounded-full text-xs font-medium ${
-                            row.booking_status === "Approved"
-                              ? "bg-green-100 text-green-800 border border-green-800"
-                              : row.booking_status === "Rejected"
+                          className={`inline-block px-5 py-1 rounded-full text-xs font-medium ${row.booking_status === "Approved"
+                            ? "bg-green-100 text-green-800 border border-green-800"
+                            : row.booking_status === "Rejected"
                               ? "bg-red-100 text-red-800 border border-red-800"
                               : row.booking_status === "Cancelled"
-                              ? "bg-gray-300 text-gray-900 border border-gray-900"
-                              : "bg-yellow-100 text-yellow-800 border border-yellow-800"
-                          }`}
+                                ? "bg-gray-300 text-gray-900 border border-gray-900"
+                                : "bg-yellow-100 text-yellow-800 border border-yellow-800"
+                            }`}
                         >
                           {row.booking_status}
                         </span>
@@ -435,7 +435,7 @@ const Page = () => {
               </Typography>
               <Typography gutterBottom>
                 {bookDetail?.trip.airport === "" ||
-                bookDetail?.trip.airport === null
+                  bookDetail?.trip.airport === null
                   ? bookDetail?.trip.pickup_location
                   : bookDetail?.trip.airport}
               </Typography>
@@ -500,15 +500,14 @@ const Page = () => {
               </Typography>
               <Chip
                 size="small"
-                color={`${
-                  bookDetail?.booking_status === "Approved"
-                    ? "success"
-                    : bookDetail?.booking_status === "Pending"
+                color={`${bookDetail?.booking_status === "Approved"
+                  ? "success"
+                  : bookDetail?.booking_status === "Pending"
                     ? "warning"
                     : bookDetail?.booking_status === "Cancelled"
-                    ? "default"
-                    : "error"
-                }`}
+                      ? "default"
+                      : "error"
+                  }`}
                 label={bookDetail?.booking_status}
               />
             </Stack>
@@ -658,66 +657,13 @@ const Page = () => {
             </Button>
           </DialogActions>
         </Dialog>
-        <Dialog
-          onClose={handleCancelDialogClose}
-          aria-labelledby="customized-dialog-title"
+        <ConfirmDialog
           open={cancelBookDialogOpen}
-          maxWidth="md"
-        >
-          <DialogTitle
-            sx={{
-              m: 0,
-              p: 2,
-              fontFamily: "aleo",
-              fontWeight: "bold",
-              bgcolor: "#2c2c2c",
-              color: "white",
-              textAlign: "center",
-              fontSize: 28,
-            }}
-            id="customized-dialog-title"
-          >
-            Cancel Booking
-          </DialogTitle>
-          <IconButton
-            aria-label="close"
-            onClick={handleCancelDialogClose}
-            sx={(theme) => ({
-              position: "absolute",
-              right: 8,
-              top: 8,
-              color: theme.palette.grey[500],
-            })}
-          >
-            <CloseIcon/>
-          </IconButton>
-          <DialogContent dividers sx={{ fontFamily: "inter" }}>
-            Are you sure you want to cancel this booking?
-          </DialogContent>
-          <DialogActions>
-            <Button
-              sx={{
-                color: "#2c2c2c",
-                transition: "all 300ms",
-                ":hover": { bgcolor: "#2c2c2c", color: "white" },
-              }}
-              onClick={handleCancelDialogClose}
-            >
-              Close
-            </Button>
-            <Button
-              sx={{
-                color: "#2c2c2c",
-                transition: "all 300ms",
-                mr: 1,
-                ":hover": { bgcolor: "#2c2c2c", color: "white" },
-              }}
-              onClick={handleConfirmCancel}
-            >
-              Confirm
-            </Button>
-          </DialogActions>
-        </Dialog>
+          dialogTitle="Cancel Booking"
+          confirmMessage="Are you sure you want to cancel this booking?"
+          confirmCallBack={handleConfirmCancel}
+          cancelCallBack={handleCancelDialogClose}
+        />
         <div className="flex justify-center mt-4">
           <TablePagination
             component="div"
