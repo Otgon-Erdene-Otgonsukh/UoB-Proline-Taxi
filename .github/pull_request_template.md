@@ -27,3 +27,4 @@ This pull request is the following type of change:
 - [ ] New feature
 - [ ] Documentation update
 - [ ] Breaking change
+- [ ] Testing
