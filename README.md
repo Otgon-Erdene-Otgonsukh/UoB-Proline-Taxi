@@ -151,7 +151,7 @@ Benefit from a streamlined booking process, clear driver communication, and stra
 
 ## Project Architecture
 
-<img src="/docs/updated-teck-stack.jpg" alt="tech stack diagram"/>
+<img src="/docs/Tech_stack.jpg" alt="tech stack diagram"/>
 
 ## Developer Instructions
 For development, you can get started by cloning the repository, navigating to the root directory of it in the command line, and then do the following to get it running locally:\
@@ -182,7 +182,8 @@ This will be used for NextAuth session JWTs on the website, effectively to keep 
 ```sh
 npx auth secret
 ```
-\
+<br/>
+
 > [!IMPORTANT]
 > You may need to move the secret key from the .env.local file it generates into .env, allowing the project and docker containers to access it.
 \
