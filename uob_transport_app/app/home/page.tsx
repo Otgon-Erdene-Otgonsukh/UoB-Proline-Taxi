@@ -31,6 +31,13 @@ import { StyledTableCell } from "@/components/StyledTableCell";
 import { Snackbar, Alert } from "@mui/material";
 import ConfirmDialog from "@/components/confirmDIalog";
 import ViewDialog from "./components/viewDialog";
+import TextField from "@mui/material/TextField";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
+import { userStatusToIntMap } from "../super/constants";
+import { bookingStatus } from "./constants";
 
 const Page = () => {
   // Get NextAuth Session.
@@ -174,6 +181,27 @@ const Page = () => {
     setEditBookDialogOpen(false);
   };
 
+  // Search form state
+  type SearchFormProps = {
+    pickUpTime?: string,
+    from?: string,
+    to?: string,
+    bookingStatus?: string,
+  }
+  const [searchFormInput, setSearchFormInput] = useState<SearchFormProps>({
+    pickUpTime: "",
+    from: "",
+    to: "",
+    bookingStatus: "",
+  })
+
+  const handleSubmitSearchForm = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+
+    setIsLoading(true);
+  }
+
   // Do nothing if we get a status. Await for this check to be carried out in useEffect.
   if (status === "loading" || status === "unauthenticated") {
     return null;
@@ -182,17 +210,65 @@ const Page = () => {
   return (
     <div className="flex justify-center font-inter p-4">
       <div className="bg-white shadow-lg/20 rounded-lg p-6 md:p-8 w-full max-w-6xl my-15 mt-20">
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-between mb-6">
           <h1 className="font-aleo text-2xl sm:text-3xl font-semibold text-shadow-lg/20">
             MY BOOKINGS
           </h1>
-          <button
-            onClick={handleClick}
-            className="bg-[#2c2c2c] text-white py-2 px-6 rounded-md hover:bg-[#474747] hover:scale-101 transition-all duration-200 text-sm font-light cursor-pointer"
-          >
-            + New Booking
-          </button>
+          <CustomizedButton
+            title="+ New Booking"
+            type="primary"
+            click={handleClick}
+          />
         </div>
+
+        <Box
+          component="form"
+          onSubmit={handleSubmitSearchForm}
+          sx={{
+            display: "flex",
+            gap: 2.5,
+            marginBottom: 3,
+          }}
+        >
+          <TextField
+            fullWidth
+            label="From"
+            id="searchFromInput"
+            value={searchFormInput.from}
+            onChange={(e) => { setSearchFormInput({ ...searchFormInput, from: e.target.value }); }}
+            size="small"
+            sx={{ minWidth: 150 }}
+          />
+          <TextField
+            fullWidth
+            label="To"
+            id="searchToInput"
+            value={searchFormInput.to}
+            onChange={(e) => { setSearchFormInput({ ...searchFormInput, to: e.target.value }); }}
+            size="small"
+            sx={{ minWidth: 150 }}
+          />
+          <FormControl sx={{ minWidth: 150 }}>
+            <InputLabel id="searchBookingStatusInputLabel" size="small">Booking Status</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              label="Booking Status"
+              id="searchBookingStatusInput"
+              value={searchFormInput.bookingStatus}
+              onChange={(e) => { setSearchFormInput({ ...searchFormInput, bookingStatus: e.target.value }); }}
+              size="small"
+            >
+              {bookingStatus.map(e => {
+                return <MenuItem value={e} key={e}>{e}</MenuItem>
+              })}
+            </Select>
+          </FormControl>
+          <CustomizedButton
+            title="Search"
+            type="primary"
+            click={() => { }}
+          />
+        </Box>
 
         {isLoading ? (
           <Typography sx={{ color: "gray", fontSize: 16, textAlign: "center" }}>
