@@ -176,7 +176,7 @@ const Page = () => {
     pickUpTimeTo: "",
     from: "",
     to: "",
-    bookingStatus: "",
+    bookingStatus: "All",
   })
 
   const handleSubmitSearchForm = (e: React.FormEvent<HTMLFormElement>) => {
@@ -187,7 +187,7 @@ const Page = () => {
   }
 
   const _getBookingListData = () => {
-    getUserBookingList(paginationMeta.page, paginationMeta.pageSize, searchFormInput).then((res) => {
+    getUserBookingList(paginationMeta.page, paginationMeta.pageSize, { ...searchFormInput, bookingStatus: searchFormInput.bookingStatus === 'All' ? '' : searchFormInput.bookingStatus }).then((res) => {
       if (res.status === 200) {
         res.json().then((data) => {
           setBookingListData(data.bookings);
@@ -254,6 +254,7 @@ const Page = () => {
               onChange={(e) => { setSearchFormInput({ ...searchFormInput, bookingStatus: e.target.value }); }}
               size="small"
             >
+              <MenuItem value={'All'} key={'All'}>All</MenuItem>
               {bookingStatus.map(e => {
                 return <MenuItem value={e} key={e}>{e}</MenuItem>
               })}
