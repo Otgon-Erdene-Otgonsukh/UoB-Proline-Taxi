@@ -1,7 +1,6 @@
 import { NextRequest } from "next/server";
 import { auth } from "@/auth";
 import { getUserListAccess, getUserCountAccess, updateUserAccess } from "@/backend/access/user_access";
-import { UserRecord } from "@/model/models";
 
 export async function GET(request: NextRequest) {
 
@@ -75,5 +74,4 @@ export async function POST(request: NextRequest) {
       headers: { 'Content-Type': 'application/json' },
     });
   }
-
 }

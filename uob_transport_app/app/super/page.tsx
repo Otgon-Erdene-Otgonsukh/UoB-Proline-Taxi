@@ -31,7 +31,7 @@ import {
   LastPage,
   FirstPage
 } from "@mui/icons-material"
-import { getUsersAsAdmin } from "./request";
+import { getUsersAsAdmin, updateUserAsAdmin } from "./request";
 import ViewDialog from "./userManageComponents/viewDialog";
 import EditDialog from "./userManageComponents/eidtDialog";
 import { userStatusToIntMap, userStatusToStrMap, roleStrMap, roles } from "./constants";
@@ -212,11 +212,27 @@ const Page = () => {
   }
 
   const handleAcceptUserRegister = (row: UserRecord) => {
-    console.log(row);
+    updateUserAsAdmin({
+      ...row,
+      user_status: userStatusToIntMap.normal
+    }).then(res => {
+      if (res.status === 200) {
+        setIsLoading(true)
+        _rerenderTable()
+      }
+    })
   };
 
   const handleRejectUserRegister = (row: UserRecord) => {
-    console.log(row);
+    updateUserAsAdmin({
+      ...row,
+      user_status: userStatusToIntMap.rejected
+    }).then(res => {
+      if (res.status === 200) {
+        setIsLoading(true)
+        _rerenderTable()
+      }
+    })
   };
 
   const _rerenderTable = () => {
