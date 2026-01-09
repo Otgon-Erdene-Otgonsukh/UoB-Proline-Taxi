@@ -43,6 +43,7 @@ export async function GET(request: NextRequest) {
   });
 }
 
+// This endpoint is to update user info by super admin
 export async function POST(request: NextRequest) {
   // TODO Check super admin
   const requestJson = await request.json()
