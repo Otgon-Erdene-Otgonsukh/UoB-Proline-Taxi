@@ -213,7 +213,6 @@ const Page = () => {
   }
 
   const [confirmAcceptDialogOpen, setConfirmAcceptDialogOpen] = useState(false);
-
   const handleAcceptUserRegister = (row: UserRecord) => {
     updateUserAsAdmin({
       ...row,
@@ -226,6 +225,7 @@ const Page = () => {
     })
   };
 
+  const [confirmRejectDialogOpen, setConfirmRejectDialogOpen] = useState(false);
   const handleRejectUserRegister = (row: UserRecord) => {
     updateUserAsAdmin({
       ...row,
@@ -411,7 +411,7 @@ const Page = () => {
                           )}
                           {row.user_status === userStatusToIntMap.pending && (
                             <CustomizedButton
-                              click={() => handleRejectUserRegister(row)}
+                              click={() => { setConfirmRejectDialogOpen(true); setUserDetail(row); }}
                               type="error"
                               title="Reject"
                             />
@@ -453,6 +453,13 @@ const Page = () => {
         confirmMessage={'Are you sure you want to accept this user registeration?'}
         confirmCallBack={() => { handleAcceptUserRegister(userDetail!); setConfirmAcceptDialogOpen(false); }}
         cancelCallBack={() => { setConfirmAcceptDialogOpen(false); }}
+      />
+      <ConfirmDialog
+        open={confirmRejectDialogOpen}
+        dialogTitle="Reject User Registeration"
+        confirmMessage={'Are you sure you want to reject this user registeration?'}
+        confirmCallBack={() => { handleRejectUserRegister(userDetail!); setConfirmRejectDialogOpen(false); }}
+        cancelCallBack={() => { setConfirmRejectDialogOpen(false); }}
       />
     </div>
   );
