@@ -294,6 +294,7 @@ export default function Register() {
                     label="First Name"
                     id="firstName"
                     type="text"
+                    data-testid="textfield"
                     onChange={(e) => {
                       setFirstName(e.target.value);
                       setFirstNameEmpty(false);
@@ -306,6 +307,7 @@ export default function Register() {
                     label="Last Name"
                     id="lastName"
                     type="text"
+                    data-testid="textfield"
                     onChange={(e) => {
                       setLastName(e.target.value);
                       setLastNameEmpty(false);
@@ -319,6 +321,7 @@ export default function Register() {
                   label="Username"
                   id="username"
                   type="text"
+                  data-testid="textfield"
                   onChange={(e) => {
                     setUsername(e.target.value);
                     setUsernameEmpty(false);
@@ -359,6 +362,7 @@ export default function Register() {
                     label="Phone Number"
                     id="phoneNumber"
                     type="tel"
+                    data-testid="textfield"
                     onChange={(e) => {
                       setPhoneNumber(e.target.value);
                       setPhoneNumberEmpty(false);
@@ -436,6 +440,7 @@ export default function Register() {
                   label="Email"
                   id="email"
                   type="email"
+                  data-testid="textfield"
                   onChange={(e) => {
                     setMail(e.target.value);
                     setEmailError(false);
@@ -466,6 +471,7 @@ export default function Register() {
                   label="Password"
                   id="password"
                   type={passwordVisible ? "text" : "password"}
+                  data-testid="textfield"
                   onChange={(e) => {
                     setPassword(e.target.value);
                     setPasswordError(false);
@@ -507,6 +513,7 @@ export default function Register() {
                       },
                       cursor: "pointer",
                     }}
+                    data-testid="card"
                   >
                     <CardActionArea
                       sx={{
@@ -543,6 +550,7 @@ export default function Register() {
                               mb: 11,
                               color: "green",
                             }}
+                            data-testid="normal-check-icon"
                           />
                         )}
                         <PersonIcon sx={{ fontSize: 40, color: "#2c2c2c" }} />
@@ -563,6 +571,7 @@ export default function Register() {
                       },
                       cursor: "pointer",
                     }}
+                    data-testid="card"
                   >
                     <CardActionArea
                       sx={{
@@ -599,6 +608,7 @@ export default function Register() {
                               mb: 11,
                               color: "green",
                             }}
+                            data-testid="finance-check-icon"
                           />
                         )}
                         <ManageAccountsIcon
@@ -620,6 +630,7 @@ export default function Register() {
                       },
                       cursor: "pointer",
                     }}
+                    data-testid="card"
                   >
                     <CardActionArea
                       sx={{
@@ -658,13 +669,14 @@ export default function Register() {
                               mb: 11,
                               color: "green",
                             }}
+                            data-testid="proline-check-icon"
                           />
                         )}
                         <PersonSearchIcon
                           sx={{ fontSize: 40, color: "#2c2c2c" }}
                         />
                         <div className="text-center font-inter text-sm font-medium">
-                          <span>ProLine Staff</span>
+                          <span>Proline Staff</span>
                         </div>
                       </CardContent>
                     </CardActionArea>
@@ -679,6 +691,7 @@ export default function Register() {
                   fullWidth
                   type="submit"
                   variant="contained"
+                  data-testid="submit-button"
                   sx={{
                     bgcolor: "#2c2c2c",
                     color: "white",
