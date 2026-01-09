@@ -36,6 +36,7 @@ import ViewDialog from "./userManageComponents/viewDialog";
 import EditDialog from "./userManageComponents/eidtDialog";
 import { userStatusToIntMap, userStatusToStrMap, roleStrMap, roles } from "./constants";
 import { getDepartmentsList } from "./requests";
+import ConfirmDialog from "@/components/confirmDIalog";
 
 interface TablePaginationActionsProps {
   count: number;
@@ -210,6 +211,8 @@ const Page = () => {
       _rerenderTable()
     }
   }
+
+  const [confirmAcceptDialogOpen, setConfirmAcceptDialogOpen] = useState(false);
 
   const handleAcceptUserRegister = (row: UserRecord) => {
     updateUserAsAdmin({
@@ -401,7 +404,7 @@ const Page = () => {
                           />
                           {row.user_status === userStatusToIntMap.pending && (
                             <CustomizedButton
-                              click={() => handleAcceptUserRegister(row)}
+                              click={() => { setConfirmAcceptDialogOpen(true); setUserDetail(row); }}
                               type="primary"
                               title="Accept"
                             />
@@ -444,6 +447,13 @@ const Page = () => {
       </div>
       {userDetail && <ViewDialog viewData={userDetail} dialogOpen={viewDialogOpen} handleDialogClose={() => { setViewDialogOpen(false); }} />}
       {userDetail && <EditDialog key={userDetail.user_id} editData={userDetail} dialogOpen={editDialogOpen} handleDialogClose={handleEditDialogClose} departmentList={departments} />}
+      <ConfirmDialog
+        open={confirmAcceptDialogOpen}
+        dialogTitle="Accept User Registeration"
+        confirmMessage={'Are you sure you want to accept this user registeration?'}
+        confirmCallBack={() => { handleAcceptUserRegister(userDetail!); setConfirmAcceptDialogOpen(false); }}
+        cancelCallBack={() => { setConfirmAcceptDialogOpen(false); }}
+      />
     </div>
   );
 };
