@@ -410,6 +410,7 @@ export default function Register() {
                       {...params}
                       label="Department"
                       error={departmentEmpty}
+                      data-testid="textfield"
                       helperText={
                         departmentEmpty
                           ? "Select a department"
