@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -13,6 +13,8 @@ import {
   InputAdornment,
   Button,
   Autocomplete,
+  Snackbar,
+  Alert
 } from "@mui/material";
 import {
   Close as CloseIcon,
@@ -89,9 +91,10 @@ const Page = ({ editData, dialogOpen, handleDialogClose, departmentList }: { edi
     // TODO Check input valid
     updateUserAsAdmin(toUpdateData).then((res) => {
       if (res.status === 200) {
+        setSnackbarState({ open: true, status: 'success' })
         handleDialogClose();
       } else {
-        alert("Update user failed");
+        setSnackbarState({ open: true, status: 'error' })
       }
     })
   }
@@ -111,6 +114,18 @@ const Page = ({ editData, dialogOpen, handleDialogClose, departmentList }: { edi
       setInvalidMail(false);
       setMailEmpty(false);
     }
+  }
+
+  const [snackbarState, setSnackbarState] = useState({
+    open: false,
+    status: 'success'
+  })
+
+  const handleCloseSnackbar = () => {
+    setSnackbarState({
+      ...snackbarState,
+      open: false,
+    })
   }
 
   return (<div>
@@ -309,6 +324,21 @@ const Page = ({ editData, dialogOpen, handleDialogClose, departmentList }: { edi
         </Box>
       </DialogContent>
     </Dialog>
+    <Snackbar
+      autoHideDuration={2000}
+      anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      open={snackbarState.open}
+      onClose={handleCloseSnackbar}
+    >
+      <Alert
+        onClose={handleCloseSnackbar}
+        severity={snackbarState.status === 'success' ? 'success' : 'error'}
+        variant="filled"
+        sx={{ width: '100%' }}
+      >
+        {snackbarState.status === 'success' ? 'Update success!' : 'Update Failed! Try again'}
+      </Alert>
+    </Snackbar>
   </div>)
 }
 
