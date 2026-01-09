@@ -19,7 +19,7 @@ model User {
   phone_number String?       @db.VarChar(20)
   token        String?       @unique @db.VarChar(256)
   time_created DateTime?     @default(now()) @db.Timestamp(6)
-  role         String?
+  role         String?       @db.VarChar(255)
   department   department?   @relation(fields: [dep_id], references: [dep_id], onUpdate: NoAction)
   booking      booking[]
   user_address user_address?
@@ -86,8 +86,8 @@ model user_address {
 }
 
 model user_reset {
-  id           Int        @id @default(autoincrement())
-  email        String     @db.VarChar(255) @unique
-  uuid         String     @db.VarChar(64) @unique
-  expired_at   DateTime   @db.Timestamp(6)
+  id         Int      @id @default(autoincrement())
+  uuid       String   @unique @db.VarChar(64)
+  expired_at DateTime @db.Timestamp(6)
+  email      String   @unique @db.VarChar(255)
 }
