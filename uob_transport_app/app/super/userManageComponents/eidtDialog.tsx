@@ -18,7 +18,7 @@ import {
 } from "@mui/material";
 import {
   Close as CloseIcon,
-  FindInPage as FindInPageIcon,
+  Edit as EditIcon,
   Email as EmailIcon,
   LocalPhone as LocalPhoneIcon
 } from "@mui/icons-material"
@@ -156,9 +156,9 @@ const Page = ({ editData, dialogOpen, handleDialogClose, departmentList }: { edi
         id="customized-dialog-title"
       >
         Edit User
-        <FindInPageIcon
+        <EditIcon
           sx={{ fontSize: 35, mb: 1, ml: 1, mr: -1 }}
-        ></FindInPageIcon>
+        ></EditIcon>
       </DialogTitle>
       <IconButton
         aria-label="close"
