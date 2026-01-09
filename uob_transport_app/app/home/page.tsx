@@ -165,13 +165,15 @@ const Page = () => {
 
   // Search form state
   type SearchFormProps = {
-    pickUpTime?: string,
+    pickUpTimeFrom?: string,
+    pickUpTimeTo?: string,
     from?: string,
     to?: string,
     bookingStatus?: string,
   }
   const [searchFormInput, setSearchFormInput] = useState<SearchFormProps>({
-    pickUpTime: "",
+    pickUpTimeFrom: "",
+    pickUpTimeTo: "",
     from: "",
     to: "",
     bookingStatus: "",
@@ -180,10 +182,12 @@ const Page = () => {
   const handleSubmitSearchForm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log(searchFormInput);
+    setIsLoading(true)
+    _getBookingListData()
   }
 
   const _getBookingListData = () => {
-    getUserBookingList(paginationMeta.page, paginationMeta.pageSize).then((res) => {
+    getUserBookingList(paginationMeta.page, paginationMeta.pageSize, searchFormInput).then((res) => {
       if (res.status === 200) {
         res.json().then((data) => {
           setBookingListData(data.bookings);
