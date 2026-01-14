@@ -14,12 +14,12 @@ model User {
   dep_id       Int?
   email        String        @unique @db.VarChar(255)
   password     String        @db.VarChar(255)
-  name         String?       @db.VarChar(100)
+  name         String        @db.VarChar(100)
   surname      String?       @db.VarChar(100)
-  phone_number String?       @db.VarChar(20)
-  token        String?       @unique @db.VarChar(256)
-  time_created DateTime?     @default(now()) @db.Timestamp(6)
-  role         String?       @db.VarChar(255)
+  phone_number String        @db.VarChar(20)
+  time_created DateTime      @default(now()) @db.Timestamp(6)
+  role         String        @db.VarChar(255)
+  user_status  Int           @default(0)
   department   department?   @relation(fields: [dep_id], references: [dep_id], onUpdate: NoAction)
   booking      booking[]
   user_address user_address?
@@ -59,22 +59,23 @@ model departmentusermap {
 }
 
 model trip {
-  trip_id           Int       @id @default(autoincrement())
-  icabbi_booking_id Int?
-  pickup_location   String?
-  pickup_latitude   Int?
-  pickup_longitude  Int?
-  dropoff_location  String?
-  dropoff_latitude  Int?
-  dropoff_longitude Int?
-  pickup_time       DateTime? @db.Timestamp(6)
-  via               String?
-  passenger_num     Int?
-  return_drop_loc   String?
-  PO                String?
-  airport           String?
-  flight_num        String?
-  booking           booking[]
+  trip_id            Int       @id @default(autoincrement())
+  icabbi_booking_id  Int?
+  pickup_location    String?
+  pickup_latitude    Int?
+  pickup_longitude   Int?
+  dropoff_location   String?
+  dropoff_latitude   Int?
+  dropoff_longitude  Int?
+  pickup_time        DateTime? @db.Timestamp(6)
+  via                String?
+  passenger_num      Int?
+  return_drop_loc    String?
+  PO                 String?
+  airport            String?
+  flight_num         String?
+  return_pickup_time DateTime? @db.Timestamp(6)
+  booking            booking[]
 }
 
 model user_address {
