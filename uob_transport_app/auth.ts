@@ -7,6 +7,10 @@ import { User, department } from "@/generated/prisma/browser";
 import bcrypt from "bcryptjs";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  // Explicitly define that jwt is used for session management
+  session: {
+    strategy: "jwt",
+  },
   providers: [
     Credentials({
       // You can specify which fields should be submitted, by adding keys to the `credentials` object.
@@ -56,7 +60,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ],
   callbacks: {
     // Adding username + other data to the session.
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
+      // On sign in, populate token from user
       if (user) {
         token.name = user.name;
         token.surname = user.surname;
@@ -66,6 +71,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.account_type = user.account_type;
         token.department = user.department;
       }
+
+      // On update, use the session data passed from client to update both token and active session data
+      if (trigger === "update" && session?.user) {
+        token.name = session.user.name;
+        token.surname = session.user.surname;
+        token.username = session.user.username;
+        token.email = session.user.email;
+        token.phone_number = session.user.phone_number;
+        token.department = session.user.department;
+        token.account_type = session.user.account_type;
+      }
+
       return token;
     },
 
