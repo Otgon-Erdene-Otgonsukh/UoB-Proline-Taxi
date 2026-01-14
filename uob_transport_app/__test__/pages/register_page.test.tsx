@@ -48,7 +48,7 @@ describe("Register page rendering test", () => {
     await user.type(screen.getAllByTestId("textfield")[1], "Doe"); // lastName
     await user.type(screen.getAllByTestId("textfield")[2], "johndoe"); // username
     await user.type(screen.getAllByTestId("textfield")[3], "1234567890"); // phone
-    await user.type(screen.getAllByTestId("textfield")[4], "Engineering"); // department
+    await user.type(screen.getAllByTestId("textfield")[4], "Law"); // department
     await user.type(screen.getAllByTestId("textfield")[5], "john@test.com"); // email
     await user.type(screen.getAllByTestId("textfield")[6], "password123"); // password
 
