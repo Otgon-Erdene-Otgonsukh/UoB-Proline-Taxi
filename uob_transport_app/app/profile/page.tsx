@@ -495,7 +495,7 @@ export default function Profile() {
           <h2 className="text-lg font-semibold text-gray-700 mb-4">
             Account Details
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className={`grid grid-cols-1 md:${session?.user.department ? "grid-cols-2" : "grid-cols-1"} gap-4`}>
             {session?.user.department &&
               (departmentEditOn ? (
                 <Autocomplete
