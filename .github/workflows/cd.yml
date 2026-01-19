@@ -48,8 +48,8 @@ jobs:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         IMAGE_TAG: ${{ github.sha }}
       run: |
-        # Build using docker compose
-        docker compose build
+        # Build using docker compose with build args
+        docker compose build --build-arg DATABASE_URL="$DATABASE_URL"
         # Tag the image for ECR
         docker tag uob-sustainable-transport:latest $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         # Push to ECR
