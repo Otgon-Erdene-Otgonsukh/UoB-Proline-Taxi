@@ -18,6 +18,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
 export const Navbar = () => {
   const router = useRouter();
@@ -49,6 +50,7 @@ export const Navbar = () => {
 
   const handleCloseMenu = () => {
     setAnchorEl(null);
+    router.push("/profile");
   };
 
   const [signoutDialogOpen, setSignoutDialogOpen] = useState(false)
@@ -118,7 +120,7 @@ export const Navbar = () => {
         <div className="pr-6">
           {session ? (
             <div>
-              <Button className="text-lg" onClick={handleClick}>Hi, {session.user?.name}!</Button>
+              <Button className="text-lg" sx={{color: "white", fontFamily: "inter"}} onClick={handleClick}>Hi, {session.user?.username}! <ArrowDropDownIcon sx={{mb: 0.4, transform: open ? "rotate(180deg)" : "none"}}/></Button>
               <Menu
                 id="basic-menu"
                 anchorEl={anchorEl}
@@ -129,13 +131,37 @@ export const Navbar = () => {
                     elevation: 0,
                     sx: {
                       overflow: 'visible',
-                      filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
-                      mt: 1.5,
+                      filter: 'drop-shadow(0px 4px 12px rgba(0,0,0,0.15))',
+                      mt: 2,
+                      minWidth: 150,
+                      borderRadius: 2,
+                      bgcolor: '#ffffff',
+                      border: '2px solid black',
                       '& .MuiAvatar-root': {
-                        width: 32,
-                        height: 32,
+                        width: 36,
+                        height: 36,
                         ml: -0.5,
-                        mr: 1,
+                        mr: 1.5,
+                        bgcolor: '#2C2C2C',
+                        fontSize: '0.95rem',
+                      },
+                      '& .MuiMenuItem-root': {
+                        px: 2,
+                        py: 1.5,
+                        fontSize: '0.95rem',
+                        transition: 'all 0.2s ease-in-out',
+                        '&:hover': {
+                          bgcolor: '#f5f5f5',
+                          transform: 'translateY(-3px)',
+                        },
+                      },
+                      '& .MuiListItemIcon-root': {
+                        minWidth: 36,
+                        color: '#666',
+                      },
+                      '& .MuiDivider-root': {
+                        my: 1,
+                        borderColor: 'rgba(0,0,0,0.08)',
                       },
                       '&::before': {
                         content: '""',
@@ -143,11 +169,14 @@ export const Navbar = () => {
                         position: 'absolute',
                         top: 0,
                         right: 14,
-                        width: 10,
-                        height: 10,
-                        bgcolor: 'background.paper',
+                        width: 12,
+                        height: 12,
+                        bgcolor: '#ffffff',
                         transform: 'translateY(-50%) rotate(45deg)',
                         zIndex: 0,
+                        border: '1px solid rgba(0,0,0,0.05)',
+                        borderRight: 'none',
+                        borderBottom: 'none',
                       },
                     },
                   },
@@ -155,16 +184,30 @@ export const Navbar = () => {
                 transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
               >
-                <MenuItem onClick={handleCloseMenu}>
-                  <Avatar />
+                <MenuItem 
+                  onClick={handleCloseMenu}
+                  sx={{
+                    fontWeight: 500,
+                    color: '#2C2C2C',
+                  }}
+                >
+                  <Avatar>{session?.user?.name?.charAt(0).toUpperCase()}</Avatar>
                   Profile
                 </MenuItem>
                 <Divider />
-                <MenuItem onClick={handleOpenSiagnoutDialog}>
+                <MenuItem 
+                  onClick={handleOpenSiagnoutDialog}
+                  sx={{
+                    color: '#d32f2f',
+                    '&:hover': {
+                      bgcolor: '#ffebee !important',
+                    }
+                  }}
+                >
                   <ListItemIcon>
-                    <Logout fontSize="small" />
+                    <Logout fontSize="small" sx={{ color: '#d32f2f', ml: 0.5}} />
                   </ListItemIcon>
-                  Logout
+                  <p className="ml-1">Logout</p>
                 </MenuItem>
               </Menu>
               <Dialog
