@@ -28,3 +28,47 @@ export const getUserByEmailAccess = async (email: string): Promise<User | null> 
     }
   })
 }
+
+export const getUserListAccess = async (page: number, pageSize: number, name?: string, role?: string, userStatus?: number): Promise<User[] | null> => {
+  const query: { [key: string]: string | number | object } = {}
+  if (name) {
+    query['name'] = {
+      contains: name
+    }
+  }
+  if (role) {
+    query['role'] = role
+  }
+  if (userStatus) {
+    query['user_status'] = userStatus
+  }
+  return prisma.user.findMany({
+    where: query,
+    include: {
+      department: true
+    },
+    orderBy: {
+      time_created: 'desc'
+    },
+    skip: page * pageSize,
+    take: pageSize
+  })
+}
+
+export const getUserCountAccess = async (name?: string, role?: string, userStatus?: number): Promise<number | null> => {
+  const query: { [key: string]: string | number | object } = {}
+  if (name) {
+    query['name'] = {
+      contains: name
+    }
+  }
+  if (role) {
+    query['role'] = role
+  }
+  if (userStatus) {
+    query['user_status'] = userStatus
+  }
+  return prisma.user.count({
+    where: query,
+  })
+}
