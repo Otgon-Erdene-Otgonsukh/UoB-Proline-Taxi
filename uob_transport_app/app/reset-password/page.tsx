@@ -1,6 +1,6 @@
 "use client";
 import { useSearchParams, useRouter, } from "next/navigation";
-import { ChangeEvent, useEffect, useState, Suspense } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -15,7 +15,6 @@ import {
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import Visibility from "@mui/icons-material/Visibility";
 import { getUserResetByUuid, resetPassword } from "./request";
-import { user_reset } from "@/generated/prisma/client";
 
 const Page = () => {
   const searchParams = useSearchParams();
@@ -25,7 +24,6 @@ const Page = () => {
   const router = useRouter();
 
   const [pageValid, setPageValid] = useState(true)
-  const [userReset, setUserReset] = useState<user_reset>()
 
   useEffect(() => {
 
@@ -33,17 +31,13 @@ const Page = () => {
       getUserResetByUuid(uuid).then(res => {
         if (res.status !== 200) {
           setPageValid(false)
-        } else {
-          res.json().then((data) => {
-            setUserReset(data)
-          })
         }
       })
     } else {
       setPageValid(false)
     }
 
-  }, []);
+  }, [uuid]);
 
   const [passEmpty, setPassEmpty] = useState(false);
   const [showPassword, setShowPassword] = useState(false);

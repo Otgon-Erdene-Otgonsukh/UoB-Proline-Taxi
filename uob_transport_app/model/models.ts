@@ -1,3 +1,5 @@
+import { department } from "@/generated/prisma/client";
+
 export type BookingLocation = {
   name: string;
   latitude: string;
@@ -42,4 +44,16 @@ export function bookingStatusMap(bookingStatus: number): BookingStatusStr {
     case 2:
       return 'Rejected';
   }
+}
+
+export type UserRecord = {
+  time_created: string;
+  user_id: string;
+  department: department;
+  email: string;
+  name: string;
+  surname: string;
+  phone_number: string;
+  role: string;
+  user_status: number;
 }
