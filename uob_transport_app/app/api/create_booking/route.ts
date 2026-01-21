@@ -1,11 +1,23 @@
 import createBooking from "@/backend/create_booking/create_booking";
 import { NextResponse } from "next/server";
+import { auth } from "@/auth";
 
 export async function POST(request: Request) {
+    // Check if user is signed in.
+    const session = await auth();
+    if (!session) {
+        return new Response(JSON.stringify({
+        message: 'login required'
+        }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' },
+        })
+    }
+
     try {
         // Get the JSON body of the POST request.
         const request_json = await request.json()
-        const user_id = request_json["user_id"]
+        const user_id = session.user.user_id // Use the user ID from the session.
         const pickup_loc = request_json["pickup_location"].toString()
         const dropoff_loc = request_json["dropoff_location"].toString()
         const first_name = request_json["first_name"].toString()
