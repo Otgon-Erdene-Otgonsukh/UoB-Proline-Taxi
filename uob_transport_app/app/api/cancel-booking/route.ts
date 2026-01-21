@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
 
   // Checks the user is allowed to update the booking.
   try {
-    var booking
+    let booking = null;
     if (await isAdmin(session.user.user_id)) {
       // If the user is an admin, they can delete the booking without ownership, but it still needs to exist.
       booking = await getBookingDetails(-1, bookingId) // -1 bypasses user check.
