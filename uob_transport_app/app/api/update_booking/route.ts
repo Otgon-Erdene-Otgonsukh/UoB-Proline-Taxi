@@ -33,7 +33,7 @@ export async function POST(req: Request) {
     // Booking is null if booking does not exist or does not belong to user/admin.
     if (booking === null) {
       return new Response(JSON.stringify({
-        message: 'Booking not found'
+        success: false, message: 'Booking not found'
       }), {
         status: 404,
         headers: { 'Content-Type': 'application/json' },

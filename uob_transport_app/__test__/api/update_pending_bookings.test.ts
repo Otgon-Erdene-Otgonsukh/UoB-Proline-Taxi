@@ -8,6 +8,12 @@ import updateStatus from "@/backend/update_booking_status/update_status";
 // Mock the database function
 jest.mock("../../backend/update_booking_status/update_status.ts");
 
+jest.mock("../../auth", () => ({
+  auth: jest.fn().mockResolvedValue({
+    user: { user_id: 3 }
+  })
+}));
+
 test("approve and reject work", async () => {
   // Setup mock to resolve successfully
   (updateStatus as jest.Mock).mockResolvedValue(undefined);
@@ -45,7 +51,8 @@ test("handles errors correctly", async () => {
 
   const res = await POST(req);
 
-  expect(res.status).toBe(500);
+  expect(res.status).toBe(404); // A non existent booking should return 404.
+  
   const data = await res.json();
   expect(data.success).toBe(false);
 });
