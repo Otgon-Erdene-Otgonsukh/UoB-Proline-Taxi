@@ -30,7 +30,7 @@ export default function Log_forgot() {
     setMailEmpty(isMailEmpty);
     setPassEmpty(isPassEmpty);
 
-    
+
     if (!isMailEmpty && !isPassEmpty) {
       setLoadingBar(true);
       // Use NextAuth for authentication, stores cookie automatically.
@@ -276,9 +276,9 @@ export default function Log_forgot() {
               transition: "all 0.2s",
             }}
           >
-           { loadingBar ? <CircularProgress color="inherit" size="30px"/> : "LOG IN" }
+            {loadingBar ? <CircularProgress color="inherit" size="30px" /> : "LOG IN"}
           </Button>
-          <Typography sx={{textAlign: "center", mb: -2}}>Don&apos;t have an account? <Link href="/register" className="text-blue-600">Sign up</Link></Typography>
+          <Typography sx={{ textAlign: "center", mb: -2 }}>Don&apos;t have an account? <Link href="/register" className="text-blue-600">Sign up</Link></Typography>
         </Box>
       </Paper>
     </div>
