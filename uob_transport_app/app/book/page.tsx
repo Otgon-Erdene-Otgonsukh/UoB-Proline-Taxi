@@ -20,6 +20,7 @@ import {
 import NumberField from "@/components/NumberField";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
+import { departments } from "@/model/models";
 
 export default function BookingPage() {
   const commonLocations = [
@@ -61,39 +62,6 @@ export default function BookingPage() {
     Email: "",
     AdditionalInfo: "",
   });
-
-  const departments = [
-    "Centre for Academic Language and Development",
-    "Centre for Innovation and Entrepreneurship",
-    "Arts",
-    "Economics",
-    "Education",
-    "Humanities",
-    "Modern Languages",
-    "Policy Studies",
-    "Sociology, Politics and International Studies",
-    "Business",
-    "Law",
-    "Dental",
-    "Medical",
-    "Veterinary",
-    "Health Professions Education",
-    "Anatomy",
-    "Biochemistry",
-    "Biological Sciences",
-    "Cellular and Molecular Medicine",
-    "Physiology, Pharmacology and Neuroscience",
-    "Psychological Science",
-    "Chemistry",
-    "Civil, Aerospace, and Design Engineering",
-    "Computer Science",
-    "Earth Sciences",
-    "Electrical, Electronic and Mechanical Engineering",
-    "Engineering Mathematics and Technology",
-    "Geographical Sciences",
-    "Mathematics",
-    "Physics",
-  ];
 
   const clearFeedback = () => {
     const dict = { ...formFeedback };
