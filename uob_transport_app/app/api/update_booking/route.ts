@@ -2,7 +2,6 @@ import updateStatus from "@/backend/update_booking_status/update_status";
 import { NextResponse } from "next/server";
 import { getBookingDetails } from "@/backend/access/booking_access";
 import { auth } from "@/auth";
-import { get } from "http";
 import { isAdmin } from "@/backend/access/user_access";
 
 export async function POST(req: Request) {
