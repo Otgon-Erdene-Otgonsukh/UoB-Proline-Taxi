@@ -545,21 +545,42 @@ const Page = () => {
               </Typography>
             </Stack>
             {bookDetail?.trip.return_drop_loc && (
-              <Stack
-                direction="row"
-                sx={{
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  width: "400px",
-                }}
-              >
-                <Typography gutterBottom sx={{ fontWeight: "bold" }}>
-                  Return Drop-off Location:
-                </Typography>
-                <Typography gutterBottom>
-                  {bookDetail?.trip.return_drop_loc}
-                </Typography>
-              </Stack>
+              <>
+                <Stack
+                  direction="row"
+                  sx={{
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    width: "400px",
+                  }}
+                >
+                  <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+                    Return trip pick-up time:
+                  </Typography>
+                  <Typography gutterBottom>
+                    {bookDetail?.trip.return_pickup_time
+                      ? new Date(
+                          bookDetail?.trip.return_pickup_time
+                        ).toLocaleString()
+                      : ""}
+                  </Typography>
+                </Stack>
+                <Stack
+                  direction="row"
+                  sx={{
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    width: "400px",
+                  }}
+                >
+                  <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+                    Return Drop-off Location:
+                  </Typography>
+                  <Typography gutterBottom>
+                    {bookDetail?.trip.return_drop_loc}
+                  </Typography>
+                </Stack>
+              </>
             )}
             {bookDetail?.trip.PO && (
               <Stack
@@ -689,7 +710,7 @@ const Page = () => {
               color: theme.palette.grey[500],
             })}
           >
-            <CloseIcon/>
+            <CloseIcon />
           </IconButton>
           <DialogContent dividers sx={{ fontFamily: "inter" }}>
             Are you sure you want to cancel this booking?

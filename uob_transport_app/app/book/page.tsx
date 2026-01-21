@@ -118,6 +118,8 @@ export default function BookingPage() {
     DropoffLoc: "",
     PickupDate: "",
     PickupTime: "",
+    ReturnDate: "",
+    ReturnTime: "",
     FirstName: "",
     Surname: "",
     Number: "",
@@ -215,6 +217,9 @@ export default function BookingPage() {
     // should only be subject to server side validation other than presence and being later than Date.Now().
 
     let pickupDateTime = new Date();
+    const returnDateTime = new Date(formData.ReturnDate);
+    const [h, m] = formData.ReturnTime.split(":").map(Number);
+    returnDateTime.setHours(h, m, 0, 0);
 
     if (formData.PickupDate == "") {
       addFormFeedback("PickupDate", "Please select a Date.");
@@ -294,13 +299,13 @@ export default function BookingPage() {
         pickup_location: loc,
         dropoff_location: formData.DropoffLoc,
         pickup_time: pickupDateTime,
+        ...(isReturnChecked ? {return_time: returnDateTime, returnTo: formData.ReturnTo} : {}),
         first_name: formData.FirstName,
         surname: formData.Surname,
         email: formData.Email,
         tel_number: phoneCode + " " + formData.Number,
         additional_info: formData.AdditionalInfo,
         via: formData.Via,
-        returnTo: formData.ReturnTo,
         passengers: formData.Passengers,
         department: formData.department,
         airport: formData.Airport,
@@ -643,7 +648,10 @@ export default function BookingPage() {
                         "&.Mui-checked": { color: "#2c2c2c" },
                       }}
                       checked={isReturnChecked}
-                      onChange={(e) => setIsReturnChecked(e.target.checked)}
+                      onChange={(e) => {
+                        setIsReturnChecked(e.target.checked);
+                        setFormData({ ...formData, ReturnTo: "" });
+                      }}
                     />
                   }
                   label="Return trip"
@@ -674,6 +682,35 @@ export default function BookingPage() {
                         setFormData({ ...formData, ReturnTo: e.target.value });
                       }}
                     ></input>
+                  </div>
+                  <div className="flex flex-col text-sm">
+                    <label htmlFor="pickupDate" className="mb-1">
+                      Return trip pick-up date and time
+                    </label>
+                    <div className="flex flex-col sm:flex-row gap-2 sm:gap-2.5">
+                      <input
+                        id="pickupDate"
+                        type="date"
+                        className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0`}
+                        onChange={(e) => {
+                          setFormData({
+                            ...formData,
+                            ReturnDate: e.target.value,
+                          });
+                        }}
+                      ></input>
+                      <input
+                        id="pickupTime"
+                        type="time"
+                        className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0`}
+                        onChange={(e) => {
+                          setFormData({
+                            ...formData,
+                            ReturnTime: e.target.value,
+                          });
+                        }}
+                      ></input>
+                    </div>
                   </div>
                 </div>
               )}
