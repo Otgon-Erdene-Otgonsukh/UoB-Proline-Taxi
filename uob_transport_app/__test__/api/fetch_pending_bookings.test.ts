@@ -40,3 +40,5 @@ test("check if the res status is good", async () => {
   expect(data).toEqual(mockBookings);
   expect(getPendingBookings).toHaveBeenCalledTimes(1);
 });
+
+jest.clearAllMocks();

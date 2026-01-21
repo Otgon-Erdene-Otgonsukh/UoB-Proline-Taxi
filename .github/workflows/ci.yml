@@ -61,10 +61,6 @@ jobs:
         working-directory: ./uob_transport_app
         run: npx tsc --noEmit # just check for type errors, --noEmit flag prevents tsc from creating .js files
 
-      - name: Generate Temporary NextAuth Secret Key
-        working-directory: ./uob_transport_app
-        run: npx auth secret generate > .env.AUTH_SECRET
-
       - name: Run Jest tests
         working-directory: ./uob_transport_app
         run: npm test

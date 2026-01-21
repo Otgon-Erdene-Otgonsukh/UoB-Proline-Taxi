@@ -52,7 +52,9 @@ test("handles errors correctly", async () => {
   const res = await POST(req);
 
   expect(res.status).toBe(404); // A non existent booking should return 404.
-  
+
   const data = await res.json();
   expect(data.success).toBe(false);
 });
+
+jest.clearAllMocks();

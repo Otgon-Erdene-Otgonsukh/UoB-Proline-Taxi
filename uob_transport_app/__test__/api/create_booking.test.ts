@@ -43,3 +43,5 @@ test("create booking api works", async () => {
   expect(createBooking).toHaveBeenCalledTimes(1);
   expect(createBooking).toHaveBeenCalledWith(jsonBody.user_id, jsonBody.pickup_location, null, null, jsonBody.dropoff_location, null, null, expect.any(Date), expect.any(Date), jsonBody.first_name, jsonBody.surname, jsonBody.email, jsonBody.tel_number, jsonBody.additional_info, jsonBody.via, jsonBody.returnTo, jsonBody.passengers, jsonBody.department, jsonBody.airport, jsonBody.flight_num)
 });
+
+jest.clearAllMocks();
