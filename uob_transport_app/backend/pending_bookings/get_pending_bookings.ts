@@ -15,9 +15,10 @@ export default async function getPendingBookings() {
       User: {
         include: {
           department: true,
-          // Explicitly do not include sensitive and irrelevant fields.
-          password: false,
         },
+        omit: {
+          password: true,
+        }
       },
     },
   });
