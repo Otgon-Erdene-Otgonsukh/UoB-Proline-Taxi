@@ -53,7 +53,7 @@ export async function POST(req: Request) {
     console.error("There was an error when updating bookings.", error);
     return NextResponse.json(
       { success: false, error: "Failed to update booking status" },
-      { status: 500 }
+      { status: 400 }
     );
   }
 }
