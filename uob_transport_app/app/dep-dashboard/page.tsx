@@ -282,7 +282,7 @@ export default function DepDashboard() {
             No bookings to show.
           </Typography>
         ) : (
-          <>
+          <div className="mt-6">
             <TableContainer
               component={Paper}
               sx={{ boxShadow: "none", border: "none" }}
@@ -385,7 +385,7 @@ export default function DepDashboard() {
                 ActionsComponent={TablePaginationActions}
               />
             </div>
-          </>
+          </div>
         )}
         <Dialog
           open={selectedBooking !== null}
