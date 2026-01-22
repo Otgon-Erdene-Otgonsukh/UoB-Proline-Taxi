@@ -153,6 +153,9 @@ Benefit from a streamlined booking process, clear driver communication, and stra
 
 <img src="/docs/Tech_stack.jpg" alt="tech stack diagram"/>
 
+## CI/CD Workflow Diagram
+<img src="/docs/CI_CD.png" alt="ci and cd workflow diagram"/>
+
 ## User Instructions
 ### Passenger / booker flow
   1. Navigate to the register page from the login page which will be prompted when visiting the website landing page.
