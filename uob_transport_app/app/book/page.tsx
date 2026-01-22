@@ -13,7 +13,9 @@ import {
   FormHelperText,
   Checkbox,
   FormControlLabel,
-  CircularProgress
+  CircularProgress,
+  Autocomplete,
+  TextField,
 } from "@mui/material";
 import NumberField from "@/components/NumberField";
 import { useSession } from "next-auth/react";
@@ -42,6 +44,7 @@ export default function BookingPage() {
   const [isReturnChecked, setIsReturnChecked] = useState(false);
   const [phoneCode, setPhoneCode] = useState("+44");
   const [loadingBar, setLoadingBar] = useState(false);
+  const [departmentEmpty, setDepartmentEmpty] = useState(false);
 
   // Set error messages visible next to fields, default "" (empty) for hide.
   const [formFeedback, setFormFeedback] = useState({
@@ -58,6 +61,39 @@ export default function BookingPage() {
     Email: "",
     AdditionalInfo: "",
   });
+
+  const departments = [
+    "Centre for Academic Language and Development",
+    "Centre for Innovation and Entrepreneurship",
+    "Arts",
+    "Economics",
+    "Education",
+    "Humanities",
+    "Modern Languages",
+    "Policy Studies",
+    "Sociology, Politics and International Studies",
+    "Business",
+    "Law",
+    "Dental",
+    "Medical",
+    "Veterinary",
+    "Health Professions Education",
+    "Anatomy",
+    "Biochemistry",
+    "Biological Sciences",
+    "Cellular and Molecular Medicine",
+    "Physiology, Pharmacology and Neuroscience",
+    "Psychological Science",
+    "Chemistry",
+    "Civil, Aerospace, and Design Engineering",
+    "Computer Science",
+    "Earth Sciences",
+    "Electrical, Electronic and Mechanical Engineering",
+    "Engineering Mathematics and Technology",
+    "Geographical Sciences",
+    "Mathematics",
+    "Physics",
+  ];
 
   const clearFeedback = () => {
     const dict = { ...formFeedback };
@@ -82,6 +118,8 @@ export default function BookingPage() {
     DropoffLoc: "",
     PickupDate: "",
     PickupTime: "",
+    ReturnDate: "",
+    ReturnTime: "",
     FirstName: "",
     Surname: "",
     Number: "",
@@ -119,13 +157,19 @@ export default function BookingPage() {
       }
 
       loc = formData.CustomLoc;
-    } else if (!isFlightChecked){
+    } else if (!isFlightChecked) {
       // Common Pickup Location / Dropdown
       if (formData.CommonLoc == "") {
         addFormFeedback("CommonLoc", "Please pick one.");
         fail = true;
       }
       loc = formData.CommonLoc;
+    }
+
+    // Department check
+    if (formData.department.length === 0) {
+      setDepartmentEmpty(true);
+      fail = true;
     }
 
     // Drop-Off Location
@@ -173,6 +217,9 @@ export default function BookingPage() {
     // should only be subject to server side validation other than presence and being later than Date.Now().
 
     let pickupDateTime = new Date();
+    const returnDateTime = new Date(formData.ReturnDate);
+    const [h, m] = formData.ReturnTime.split(":").map(Number);
+    returnDateTime.setHours(h, m, 0, 0);
 
     if (formData.PickupDate == "") {
       addFormFeedback("PickupDate", "Please select a Date.");
@@ -252,13 +299,13 @@ export default function BookingPage() {
         pickup_location: loc,
         dropoff_location: formData.DropoffLoc,
         pickup_time: pickupDateTime,
+        ...(isReturnChecked ? {return_time: returnDateTime, returnTo: formData.ReturnTo} : {}),
         first_name: formData.FirstName,
         surname: formData.Surname,
         email: formData.Email,
         tel_number: phoneCode + " " + formData.Number,
         additional_info: formData.AdditionalInfo,
         via: formData.Via,
-        returnTo: formData.ReturnTo,
         passengers: formData.Passengers,
         department: formData.department,
         airport: formData.Airport,
@@ -601,7 +648,10 @@ export default function BookingPage() {
                         "&.Mui-checked": { color: "#2c2c2c" },
                       }}
                       checked={isReturnChecked}
-                      onChange={(e) => setIsReturnChecked(e.target.checked)}
+                      onChange={(e) => {
+                        setIsReturnChecked(e.target.checked);
+                        setFormData({ ...formData, ReturnTo: "" });
+                      }}
                     />
                   }
                   label="Return trip"
@@ -632,6 +682,35 @@ export default function BookingPage() {
                         setFormData({ ...formData, ReturnTo: e.target.value });
                       }}
                     ></input>
+                  </div>
+                  <div className="flex flex-col text-sm">
+                    <label htmlFor="pickupDate" className="mb-1">
+                      Return trip pick-up date and time
+                    </label>
+                    <div className="flex flex-col sm:flex-row gap-2 sm:gap-2.5">
+                      <input
+                        id="pickupDate"
+                        type="date"
+                        className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0`}
+                        onChange={(e) => {
+                          setFormData({
+                            ...formData,
+                            ReturnDate: e.target.value,
+                          });
+                        }}
+                      ></input>
+                      <input
+                        id="pickupTime"
+                        type="time"
+                        className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0`}
+                        onChange={(e) => {
+                          setFormData({
+                            ...formData,
+                            ReturnTime: e.target.value,
+                          });
+                        }}
+                      ></input>
+                    </div>
                   </div>
                 </div>
               )}
@@ -758,18 +837,44 @@ export default function BookingPage() {
                   {formFeedback.Number}
                 </FormHelperText>
               </div>
-              <div className="flex flex-col">
-                <label htmlFor="dropLoc" className="mb-1 text-sm">
-                  Department
-                </label>
-                <input
-                  id="department"
-                  onChange={(e) => {
-                    setFormData({ ...formData, department: e.target.value });
+              <ThemeProvider theme={inputTheme}>
+                <Autocomplete
+                  sx={{ my: 1 }}
+                  disablePortal
+                  value={formData.department}
+                  inputValue={formData.department}
+                  onInputChange={(_, dep) => {
+                    setFormData({ ...formData, department: dep });
+                    setDepartmentEmpty(false);
                   }}
-                  className="border-2 rounded px-3 py-2"
-                ></input>
-              </div>
+                  options={departments}
+                  slotProps={{
+                    paper: {
+                      sx: {
+                        border: "2px solid #2c2c2c",
+                        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                        mt: 0.5,
+                        "& .MuiAutocomplete-option": {
+                          "&:hover": {
+                            backgroundColor: "#f3f4f6",
+                          },
+                          '&[aria-selected="true"]': {
+                            backgroundColor: "#e5e7eb !important",
+                          },
+                        },
+                      },
+                    },
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Department"
+                      error={departmentEmpty}
+                      helperText={departmentEmpty && "Select a department."}
+                    />
+                  )}
+                />
+              </ThemeProvider>
               <div className="flex flex-col sm:flex-row gap-4">
                 <div className="flex flex-col flex-1">
                   <label htmlFor="mail" className="mb-1 text-sm">
@@ -851,7 +956,11 @@ export default function BookingPage() {
                     fontSize: "0.875rem",
                   }}
                 >
-                  {loadingBar ? <CircularProgress color="inherit" size="30px"/> : "Confirm Booking"}
+                  {loadingBar ? (
+                    <CircularProgress color="inherit" size="30px" />
+                  ) : (
+                    "Confirm Booking"
+                  )}
                 </Button>
               </div>
             </div>
@@ -859,11 +968,13 @@ export default function BookingPage() {
         </div>
 
         {/* Image Section */}
-        <div className="hidden lg:block lg:w-1/2">
+        <div className="hidden lg:block lg:w-1/2 object-contain">
           <Image
             src="/emptymap.png"
             alt="Map"
             className="w-full h-full object-cover border-l-3 border-[#2c2c2c]"
+            width={330}
+            height={500}
           />
         </div>
       </div>

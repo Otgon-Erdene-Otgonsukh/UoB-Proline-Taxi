@@ -131,7 +131,9 @@ export default function DepDashboard() {
         e.trip.airport?.toLowerCase().startsWith(search.trim().toLowerCase())
       );
     } else if (searchType === "flightNum" && search !== "") {
-      return e.trip.flight_num?.toLowerCase().includes(search.trim().toLowerCase());
+      return e.trip.flight_num
+        ?.toLowerCase()
+        .includes(search.trim().toLowerCase());
     } else {
       return (
         e.first_name?.toLowerCase().startsWith(search.trim().toLowerCase()) ||
@@ -649,21 +651,42 @@ export default function DepDashboard() {
               </Typography>
             </Stack>
             {selectedBooking?.trip.return_drop_loc && (
-              <Stack
-                direction="row"
-                sx={{
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  width: "400px",
-                }}
-              >
-                <Typography gutterBottom sx={{ fontWeight: "bold" }}>
-                  Return Drop-off Location:
-                </Typography>
-                <Typography gutterBottom sx={{ textAlign: "right" }}>
-                  {selectedBooking?.trip.return_drop_loc}
-                </Typography>
-              </Stack>
+              <>
+                <Stack
+                  direction="row"
+                  sx={{
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    width: "400px",
+                  }}
+                >
+                  <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+                    Return trip pick-up time:
+                  </Typography>
+                  <Typography gutterBottom>
+                    {selectedBooking?.trip.return_pickup_time
+                      ? new Date(
+                          selectedBooking?.trip.return_pickup_time
+                        ).toLocaleString()
+                      : ""}
+                  </Typography>
+                </Stack>
+                <Stack
+                  direction="row"
+                  sx={{
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    width: "400px",
+                  }}
+                >
+                  <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+                    Return Drop-off Location:
+                  </Typography>
+                  <Typography gutterBottom sx={{ textAlign: "right" }}>
+                    {selectedBooking?.trip.return_drop_loc}
+                  </Typography>
+                </Stack>
+              </>
             )}
             {selectedBooking?.trip.PO !== null && (
               <Stack
