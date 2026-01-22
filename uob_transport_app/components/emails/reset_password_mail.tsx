@@ -46,7 +46,7 @@ export default function ResetEmail({
 
             <Section className="text-center my-8">
               <Button
-                href={`http://localhost:3000/reset-password?uuid=${uuid}`} //the base url used is only for dev testing, in production change it to the ALB dns name or the domain when we get access to one
+                href={`${process.env.NODE_ENV === "development" ? `http://localhost:3000/reset-password?uuid=${uuid}` : `http://uob-transport-alb-848507222.eu-west-2.elb.amazonaws.com/reset-password?uuid=${uuid}`}`} //the base url used is only for dev testing, in production change it to the ALB dns name or the domain when we get access to one
                 className="bg-blue-600 text-white font-semibold py-4 px-8 rounded-lg inline-block text-center no-underline"
               >
                 Reset Your Password
