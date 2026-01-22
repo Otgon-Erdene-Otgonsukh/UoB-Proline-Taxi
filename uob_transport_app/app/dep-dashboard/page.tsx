@@ -147,6 +147,7 @@ export default function DepDashboard() {
         from: searchFormInput.from,
         to: searchFormInput.to,
         passengerName: searchFormInput.passengerName,
+        isFlight: searchFormInput.isFlight,
       }
     )
       .then((res) => res.json())
