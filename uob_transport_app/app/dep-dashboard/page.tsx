@@ -296,6 +296,7 @@ export default function DepDashboard() {
                     <StyledTableCell>Pick-up Time</StyledTableCell>
                     <StyledTableCell>From</StyledTableCell>
                     <StyledTableCell>To</StyledTableCell>
+                    <StyledTableCell>Passenger Name</StyledTableCell>
                     <StyledTableCell>Operation</StyledTableCell>
                   </TableRow>
                 </TableHead>
