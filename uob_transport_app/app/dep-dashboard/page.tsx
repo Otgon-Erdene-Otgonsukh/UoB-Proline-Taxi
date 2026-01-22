@@ -5,7 +5,6 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import NumbersIcon from "@mui/icons-material/Numbers";
 import ReceiptIcon from "@mui/icons-material/Receipt";
-import FindInPageIcon from "@mui/icons-material/FindInPage";
 import {
   Box,
   Dialog,
@@ -40,6 +39,7 @@ import CustomizedButton from "@/components/CustomizedButton";
 import { getPendingBookingList } from "./requests";
 import { TablePaginationActions } from "@/components/paginationActions";
 import ViewDialog from "./components/viewDialog";
+import CustomSwitch from "@/components/CustomSwitch";
 
 
 type BookingWithTrip = booking & {
@@ -121,11 +121,13 @@ export default function DepDashboard() {
     passengerName?: string,
     from?: string,
     to?: string,
+    isFlight: boolean,
   }
   const [searchFormInput, setSearchFormInput] = useState<SearchFormProps>({
     passengerName: "",
     from: "",
     to: "",
+    isFlight: false,
   })
   const handleSubmitSearchForm = (e: React.FormEvent) => {
     e.preventDefault()
@@ -240,6 +242,11 @@ export default function DepDashboard() {
               gap: 2.5,
             }}
           >
+            <CustomSwitch
+              onClick={() => {
+                setSearchFormInput({ ...searchFormInput, isFlight: !searchFormInput.isFlight });
+              }}
+            ></CustomSwitch>
             <TextField
               fullWidth
               label="PassengerName"
