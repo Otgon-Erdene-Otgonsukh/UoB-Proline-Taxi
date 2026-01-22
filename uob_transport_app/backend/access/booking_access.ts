@@ -12,11 +12,9 @@ export const getUserBookingsAccess = async (userId: number, page: number, pageSi
     }
   }
   if (searchParams.to !== undefined) {
-    query['to'] = {
-      trip: {
-        dropoff_location: {
-          contains: searchParams.to
-        }
+    query['trip'] = {
+      dropoff_location: {
+        contains: searchParams.to
       }
     }
   }
