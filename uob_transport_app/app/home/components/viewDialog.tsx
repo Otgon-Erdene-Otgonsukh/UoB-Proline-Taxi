@@ -181,21 +181,42 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRe
         </Typography>
       </Stack>
       {viewData?.trip.return_drop_loc && (
-        <Stack
-          direction="row"
-          sx={{
-            justifyContent: "space-between",
-            alignItems: "center",
-            width: "400px",
-          }}
-        >
-          <Typography gutterBottom sx={{ fontWeight: "bold" }}>
-            Return Drop-off Location:
-          </Typography>
-          <Typography gutterBottom>
-            {viewData?.trip.return_drop_loc}
-          </Typography>
-        </Stack>
+        <>
+          <Stack
+            direction="row"
+            sx={{
+              justifyContent: "space-between",
+              alignItems: "center",
+              width: "400px",
+            }}
+          >
+            <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+              Return trip pick-up time:
+            </Typography>
+            <Typography gutterBottom>
+              {viewData?.trip.return_pickup_time
+                ? new Date(
+                  viewData?.trip.return_pickup_time
+                ).toLocaleString()
+                : ""}
+            </Typography>
+          </Stack>
+          <Stack
+            direction="row"
+            sx={{
+              justifyContent: "space-between",
+              alignItems: "center",
+              width: "400px",
+            }}
+          >
+            <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+              Return Drop-off Location:
+            </Typography>
+            <Typography gutterBottom>
+              {viewData?.trip.return_drop_loc}
+            </Typography>
+          </Stack>
+        </>
       )}
       {viewData?.trip.PO && (
         <Stack

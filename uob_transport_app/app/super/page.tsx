@@ -369,7 +369,7 @@ const Page = () => {
                         transition: "background-color 0.2s",
                       }}
                     >
-                      <StyledTableCell>{row.time_created}</StyledTableCell>
+                      <StyledTableCell>{new Date(row.time_created).toDateString()}</StyledTableCell>
                       <StyledTableCell>{row.name + ' ' + row.surname}</StyledTableCell>
                       <StyledTableCell>{row.email}</StyledTableCell>
                       <StyledTableCell>{row.phone_number}</StyledTableCell>
