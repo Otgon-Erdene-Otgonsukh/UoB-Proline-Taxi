@@ -2,7 +2,7 @@ import { PrismaClient } from "@/generated/prisma/client";
 
 const prisma = new PrismaClient();
 
-export async function getPendingBookings(page: number, pageSize: number, searchParams: { from?: string, to?: string, passengerName?: string, pickUpTimeFrom?: string, pickUpTimeTo?: string }) {
+export async function getPendingBookings(page: number, pageSize: number, searchParams: { from?: string, to?: string, passengerName?: string, pickUpTimeFrom?: string, pickUpTimeTo?: string, isFlight: boolean }) {
   const query: { [key: string]: string | object } = {};
   if (searchParams.from !== undefined) {
     query['trip'] = {
@@ -26,6 +26,14 @@ export async function getPendingBookings(page: number, pageSize: number, searchP
       }
     }
   }
+  if (searchParams.isFlight) {
+    query['trip'] = {
+      flight_num: {
+        not: null
+      }
+    }
+  }
+
   return prisma.booking.findMany({
     where: {
       booking_status: "Pending",
@@ -47,7 +55,7 @@ export async function getPendingBookings(page: number, pageSize: number, searchP
   });
 }
 
-export async function getPendingBookingsCount(searchParams: { from?: string, to?: string, passengerName?: string, pickUpTimeFrom?: string, pickUpTimeTo?: string }) {
+export async function getPendingBookingsCount(searchParams: { from?: string, to?: string, passengerName?: string, pickUpTimeFrom?: string, pickUpTimeTo?: string, isFlight: boolean }) {
   const query: { [key: string]: string | object } = {};
   if (searchParams.from !== undefined) {
     query['trip'] = {
@@ -68,6 +76,13 @@ export async function getPendingBookingsCount(searchParams: { from?: string, to?
     query['firstName'] = {
       name: {
         contains: searchParams.passengerName
+      }
+    }
+  }
+  if (searchParams.isFlight) {
+    query['trip'] = {
+      flight_num: {
+        not: null
       }
     }
   }

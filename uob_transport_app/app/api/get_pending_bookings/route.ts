@@ -23,6 +23,7 @@ export async function GET(request: NextRequest,) {
   const passengerName = (searchParams.get('passengerName') !== null && searchParams.get('passengerName') !== "") ? searchParams.get('passengerName')! : undefined;
   const pickUpTimeFrom = (searchParams.get('pickUpTimeFrom') !== null && searchParams.get('pickUpTimeFrom') !== "") ? searchParams.get('pickUpTimeFrom')! : undefined;
   const pickUpTimeTo = (searchParams.get('pickUpTimeTo') !== null && searchParams.get('pickUpTimeTo') !== "") ? searchParams.get('pickUpTimeTo')! : undefined;
+  const isFlight = (searchParams.get('isFlight') === 'true');
 
   if (!page || !pageSize) {
     return new Response(JSON.stringify({ message: 'page params needed' }), {
@@ -38,6 +39,7 @@ export async function GET(request: NextRequest,) {
       passengerName,
       pickUpTimeFrom,
       pickUpTimeTo,
+      isFlight
     });
 
     const totalNum = await getPendingBookingsCount({
@@ -46,6 +48,7 @@ export async function GET(request: NextRequest,) {
       passengerName,
       pickUpTimeFrom,
       pickUpTimeTo,
+      isFlight
     });
     return NextResponse.json({ pendingBookings, totalNum }, { status: 200 });
   } catch (error) {
