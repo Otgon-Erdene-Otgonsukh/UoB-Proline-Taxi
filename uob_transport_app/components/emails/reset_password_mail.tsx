@@ -1,7 +1,6 @@
 import {
   Html,
   Head,
-  Heading,
   Tailwind,
   Button,
   Container,
@@ -61,7 +60,7 @@ export default function ResetEmail({
             <Hr className="my-6 border-gray-300" />
 
             <Text className="text-gray-600 text-sm leading-relaxed mb-2">
-              If you didn't request a password reset, you can safely ignore this
+              If you didn&apos;t request a password reset, you can safely ignore this
               email. Your password will remain unchanged.
             </Text>
 
