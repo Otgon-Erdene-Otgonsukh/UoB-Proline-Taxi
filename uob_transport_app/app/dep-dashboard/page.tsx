@@ -115,8 +115,27 @@ export default function DepDashboard() {
   // booking data
   const [pendingBookings, setPendingBookings] = useState<BookingWithTrip[]>([]);
   const [pendingBookingsCount, setPendingBookingsCount] = useState(0);
+  // search form
+  type SearchFormProps = {
+    passengerName?: string,
+    from?: string,
+    to?: string,
+  }
+  const [searchFormInput, setSearchFormInput] = useState<SearchFormProps>({
+    passengerName: "",
+    from: "",
+    to: "",
+  })
+  const handleSubmitSearchForm = (e: React.FormEvent) => {
+    e.preventDefault()
+    console.log('submit');
+    setIsLoading(true)
+    _getBookingListData()
+  }
 
   const _getBookingListData = () => {
+    console.log(searchFormInput);
+
     // fetch data with current paginationMeta and searchParams
     getPendingBookingList(
       paginationMeta.page,
@@ -129,8 +148,8 @@ export default function DepDashboard() {
     )
       .then((res) => res.json())
       .then((data) => {
-        setPendingBookings(data.bookings);
-        setPendingBookingsCount(data.totalCount);
+        setPendingBookings(data.pendingBookings);
+        setPendingBookingsCount(data.totalNum);
         setIsLoading(false);
       });
   }
@@ -204,20 +223,6 @@ export default function DepDashboard() {
       body: JSON.stringify({ bookingId: bookingId, newStatus: "Rejected" }),
     });
   };
-
-  // search form
-  type SearchFormProps = {
-    passengerName?: string,
-    from?: string,
-    to?: string,
-  }
-  const [searchFormInput, setSearchFormInput] = useState<SearchFormProps>({})
-  const handleSubmitSearchForm = (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log('submit');
-    setIsLoading(true)
-    // _rerenderTable()
-  }
 
   return (
     <div className="flex min-h-screen justify-center pt-24 p-4">
@@ -328,7 +333,7 @@ export default function DepDashboard() {
                                   : "bg-yellow-100 text-yellow-800 border border-yellow-800"
                               }`}
                           >
-                            {row.booking_status}
+                            {row.first_name + " " + row.surname}
                           </span>
                         </StyledTableCell>
                         <StyledTableCell>
