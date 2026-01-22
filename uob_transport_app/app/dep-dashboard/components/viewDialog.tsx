@@ -7,8 +7,9 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import FindInPageIcon from "@mui/icons-material/FindInPage";
+import { BookingWithTrip } from "@/app/dep-dashboard/constants";
 
-export default function Page({ open, handleDialogClose, viewData }: { open: boolean; handleDialogClose: () => void; viewData: any; }) {
+export default function Page({ open, handleDialogClose, viewData }: { open: boolean; handleDialogClose: () => void; viewData: BookingWithTrip; }) {
   return (
     <Dialog
       open={open}

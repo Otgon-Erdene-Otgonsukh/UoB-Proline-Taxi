@@ -29,28 +29,14 @@ import {
   TablePagination,
 } from "@mui/material";
 import { StyledTableCell } from "@/components/StyledTableCell";
-import type {
-  booking,
-  trip,
-  User,
-  department,
-} from "@/generated/prisma/client"; // importing just the type is safe and does not expose any prisma code
 import CustomizedButton from "@/components/CustomizedButton";
 import { getPendingBookingList } from "./requests";
 import { TablePaginationActions } from "@/components/paginationActions";
 import ViewDialog from "./components/viewDialog";
 import CustomSwitch from "@/components/CustomSwitch";
-
-
-type BookingWithTrip = booking & {
-  // creating a custom type to access the data
-  trip: trip;
-  User: User & { department: department };
-};
+import type { BookingWithTrip } from "./constants";
 
 export default function DepDashboard() {
-
-
   // ...
   const [search, setSearch] = useState("");
   const [noMatchingResult, setNoMatchingResult] = useState(false);
@@ -399,7 +385,7 @@ export default function DepDashboard() {
         <ViewDialog
           open={selectedBooking !== null}
           handleDialogClose={handleViewClose}
-          viewData={selectedBooking}
+          viewData={selectedBooking!}
         />
         <Dialog open={poDialog} onClose={handlePoClose}>
           <DialogTitle
