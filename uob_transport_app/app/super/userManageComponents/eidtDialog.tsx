@@ -23,7 +23,7 @@ import {
   LocalPhone as LocalPhoneIcon
 } from "@mui/icons-material"
 import { UserRecord } from "@/model/models";
-import { userStatusToIntMap, userStatusToStrMap } from "../../super/constants";
+import { roleReadableStrMap, userStatusToIntMap, userStatusToStrMap } from "../../super/constants";
 import { roles } from "../../super/constants";
 import { department } from "@/generated/prisma/client";
 import { updateUserAsAdmin } from "../request";
@@ -263,7 +263,7 @@ const Page = ({ editData, dialogOpen, handleDialogClose, departmentList }: { edi
               onChange={(e) => { setFormInput({ ...formInput, role: e.target.value }); }}
             >
               {roles.map(e => {
-                return <MenuItem value={e} key={e}>{e}</MenuItem>
+                return <MenuItem value={e} key={e}>{roleReadableStrMap[e]}</MenuItem>
               })}
             </Select>
           </FormControl>

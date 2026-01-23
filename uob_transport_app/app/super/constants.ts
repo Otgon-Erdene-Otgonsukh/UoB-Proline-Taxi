@@ -12,4 +12,10 @@ export const roleStrMap = {
   prolineStaff: 'proline_staff'
 }
 
+export const roleReadableStrMap: { [key: string]: string } = {
+  normal_user: 'Normal User',
+  finance_staff: 'Finance Staff',
+  proline_staff: 'Proline Staff'
+}
+
 export const roles = [roleStrMap.normalUser, roleStrMap.financeStaff, roleStrMap.prolineStaff]

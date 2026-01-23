@@ -15,7 +15,7 @@ import {
   FindInPage as FindInPageIcon
 } from "@mui/icons-material"
 import { UserRecord } from "@/model/models";
-import { userStatusToIntMap, userStatusToStrMap } from "../../super/constants";
+import { roleReadableStrMap, userStatusToIntMap, userStatusToStrMap } from "../../super/constants";
 import CustomizedButton from "@/components/CustomizedButton";
 
 const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: UserRecord, dialogOpen: boolean, handleDialogClose: () => void }) => {
@@ -106,7 +106,7 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: UserRecor
             Role:
           </Typography>
           <Typography gutterBottom>
-            {viewData?.role}
+            {roleReadableStrMap[viewData?.role]}
           </Typography>
         </Stack>
         <Stack>

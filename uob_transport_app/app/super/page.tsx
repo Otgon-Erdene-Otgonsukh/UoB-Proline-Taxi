@@ -34,7 +34,7 @@ import {
 import { getUsersAsAdmin, updateUserAsAdmin } from "./request";
 import ViewDialog from "./userManageComponents/viewDialog";
 import EditDialog from "./userManageComponents/eidtDialog";
-import { userStatusToIntMap, userStatusToStrMap, roleStrMap, roles } from "./constants";
+import { userStatusToIntMap, userStatusToStrMap, roleStrMap, roles, roleReadableStrMap } from "./constants";
 import { getDepartmentsList } from "./requests";
 import ConfirmDialog from "@/components/confirmDIalog";
 
@@ -289,7 +289,7 @@ const Page = () => {
                 size="small"
               >
                 {roles.map(e => {
-                  return <MenuItem value={e} key={e}>{e}</MenuItem>
+                  return <MenuItem value={e} key={e}>{roleReadableStrMap[e]}</MenuItem>
                 })}
               </Select>
             </FormControl>
@@ -374,7 +374,7 @@ const Page = () => {
                       <StyledTableCell>{row.email}</StyledTableCell>
                       <StyledTableCell>{row.phone_number}</StyledTableCell>
                       <StyledTableCell>{row.department.dep_name}</StyledTableCell>
-                      <StyledTableCell>{row.role}</StyledTableCell>
+                      <StyledTableCell>{roleReadableStrMap[row.role]}</StyledTableCell>
                       <StyledTableCell>
                         <span
                           className={`inline-block px-5 py-1 rounded-full text-xs font-medium ${row.user_status === userStatusToIntMap.normal
