@@ -3,7 +3,7 @@
  */
 import { NextRequest } from "next/server";
 import { GET } from "../../app/api/get_pending_bookings/route";
-import { getPendingBookings } from "@/backend/pending_bookings/get_pending_bookings";
+import { getPendingBookings, getPendingBookingsCount } from "@/backend/pending_bookings/get_pending_bookings";
 
 // Mock the database function
 jest.mock("../../backend/pending_bookings/get_pending_bookings");
@@ -26,9 +26,9 @@ test("check if the res status is good", async () => {
   ];
 
   (getPendingBookings as jest.Mock).mockResolvedValue(mockBookings);
+  (getPendingBookingsCount as jest.Mock).mockResolvedValue(1);
 
-  const body = { bookingId: 11, newStatus: "Rejected", po: "PO-111" };
-  const req = new NextRequest("http://localhost:3000/api/get_pending_bookings", {
+  const req = new NextRequest("http://localhost:3000/api/get_pending_bookings?page=1&pageSize=10", {
     method: "GET",
   });
 
@@ -37,6 +37,9 @@ test("check if the res status is good", async () => {
 
   const data = await res.json();
   expect(data).toBeDefined();
-  expect(data).toEqual(mockBookings);
+  expect(data).toEqual({
+    pendingBookings: mockBookings,
+    totalNum: 1,
+  });
   expect(getPendingBookings).toHaveBeenCalledTimes(1);
 });
