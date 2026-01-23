@@ -1,8 +1,9 @@
 /**
  * @jest-environment node
  */
+import { NextRequest } from "next/server";
 import { GET } from "../../app/api/get_pending_bookings/route";
-import getPendingBookings from "@/backend/pending_bookings/get_pending_bookings";
+import { getPendingBookings } from "@/backend/pending_bookings/get_pending_bookings";
 
 // Mock the database function
 jest.mock("../../backend/pending_bookings/get_pending_bookings");
@@ -26,7 +27,12 @@ test("check if the res status is good", async () => {
 
   (getPendingBookings as jest.Mock).mockResolvedValue(mockBookings);
 
-  const res = await GET();
+  const body = { bookingId: 11, newStatus: "Rejected", po: "PO-111" };
+  const req = new NextRequest("http://localhost:3000/api/get_pending_bookings", {
+    method: "GET",
+  });
+
+  const res = await GET(req);
   expect(res.status).toBe(200);
 
   const data = await res.json();
