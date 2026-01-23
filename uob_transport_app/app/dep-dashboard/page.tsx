@@ -13,8 +13,6 @@ import {
   DialogTitle,
   Button,
   Typography,
-  Stack,
-  createTheme,
   DialogContentText,
   TextField,
   InputAdornment,
@@ -37,10 +35,6 @@ import CustomSwitch from "@/components/CustomSwitch";
 import type { BookingWithTrip } from "./constants";
 
 export default function DepDashboard() {
-  // ...
-  const [search, setSearch] = useState("");
-  const [noMatchingResult, setNoMatchingResult] = useState(false);
-  const [searchType, setSearchType] = useState("");
   const [selectedBooking, setSelectedBooking] =
     useState<BookingWithTrip | null>(null);
   const [poDialog, setPoDialog] = useState(false);
@@ -50,8 +44,6 @@ export default function DepDashboard() {
   const [poTooLong, setPoTooLong] = useState(false);
   const [pendingBookingId, setPendingBookingId] = useState<number | null>(null);
   const [snackBar, setSnackBar] = useState(false);
-  const [flightChecked, setFlightChecked] = useState(false);
-  // ...
 
   const [isLoading, setIsLoading] = useState(true);
 
