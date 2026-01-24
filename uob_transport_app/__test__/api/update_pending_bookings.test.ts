@@ -5,8 +5,16 @@
 import { POST } from "@/app/api/update_booking/route";
 import updateStatus from "@/backend/update_booking_status/update_status";
 
-// Mock the database function
+// Mock the database, isAdmin, and getBookingDetails functions
 jest.mock("../../backend/update_booking_status/update_status.ts");
+jest.mock("../../backend/access/booking_access.ts");
+jest.mock("../../backend/access/user_access.ts");
+
+jest.mock("../../auth", () => ({
+  auth: jest.fn().mockResolvedValue({
+    user: { user_id: 3 }
+  })
+}));
 
 test("approve and reject work", async () => {
   // Setup mock to resolve successfully
@@ -45,7 +53,10 @@ test("handles errors correctly", async () => {
 
   const res = await POST(req);
 
-  expect(res.status).toBe(500);
+  expect(res.status).toBe(400); // Change to 400, it is the requester's fault if there is an error here.
+
   const data = await res.json();
   expect(data.success).toBe(false);
 });
+
+jest.clearAllMocks();
