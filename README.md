@@ -153,6 +153,9 @@ Benefit from a streamlined booking process, clear driver communication, and stra
 
 <img src="/docs/Tech_stack.jpg" alt="tech stack diagram"/>
 
+## CI/CD Workflow Diagram
+<img src="/docs/CI_CD.png" alt="ci and cd workflow diagram"/>
+
 ## User Instructions
 ### Passenger / booker flow
   1. Navigate to the register page from the login page which will be prompted when visiting the website landing page.
@@ -238,4 +241,5 @@ You should be able to see the app running in your web browser by visiting http:/
 | Ioan Moir (Project Manager)  | ok24616@bristol.ac.uk |
 | Otgon-Erdene Otgonsukh       | ww23805@bristol.ac.uk |
 | Yidi Ai                      | nb23869@bristol.ac.uk |
+| Alan Yang                    | ng24695@bristol.ac.uk |
 | Erik Maltby (Client Liaison) | bg24935@bristol.ac.uk |
