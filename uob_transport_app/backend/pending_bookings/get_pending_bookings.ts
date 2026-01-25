@@ -16,6 +16,9 @@ export default async function getPendingBookings() {
         include: {
           department: true,
         },
+        omit: {
+          password: true,
+        }
       },
     },
   });

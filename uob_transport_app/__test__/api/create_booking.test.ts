@@ -141,3 +141,5 @@ describe("create booking api route tests", () => {
     expect(res.status).toBe(401);
   });
 });
+
+jest.clearAllMocks();
