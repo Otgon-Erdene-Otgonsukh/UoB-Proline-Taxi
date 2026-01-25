@@ -15,6 +15,7 @@ import Paper from "@mui/material/Paper";
 import FirstPageIcon from "@mui/icons-material/FirstPage";
 import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
+import FindInPageIcon from "@mui/icons-material/FindInPage";
 import LastPageIcon from "@mui/icons-material/LastPage";
 import { BookingRecord } from "@/model/models";
 import { cancelBooking, getUserBookingList } from "./requests";
@@ -118,6 +119,10 @@ const Page = () => {
 
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
+  const [paginationMeta, setPaginationMeta] = useState({
+    page: 0,
+    pageSize: 10,
+  });
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -125,38 +130,34 @@ const Page = () => {
       return;
     }
 
-    getUserBookingList(paginationMeta.page, paginationMeta.pageSize).then((res) => {
-      if (res.status === 200) {
-        res.json().then((data) => {
-          setBookingListData(data.bookings);
-          setBookingListCount(data.totalNum)
-          setIsLoading(false)
-        });
+    getUserBookingList(paginationMeta.page, paginationMeta.pageSize).then(
+      (res) => {
+        if (res.status === 200) {
+          res.json().then((data) => {
+            setBookingListData(data.bookings);
+            setBookingListCount(data.totalNum);
+            setIsLoading(false);
+          });
+        }
       }
-    });
-
-  }, [status]);
+    );
+  }, [status, paginationMeta.page, paginationMeta.pageSize, router]);
 
   const handleClick = () => {
     router.push("/book");
   };
 
-  const [paginationMeta, setPaginationMeta] = useState({
-    page: 0,
-    pageSize: 10,
-  });
-
   const handleChangePage = (
     event: React.MouseEvent<HTMLButtonElement> | null,
     newPage: number
   ) => {
-    setIsLoading(true)
+    setIsLoading(true);
     getUserBookingList(newPage, paginationMeta.pageSize).then((res) => {
       if (res.status === 200) {
         res.json().then((data) => {
           setBookingListData(data.bookings);
-          setBookingListCount(data.totalNum)
-          setIsLoading(false)
+          setBookingListCount(data.totalNum);
+          setIsLoading(false);
           setPaginationMeta({
             ...paginationMeta,
             page: newPage,
@@ -164,7 +165,6 @@ const Page = () => {
         });
       }
     });
-
   };
 
   const handleChangePageSize = (
@@ -294,7 +294,7 @@ const Page = () => {
             >
               <TableHead>
                 <TableRow>
-                  <StyledTableCell>Time Created</StyledTableCell>
+                  <StyledTableCell>Pick-up Time</StyledTableCell>
                   <StyledTableCell>From</StyledTableCell>
                   <StyledTableCell>To</StyledTableCell>
                   <StyledTableCell>Booking Status</StyledTableCell>
@@ -312,26 +312,29 @@ const Page = () => {
                       }}
                     >
                       <StyledTableCell>
-                        {row.time_created
-                          ? new Date(row.time_created).toLocaleString()
+                        {row.trip.pickup_time
+                          ? new Date(row.trip.pickup_time).toLocaleString()
                           : "N/A"}
                       </StyledTableCell>
                       <StyledTableCell>
-                        {row.trip.pickup_location}
+                        {row.trip.airport === "" || row.trip.airport === null
+                          ? row.trip.pickup_location
+                          : row.trip.airport}
                       </StyledTableCell>
                       <StyledTableCell>
                         {row.trip.dropoff_location}
                       </StyledTableCell>
                       <StyledTableCell>
                         <span
-                          className={`inline-block px-5 py-1 rounded-full text-xs font-medium ${row.booking_status === "Approved"
-                            ? "bg-green-100 text-green-800 border border-green-800"
-                            : row.booking_status === "Rejected"
+                          className={`inline-block px-5 py-1 rounded-full text-xs font-medium ${
+                            row.booking_status === "Approved"
+                              ? "bg-green-100 text-green-800 border border-green-800"
+                              : row.booking_status === "Rejected"
                               ? "bg-red-100 text-red-800 border border-red-800"
                               : row.booking_status === "Cancelled"
-                                ? "bg-gray-300 text-gray-900 border border-gray-900"
-                                : "bg-yellow-100 text-yellow-800 border border-yellow-800"
-                            }`}
+                              ? "bg-gray-300 text-gray-900 border border-gray-900"
+                              : "bg-yellow-100 text-yellow-800 border border-yellow-800"
+                          }`}
                         >
                           {row.booking_status}
                         </span>
@@ -375,7 +378,7 @@ const Page = () => {
             sx={{
               m: 0,
               p: 2,
-              fontFamily: "inter",
+              fontFamily: "aleo",
               fontWeight: "bold",
               bgcolor: "#2c2c2c",
               color: "white",
@@ -385,6 +388,9 @@ const Page = () => {
             id="customized-dialog-title"
           >
             Booking Detail
+            <FindInPageIcon
+              sx={{ fontSize: 35, mb: 1, ml: 1, mr: -1 }}
+            ></FindInPageIcon>
           </DialogTitle>
           <IconButton
             aria-label="close"
@@ -428,22 +434,44 @@ const Page = () => {
                 From:
               </Typography>
               <Typography gutterBottom>
-                {bookDetail?.trip.pickup_location}
+                {bookDetail?.trip.airport === "" ||
+                bookDetail?.trip.airport === null
+                  ? bookDetail?.trip.pickup_location
+                  : bookDetail?.trip.airport}
               </Typography>
             </Stack>
-            <Stack
-              direction="row"
-              sx={{
-                justifyContent: "space-between",
-                alignItems: "center",
-                width: "400px",
-              }}
-            >
-              <Typography gutterBottom sx={{ fontWeight: "bold" }}>
-                Via:
-              </Typography>
-              <Typography gutterBottom>{bookDetail?.trip.via}</Typography>
-            </Stack>
+            {bookDetail?.trip.flight_num && (
+              <Stack
+                direction="row"
+                sx={{
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  width: "400px",
+                }}
+              >
+                <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+                  Flight number:
+                </Typography>
+                <Typography gutterBottom>
+                  {bookDetail.trip.flight_num}
+                </Typography>
+              </Stack>
+            )}
+            {bookDetail?.trip.via && (
+              <Stack
+                direction="row"
+                sx={{
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  width: "400px",
+                }}
+              >
+                <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+                  Via:
+                </Typography>
+                <Typography gutterBottom>{bookDetail?.trip.via}</Typography>
+              </Stack>
+            )}
             <Stack
               direction="row"
               sx={{
@@ -472,14 +500,15 @@ const Page = () => {
               </Typography>
               <Chip
                 size="small"
-                color={`${bookDetail?.booking_status === "Approved"
-                  ? "success"
-                  : bookDetail?.booking_status === "Pending"
+                color={`${
+                  bookDetail?.booking_status === "Approved"
+                    ? "success"
+                    : bookDetail?.booking_status === "Pending"
                     ? "warning"
                     : bookDetail?.booking_status === "Cancelled"
-                      ? "default"
-                      : "error"
-                  }`}
+                    ? "default"
+                    : "error"
+                }`}
                 label={bookDetail?.booking_status}
               />
             </Stack>
@@ -515,27 +544,86 @@ const Page = () => {
                   : ""}
               </Typography>
             </Stack>
-            <Stack
-              direction="row"
-              sx={{
-                justifyContent: "space-between",
-                alignItems: "center",
-                width: "400px",
-              }}
-            >
-              <Typography gutterBottom sx={{ fontWeight: "bold" }}>
-                Return Drop Location:
-              </Typography>
-              <Typography gutterBottom>
-                {bookDetail?.trip.return_drop_loc}
-              </Typography>
-            </Stack>
+            {bookDetail?.trip.return_drop_loc && (
+              <>
+                <Stack
+                  direction="row"
+                  sx={{
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    width: "400px",
+                  }}
+                >
+                  <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+                    Return trip pick-up time:
+                  </Typography>
+                  <Typography gutterBottom>
+                    {bookDetail?.trip.return_pickup_time
+                      ? new Date(
+                          bookDetail?.trip.return_pickup_time
+                        ).toLocaleString()
+                      : ""}
+                  </Typography>
+                </Stack>
+                <Stack
+                  direction="row"
+                  sx={{
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    width: "400px",
+                  }}
+                >
+                  <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+                    Return Drop-off Location:
+                  </Typography>
+                  <Typography gutterBottom>
+                    {bookDetail?.trip.return_drop_loc}
+                  </Typography>
+                </Stack>
+              </>
+            )}
+            {bookDetail?.trip.PO && (
+              <Stack
+                direction="row"
+                sx={{
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  width: "400px",
+                }}
+              >
+                <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+                  PO number:
+                </Typography>
+                <Typography gutterBottom>{bookDetail?.trip.PO}</Typography>
+              </Stack>
+            )}
+            {bookDetail?.additional_info && (
+              <Stack
+                direction="row"
+                sx={{
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  width: "400px",
+                }}
+              >
+                <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+                  Additional info:
+                </Typography>
+                <Typography gutterBottom sx={{ textAlign: "right" }}>
+                  {bookDetail?.additional_info}
+                </Typography>
+              </Stack>
+            )}
           </DialogContent>
           <DialogActions>
             <Button
-              autoFocus
+              sx={{
+                color: "#2c2c2c",
+                mr: 1,
+                transition: "all 250ms",
+                ":hover": { bgcolor: "#2c2c2c", color: "white" },
+              }}
               onClick={handleViewDialogClose}
-              sx={{ color: "#2c2c2c", mr: 1 }}
             >
               Close
             </Button>
@@ -579,9 +667,13 @@ const Page = () => {
           </DialogContent>
           <DialogActions>
             <Button
-              autoFocus
-              onClick={handleEditDialogClose}
-              sx={{ color: "#2c2c2c" }}
+              sx={{
+                color: "#2c2c2c",
+                transition: "all 300ms",
+                mr: 1,
+                ":hover": { bgcolor: "#2c2c2c", color: "white" },
+              }}
+              onClick={handleCancelDialogClose}
             >
               Close
             </Button>
@@ -597,7 +689,7 @@ const Page = () => {
             sx={{
               m: 0,
               p: 2,
-              fontFamily: "inter",
+              fontFamily: "aleo",
               fontWeight: "bold",
               bgcolor: "#2c2c2c",
               color: "white",
@@ -618,23 +710,30 @@ const Page = () => {
               color: theme.palette.grey[500],
             })}
           >
-            <CloseIcon/>
+            <CloseIcon />
           </IconButton>
-          <DialogContent dividers>
+          <DialogContent dividers sx={{ fontFamily: "inter" }}>
             Are you sure you want to cancel this booking?
           </DialogContent>
           <DialogActions>
             <Button
-              autoFocus
+              sx={{
+                color: "#2c2c2c",
+                transition: "all 300ms",
+                ":hover": { bgcolor: "#2c2c2c", color: "white" },
+              }}
               onClick={handleCancelDialogClose}
-              sx={{ color: "#2c2c2c" }}
             >
               Close
             </Button>
             <Button
-              autoFocus
+              sx={{
+                color: "#2c2c2c",
+                transition: "all 300ms",
+                mr: 1,
+                ":hover": { bgcolor: "#2c2c2c", color: "white" },
+              }}
               onClick={handleConfirmCancel}
-              sx={{ color: "#2c2c2c" }}
             >
               Confirm
             </Button>

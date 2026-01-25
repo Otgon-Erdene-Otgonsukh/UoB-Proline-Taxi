@@ -10,13 +10,14 @@ import {
   Paper,
   InputAdornment,
   IconButton,
+  CircularProgress
 } from "@mui/material";
+import Link from "next/link";
 import EmailIcon from "@mui/icons-material/Email";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { Snackbar, Alert } from "@mui/material";
 import { signIn } from "next-auth/react"
-import { userLogin } from "./request";
 
 export default function Log_forgot() {
   const router = useRouter();
@@ -29,18 +30,20 @@ export default function Log_forgot() {
     setMailEmpty(isMailEmpty);
     setPassEmpty(isPassEmpty);
 
-    
+
     if (!isMailEmpty && !isPassEmpty) {
+      setLoadingBar(true);
       // Use NextAuth for authentication, stores cookie automatically.
       signIn('credentials', {
         redirect: false, // Force NExtAuth not to redirect.
         email: mail,
         password: password,
       }).then(res => {
-        if (res.status !== 200) {
-          setSnackbarState({ open: true, status: 'fail' })
+        if (res.error) {
+          setWrong(true);
+          setLoadingBar(false);
         } else {
-          setSnackbarState({ open: true, status: 'success' })
+          setSnackbarState({ open: true, status: 'success' });
           router.push("/home");
         }
       })
@@ -52,6 +55,8 @@ export default function Log_forgot() {
   const [password, setPassword] = useState("");
   const [mailEmpty, setMailEmpty] = useState(false);
   const [passEmpty, setPassEmpty] = useState(false);
+  const [loadingBar, setLoadingBar] = useState(false);
+  const [wrong, setWrong] = useState(false);
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
@@ -93,7 +98,7 @@ export default function Log_forgot() {
       <Paper
         elevation={3}
         sx={{
-          maxWidth: 500,
+          maxWidth: 430,
           width: "100%",
           borderRadius: 5,
           mt: 10,
@@ -128,7 +133,7 @@ export default function Log_forgot() {
           sx={{
             display: "flex",
             flexDirection: "column",
-            gap: 3,
+            gap: 2.5,
             p: { xs: 4, sm: 5, md: 6 },
           }}
         >          <TextField
@@ -141,6 +146,8 @@ export default function Log_forgot() {
             value={mail}
             onChange={(e) => {
               setMail(e.target.value);
+              setWrong(false);
+              setMailEmpty(false);
             }}
             sx={{
               "& .MuiOutlinedInput-root": {
@@ -186,6 +193,8 @@ export default function Log_forgot() {
             value={password}
             onChange={(e) => {
               setPassword(e.target.value);
+              setWrong(false);
+              setPassEmpty(false);
             }}
             sx={{
               "& .MuiOutlinedInput-root": {
@@ -231,7 +240,7 @@ export default function Log_forgot() {
               },
             }}
           />
-
+          {wrong && <Alert severity="error">Incorrect mail or password. Please enter the correct details or wait for your account approval.</Alert>}
           <Box sx={{ textAlign: "left"}}>
             <Button variant="text" onClick={handleForgotClick}
               sx={{
@@ -241,6 +250,8 @@ export default function Log_forgot() {
                 "&:hover": {
                   color: "#374151",
                 },
+                mb: -1,
+                mt: -1
               }}
             >
               Forgot password?
@@ -265,8 +276,9 @@ export default function Log_forgot() {
               transition: "all 0.2s",
             }}
           >
-            LOG IN
+            {loadingBar ? <CircularProgress color="inherit" size="30px" /> : "LOG IN"}
           </Button>
+          <Typography sx={{ textAlign: "center", mb: -2 }}>Don&apos;t have an account? <Link href="/register" className="text-blue-600">Sign up</Link></Typography>
         </Box>
       </Paper>
     </div>

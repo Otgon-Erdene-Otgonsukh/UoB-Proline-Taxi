@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import SearchAppBar from "@/components/SearchBar";
+import CustomSwitch from "@/components/CustomSwitch";
 import NumbersIcon from "@mui/icons-material/Numbers";
 import ReceiptIcon from "@mui/icons-material/Receipt";
 import FindInPageIcon from "@mui/icons-material/FindInPage";
@@ -22,6 +23,8 @@ import {
   DialogContentText,
   TextField,
   InputAdornment,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import type {
   booking,
@@ -50,6 +53,8 @@ export default function DepDashboard() {
   const [poEmpty, setPoEmpty] = useState(false);
   const [poTooLong, setPoTooLong] = useState(false);
   const [pendingBookingId, setPendingBookingId] = useState<number | null>(null);
+  const [snackBar, setSnackBar] = useState(false);
+  const [flightChecked, setFlightChecked] = useState(false);
 
   const inputTheme = createTheme({
     //creating a custom theme outside the component
@@ -103,35 +108,46 @@ export default function DepDashboard() {
 
   // Filter bookings based on search
   const filteredBookings = pendingBookings.filter((e) => {
-    if (searchType === "Phone number") {
-      return e.tel_number?.startsWith(search);
+    if (flightChecked) {
+      return e.trip.airport !== "" && e.trip.airport !== null;
+    } else if (searchType === "Phone number") {
+      return e.tel_number?.startsWith(search.trim());
     } else if (searchType === "Email") {
-      return e.email?.toLowerCase().includes(search.toLowerCase());
+      return e.email?.toLowerCase().startsWith(search.trim().toLowerCase());
     } else if (searchType === "Passengers") {
       return search === "" ? e : e.trip.passenger_num === Number(search);
     } else if (searchType === "Location") {
       return (
         e.trip.pickup_location
           ?.toLowerCase()
-          .startsWith(search.toLowerCase()) ||
+          .startsWith(search.trim().toLowerCase()) ||
         e.trip.dropoff_location
           ?.toLowerCase()
-          .startsWith(search.toLowerCase()) ||
-        e.trip.via?.toLowerCase().startsWith(search.toLowerCase()) ||
-        e.trip.return_drop_loc?.toLowerCase().startsWith(search.toLowerCase())
+          .startsWith(search.trim().toLowerCase()) ||
+        e.trip.via?.toLowerCase().startsWith(search.trim().toLowerCase()) ||
+        e.trip.return_drop_loc
+          ?.toLowerCase()
+          .startsWith(search.trim().toLowerCase()) ||
+        e.trip.airport?.toLowerCase().startsWith(search.trim().toLowerCase())
       );
+    } else if (searchType === "flightNum" && search !== "") {
+      return e.trip.flight_num
+        ?.toLowerCase()
+        .includes(search.trim().toLowerCase());
     } else {
       return (
-        e.first_name?.toLowerCase().startsWith(search.toLowerCase()) ||
-        e.surname?.toLowerCase().startsWith(search.toLowerCase())
+        e.first_name?.toLowerCase().startsWith(search.trim().toLowerCase()) ||
+        e.surname?.toLowerCase().startsWith(search.trim().toLowerCase())
       );
     }
   });
 
   // Update noMatchingResult based on filtered results
   useEffect(() => {
-    setNoMatchingResult(filteredBookings.length === 0 && search !== "");
-  }, [search]);
+    setNoMatchingResult(
+      filteredBookings.length === 0 && (search !== "" || flightChecked)
+    );
+  }, [search, flightChecked, filteredBookings.length]);
 
   const handleViewOpen = (booking: BookingWithTrip) => {
     setSelectedBooking(booking);
@@ -155,6 +171,7 @@ export default function DepDashboard() {
     } else {
       setPoValidity(false);
       setPoDialog(false);
+      setSnackBar(true);
 
       // Complete the approval
       if (pendingBookingId !== null) {
@@ -210,6 +227,13 @@ export default function DepDashboard() {
             Department Bookings
           </h1>
           <div className="flex gap-4">
+            <div className="mt-2">
+              <CustomSwitch
+                onClick={() => {
+                  setFlightChecked(!flightChecked);
+                }}
+              ></CustomSwitch>
+            </div>
             <ThemeProvider theme={inputTheme}>
               <FormControl sx={{ minWidth: 200 }}>
                 <InputLabel>Search By</InputLabel>
@@ -236,6 +260,9 @@ export default function DepDashboard() {
                   <MenuItem key="4" value="Name">
                     Passenger name
                   </MenuItem>
+                  <MenuItem key="5" value="flightNum">
+                    Flight number
+                  </MenuItem>
                 </Select>
               </FormControl>
             </ThemeProvider>
@@ -250,8 +277,10 @@ export default function DepDashboard() {
           <div className="text-center py-15 font-inter text-gray-400">
             {isLoading
               ? "Loading..."
-              : noMatchingResult
-              ? "No matching booking."
+              : noMatchingResult && flightChecked
+              ? "No airport pick-up bookings."
+              : noMatchingResult && search !== ""
+              ? "No matching bookings."
               : "There are no bookings awaiting approval."}
           </div>
         ) : (
@@ -286,7 +315,9 @@ export default function DepDashboard() {
                           : "N/A"}
                       </td>
                       <td className="border-2 border-gray-900 px-4 py-3 text-md">
-                        {e.trip.pickup_location}
+                        {e.trip.airport === "" || e.trip.airport === null
+                          ? e.trip.pickup_location
+                          : e.trip.airport}
                       </td>
                       <td className="border-2 border-gray-900 px-4 py-3 text-md">
                         {e.trip.dropoff_location}
@@ -388,7 +419,7 @@ export default function DepDashboard() {
                 gutterBottom
                 sx={{ fontWeight: "bold", fontSize: 20 }}
               >
-                Information about passenger:
+                Information about lead passenger:
               </Typography>
             </Stack>
             <Stack
@@ -507,22 +538,46 @@ export default function DepDashboard() {
                 From:
               </Typography>
               <Typography gutterBottom>
-                {selectedBooking?.trip.pickup_location}
+                {selectedBooking?.trip.airport === "" ||
+                selectedBooking?.trip.airport === null
+                  ? selectedBooking?.trip.pickup_location
+                  : selectedBooking?.trip.airport}
               </Typography>
             </Stack>
-            <Stack
-              direction="row"
-              sx={{
-                justifyContent: "space-between",
-                alignItems: "center",
-                width: "400px",
-              }}
-            >
-              <Typography gutterBottom sx={{ fontWeight: "bold" }}>
-                Via:
-              </Typography>
-              <Typography gutterBottom>{selectedBooking?.trip.via}</Typography>
-            </Stack>
+            {selectedBooking?.trip.flight_num && (
+              <Stack
+                direction="row"
+                sx={{
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  width: "400px",
+                }}
+              >
+                <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+                  Flight number:
+                </Typography>
+                <Typography gutterBottom>
+                  {selectedBooking.trip.flight_num}
+                </Typography>
+              </Stack>
+            )}
+            {selectedBooking?.trip.via && (
+              <Stack
+                direction="row"
+                sx={{
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  width: "400px",
+                }}
+              >
+                <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+                  Via:
+                </Typography>
+                <Typography gutterBottom>
+                  {selectedBooking?.trip.via}
+                </Typography>
+              </Stack>
+            )}
             <Stack
               direction="row"
               sx={{
@@ -595,21 +650,44 @@ export default function DepDashboard() {
                   : ""}
               </Typography>
             </Stack>
-            <Stack
-              direction="row"
-              sx={{
-                justifyContent: "space-between",
-                alignItems: "center",
-                width: "400px",
-              }}
-            >
-              <Typography gutterBottom sx={{ fontWeight: "bold" }}>
-                Return Drop-off Location:
-              </Typography>
-              <Typography gutterBottom>
-                {selectedBooking?.trip.return_drop_loc}
-              </Typography>
-            </Stack>
+            {selectedBooking?.trip.return_drop_loc && (
+              <>
+                <Stack
+                  direction="row"
+                  sx={{
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    width: "400px",
+                  }}
+                >
+                  <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+                    Return trip pick-up time:
+                  </Typography>
+                  <Typography gutterBottom>
+                    {selectedBooking?.trip.return_pickup_time
+                      ? new Date(
+                          selectedBooking?.trip.return_pickup_time
+                        ).toLocaleString()
+                      : ""}
+                  </Typography>
+                </Stack>
+                <Stack
+                  direction="row"
+                  sx={{
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    width: "400px",
+                  }}
+                >
+                  <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+                    Return Drop-off Location:
+                  </Typography>
+                  <Typography gutterBottom sx={{ textAlign: "right" }}>
+                    {selectedBooking?.trip.return_drop_loc}
+                  </Typography>
+                </Stack>
+              </>
+            )}
             {selectedBooking?.trip.PO !== null && (
               <Stack
                 direction="row"
@@ -623,6 +701,23 @@ export default function DepDashboard() {
                   PO number:
                 </Typography>
                 <Typography gutterBottom>{selectedBooking?.trip.PO}</Typography>
+              </Stack>
+            )}
+            {selectedBooking?.additional_info && (
+              <Stack
+                direction="row"
+                sx={{
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  width: "400px",
+                }}
+              >
+                <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+                  Additional info:
+                </Typography>
+                <Typography gutterBottom sx={{ textAlign: "right" }}>
+                  {selectedBooking?.additional_info}
+                </Typography>
               </Stack>
             )}
           </DialogContent>
@@ -749,6 +844,24 @@ export default function DepDashboard() {
             </Button>
           </DialogActions>
         </Dialog>
+        <Snackbar
+          open={snackBar}
+          autoHideDuration={4000}
+          onClose={() => {
+            setSnackBar(!snackBar);
+          }}
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        >
+          <Alert
+            onClose={() => {
+              setSnackBar(!snackBar);
+            }}
+            severity="success"
+            variant="filled"
+          >
+            PO number has been successfully attached!
+          </Alert>
+        </Snackbar>
       </div>
     </div>
   );

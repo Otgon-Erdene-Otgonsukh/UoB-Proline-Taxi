@@ -1,3 +1,5 @@
+import { department } from "@/generated/prisma/client";
+
 export type BookingLocation = {
   name: string;
   latitude: string;
@@ -16,13 +18,18 @@ export type Trip = {
   dropoff_latitude: number;
   dropoff_longitude: number;
   pickup_time?: string;
+  return_pickup_time: string,
   passenger_num: number;
   via: string;
   return_drop_loc: string;
+  PO: string;
+  airport: string;
+  flight_num: string;
 }
 
 export type BookingRecord = {
   booking_id: number;
+  additional_info: string;
   time_created: string;
   trip: Trip;
   booking_status: 'Approved' | 'Pending' | 'Rejected' | 'Cancelled';
@@ -38,4 +45,16 @@ export function bookingStatusMap(bookingStatus: number): BookingStatusStr {
     case 2:
       return 'Rejected';
   }
+}
+
+export type UserRecord = {
+  time_created: string;
+  user_id: string;
+  department: department;
+  email: string;
+  name: string;
+  surname: string;
+  phone_number: string;
+  role: string;
+  user_status: number;
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, redirect } from "next/navigation";
 import {
   Button,
   createTheme,
@@ -13,8 +13,13 @@ import {
   FormHelperText,
   Checkbox,
   FormControlLabel,
+  CircularProgress,
+  Autocomplete,
+  TextField,
 } from "@mui/material";
 import NumberField from "@/components/NumberField";
+import { useSession } from "next-auth/react";
+import Image from "next/image";
 
 export default function BookingPage() {
   const commonLocations = [
@@ -26,10 +31,20 @@ export default function BookingPage() {
     "Physics Building",
   ];
 
+  const session = useSession();
+
+  if (!session) {
+    // protected page
+    redirect("/login");
+  }
+
   const [isManualChecked, setIsManualChecked] = useState(false);
   const [isFlightChecked, setIsFlightChecked] = useState(false);
   const [isViaChecked, setIsViaChecked] = useState(false);
   const [isReturnChecked, setIsReturnChecked] = useState(false);
+  const [phoneCode, setPhoneCode] = useState("+44");
+  const [loadingBar, setLoadingBar] = useState(false);
+  const [departmentEmpty, setDepartmentEmpty] = useState(false);
 
   // Set error messages visible next to fields, default "" (empty) for hide.
   const [formFeedback, setFormFeedback] = useState({
@@ -46,6 +61,39 @@ export default function BookingPage() {
     Email: "",
     AdditionalInfo: "",
   });
+
+  const departments = [
+    "Centre for Academic Language and Development",
+    "Centre for Innovation and Entrepreneurship",
+    "Arts",
+    "Economics",
+    "Education",
+    "Humanities",
+    "Modern Languages",
+    "Policy Studies",
+    "Sociology, Politics and International Studies",
+    "Business",
+    "Law",
+    "Dental",
+    "Medical",
+    "Veterinary",
+    "Health Professions Education",
+    "Anatomy",
+    "Biochemistry",
+    "Biological Sciences",
+    "Cellular and Molecular Medicine",
+    "Physiology, Pharmacology and Neuroscience",
+    "Psychological Science",
+    "Chemistry",
+    "Civil, Aerospace, and Design Engineering",
+    "Computer Science",
+    "Earth Sciences",
+    "Electrical, Electronic and Mechanical Engineering",
+    "Engineering Mathematics and Technology",
+    "Geographical Sciences",
+    "Mathematics",
+    "Physics",
+  ];
 
   const clearFeedback = () => {
     const dict = { ...formFeedback };
@@ -70,6 +118,8 @@ export default function BookingPage() {
     DropoffLoc: "",
     PickupDate: "",
     PickupTime: "",
+    ReturnDate: "",
+    ReturnTime: "",
     FirstName: "",
     Surname: "",
     Number: "",
@@ -94,7 +144,7 @@ export default function BookingPage() {
     let loc = "";
 
     // Custom Location
-    if (isManualChecked || isFlightChecked) {
+    if (isManualChecked) {
       if (formData.CustomLoc == "") {
         addFormFeedback("CustomLoc", "Please enter a pickup location.");
         fail = true;
@@ -107,13 +157,19 @@ export default function BookingPage() {
       }
 
       loc = formData.CustomLoc;
-    } else {
+    } else if (!isFlightChecked) {
       // Common Pickup Location / Dropdown
       if (formData.CommonLoc == "") {
         addFormFeedback("CommonLoc", "Please pick one.");
         fail = true;
       }
       loc = formData.CommonLoc;
+    }
+
+    // Department check
+    if (formData.department.length === 0) {
+      setDepartmentEmpty(true);
+      fail = true;
     }
 
     // Drop-Off Location
@@ -161,6 +217,9 @@ export default function BookingPage() {
     // should only be subject to server side validation other than presence and being later than Date.Now().
 
     let pickupDateTime = new Date();
+    const returnDateTime = new Date(formData.ReturnDate);
+    const [h, m] = formData.ReturnTime.split(":").map(Number);
+    returnDateTime.setHours(h, m, 0, 0);
 
     if (formData.PickupDate == "") {
       addFormFeedback("PickupDate", "Please select a Date.");
@@ -234,20 +293,23 @@ export default function BookingPage() {
 
     // fail == false if all validation succeeds, then post the request.
     if (fail == false) {
+      setLoadingBar(true);
       const jsonBody = {
-        user_id: 1,
+        user_id: session.data?.user.user_id,
         pickup_location: loc,
         dropoff_location: formData.DropoffLoc,
         pickup_time: pickupDateTime,
+        ...(isReturnChecked ? {return_time: returnDateTime, returnTo: formData.ReturnTo} : {}),
         first_name: formData.FirstName,
         surname: formData.Surname,
         email: formData.Email,
-        tel_number: formData.Number,
+        tel_number: phoneCode + " " + formData.Number,
         additional_info: formData.AdditionalInfo,
         via: formData.Via,
-        returnTo: formData.ReturnTo,
         passengers: formData.Passengers,
         department: formData.department,
+        airport: formData.Airport,
+        flight_num: formData.FlightNum,
       };
       fetch("/api/create_booking", {
         method: "POST",
@@ -396,7 +458,7 @@ export default function BookingPage() {
                     onChange={(e) => setIsManualChecked(e.target.checked)}
                     className="sr-only peer"
                   />
-                  <div className="relative w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-gray-300 peer-checked:bg-[#4a4a4a] peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+                  <div className="relative w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-gray-300 peer-checked:bg-[#4a4a4a] peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
                 </label>
                 <label
                   htmlFor="flight"
@@ -412,7 +474,7 @@ export default function BookingPage() {
                     onChange={(e) => setIsFlightChecked(e.target.checked)}
                     className="sr-only peer"
                   />
-                  <div className="relative w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-gray-300 peer-checked:bg-[#4a4a4a] peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+                  <div className="relative w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-gray-300 peer-checked:bg-[#4a4a4a] peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
                 </label>
                 <label
                   htmlFor="via"
@@ -426,10 +488,10 @@ export default function BookingPage() {
                     onChange={(e) => setIsViaChecked(e.target.checked)}
                     className="sr-only peer"
                   />
-                  <div className="relative w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-gray-300 peer-checked:bg-[#4a4a4a] peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+                  <div className="relative w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-gray-300 peer-checked:bg-[#4a4a4a] peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
                 </label>
               </div>
-              {isViaChecked && !isManualChecked && (
+              {isViaChecked && !isManualChecked && !isFlightChecked && (
                 <div className="flex flex-col">
                   <label htmlFor="via" className="mb-1 text-sm">
                     Via
@@ -537,6 +599,21 @@ export default function BookingPage() {
                       {formFeedback.Airport}
                     </FormHelperText>
                   </div>
+                  {isViaChecked && (
+                    <div className="flex flex-col">
+                      <label htmlFor="via" className="mb-1 text-sm">
+                        Via
+                      </label>
+                      <input
+                        id="via"
+                        placeholder="Via..."
+                        className="border-2 rounded px-3 py-2"
+                        onChange={(e) => {
+                          setFormData({ ...formData, Via: e.target.value });
+                        }}
+                      ></input>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -571,7 +648,10 @@ export default function BookingPage() {
                         "&.Mui-checked": { color: "#2c2c2c" },
                       }}
                       checked={isReturnChecked}
-                      onChange={(e) => setIsReturnChecked(e.target.checked)}
+                      onChange={(e) => {
+                        setIsReturnChecked(e.target.checked);
+                        setFormData({ ...formData, ReturnTo: "" });
+                      }}
                     />
                   }
                   label="Return trip"
@@ -586,11 +666,7 @@ export default function BookingPage() {
                     <input
                       id="returnPickUp"
                       className="border-2 rounded px-3 py-2"
-                      value={
-                        formData.CommonLoc === ""
-                          ? formData.CustomLoc
-                          : formData.CommonLoc
-                      }
+                      value={formData.DropoffLoc}
                       disabled
                     ></input>
                   </div>
@@ -606,6 +682,35 @@ export default function BookingPage() {
                         setFormData({ ...formData, ReturnTo: e.target.value });
                       }}
                     ></input>
+                  </div>
+                  <div className="flex flex-col text-sm">
+                    <label htmlFor="pickupDate" className="mb-1">
+                      Return trip pick-up date and time
+                    </label>
+                    <div className="flex flex-col sm:flex-row gap-2 sm:gap-2.5">
+                      <input
+                        id="pickupDate"
+                        type="date"
+                        className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0`}
+                        onChange={(e) => {
+                          setFormData({
+                            ...formData,
+                            ReturnDate: e.target.value,
+                          });
+                        }}
+                      ></input>
+                      <input
+                        id="pickupTime"
+                        type="time"
+                        className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0`}
+                        onChange={(e) => {
+                          setFormData({
+                            ...formData,
+                            ReturnTime: e.target.value,
+                          });
+                        }}
+                      ></input>
+                    </div>
                   </div>
                 </div>
               )}
@@ -648,9 +753,12 @@ export default function BookingPage() {
                   {formFeedback.PickupTime}
                 </FormHelperText>
               </div>
+              <div>
+                <h3 className="font-bold">Lead passenger details:</h3>
+              </div>
               <div className="flex flex-col">
                 <label htmlFor="name" className="mb-1 text-sm">
-                  Name
+                  First name
                 </label>
                 <input
                   id="name"
@@ -671,7 +779,7 @@ export default function BookingPage() {
               </div>
               <div className="flex flex-col">
                 <label htmlFor="surname" className="mb-1 text-sm">
-                  Surname
+                  Last name
                 </label>
                 <input
                   id="surname"
@@ -695,7 +803,12 @@ export default function BookingPage() {
                   Phone number
                 </label>
                 <div className="flex gap-2">
-                  <select className="border-2 rounded px-2 py-2">
+                  <select
+                    className="border-2 rounded px-2 py-2"
+                    onChange={(e) => {
+                      setPhoneCode(e.target.value);
+                    }}
+                  >
                     <option value="+44">+44 (UK)</option>
                     <option value="+1">+1 (US/CA)</option>
                     <option value="+91">+91 (IN)</option>
@@ -724,18 +837,44 @@ export default function BookingPage() {
                   {formFeedback.Number}
                 </FormHelperText>
               </div>
-              <div className="flex flex-col">
-                <label htmlFor="dropLoc" className="mb-1 text-sm">
-                  Department
-                </label>
-                <input
-                  id="department"
-                  onChange={(e) => {
-                    setFormData({ ...formData, department: e.target.value });
+              <ThemeProvider theme={inputTheme}>
+                <Autocomplete
+                  sx={{ my: 1 }}
+                  disablePortal
+                  value={formData.department}
+                  inputValue={formData.department}
+                  onInputChange={(_, dep) => {
+                    setFormData({ ...formData, department: dep });
+                    setDepartmentEmpty(false);
                   }}
-                  className="border-2 rounded px-3 py-2"
-                ></input>
-              </div>
+                  options={departments}
+                  slotProps={{
+                    paper: {
+                      sx: {
+                        border: "2px solid #2c2c2c",
+                        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                        mt: 0.5,
+                        "& .MuiAutocomplete-option": {
+                          "&:hover": {
+                            backgroundColor: "#f3f4f6",
+                          },
+                          '&[aria-selected="true"]': {
+                            backgroundColor: "#e5e7eb !important",
+                          },
+                        },
+                      },
+                    },
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Department"
+                      error={departmentEmpty}
+                      helperText={departmentEmpty && "Select a department."}
+                    />
+                  )}
+                />
+              </ThemeProvider>
               <div className="flex flex-col sm:flex-row gap-4">
                 <div className="flex flex-col flex-1">
                   <label htmlFor="mail" className="mb-1 text-sm">
@@ -782,7 +921,7 @@ export default function BookingPage() {
                 </label>
                 <textarea
                   id="addInfo"
-                  className={`border-2 rounded px-3 py-2 min-h-[80px] ${
+                  className={`border-2 rounded px-3 py-2 min-h-20 ${
                     formFeedback.AdditionalInfo == "" ? "" : "border-red-700"
                   }`}
                   onChange={(e) => {
@@ -817,7 +956,11 @@ export default function BookingPage() {
                     fontSize: "0.875rem",
                   }}
                 >
-                  Confirm Booking
+                  {loadingBar ? (
+                    <CircularProgress color="inherit" size="30px" />
+                  ) : (
+                    "Confirm Booking"
+                  )}
                 </Button>
               </div>
             </div>
@@ -825,11 +968,13 @@ export default function BookingPage() {
         </div>
 
         {/* Image Section */}
-        <div className="hidden lg:block lg:w-1/2">
-          <img
+        <div className="hidden lg:block lg:w-1/2 object-contain">
+          <Image
             src="/emptymap.png"
             alt="Map"
             className="w-full h-full object-cover border-l-3 border-[#2c2c2c]"
+            width={330}
+            height={500}
           />
         </div>
       </div>

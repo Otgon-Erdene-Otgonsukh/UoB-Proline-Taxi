@@ -9,6 +9,7 @@ export default async function createBooking(
     pickupLongitude : number | null,
     dropoffLocation : string, dropoffLatitude: number | null, dropoffLongitude: number | null,
     pickupTime : Date,
+    returnDT : Date | undefined,
     first_name : string,
     surname : string,
     email: string,
@@ -18,7 +19,9 @@ export default async function createBooking(
     returnTo: string,
     passenger_num: number,
     department: string,
-)
+    airport: string,
+    flight_num: string,
+    )
 {
     // Create a trip for the booking to be bound to.
     const trip = await prisma.trip.create({
@@ -31,14 +34,17 @@ export default async function createBooking(
             dropoff_latitude: dropoffLatitude,
             dropoff_longitude: dropoffLongitude,
             pickup_time: pickupTime,
+            return_pickup_time: returnDT ? returnDT : null,
             via: via,
             passenger_num: passenger_num,
-            return_drop_loc: returnTo
+            return_drop_loc: returnTo,
+            airport: airport,
+            flight_num: flight_num
         }
     });
 
     // Create a booking entry.
-    const booking = await prisma.booking.create({
+    await prisma.booking.create({
         data: {
             user_id: userID,
             trip_id: trip.trip_id,
