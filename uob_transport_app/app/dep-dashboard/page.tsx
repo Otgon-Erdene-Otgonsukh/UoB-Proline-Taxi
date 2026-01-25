@@ -128,12 +128,15 @@ export default function DepDashboard() {
         isFlight: searchFormInput.isFlight,
       }
     )
-      .then((res) => res.json())
-      .then((data) => {
-        setPendingBookings(data.pendingBookings);
-        setPendingBookingsCount(data.totalNum);
-        setIsLoading(false);
-      });
+      .then((res) => {
+        if (res.status === 200) {
+          res.json().then((data) => {
+            setPendingBookings(data.pendingBookings);
+            setPendingBookingsCount(data.totalNum);
+            setIsLoading(false);
+          })
+        }
+      })
   }
 
   const handleViewOpen = (booking: BookingWithTrip) => {
@@ -264,7 +267,7 @@ export default function DepDashboard() {
           <Typography sx={{ color: "gray", fontSize: 16, textAlign: "center" }}>
             Getting your bookings...
           </Typography>
-        ) : pendingBookings.length === 0 ? (
+        ) : pendingBookings && pendingBookings.length === 0 ? (
           <Typography sx={{ color: "gray", fontSize: 16, textAlign: "center" }}>
             No bookings to show.
           </Typography>
@@ -311,16 +314,7 @@ export default function DepDashboard() {
                           {row.trip.dropoff_location}
                         </StyledTableCell>
                         <StyledTableCell>
-                          <span
-                            className={`inline-block px-5 py-1 rounded-full text-xs font-medium ${row.booking_status === "Approved"
-                              ? "bg-green-100 text-green-800 border border-green-800"
-                              : row.booking_status === "Rejected"
-                                ? "bg-red-100 text-red-800 border border-red-800"
-                                : row.booking_status === "Cancelled"
-                                  ? "bg-gray-300 text-gray-900 border border-gray-900"
-                                  : "bg-yellow-100 text-yellow-800 border border-yellow-800"
-                              }`}
-                          >
+                          <span>
                             {row.first_name + " " + row.surname}
                           </span>
                         </StyledTableCell>
