@@ -231,7 +231,7 @@ export default function DepDashboard() {
             ></CustomSwitch>
             <TextField
               fullWidth
-              label="PassengerName"
+              label="Passenger Name"
               id="passengerNameInput"
               value={searchFormInput.passengerName}
               onChange={(e) => { setSearchFormInput({ ...searchFormInput, passengerName: e.target.value }); }}
