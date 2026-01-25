@@ -18,6 +18,26 @@ export const getUserBookingsAccess = async (userId: number, page: number, pageSi
   })
 }
 
+// Get all details about a specific booking by both User ID and Booking ID.
+// Allows us to match bookings to the creator of it / verify ownership.
+export const getBookingDetails = async (userId: number, bookingId: number): Promise<booking | null> => {
+  // If userId is -1, it bypasses the user check.
+  if (userId === -1) {
+    return prisma.booking.findUnique({
+      where: {
+        booking_id: bookingId,
+      }
+    })
+  } else {
+    return prisma.booking.findFirst({
+      where: {
+        booking_id: bookingId,
+        user_id: userId
+      }
+    })
+  }
+}
+
 export const cancelBookingsAccess = async (bookingId: number): Promise<booking | null> => {
   return prisma.booking.update({
     where: {
