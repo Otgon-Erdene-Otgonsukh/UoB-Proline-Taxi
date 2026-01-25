@@ -48,6 +48,9 @@ export async function getPendingBookings(page: number, pageSize: number, searchP
         include: {
           department: true,
         },
+        omit: {
+          password: true,
+        }
       },
     },
     skip: page * pageSize,

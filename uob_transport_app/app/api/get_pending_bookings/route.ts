@@ -9,7 +9,7 @@ export async function GET(request: NextRequest,) {
     return new Response(JSON.stringify({
       message: 'login required'
     }), {
-      status: 201,
+      status: 401,
       headers: { 'Content-Type': 'application/json' },
     })
   }
@@ -31,6 +31,10 @@ export async function GET(request: NextRequest,) {
       headers: { 'Content-Type': 'application/json' },
     })
   }
+
+  // TODO: Add admin check / privilege check here later, these are currently not done.
+  // All logged in users can currently view pending bookings.
+  // This part of logic is not clear for now. Isn't it to be the department manager who can view and approve pending bookings?
 
   try {
     const pendingBookings = await getPendingBookings(parseInt(page), parseInt(pageSize), {

@@ -8,12 +8,18 @@ import { getPendingBookings, getPendingBookingsCount } from "@/backend/pending_b
 // Mock the database function
 jest.mock("../../backend/pending_bookings/get_pending_bookings");
 
+jest.mock("../../auth", () => ({
+  auth: jest.fn().mockResolvedValue({
+    user: { user_id: 3 }
+  })
+}));
+
 test("check if the res status is good", async () => {
   // Mock return value - fake booking data
   const mockBookings = [
     {
       booking_id: 1,
-      user_id: 1,
+      user_id: 3,
       trip_id: 1,
       booking_status: "Pending",
       time_created: new Date("2025-01-01").toLocaleString(),
@@ -43,3 +49,5 @@ test("check if the res status is good", async () => {
   });
   expect(getPendingBookings).toHaveBeenCalledTimes(1);
 });
+
+jest.clearAllMocks();
