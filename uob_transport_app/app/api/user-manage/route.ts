@@ -1,6 +1,5 @@
 import { NextRequest } from "next/server";
 import { auth } from "@/auth";
-<<<<<<< HEAD
 import { getUserListAccess, getUserCountAccess, updateUserAccess } from "@/backend/access/user_access";
 import { isAdmin } from "@/backend/access/user_access";
 
