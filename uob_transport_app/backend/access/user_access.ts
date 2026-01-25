@@ -72,3 +72,18 @@ export const getUserCountAccess = async (name?: string, role?: string, userStatu
     where: query,
   })
 }
+
+// Check if a user has admin privileges by their ID.
+export const isAdmin = async (userId: number): Promise<boolean> => {
+  const user = await prisma.user.findUnique({
+    where: {
+      user_id: userId
+    }
+  })
+
+  if ( user !== null && (user.role === 'proline_staff' || user.role === 'super_admin')) {
+    return true
+  } else {
+    return false
+  }
+}
