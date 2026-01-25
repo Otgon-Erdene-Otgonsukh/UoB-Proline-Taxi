@@ -12,31 +12,31 @@ import {
 } from "@react-email/components";
 
 export default function BookingInfo({
-  from = "Queens Building",
-  via = "Somwehre",
-  to = "Bristol Airport",
-  airport = "Heathrow",
-  flightNum = "AB 1234",
-  pickUpTime = new Date("2026-12-30"),
-  returnTime = new Date("2026-12-31"),
-  returnTo = "Physics building",
-  firstName = "George",
-  surName = "David",
-  phoneNumber = "+44 7215625321",
-  department = "Physics",
+  from,
+  via,
+  to,
+  airport,
+  flightNum,
+  pickUpTime,
+  returnTime,
+  returnTo,
+  firstName,
+  surName,
+  phoneNumber,
+  department,
 }: {
-  from?: string;
-  via?: string;
-  to?: string;
-  airport?: string;
-  flightNum?: string;
-  pickUpTime?: Date;
+  from: string;
+  via: string;
+  to: string;
+  airport: string;
+  flightNum: string;
+  pickUpTime: Date;
   returnTime?: Date;
   returnTo?: string;
-  firstName?: string;
-  surName?: string;
-  phoneNumber?: string;
-  department?: string;
+  firstName: string;
+  surName: string;
+  phoneNumber: string;
+  department: string;
 }) {
   return (
     <Html>
