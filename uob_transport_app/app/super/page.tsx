@@ -34,7 +34,7 @@ import {
 import { getUsersAsAdmin, updateUserAsAdmin } from "./request";
 import ViewDialog from "./userManageComponents/viewDialog";
 import EditDialog from "./userManageComponents/eidtDialog";
-import { userStatusToIntMap, userStatusToStrMap, roleStrMap, roles } from "./constants";
+import { userStatusToIntMap, userStatusToStrMap, roleStrMap, roles, roleReadableStrMap } from "./constants";
 import { getDepartmentsList } from "./requests";
 import ConfirmDialog from "@/components/confirmDIalog";
 
@@ -216,7 +216,7 @@ const Page = () => {
   const handleAcceptUserRegister = (row: UserRecord) => {
     updateUserAsAdmin({
       ...row,
-      user_status: userStatusToIntMap.normal
+      user_status: userStatusToIntMap.approved
     }).then(res => {
       if (res.status === 200) {
         setIsLoading(true)
@@ -289,7 +289,7 @@ const Page = () => {
                 size="small"
               >
                 {roles.map(e => {
-                  return <MenuItem value={e} key={e}>{e}</MenuItem>
+                  return <MenuItem value={e} key={e}>{roleReadableStrMap[e]}</MenuItem>
                 })}
               </Select>
             </FormControl>
@@ -303,7 +303,7 @@ const Page = () => {
                 size="small"
               >
                 <MenuItem value={userStatusToIntMap.pending}>{userStatusToStrMap[userStatusToIntMap.pending]}</MenuItem>
-                <MenuItem value={userStatusToIntMap.normal}>{userStatusToStrMap[userStatusToIntMap.normal]}</MenuItem>
+                <MenuItem value={userStatusToIntMap.approved}>{userStatusToStrMap[userStatusToIntMap.approved]}</MenuItem>
                 <MenuItem value={userStatusToIntMap.rejected}>{userStatusToStrMap[userStatusToIntMap.rejected]}</MenuItem>
               </Select>
             </FormControl>
@@ -374,10 +374,10 @@ const Page = () => {
                       <StyledTableCell>{row.email}</StyledTableCell>
                       <StyledTableCell>{row.phone_number}</StyledTableCell>
                       <StyledTableCell>{row.department.dep_name}</StyledTableCell>
-                      <StyledTableCell>{row.role}</StyledTableCell>
+                      <StyledTableCell>{roleReadableStrMap[row.role]}</StyledTableCell>
                       <StyledTableCell>
                         <span
-                          className={`inline-block px-5 py-1 rounded-full text-xs font-medium ${row.user_status === userStatusToIntMap.normal
+                          className={`inline-block px-5 py-1 rounded-full text-xs font-medium ${row.user_status === userStatusToIntMap.approved
                             ? "bg-green-100 text-green-800 border border-green-800"
                             : row.user_status === userStatusToIntMap.rejected
                               ? "bg-red-100 text-red-800 border border-red-800"

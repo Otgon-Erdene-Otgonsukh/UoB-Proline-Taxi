@@ -15,7 +15,7 @@ import {
   FindInPage as FindInPageIcon
 } from "@mui/icons-material"
 import { UserRecord } from "@/model/models";
-import { userStatusToIntMap, userStatusToStrMap } from "../../super/constants";
+import { roleReadableStrMap, userStatusToIntMap, userStatusToStrMap } from "../../super/constants";
 import CustomizedButton from "@/components/CustomizedButton";
 
 const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: UserRecord, dialogOpen: boolean, handleDialogClose: () => void }) => {
@@ -52,9 +52,6 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: UserRecor
         id="customized-dialog-title"
       >
         User Detail
-        <FindInPageIcon
-          sx={{ fontSize: 35, mb: 1, ml: 1, mr: -1 }}
-        ></FindInPageIcon>
       </DialogTitle>
       <IconButton
         aria-label="close"
@@ -106,7 +103,7 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: UserRecor
             Role:
           </Typography>
           <Typography gutterBottom>
-            {viewData?.role}
+            {roleReadableStrMap[viewData?.role]}
           </Typography>
         </Stack>
         <Stack>
@@ -115,7 +112,7 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: UserRecor
           </Typography>
           <Chip
             size="small"
-            color={`${viewData?.user_status === userStatusToIntMap.normal
+            color={`${viewData?.user_status === userStatusToIntMap.approved
               ? "success"
               : viewData?.user_status === userStatusToIntMap.pending
                 ? "warning"
