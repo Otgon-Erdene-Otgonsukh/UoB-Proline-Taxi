@@ -216,7 +216,7 @@ const Page = () => {
   const handleAcceptUserRegister = (row: UserRecord) => {
     updateUserAsAdmin({
       ...row,
-      user_status: userStatusToIntMap.normal
+      user_status: userStatusToIntMap.approved
     }).then(res => {
       if (res.status === 200) {
         setIsLoading(true)
@@ -303,7 +303,7 @@ const Page = () => {
                 size="small"
               >
                 <MenuItem value={userStatusToIntMap.pending}>{userStatusToStrMap[userStatusToIntMap.pending]}</MenuItem>
-                <MenuItem value={userStatusToIntMap.normal}>{userStatusToStrMap[userStatusToIntMap.normal]}</MenuItem>
+                <MenuItem value={userStatusToIntMap.approved}>{userStatusToStrMap[userStatusToIntMap.approved]}</MenuItem>
                 <MenuItem value={userStatusToIntMap.rejected}>{userStatusToStrMap[userStatusToIntMap.rejected]}</MenuItem>
               </Select>
             </FormControl>
@@ -377,7 +377,7 @@ const Page = () => {
                       <StyledTableCell>{roleReadableStrMap[row.role]}</StyledTableCell>
                       <StyledTableCell>
                         <span
-                          className={`inline-block px-5 py-1 rounded-full text-xs font-medium ${row.user_status === userStatusToIntMap.normal
+                          className={`inline-block px-5 py-1 rounded-full text-xs font-medium ${row.user_status === userStatusToIntMap.approved
                             ? "bg-green-100 text-green-800 border border-green-800"
                             : row.user_status === userStatusToIntMap.rejected
                               ? "bg-red-100 text-red-800 border border-red-800"

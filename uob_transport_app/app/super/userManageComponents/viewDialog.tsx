@@ -115,7 +115,7 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: UserRecor
           </Typography>
           <Chip
             size="small"
-            color={`${viewData?.user_status === userStatusToIntMap.normal
+            color={`${viewData?.user_status === userStatusToIntMap.approved
               ? "success"
               : viewData?.user_status === userStatusToIntMap.pending
                 ? "warning"

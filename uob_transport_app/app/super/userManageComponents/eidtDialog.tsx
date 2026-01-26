@@ -276,7 +276,7 @@ const Page = ({ editData, dialogOpen, handleDialogClose, departmentList }: { edi
               onChange={(e) => { setFormInput({ ...formInput, userStatus: e.target.value }); }}
             >
               <MenuItem value={userStatusToIntMap.pending}>{userStatusToStrMap[userStatusToIntMap.pending]}</MenuItem>
-              <MenuItem value={userStatusToIntMap.normal}>{userStatusToStrMap[userStatusToIntMap.normal]}</MenuItem>
+              <MenuItem value={userStatusToIntMap.approved}>{userStatusToStrMap[userStatusToIntMap.approved]}</MenuItem>
               <MenuItem value={userStatusToIntMap.rejected}>{userStatusToStrMap[userStatusToIntMap.rejected]}</MenuItem>
             </Select>
           </FormControl><FormControl sx={{ minWidth: 150 }}>

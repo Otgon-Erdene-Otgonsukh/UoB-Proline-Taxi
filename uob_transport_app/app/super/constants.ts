@@ -1,10 +1,10 @@
 export const userStatusToIntMap = {
   pending: 0,
-  normal: 1,
+  approved: 1,
   rejected: 2
 }
 
-export const userStatusToStrMap = ['pending', 'normal', 'rejected']
+export const userStatusToStrMap = ['pending', 'approved', 'rejected']
 
 export const roleStrMap = {
   normalUser: 'normal_user',
