@@ -213,7 +213,7 @@ export default function DepDashboard() {
     <div className="flex min-h-screen justify-center pt-24 p-4">
       <div className="bg-white shadow-lg rounded-lg p-6 md:p-8 w-full max-w-6xl mb-8 h-fit">
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-aleo md:text-3xl font-semibold text-shadow-lg/20">
+          <h1 className="text-xl font-aleo md:text-3xl font-semibold text-shadow-lg/20">
             Department Bookings
           </h1>
           <Box
@@ -264,11 +264,11 @@ export default function DepDashboard() {
           </Box>
         </div>
         {isLoading ? (
-          <Typography sx={{ color: "gray", fontSize: 16, textAlign: "center" }}>
+          <Typography sx={{ color: "gray", fontSize: 16, textAlign: "center", my: 7 }}>
             Getting your bookings...
           </Typography>
         ) : pendingBookings && pendingBookings.length === 0 ? (
-          <Typography sx={{ color: "gray", fontSize: 16, textAlign: "center" }}>
+          <Typography sx={{ color: "gray", fontSize: 16, textAlign: "center", my: 7 }}>
             No bookings to show.
           </Typography>
         ) : (
