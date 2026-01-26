@@ -50,6 +50,7 @@ export const Navbar = () => {
 
   const handleCloseMenu = () => {
     setAnchorEl(null);
+    router.push("/profile");
   };
 
   const [signoutDialogOpen, setSignoutDialogOpen] = useState(false)
@@ -119,7 +120,7 @@ export const Navbar = () => {
         <div className="pr-6">
           {session ? (
             <div>
-              <Button className="text-lg" sx={{color: "white", fontFamily: "inter"}} onClick={handleClick}>Hi, {session.user?.name}! <ArrowDropDownIcon sx={{mb: 0.4, transform: open ? "rotate(180deg)" : "none"}}/></Button>
+              <Button className="text-lg" sx={{color: "white", fontFamily: "inter"}} onClick={handleClick}>Hi, {session.user?.username}! <ArrowDropDownIcon sx={{mb: 0.4, transform: open ? "rotate(180deg)" : "none"}}/></Button>
               <Menu
                 id="basic-menu"
                 anchorEl={anchorEl}
