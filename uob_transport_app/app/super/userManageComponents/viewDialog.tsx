@@ -52,9 +52,6 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: UserRecor
         id="customized-dialog-title"
       >
         User Detail
-        <FindInPageIcon
-          sx={{ fontSize: 35, mb: 1, ml: 1, mr: -1 }}
-        ></FindInPageIcon>
       </DialogTitle>
       <IconButton
         aria-label="close"
