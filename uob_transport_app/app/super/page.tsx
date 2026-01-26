@@ -31,20 +31,12 @@ import {
   LastPage,
   FirstPage
 } from "@mui/icons-material"
-import { getUsersAsAdmin } from "./request";
-
-const userStatusToIntMap = {
-  pending: 0,
-  normal: 1,
-  rejected: 2
-}
-const userStatusToStrMap = ['pending', 'normal', 'rejected']
-const roleStrMap = {
-  normalUser: 'normal_user',
-  financeStaff: 'finance_staff',
-  prolineStaff: 'proline_staff'
-}
-const role = [roleStrMap.normalUser, roleStrMap.financeStaff, roleStrMap.prolineStaff]
+import { getUsersAsAdmin, updateUserAsAdmin } from "./request";
+import ViewDialog from "./userManageComponents/viewDialog";
+import EditDialog from "./userManageComponents/eidtDialog";
+import { userStatusToIntMap, userStatusToStrMap, roleStrMap, roles } from "./constants";
+import { getDepartmentsList } from "./requests";
+import ConfirmDialog from "@/components/confirmDIalog";
 
 interface TablePaginationActionsProps {
   count: number;
@@ -139,6 +131,8 @@ const Page = () => {
     pageSize: 10,
   });
 
+  const [departments, setDepartments] = useState<UserRecord["department"][]>([])
+
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/login");
@@ -146,6 +140,13 @@ const Page = () => {
     }
 
     _rerenderTable()
+
+    getDepartmentsList().then(async res => {
+      if (res.status === 200) {
+        const data = await res.json();
+        setDepartments(data);
+      }
+    })
   }, [status, router,]);
 
   const handleChangePage = (_: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
@@ -186,20 +187,55 @@ const Page = () => {
     _rerenderTable()
   }
 
+  const [userDetail, setUserDetail] = useState<UserRecord>()
+  const [viewDialogOpen, setViewDialogOpen] = useState(false);
+
   const handleViewDialogOpen = (row: UserRecord) => {
     console.log(row);
+    setUserDetail(row)
+    setViewDialogOpen(true);
   }
 
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
   const handleEditDialogOpen = (row: UserRecord) => {
     console.log(row);
+    setUserDetail(row)
+    setEditDialogOpen(true);
   };
 
+  const handleEditDialogClose = (isEdited: boolean) => {
+    setEditDialogOpen(false);
+    // after edit dialog closed, rerender table to get updated data
+    if (isEdited) {
+      setIsLoading(true)
+      _rerenderTable()
+    }
+  }
+
+  const [confirmAcceptDialogOpen, setConfirmAcceptDialogOpen] = useState(false);
   const handleAcceptUserRegister = (row: UserRecord) => {
-    console.log(row);
+    updateUserAsAdmin({
+      ...row,
+      user_status: userStatusToIntMap.normal
+    }).then(res => {
+      if (res.status === 200) {
+        setIsLoading(true)
+        _rerenderTable()
+      }
+    })
   };
 
+  const [confirmRejectDialogOpen, setConfirmRejectDialogOpen] = useState(false);
   const handleRejectUserRegister = (row: UserRecord) => {
-    console.log(row);
+    updateUserAsAdmin({
+      ...row,
+      user_status: userStatusToIntMap.rejected
+    }).then(res => {
+      if (res.status === 200) {
+        setIsLoading(true)
+        _rerenderTable()
+      }
+    })
   };
 
   const _rerenderTable = () => {
@@ -252,7 +288,7 @@ const Page = () => {
                 onChange={(e) => { setSearchFormInput({ ...searchFormInput, role: e.target.value }); }}
                 size="small"
               >
-                {role.map(e => {
+                {roles.map(e => {
                   return <MenuItem value={e} key={e}>{e}</MenuItem>
                 })}
               </Select>
@@ -368,14 +404,14 @@ const Page = () => {
                           />
                           {row.user_status === userStatusToIntMap.pending && (
                             <CustomizedButton
-                              click={() => handleAcceptUserRegister(row)}
+                              click={() => { setConfirmAcceptDialogOpen(true); setUserDetail(row); }}
                               type="primary"
                               title="Accept"
                             />
                           )}
                           {row.user_status === userStatusToIntMap.pending && (
                             <CustomizedButton
-                              click={() => handleRejectUserRegister(row)}
+                              click={() => { setConfirmRejectDialogOpen(true); setUserDetail(row); }}
                               type="error"
                               title="Reject"
                             />
@@ -409,6 +445,22 @@ const Page = () => {
           />
         </div>
       </div>
+      {userDetail && <ViewDialog viewData={userDetail} dialogOpen={viewDialogOpen} handleDialogClose={() => { setViewDialogOpen(false); }} />}
+      {userDetail && <EditDialog key={userDetail.user_id} editData={userDetail} dialogOpen={editDialogOpen} handleDialogClose={handleEditDialogClose} departmentList={departments} />}
+      <ConfirmDialog
+        open={confirmAcceptDialogOpen}
+        dialogTitle="Accept User Registeration"
+        confirmMessage={'Are you sure you want to accept this user registeration?'}
+        confirmCallBack={() => { handleAcceptUserRegister(userDetail!); setConfirmAcceptDialogOpen(false); }}
+        cancelCallBack={() => { setConfirmAcceptDialogOpen(false); }}
+      />
+      <ConfirmDialog
+        open={confirmRejectDialogOpen}
+        dialogTitle="Reject User Registeration"
+        confirmMessage={'Are you sure you want to reject this user registeration?'}
+        confirmCallBack={() => { handleRejectUserRegister(userDetail!); setConfirmRejectDialogOpen(false); }}
+        cancelCallBack={() => { setConfirmRejectDialogOpen(false); }}
+      />
     </div>
   );
 };
