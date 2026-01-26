@@ -55,6 +55,27 @@ export async function GET(request: NextRequest) {
 // This endpoint is to update user info by super admin
 export async function POST(request: NextRequest) {
   // TODO Check super admin
+
+  const session = await auth();
+  if (!session) {
+    return new Response(JSON.stringify({
+      message: 'login required'
+    }), {
+      status: 401,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }
+
+  // Check if user does not have admin privileges.
+  if (!await isAdmin(session.user.user_id)) {
+    return new Response(JSON.stringify({
+      message: 'Not authorised'
+    }), {
+      status: 401,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }
+
   const requestJson = await request.json()
   const userData = requestJson.userData
 
