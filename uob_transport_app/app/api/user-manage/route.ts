@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { auth } from "@/auth";
-import { getUserListAccess, getUserCountAccess } from "@/backend/access/user_access";
+import { getUserListAccess, getUserCountAccess, updateUserAccess } from "@/backend/access/user_access";
 import { isAdmin } from "@/backend/access/user_access";
 
 export async function GET(request: NextRequest) {
@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
       headers: { 'Content-Type': 'application/json' },
     })
   }
-  
+
   // Check if user does not have admin privileges.
   if (!await isAdmin(session.user.user_id)) {
     return new Response(JSON.stringify({
@@ -50,4 +50,59 @@ export async function GET(request: NextRequest) {
     status: 200,
     headers: { 'Content-Type': 'application/json' },
   });
+}
+
+// This endpoint is to update user info by super admin
+export async function POST(request: NextRequest) {
+  // TODO Check super admin
+
+  const session = await auth();
+  if (!session) {
+    return new Response(JSON.stringify({
+      message: 'login required'
+    }), {
+      status: 401,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }
+
+  // Check if user does not have admin privileges.
+  if (!await isAdmin(session.user.user_id)) {
+    return new Response(JSON.stringify({
+      message: 'Not authorised'
+    }), {
+      status: 401,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }
+
+  const requestJson = await request.json()
+  const userData = requestJson.userData
+
+  const userId = userData.user_id
+
+  const updateResult = await updateUserAccess(userId!, {
+    name: userData.name!,
+    email: userData.email,
+    phone_number: userData.phone_number!,
+    role: userData.role!,
+    user_status: userData.user_status,
+    department: userData.department,
+  })
+
+  if (updateResult) {
+    return new Response(JSON.stringify({
+      message: 'update user success'
+    }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  } else {
+    return new Response(JSON.stringify({
+      message: 'update user failed'
+    }), {
+      status: 201,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
 }

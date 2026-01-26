@@ -1,4 +1,5 @@
-import { easyGetRequest } from "@/utils/easyRequest";
+import { UserRecord } from "@/model/models";
+import { easyGetRequest, easyPostRequest } from "@/utils/easyRequest";
 
 export const getUsersAsAdmin = async (searchParams: {
   name?: string,
@@ -14,4 +15,8 @@ export const getUsersAsAdmin = async (searchParams: {
     }
   }
   return easyGetRequest('user-manage', getParams)
+}
+
+export const updateUserAsAdmin = async (userData: UserRecord): Promise<Response> => {
+  return easyPostRequest('user-manage', { userData })
 }
