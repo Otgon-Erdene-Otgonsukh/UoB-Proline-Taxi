@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { auth } from "@/auth";
 import { getUserListAccess, getUserCountAccess, updateUserAccess } from "@/backend/access/user_access";
+import { isAdmin } from "@/backend/access/user_access";
 
 export async function GET(request: NextRequest) {
 
@@ -9,11 +10,20 @@ export async function GET(request: NextRequest) {
     return new Response(JSON.stringify({
       message: 'login required'
     }), {
-      status: 201,
+      status: 401,
       headers: { 'Content-Type': 'application/json' },
     })
   }
-  // TODO Check super admin
+
+  // Check if user does not have admin privileges.
+  if (!await isAdmin(session.user.user_id)) {
+    return new Response(JSON.stringify({
+      message: 'Not authorised'
+    }), {
+      status: 401,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }
 
   const searchParams = request.nextUrl.searchParams;
 
