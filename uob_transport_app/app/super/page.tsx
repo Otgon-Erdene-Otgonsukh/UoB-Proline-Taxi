@@ -119,7 +119,7 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
 
 const Page = () => {
   // Get NextAuth Session.
-  const { status } = useSession();
+  const { status, data } = useSession();
 
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
@@ -136,6 +136,12 @@ const Page = () => {
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/login");
+      return;
+    }
+
+    // Protect this route from logged in not admin users
+    if (status === "authenticated" && data.user.account_type !== "super_admin" && data.user.account_type !== "proline_staff") {
+      router.push("/home");
       return;
     }
 
@@ -254,7 +260,7 @@ const Page = () => {
       }
     })
   }
-
+  
   return (
     <div className="flex justify-center font-inter p-4">
       <div className="bg-white shadow-lg/20 rounded-lg p-6 md:p-8 w-full max-w-6xl my-15 mt-20">

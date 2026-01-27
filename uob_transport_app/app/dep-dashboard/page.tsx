@@ -122,9 +122,9 @@ export default function DepDashboard() {
       paginationMeta.page,
       paginationMeta.pageSize,
       {
-        from: searchFormInput.from,
-        to: searchFormInput.to,
-        passengerName: searchFormInput.passengerName,
+        from: searchFormInput.from?.trim(),
+        to: searchFormInput.to?.trim(),
+        passengerName: searchFormInput.passengerName?.trim(),
         isFlight: searchFormInput.isFlight,
       }
     )
