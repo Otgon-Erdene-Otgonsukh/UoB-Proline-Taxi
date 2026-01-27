@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter, redirect } from "next/navigation";
 import {
   Button,
@@ -20,6 +20,7 @@ import {
 import NumberField from "@/components/NumberField";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
+import dynamic from "next/dist/shared/lib/dynamic";
 
 export default function BookingPage() {
   const commonLocations = [
@@ -376,6 +377,16 @@ export default function BookingPage() {
       },
     },
   });
+
+  // Used instead of import because OpenStreetMap uses 'window' which is only available through lazy load.
+  // https://stackoverflow.com/questions/74846567/react-leaflet-in-next-js-referenceerror-window-is-not-defined
+  const OpenStreetMap = useMemo(() => dynamic(
+  () => import('@/components/OpenStreetMap'),
+    { 
+      loading: () => <p>Loading map...</p>,
+      ssr: false
+    }
+  ), [])
 
   return (
     <div className="flex min-h-screen justify-center items-center font-inter p-4">
@@ -967,8 +978,8 @@ export default function BookingPage() {
           </form>
         </div>
 
-        {/* Image Section */}
-        <div className="hidden lg:block lg:w-1/2 object-contain">
+        {/* Map Section */}
+        {/* <div className="hidden lg:block lg:w-1/2 object-contain">
           <Image
             src="/emptymap.png"
             alt="Map"
@@ -976,7 +987,8 @@ export default function BookingPage() {
             width={330}
             height={500}
           />
-        </div>
+        </div> */}
+        <OpenStreetMap />
       </div>
     </div>
   );
