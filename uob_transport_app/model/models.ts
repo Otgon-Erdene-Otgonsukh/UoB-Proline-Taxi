@@ -82,7 +82,7 @@ export function bookingStatusMap(bookingStatus: number): BookingStatusStr {
 
 export type UserRecord = {
   time_created: string;
-  user_id: string;
+  user_id: number;
   department: department;
   email: string;
   name: string;

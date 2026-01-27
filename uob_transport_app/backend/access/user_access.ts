@@ -1,4 +1,4 @@
-import { PrismaClient, User, department } from "@/generated/prisma/client";
+import { department, PrismaClient, User } from '@/generated/prisma/client'
 
 const prisma = new PrismaClient();
 
@@ -41,15 +41,15 @@ export const getUserByEmailAccess = async (
 
 export const getUserListAccess = async (page: number, pageSize: number, name?: string, role?: string, userStatus?: number): Promise<User[] | null> => {
   const query: { [key: string]: string | number | object } = {}
-  if (name) {
+  if (name !== undefined) {
     query['name'] = {
       contains: name
     }
   }
-  if (role) {
+  if (role !== undefined) {
     query['role'] = role
   }
-  if (userStatus) {
+  if (userStatus !== undefined) {
     query['user_status'] = userStatus
   }
   return prisma.user.findMany({
@@ -81,4 +81,35 @@ export const getUserCountAccess = async (name?: string, role?: string, userStatu
   return prisma.user.count({
     where: query,
   })
+}
+
+export const updateUserAccess = async (userId: number, updateData: { [key: string]: string | number | object }): Promise<User | null> => {
+  return prisma.user.update({
+    where: {
+      user_id: userId
+    },
+    data: {
+      ...updateData,
+      department: updateData['department'] ? {
+        connect: {
+          dep_id: (updateData['department'] as department).dep_id
+        }
+      } : undefined
+    }
+  })
+}
+
+// Check if a user has admin privileges by their ID.
+export const isAdmin = async (userId: number): Promise<boolean> => {
+  const user = await prisma.user.findUnique({
+    where: {
+      user_id: userId
+    }
+  })
+
+  if (user !== null && (user.role === 'proline_staff' || user.role === 'super_admin')) {
+    return true
+  } else {
+    return false
+  }
 }
