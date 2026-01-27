@@ -4,7 +4,6 @@
 
 import React, { useState, useRef } from 'react'
 import { MapContainer, TileLayer, Marker } from 'react-leaflet'
-import 'leaflet/dist/leaflet.css'
 
 const Map = () => {
     // Default to University of Bristol for time being.
@@ -14,13 +13,10 @@ const Map = () => {
     return (
         <>
         <div className='container'>
-            <div className='container'>
-            <h1 className='text-center-mt-5'>OpenStreetMap Embedded</h1>
-            </div>
             <div className='row'>
             <div className='col'>
                 <div className='container'>
-                <MapContainer center={center} zoom={zoom}>
+                <MapContainer center={center} zoom={zoom} style={{ height: "512px", width: "512px"}}>
                     <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'

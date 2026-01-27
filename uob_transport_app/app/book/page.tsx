@@ -21,6 +21,7 @@ import NumberField from "@/components/NumberField";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import dynamic from "next/dist/shared/lib/dynamic";
+import 'leaflet/dist/leaflet.css'
 
 export default function BookingPage() {
   const commonLocations = [
