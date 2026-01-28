@@ -1,4 +1,10 @@
+import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
+import Page from "@/app/super/page";
+import type { Session } from "next-auth";
+import { useSession } from "next-auth/react";
+import { getUsersAsAdmin } from "@/app/super/request";
+import { getDepartmentsList } from "@/app/super/requests";
 
 // ========== mocks ==========
 
@@ -49,3 +55,35 @@ jest.mock("@/components/confirmDIalog", () => {
     return open ? <div>{dialogTitle}</div> : null;
   };
 });
+
+// ========== mock data ==========
+
+const mockSession: Session = {
+  user: {
+    name: "Admin",
+    email: "admin@test.com",
+    surname: "User",
+    username: "adminuser",
+    user_id: 6,
+    phone_number: "0123456789",
+    department: null,
+    account_type: "superUser",
+  },
+  expires: "2099-01-01",
+};
+
+const mockUsers = [
+  {
+    user_id: 1,
+    time_created: new Date().toISOString(),
+    name: "John",
+    surname: "Doe",
+    email: "john@test.com",
+    phone_number: "12345678",
+    department: { dep_name: "IT" },
+    role: "normalUser",
+    user_status: 0, // pending
+  },
+];
+
+
