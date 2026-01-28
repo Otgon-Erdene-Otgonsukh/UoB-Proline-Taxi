@@ -283,4 +283,33 @@ describe("User Management Page", () => {
     ).toBeInTheDocument();
   });
 
+  test("opens confirm dialog when clicking Reject", async () => {
+    (useSession as jest.Mock).mockReturnValue({
+      status: "authenticated",
+      data: mockSession,
+    });
+
+    (getUsersAsAdmin as jest.Mock).mockResolvedValue({
+      status: 200,
+      json: async () => ({
+        userList: mockUsers.map((user) => { user.user_status = 0; return user; }), // pending
+        userCount: 1,
+      }),
+    });
+
+    (getDepartmentsList as jest.Mock).mockResolvedValue({
+      status: 200,
+      json: async () => [],
+    });
+
+    render(<Page />);
+
+    const acceptButton = await screen.findByText("Reject");
+    fireEvent.click(acceptButton);
+
+    expect(
+      screen.getByText("Reject User Registeration")
+    ).toBeInTheDocument();
+  });
+
 });
