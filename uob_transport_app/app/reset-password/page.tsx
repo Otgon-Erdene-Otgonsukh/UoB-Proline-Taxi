@@ -1,5 +1,5 @@
 "use client";
-import { useSearchParams, useRouter, } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useState } from "react";
 import {
   Box,
@@ -10,7 +10,8 @@ import {
   InputAdornment,
   IconButton,
   Snackbar,
-  Alert
+  Alert,
+  CircularProgress,
 } from "@mui/material";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import Visibility from "@mui/icons-material/Visibility";
@@ -18,25 +19,23 @@ import { getUserResetByUuid, resetPassword } from "./request";
 
 const Page = () => {
   const searchParams = useSearchParams();
-  const uuid = searchParams.get('uuid')
-  console.log(uuid);
+  const uuid = searchParams.get("uuid");
 
   const router = useRouter();
 
-  const [pageValid, setPageValid] = useState(true)
+  const [pageValid, setPageValid] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-
     if (uuid) {
-      getUserResetByUuid(uuid).then(res => {
+      getUserResetByUuid(uuid).then((res) => {
         if (res.status !== 200) {
-          setPageValid(false)
+          setPageValid(false);
         }
-      })
+      });
     } else {
-      setPageValid(false)
+      setPageValid(false);
     }
-
   }, [uuid]);
 
   const [passEmpty, setPassEmpty] = useState(false);
@@ -49,10 +48,12 @@ const Page = () => {
     setShowPassword(!showPassword);
   };
 
-  const handleConfirmPasswordChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleConfirmPasswordChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     setConfirmPassword(e.target.value);
-    setConfirmPassError(e.target.value !== password)
-  }
+    setConfirmPassError(e.target.value !== password);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,50 +62,53 @@ const Page = () => {
     const isConfirmPassWrong = confirmPassword !== password;
 
     setPassEmpty(isPassEmpty);
-    setConfirmPassError(isConfirmPassWrong)
+    setConfirmPassError(isConfirmPassWrong);
     if (!isPassEmpty && !isConfirmPassWrong) {
-      resetPassword(uuid!, password).then(res => {
+      setIsLoading(true);
+      resetPassword(uuid!, password).then((res) => {
         if (res.status === 200) {
           setSnackbarState({
             open: true,
-            status: 'success'
-          })
-          router.push('/login')
+            status: "success",
+          });
+          setTimeout(() => {
+            router.push("/login");
+          }, 2000);
         } else {
           setSnackbarState({
             open: true,
-            status: 'fail'
-          })
+            status: "fail",
+          });
+          setIsLoading(false);
         }
-      })
-
+      });
     }
-  }
+  };
 
   const [snackbarState, setSnackbarState] = useState({
     open: false,
-    status: 'success'
-  })
+    status: "success",
+  });
 
   const handleCloseSnackbarState = () => {
     setSnackbarState({
       ...snackbarState,
       open: false,
-    })
-  }
+    });
+  };
 
   return pageValid ? (
     <div className="flex min-h-screen justify-center items-center font-inter p-4">
       <Paper
-        elevation={3}
+        elevation={6}
         sx={{
-          maxWidth: 500,
+          maxWidth: 450,
           width: "100%",
           borderRadius: 5,
           mt: 10,
-          mb: 20,
+          mb: 10,
           overflow: "hidden",
-          border: 3
+          border: 3,
         }}
       >
         <Box
@@ -112,7 +116,7 @@ const Page = () => {
             bgcolor: "#2c2c2c",
             color: "white",
             py: 3,
-            textAlign: "center"
+            textAlign: "center",
           }}
         >
           <Typography
@@ -123,7 +127,7 @@ const Page = () => {
               fontFamily: "aleo",
             }}
           >
-            RESET PASSWORD
+            Reset Password
           </Typography>
         </Box>
 
@@ -147,6 +151,7 @@ const Page = () => {
             value={password}
             onChange={(e) => {
               setPassword(e.target.value);
+              setPassEmpty(false)
             }}
             sx={{
               "& .MuiOutlinedInput-root": {
@@ -196,7 +201,11 @@ const Page = () => {
           <TextField
             fullWidth
             error={confirmPassError}
-            helperText={confirmPassError ? "Confirm password should be the same as the password" : ""}
+            helperText={
+              confirmPassError
+                ? "Confirm password should be the same as the password"
+                : ""
+            }
             label="Confirm password"
             id="password"
             type={showPassword ? "text" : "password"}
@@ -265,32 +274,39 @@ const Page = () => {
               transition: "all 0.2s",
             }}
           >
-            RESET PASSWORD
+            {isLoading ? (
+              <CircularProgress size="23px" color="inherit" />
+            ) : (
+              "RESET PASSWORD"
+            )}
           </Button>
         </Box>
       </Paper>
       <Snackbar
         autoHideDuration={2000}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
         open={snackbarState.open}
         onClose={handleCloseSnackbarState}
       >
         <Alert
           onClose={handleCloseSnackbarState}
-          severity={snackbarState.status === 'success' ? 'success' : 'error'}
+          severity={snackbarState.status === "success" ? "success" : "error"}
           variant="filled"
-          sx={{ width: '100%' }}
+          sx={{ width: "100%" }}
         >
-          {snackbarState.status === 'success' ? 'Reset Password Success!' : 'Reset password failed! Try again later!'}
+          {snackbarState.status === "success"
+            ? "Reset Password Success!"
+            : "Reset password failed! Try again later!"}
         </Alert>
       </Snackbar>
     </div>
   ) : (
     <div className="flex min-h-screen justify-center items-center font-inter p-4">
-      <h1 className="inline-block mr-1 pr-1 font-medium font-aleo">404 | This page has been expired</h1>
+      <h1 className="inline-block mr-1 pr-1 font-medium font-aleo">
+        404 | This page has been expired
+      </h1>
     </div>
-  )
-
-}
+  );
+};
 
 export default Page;
