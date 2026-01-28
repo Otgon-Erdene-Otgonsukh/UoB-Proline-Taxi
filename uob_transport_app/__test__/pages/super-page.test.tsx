@@ -227,4 +227,31 @@ describe("User Management Page", () => {
     expect(screen.getByText("View Dialog")).toBeInTheDocument();
   });
 
+  test("opens edit dialog when clicking Edit", async () => {
+    (useSession as jest.Mock).mockReturnValue({
+      status: "authenticated",
+      data: mockSession,
+    });
+
+    (getUsersAsAdmin as jest.Mock).mockResolvedValue({
+      status: 200,
+      json: async () => ({
+        userList: mockUsers,
+        userCount: 1,
+      }),
+    });
+
+    (getDepartmentsList as jest.Mock).mockResolvedValue({
+      status: 200,
+      json: async () => [],
+    });
+
+    render(<Page />);
+
+    const editButton = await screen.findByText("Edit");
+    fireEvent.click(editButton);
+
+    expect(screen.getByText("Edit Dialog")).toBeInTheDocument();
+  });
+
 });
