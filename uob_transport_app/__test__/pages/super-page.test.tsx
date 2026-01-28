@@ -225,6 +225,12 @@ describe("User Management Page", () => {
     fireEvent.click(viewButton);
 
     expect(screen.getByText("View Dialog")).toBeInTheDocument();
+    // row content
+    expect(screen.getByText("John Doe")).toBeInTheDocument();
+    expect(screen.getByText("john@test.com")).toBeInTheDocument();
+    expect(screen.getByText("IT")).toBeInTheDocument();
+    expect(screen.getByText("Normal User")).toBeInTheDocument();
+    expect(screen.getByText("approved")).toBeInTheDocument();
   });
 
   test("opens edit dialog when clicking Edit", async () => {
@@ -252,6 +258,12 @@ describe("User Management Page", () => {
     fireEvent.click(editButton);
 
     expect(screen.getByText("Edit Dialog")).toBeInTheDocument();
+    // row content
+    expect(screen.getByText("John Doe")).toBeInTheDocument();
+    expect(screen.getByText("john@test.com")).toBeInTheDocument();
+    expect(screen.getByText("IT")).toBeInTheDocument();
+    expect(screen.getByText("Normal User")).toBeInTheDocument();
+    expect(screen.getByText("approved")).toBeInTheDocument();
   });
 
   test("opens confirm dialog when clicking Accept", async () => {
