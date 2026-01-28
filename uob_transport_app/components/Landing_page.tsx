@@ -3,8 +3,11 @@
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { useState } from "react";
+import { CircularProgress } from "@mui/material";
 
 export function Landing_page() {
+  const [loading, setLoading] = useState(false);
   return (
     <div>
       <motion.div
@@ -31,10 +34,11 @@ export function Landing_page() {
           <div className="mt-8 lg:ml-6 flex flex-col lg:flex-row gap-4 max-w-md mx-auto lg:mx-5">
             <Link href="/login">
               <button
+                onClick={() => setLoading(true)}
                 type="button"
-                className="w-full lg:w-auto border-[#2c2c2c] border-1 bg-[#2c2c2c] text-white font-inter font-light rounded-md py-3 px-11 text-sm cursor-pointer hover:scale-103 hover:bg-[#393939] transition-all duration-300 active:bg-[#4d4d4d] whitespace-nowrap"
+                className="w-full lg:min-w-[250px] lg:w-auto border-[#2c2c2c] border-1 bg-[#2c2c2c] text-white font-inter font-light rounded-md py-3 px-11 text-sm cursor-pointer hover:scale-103 hover:bg-[#393939] transition-all duration-300 active:bg-[#4d4d4d] whitespace-nowrap"
               >
-                LOGIN TO BOOK NOW
+                {loading ? <CircularProgress size="15px" color="inherit"></CircularProgress> : "LOGIN TO BOOK NOW"}
               </button>
             </Link>
             <Link href="/about">
