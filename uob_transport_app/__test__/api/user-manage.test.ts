@@ -23,36 +23,64 @@ jest.mock("../../auth", () => ({
 }));
 jest.mock("@/backend/access/user_access");
 
-test("admin permission check fails", async () => {
-  (isAdmin as jest.Mock).mockResolvedValue(false);
-
-  const req = new NextRequest(
-    "http://localhost:3000/api/user-manage?page=1&pageSize=10",
-    { method: "GET" }
-  );
-
-  const res = await GET(req);
-  expect(res.status).toBe(401);
-});
-
-test("user manage get api works", async () => {
-
-  // Mock the database, isAdmin, and getBookingDetails functions
-
-  (getUserListAccess as jest.Mock).mockResolvedValue([mockUserData]);
-  (getUserCountAccess as jest.Mock).mockResolvedValue(1);
-  (isAdmin as jest.Mock).mockResolvedValue(true);
-
-  const req = new NextRequest("http://localhost:3000/api/user-manage?page=1&pageSize=10", {
-    method: "GET",
+describe("Admin API", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
-  const res = await GET(req);
-  expect(res.status).toBe(200);
-  const data = await res.json();
+  test("unauthenticated GET request", async () => {
+    // Mock the database, isAdmin, and getBookingDetails functions
 
-  expect(data.userList).toHaveLength(1);
-  expect(data.userCount).toBe(1);
+    (isAdmin as jest.Mock).mockResolvedValue(true);
+
+    const req = new NextRequest(
+      "http://localhost:3000/api/user-manage?page=1&pageSize=10",
+      { method: "GET" }
+    );
+
+    // Mock auth to return null (unauthenticated)
+    const { auth } = require("../../auth");
+    auth.mockResolvedValue(null);
+
+    const res = await GET(req);
+    expect(res.status).toBe(401);
+  });
+
+  test("admin permission check fails", async () => {
+    (isAdmin as jest.Mock).mockResolvedValue(false);
+
+    const req = new NextRequest(
+      "http://localhost:3000/api/user-manage?page=1&pageSize=10",
+      { method: "GET" }
+    );
+
+    const res = await GET(req);
+    expect(res.status).toBe(401);
+  });
+
+  test("user manage get api works", async () => {
+
+    // Mock the database, isAdmin, and getBookingDetails functions
+
+    // Mock auth to return null (unauthenticated)
+    const { auth } = require("../../auth");
+    auth.mockResolvedValue({
+      user: { user_id: 3 }
+    });
+
+    (getUserListAccess as jest.Mock).mockResolvedValue([mockUserData]);
+    (getUserCountAccess as jest.Mock).mockResolvedValue(1);
+    (isAdmin as jest.Mock).mockResolvedValue(true);
+
+    const req = new NextRequest("http://localhost:3000/api/user-manage?page=1&pageSize=10", {
+      method: "GET",
+    });
+
+    const res = await GET(req);
+    expect(res.status).toBe(200);
+    const data = await res.json();
+
+    expect(data.userList).toHaveLength(1);
+    expect(data.userCount).toBe(1);
+  });
 });
-
-
