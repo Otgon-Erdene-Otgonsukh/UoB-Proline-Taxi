@@ -126,5 +126,41 @@ describe("User Management Page", () => {
     ).toBeInTheDocument();
   });
 
+  test("renders user table when data is returned", async () => {
+    (useSession as jest.Mock).mockReturnValue({
+      status: "authenticated",
+      data: mockSession,
+    });
+
+    (getUsersAsAdmin as jest.Mock).mockResolvedValue({
+      status: 200,
+      json: async () => ({
+        userList: mockUsers,
+        userCount: 1,
+      }),
+    });
+
+    (getDepartmentsList as jest.Mock).mockResolvedValue({
+      status: 200,
+      json: async () => [],
+    });
+
+    render(<Page />);
+
+    await waitFor(() => {
+      expect(screen.getByText("User Management")).toBeInTheDocument();
+    });
+
+    // table content
+    expect(screen.getByText("John Doe")).toBeInTheDocument();
+    expect(screen.getByText("john@test.com")).toBeInTheDocument();
+    expect(screen.getByText("IT")).toBeInTheDocument();
+
+    // operation buttons
+    expect(screen.getByText("View")).toBeInTheDocument();
+    expect(screen.getByText("Edit")).toBeInTheDocument();
+    expect(screen.getByText("Accept")).toBeInTheDocument();
+    expect(screen.getByText("Reject")).toBeInTheDocument();
+  });
 
 });
