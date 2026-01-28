@@ -312,4 +312,32 @@ describe("User Management Page", () => {
     ).toBeInTheDocument();
   });
 
+  test("shows empty state when no users returned", async () => {
+    (useSession as jest.Mock).mockReturnValue({
+      status: "authenticated",
+      data: mockSession,
+    });
+
+    (getUsersAsAdmin as jest.Mock).mockResolvedValue({
+      status: 200,
+      json: async () => ({
+        userList: [],
+        userCount: 0,
+      }),
+    });
+
+    (getDepartmentsList as jest.Mock).mockResolvedValue({
+      status: 200,
+      json: async () => [],
+    });
+
+    render(<Page />);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("No users to show.")
+      ).toBeInTheDocument();
+    });
+  });
+
 });
