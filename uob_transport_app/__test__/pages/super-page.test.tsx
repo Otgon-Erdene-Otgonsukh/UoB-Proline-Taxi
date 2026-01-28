@@ -200,4 +200,31 @@ describe("User Management Page", () => {
     expect(screen.queryByText("Reject")).toBeNull();
   });
 
+  test("opens view dialog when clicking View", async () => {
+    (useSession as jest.Mock).mockReturnValue({
+      status: "authenticated",
+      data: mockSession,
+    });
+
+    (getUsersAsAdmin as jest.Mock).mockResolvedValue({
+      status: 200,
+      json: async () => ({
+        userList: mockUsers,
+        userCount: 1,
+      }),
+    });
+
+    (getDepartmentsList as jest.Mock).mockResolvedValue({
+      status: 200,
+      json: async () => [],
+    });
+
+    render(<Page />);
+
+    const viewButton = await screen.findByText("View");
+    fireEvent.click(viewButton);
+
+    expect(screen.getByText("View Dialog")).toBeInTheDocument();
+  });
+
 });
