@@ -12,6 +12,10 @@ import { signOut, useSession } from "next-auth/react";
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Logout from '@mui/icons-material/Logout';
 import MenuIcon from '@mui/icons-material/Menu';
+import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
+import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import HelpCenterOutlinedIcon from '@mui/icons-material/HelpCenterOutlined';
 import Avatar from '@mui/material/Avatar';
 import Divider from '@mui/material/Divider';
 import Dialog from '@mui/material/Dialog';
@@ -32,10 +36,10 @@ export const Navbar = () => {
   }
 
   const pages = [
-    { name: 'Home', path: '/home'},
-    { name: 'Dashboard', path: '/dep-dashboard'},
-    { name: 'About', path: '/about'},
-    { name: 'Help', path: '/faq'},
+    { name: 'Home', path: '/home', icon: <HomeOutlinedIcon /> },
+    { name: 'Dashboard', path: '/dep-dashboard', icon: <DashboardOutlinedIcon /> },
+    { name: 'About', path: '/about', icon: <InfoOutlinedIcon /> },
+    { name: 'Help', path: '/faq', icon: <HelpCenterOutlinedIcon /> },
   ];
 
   const isActive = (path: string) => {
@@ -121,7 +125,7 @@ const handleCloseNav = () => {
                 href={page.path}
                 className={"text-lg hover:text-gray-300 relative group flex items-center gap-2"}
               >
-                <Image src={`${index === 0 ? "/Home-cropped.svg" : index === 1 ? "/dashboard.svg" : index === 2 ? "/Info.svg" : "/help.svg"}`} className={`${(index === 1 || index === 0) && "mb-1 w-[14px] h-[14px]"}`} width={15} height={15} alt="Tab logos"></Image>
+                {page.icon}
                 {page.name}
                 <span className={`absolute -bottom-0.5 left-1/2 h-0.5 bg-white transition-all duration-300 transform -translate-x-1/2 ${isActive(page.path) ? 'w-full' : 'w-0 group-hover:w-full group-hover:bg-gray-300'}`}></span>
               </Link>
@@ -147,10 +151,13 @@ const handleCloseNav = () => {
                   sx: {
                     overflow: 'visible',
                     filter: 'drop-shadow(0px 4px 12px rgba(0,0,0,0.15))',
-                    mt: 1.5,
-                    minWidth: 180,
+                    mt: 2.5,
                     borderRadius: 2,
                     border: '2px solid black',
+                    '& .MuiList-root': {
+                      paddingTop: 0,
+                      paddingBottom: 0,
+                    },
                   }
                 }
               }}
@@ -166,21 +173,36 @@ const handleCloseNav = () => {
                     color: '#2C2C2C'
                    }}
                 >
-                  <ListItemIcon>
-                    <Image 
-                      src={index === 0 ? "/Home-cropped.svg" : index === 1 ? "/dashboard.svg" : index === 2 ? "/Info.svg" : "/help.svg"} 
-                      width={20} 
-                      height={20} 
-                      alt={page.name} 
-                    />
-                  </ListItemIcon>
-                  {page.name}
+                  {page.icon}
+                  <div className="p-2">{page.name}</div>
                 </MenuItem>
               ))}
+
+              {session && (
+                <div>
+                  <Divider sx={{ my: 1 }} />
+                  <MenuItem
+                    onClick={handleCloseNav}
+                    sx={{ color: '#2C2C2C' }}
+                  >
+                    <Avatar sx={{ width: 24, height: 24, fontSize: '0.8rem', bgcolor: '#2C2C2C' }}>
+                      {session?.user?.name?.charAt(0).toUpperCase()}
+                    </Avatar>
+                    <div className="p-2">Profile</div>
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => { handleCloseNav(); handleOpenSiagnoutDialog(); }}
+                    sx={{ color: '#d32f2f' }}
+                  >
+                    <Logout sx={{ fontSize: 24 }} />
+                    <div className="p-2">Logout</div>
+                  </MenuItem>
+                </div>
+              )}
             </Menu>
           </div>
           {session ? (
-            <div>
+            <div className="hidden lg:block">
               <Button className="text-lg" sx={{color: "white", fontFamily: "inter"}} onClick={handleClick}>Hi, {session.user?.name}! <ArrowDropDownIcon sx={{mb: 0.4, transform: open ? "rotate(180deg)" : "none"}}/></Button>
               <Menu
                 id="basic-menu"
@@ -193,11 +215,15 @@ const handleCloseNav = () => {
                     sx: {
                       overflow: 'visible',
                       filter: 'drop-shadow(0px 4px 12px rgba(0,0,0,0.15))',
-                      mt: 2,
+                      mt: 2.5,
                       minWidth: 150,
                       borderRadius: 2,
                       bgcolor: '#ffffff',
                       border: '2px solid black',
+                      '& .MuiList-root': {
+                      paddingTop: 1,
+                      paddingBottom: 1,
+                    },
                       '& .MuiAvatar-root': {
                         width: 36,
                         height: 36,
@@ -290,6 +316,7 @@ const handleCloseNav = () => {
                   <Button onClick={handleSignout} autoFocus>Yes</Button>
                 </DialogActions>
               </Dialog>
+            
             </div>
           ) : (
             <Button variant="contained" onClick={handleLoginClick}
