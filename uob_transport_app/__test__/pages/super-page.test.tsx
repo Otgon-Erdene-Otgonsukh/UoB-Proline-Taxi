@@ -254,4 +254,33 @@ describe("User Management Page", () => {
     expect(screen.getByText("Edit Dialog")).toBeInTheDocument();
   });
 
+  test("opens confirm dialog when clicking Accept", async () => {
+    (useSession as jest.Mock).mockReturnValue({
+      status: "authenticated",
+      data: mockSession,
+    });
+
+    (getUsersAsAdmin as jest.Mock).mockResolvedValue({
+      status: 200,
+      json: async () => ({
+        userList: mockUsers.map((user) => { user.user_status = 0; return user; }), // pending
+        userCount: 1,
+      }),
+    });
+
+    (getDepartmentsList as jest.Mock).mockResolvedValue({
+      status: 200,
+      json: async () => [],
+    });
+
+    render(<Page />);
+
+    const acceptButton = await screen.findByText("Accept");
+    fireEvent.click(acceptButton);
+
+    expect(
+      screen.getByText("Accept User Registeration")
+    ).toBeInTheDocument();
+  });
+
 });
