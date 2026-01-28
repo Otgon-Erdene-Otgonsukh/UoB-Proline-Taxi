@@ -83,4 +83,38 @@ describe("Admin API", () => {
     expect(data.userList).toHaveLength(1);
     expect(data.userCount).toBe(1);
   });
+
+  test("user manage post api works", async () => {
+
+    // Mock the database, isAdmin, and getBookingDetails functions
+
+    // Mock auth to return null (unauthenticated)
+    const { auth } = require("../../auth");
+    auth.mockResolvedValue({
+      user: { user_id: 3 }
+    });
+
+    const body = {
+      user_id: 1,
+      name: "John Doe Updated",
+      email: "john.updated@test.com",
+      phone_number: "87654321",
+      department: "IT",
+      role: "normalUser",
+      user_status: 1
+    };
+
+    (updateUserAccess as jest.Mock).mockResolvedValue(body);
+    (isAdmin as jest.Mock).mockResolvedValue(true);
+
+    const req = new NextRequest("http://localhost:3000/api/user-manage", {
+      method: "POST",
+      body: JSON.stringify({
+        userData: body
+      }),
+    });
+
+    const res = await POST(req);
+    expect(res.status).toBe(200);
+  });
 });
