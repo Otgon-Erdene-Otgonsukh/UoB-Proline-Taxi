@@ -5,6 +5,7 @@
 import { GET, POST } from "@/app/api/user-manage/route";
 import { getUserListAccess, getUserCountAccess, updateUserAccess, isAdmin } from "@/backend/access/user_access";
 import { NextRequest } from "next/server";
+import { auth } from "@/auth";
 
 const mockUserData = {
   user_id: 1,
@@ -38,9 +39,7 @@ describe("Admin API", () => {
       { method: "GET" }
     );
 
-    // Mock auth to return null (unauthenticated)
-    const { auth } = require("../../auth");
-    auth.mockResolvedValue(null);
+    (auth as jest.Mock).mockResolvedValue(null);
 
     const res = await GET(req);
     expect(res.status).toBe(401);
@@ -60,11 +59,8 @@ describe("Admin API", () => {
 
   test("user manage get api works", async () => {
 
-    // Mock the database, isAdmin, and getBookingDetails functions
-
     // Mock auth to return null (unauthenticated)
-    const { auth } = require("../../auth");
-    auth.mockResolvedValue({
+    (auth as jest.Mock).mockResolvedValue({
       user: { user_id: 3 }
     });
 
@@ -86,11 +82,8 @@ describe("Admin API", () => {
 
   test("user manage post api works", async () => {
 
-    // Mock the database, isAdmin, and getBookingDetails functions
-
     // Mock auth to return null (unauthenticated)
-    const { auth } = require("../../auth");
-    auth.mockResolvedValue({
+    (auth as jest.Mock).mockResolvedValue({
       user: { user_id: 3 }
     });
 
@@ -120,11 +113,8 @@ describe("Admin API", () => {
 
   test("user manage post api fails when not admin", async () => {
 
-    // Mock the database, isAdmin, and getBookingDetails functions
-
     // Mock auth to return null (unauthenticated)
-    const { auth } = require("../../auth");
-    auth.mockResolvedValue({
+    (auth as jest.Mock).mockResolvedValue({
       user: { user_id: 3 }
     });
 
@@ -152,11 +142,8 @@ describe("Admin API", () => {
 
   test("user manage post api fails to update user", async () => {
 
-    // Mock the database, isAdmin, and getBookingDetails functions
-
     // Mock auth to return null (unauthenticated)
-    const { auth } = require("../../auth");
-    auth.mockResolvedValue({
+    (auth as jest.Mock).mockResolvedValue({
       user: { user_id: 3 }
     });
 
@@ -185,11 +172,8 @@ describe("Admin API", () => {
 
   test("user manage post api fails when unauthenticated", async () => {
 
-    // Mock the database, isAdmin, and getBookingDetails functions
-
     // Mock auth to return null (unauthenticated)
-    const { auth } = require("../../auth");
-    auth.mockResolvedValue(null);
+    (auth as jest.Mock).mockResolvedValue(null);
 
     const body = {
       user_id: 1,
