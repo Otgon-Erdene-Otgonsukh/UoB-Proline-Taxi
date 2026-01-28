@@ -86,4 +86,45 @@ const mockUsers = [
   },
 ];
 
+// ========== tests ==========
 
+describe("User Management Page", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  test("redirects to login when unauthenticated", async () => {
+    (useSession as jest.Mock).mockReturnValue({ status: "unauthenticated" });
+
+    render(<Page />);
+
+    await waitFor(() => {
+      expect(pushMock).toHaveBeenCalledWith("/login");
+    });
+  });
+
+  test("renders loading state initially", async () => {
+    (useSession as jest.Mock).mockReturnValue({
+      status: "authenticated",
+      data: mockSession,
+    });
+
+    (getUsersAsAdmin as jest.Mock).mockResolvedValue({
+      status: 200,
+      json: async () => ({ userList: [], userCount: 0 }),
+    });
+
+    (getDepartmentsList as jest.Mock).mockResolvedValue({
+      status: 200,
+      json: async () => [],
+    });
+
+    render(<Page />);
+
+    expect(
+      screen.getByText("Getting user data...")
+    ).toBeInTheDocument();
+  });
+
+
+});
