@@ -2,8 +2,9 @@
  * @jest-environment node
  */
 
-import { POST } from "@/app/api/update_booking/route";
-import { getUserListAccess, getUserCountAccess, updateUserAccess } from "@/backend/access/user_access";
+import { GET, POST } from "@/app/api/user-manage/route";
+import { getUserListAccess, getUserCountAccess, updateUserAccess, isAdmin } from "@/backend/access/user_access";
+import { NextRequest } from "next/server";
 
 const mockUserData = {
   user_id: 1,
@@ -15,16 +16,31 @@ const mockUserData = {
   user_status: 0, // pending
 }
 
-// Mock the database, isAdmin, and getBookingDetails functions
-jest.mock("@/backend/access/user_access", () => ({
-  // ...jest.requireActual("@/backend/access/user_access"),
-  getUserListAccess: jest.fn().mockResolvedValue([mockUserData]),
-  getUserCountAccess: jest.fn().mockResolvedValue(1),
-  updateUserAccess: jest.fn().mockResolvedValue(mockUserData),
-}));
-
 jest.mock("../../auth", () => ({
   auth: jest.fn().mockResolvedValue({
     user: { user_id: 3 }
   })
 }));
+jest.mock("@/backend/access/user_access");
+
+test("user manage get api works", async () => {
+
+  // Mock the database, isAdmin, and getBookingDetails functions
+
+  (getUserListAccess as jest.Mock).mockResolvedValue([mockUserData]);
+  (getUserCountAccess as jest.Mock).mockResolvedValue(1);
+  (isAdmin as jest.Mock).mockResolvedValue(true);
+
+  const req = new NextRequest("http://localhost:3000/api/user-manage?page=1&pageSize=10", {
+    method: "GET",
+  });
+
+  const res = await GET(req);
+  expect(res.status).toBe(200);
+  const data = await res.json();
+
+  expect(data.userList).toHaveLength(1);
+  expect(data.userCount).toBe(1);
+});
+
+
