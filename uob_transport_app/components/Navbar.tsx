@@ -204,7 +204,7 @@ const handleCloseNav = () => {
           </div>
           {session ? (
             <div className="hidden lg:block">
-              <Button className="text-lg" sx={{color: "white", fontFamily: "inter"}} onClick={handleClick}>Hi, {session.user?.name}! <ArrowDropDownIcon sx={{mb: 0.4, transform: open ? "rotate(180deg)" : "none"}}/></Button>
+              <Button className="text-lg" sx={{color: "white", fontFamily: "inter"}} onClick={handleClick}>Hi, {session.user?.username}! <ArrowDropDownIcon sx={{mb: 0.4, transform: open ? "rotate(180deg)" : "none"}}/></Button>
               <Menu
                 id="basic-menu"
                 anchorEl={anchorEl}
