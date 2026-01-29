@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
     );
     try {
       const input = new SendEmailCommand({
-        FromEmailAddress: process.env.SES_FROM_EMAIL!,
+        FromEmailAddress: `UoB Taxi & Chauffeur <${process.env.SES_FROM_EMAIL!}>`,
         Destination: {
           ToAddresses: [toEmail],
         },

@@ -29,42 +29,10 @@ import Link from "next/link";
 import { useState } from "react";
 import { redirect } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { departments } from "@/model/models";
 
 export default function Register() {
   const session = useSession();
-
-  const departments = [
-    "Centre for Academic Language and Development",
-    "Centre for Innovation and Entrepreneurship",
-    "Arts",
-    "Economics",
-    "Education",
-    "Humanities",
-    "Modern Languages",
-    "Policy Studies",
-    "Sociology, Politics and International Studies",
-    "Business",
-    "Law",
-    "Dental",
-    "Medical",
-    "Veterinary",
-    "Health Professions Education",
-    "Anatomy",
-    "Biochemistry",
-    "Biological Sciences",
-    "Cellular and Molecular Medicine",
-    "Physiology, Pharmacology and Neuroscience",
-    "Psychological Science",
-    "Chemistry",
-    "Civil, Aerospace, and Design Engineering",
-    "Computer Science",
-    "Earth Sciences",
-    "Electrical, Electronic and Mechanical Engineering",
-    "Engineering Mathematics and Technology",
-    "Geographical Sciences",
-    "Mathematics",
-    "Physics",
-  ];
 
   if (session.data) {
     // if user is logged in, protect this route
