@@ -1,3 +1,6 @@
+// File sourced from mapcn
+// npx shadcn@latest add https://mapcn.dev/maps/map.json
+
 "use client";
 
 import MapLibreGL, { type PopupOptions, type MarkerOptions } from "maplibre-gl";
