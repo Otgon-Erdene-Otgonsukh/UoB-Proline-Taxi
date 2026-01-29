@@ -35,6 +35,39 @@ export type BookingRecord = {
   booking_status: 'Approved' | 'Pending' | 'Rejected' | 'Cancelled';
 }
 
+export const departments = [
+  "Centre for Academic Language and Development",
+  "Centre for Innovation and Entrepreneurship",
+  "Arts",
+  "Economics",
+  "Education",
+  "Humanities",
+  "Modern Languages",
+  "Policy Studies",
+  "Sociology, Politics and International Studies",
+  "Business",
+  "Law",
+  "Dental",
+  "Medical",
+  "Veterinary",
+  "Health Professions Education",
+  "Anatomy",
+  "Biochemistry",
+  "Biological Sciences",
+  "Cellular and Molecular Medicine",
+  "Physiology, Pharmacology and Neuroscience",
+  "Psychological Science",
+  "Chemistry",
+  "Civil, Aerospace, and Design Engineering",
+  "Computer Science",
+  "Earth Sciences",
+  "Electrical, Electronic and Mechanical Engineering",
+  "Engineering Mathematics and Technology",
+  "Geographical Sciences",
+  "Mathematics",
+  "Physics",
+];
+
 export function bookingStatusMap(bookingStatus: number): BookingStatusStr {
   switch (bookingStatus) {
     case 0:
@@ -49,7 +82,7 @@ export function bookingStatusMap(bookingStatus: number): BookingStatusStr {
 
 export type UserRecord = {
   time_created: string;
-  user_id: string;
+  user_id: number;
   department: department;
   email: string;
   name: string;
