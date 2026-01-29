@@ -30,6 +30,7 @@ function getDocumentTheme(): Theme | null {
 
 // Get system preference
 function getSystemTheme(): Theme {
+  return "light";
   if (typeof window === "undefined") return "light";
   return window.matchMedia("(prefers-color-scheme: dark)").matches
     ? "dark"

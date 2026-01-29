@@ -457,10 +457,10 @@ export default function BookingPage() {
 
   return (
     <div className="flex min-h-screen justify-center items-center font-inter p-4">
-      <div className="border-3 border-[#2c2c2c] flex flex-col lg:flex-row bg-white shadow-lg rounded-lg my-8 max-w-5xl overflow-hidden">
+      <div className="border-3 border-[#2c2c2c] flex flex-col lg:flex-row bg-white shadow-lg rounded-lg my-8 max-w-10xl overflow-hidden">
         {/* Booking Form Section */}
         <div className="p-4 sm:p-6 md:p-8 w-full lg:w-1/2">
-          <div className="bg-[#2c2c2c] text-white py-4 -mx-4 sm:-mx-6 md:-mx-8 px-4 sm:px-6 md:px-8 -mt-4 sm:-mt-6 md:-mt-8 mb-6">
+          <div className="bg-[#2c2c2c] text-white py-6 -mx-4 sm:-mx-6 md:-mx-8 px-4 sm:px-6 md:px-8 -mt-4 sm:-mt-6 md:-mt-8 mb-6">
             <h1 className="font-aleo text-2xl sm:text-3xl font-semibold text-center">
               BOOKING DETAILS
             </h1>
@@ -1047,7 +1047,7 @@ export default function BookingPage() {
 
         {/* Map Section */}
         { /* https://mapcn.vercel.app/docs/routes */ }
-        <div className="hidden lg:block lg:w-1/2 w-full object-contain min-w-[400px] rounded-[0px_5px_5px_0px] overflow-hidden">
+        <div className="container hidden lg:block lg:w-1/2 w-full object-contain min-w-[600px] border-l-3 border-gray-700 rounded-[0px_5px_5px_0px] overflow-hidden">
           { /* Lat and long are inverted by MAPCN here */ }
           <Map center={[-2.602, 51.458]} zoom={14}>
             {sortedRoutes.map(({ route, index }) => {
