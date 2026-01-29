@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, redirect } from "next/navigation";
 import {
   Button,
@@ -21,7 +21,14 @@ import NumberField from "@/components/NumberField";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import dynamic from "next/dist/shared/lib/dynamic";
-import { Map, MapControls } from "@/components/ui/map";
+import {
+  Map,
+  MapMarker,
+  MarkerContent,
+  MapRoute,
+  MarkerLabel,
+} from "@/components/ui/map";
+import { Loader2, Clock, Route } from "lucide-react";
 
 export default function BookingPage() {
   const commonLocations = [
@@ -378,6 +385,75 @@ export default function BookingPage() {
       },
     },
   });
+
+  // MapCN Routing Example
+  const start = { name: "Senate House, University of Bristol", lng: -2.603958, lat: 51.45892 };
+  const end = { name: "Bristol Airport", lng: -2.710774, lat: 51.386765 };
+
+  interface RouteData {
+    coordinates: [number, number][];
+    duration: number; // seconds
+    distance: number; // meters
+  }
+
+  function formatDuration(seconds: number): string {
+    const mins = Math.round(seconds / 60);
+    if (mins < 60) return `${mins} min`;
+    const hours = Math.floor(mins / 60);
+    const remainingMins = mins % 60;
+    return `${hours}h ${remainingMins}m`;
+  }
+
+  function formatDistance(meters: number): string {
+    if (meters < 1000) return `${Math.round(meters)} m`;
+    return `${(meters / 1000).toFixed(1)} km`;
+  }
+
+  const [routes, setRoutes] = useState<RouteData[]>([]);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+      async function fetchRoutes() {
+        try {
+          const response = await fetch(
+            `https://router.project-osrm.org/route/v1/driving/${start.lng},${start.lat};${end.lng},${end.lat}?overview=full&geometries=geojson&alternatives=true`
+          );
+          const data = await response.json();
+
+          if (data.routes?.length > 0) {
+            const routeData: RouteData[] = data.routes.map(
+              (route: {
+                geometry: { coordinates: [number, number][] };
+                duration: number;
+                distance: number;
+              }) => ({
+                coordinates: route.geometry.coordinates,
+                duration: route.duration,
+                distance: route.distance,
+              })
+            );
+            setRoutes(routeData);
+          }
+        } catch (error) {
+          console.error("Failed to fetch routes:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+
+      fetchRoutes();
+    }, []);
+  
+
+    // Sort routes: non-selected first, selected last (renders on top)
+    const sortedRoutes = routes
+      .map((route, index) => ({ route, index }))
+      .sort((a, b) => {
+        if (a.index === selectedIndex) return 1;
+        if (b.index === selectedIndex) return -1;
+        return 0;
+      });
 
   return (
     <div className="flex min-h-screen justify-center items-center font-inter p-4">
@@ -970,12 +1046,46 @@ export default function BookingPage() {
         </div>
 
         {/* Map Section */}
-        <div className="hidden lg:block lg:w-1/2 object-contain min-w-[300px]">
-          <Map center={[-74.006, 40.7128]} zoom={11}>
-            <MapControls />
-          </Map>
+        { /* https://mapcn.vercel.app/docs/routes */ }
+        <div className="hidden lg:block lg:w-1/2 w-full object-contain min-w-[400px] rounded-[0px_5px_5px_0px] overflow-hidden">
+          { /* Lat and long are inverted by MAPCN here */ }
+          <Map center={[-2.602, 51.458]} zoom={14}>
+            {sortedRoutes.map(({ route, index }) => {
+            const isSelected = index === selectedIndex;
+            return (
+              <MapRoute
+                key={index}
+                coordinates={route.coordinates}
+                color={isSelected ? "#6366f1" : "#94a3b8"}
+                width={isSelected ? 6 : 5}
+                opacity={isSelected ? 1 : 0.6}
+                onClick={() => setSelectedIndex(index)}
+              />
+            );
+          })}
+
+          <MapMarker longitude={start.lng} latitude={start.lat}>
+            <MarkerContent>
+              <div className="size-5 rounded-full bg-green-500 border-2 border-white shadow-lg" />
+              <MarkerLabel position="top">{start.name}</MarkerLabel>
+            </MarkerContent>
+          </MapMarker>
+
+          <MapMarker longitude={end.lng} latitude={end.lat}>
+            <MarkerContent>
+              <div className="size-5 rounded-full bg-red-500 border-2 border-white shadow-lg" />
+              <MarkerLabel position="bottom">{end.name}</MarkerLabel>
+            </MarkerContent>
+          </MapMarker>
+        </Map>
+
+        {isLoading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-background/50">
+            <Loader2 className="size-6 animate-spin text-muted-foreground" />
+          </div>
+        )}
+      </div>
         </div>
       </div>
-    </div>
   );
 }
