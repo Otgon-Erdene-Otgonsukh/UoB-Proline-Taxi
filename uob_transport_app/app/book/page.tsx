@@ -21,7 +21,7 @@ import NumberField from "@/components/NumberField";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import dynamic from "next/dist/shared/lib/dynamic";
-import 'leaflet/dist/leaflet.css'
+import { Map, MapControls } from "@/components/ui/map";
 
 export default function BookingPage() {
   const commonLocations = [
@@ -378,16 +378,6 @@ export default function BookingPage() {
       },
     },
   });
-
-  // Used instead of import because OpenStreetMap uses 'window' which is only available through lazy load.
-  // https://stackoverflow.com/questions/74846567/react-leaflet-in-next-js-referenceerror-window-is-not-defined
-  const OpenStreetMap = useMemo(() => dynamic(
-  () => import('@/components/OpenStreetMap'),
-    { 
-      loading: () => <p>Loading map...</p>,
-      ssr: false
-    }
-  ), [])
 
   return (
     <div className="flex min-h-screen justify-center items-center font-inter p-4">
@@ -980,16 +970,11 @@ export default function BookingPage() {
         </div>
 
         {/* Map Section */}
-        {/* <div className="hidden lg:block lg:w-1/2 object-contain">
-          <Image
-            src="/emptymap.png"
-            alt="Map"
-            className="w-full h-full object-cover border-l-3 border-[#2c2c2c]"
-            width={330}
-            height={500}
-          />
-        </div> */}
-        <OpenStreetMap />
+        <div className="hidden lg:block lg:w-1/2 object-contain min-w-[300px]">
+          <Map center={[-74.006, 40.7128]} zoom={11}>
+            <MapControls />
+          </Map>
+        </div>
       </div>
     </div>
   );
