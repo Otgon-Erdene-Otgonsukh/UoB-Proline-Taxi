@@ -182,15 +182,22 @@ const Page = () => {
   }
 
   const _getBookingListData = () => {
-    getUserBookingList(paginationMeta.page, paginationMeta.pageSize, { ...searchFormInput, bookingStatus: searchFormInput.bookingStatus === 'All' ? '' : searchFormInput.bookingStatus }).then((res) => {
-      if (res.status === 200) {
-        res.json().then((data) => {
-          setBookingListData(data.bookings);
-          setBookingListCount(data.totalNum);
-          setIsLoading(false);
-        });
-      }
-    });
+    getUserBookingList(
+      paginationMeta.page,
+      paginationMeta.pageSize,
+      {
+        ...searchFormInput,
+        bookingStatus: searchFormInput.bookingStatus === 'All' ? '' : searchFormInput.bookingStatus
+      })
+      .then((res) => {
+        if (res.status === 200) {
+          res.json().then((data) => {
+            setBookingListData(data.bookings);
+            setBookingListCount(data.totalNum);
+            setIsLoading(false);
+          });
+        }
+      });
   }
 
   // Do nothing if we get a status. Await for this check to be carried out in useEffect.
