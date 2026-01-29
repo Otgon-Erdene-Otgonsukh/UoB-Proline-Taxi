@@ -176,7 +176,6 @@ const Page = () => {
 
   const handleSubmitSearchForm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(searchFormInput);
     setIsLoading(true)
     _getBookingListData()
   }
@@ -186,7 +185,10 @@ const Page = () => {
       paginationMeta.page,
       paginationMeta.pageSize,
       {
-        ...searchFormInput,
+        pickUpTimeFrom: searchFormInput.pickUpTimeFrom?.trim(),
+        pickUpTimeTo: searchFormInput.pickUpTimeTo?.trim(),
+        from: searchFormInput.from?.toLowerCase().trim(),
+        to: searchFormInput.to?.toLowerCase().trim(),
         bookingStatus: searchFormInput.bookingStatus === 'All' ? '' : searchFormInput.bookingStatus
       })
       .then((res) => {
