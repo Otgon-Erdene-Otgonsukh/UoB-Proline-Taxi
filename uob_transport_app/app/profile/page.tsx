@@ -15,6 +15,7 @@ import { useRouter } from "next/navigation";
 import EditIcon from "@mui/icons-material/Edit";
 import { useState, useEffect } from "react";
 import { departments } from "@/model/models";
+import { motion } from "framer-motion";
 
 const role: Record<string, string> = {
   normal_user: "Normal User",
@@ -196,7 +197,12 @@ export default function Profile() {
 
   return (
     <div className="min-h-screen flex justify-center items-center flex-col p-6 mt-6">
-      <div className="flex flex-col items-center justify-center mb-8">
+      <motion.div
+        className="flex flex-col items-center justify-center mb-8"
+        initial={{ opacity: 0, y: 10, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 1, ease: "easeOut", delay: 0 }}
+      >
         <Avatar
           className="drop-shadow-lg/40"
           sx={{
@@ -214,10 +220,15 @@ export default function Profile() {
         <h1 className="font-mono font-bold text-3xl text-gray-800 mb-1 text-shadow-lg/10">
           {session?.user.name} {session?.user.surname}
         </h1>
-      </div>
+      </motion.div>
 
       <div className="bg-white flex flex-col w-full max-w-2xl shadow-xl rounded-2xl p-8 space-y-6 mb-10">
-        <div className="border-b border-gray-200 pb-4">
+        <motion.div
+          className="border-b border-gray-200 pb-4"
+          initial={{ opacity: 0, y: 10, scale: 0.98 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 1, ease: "easeOut", delay: 0 }}
+        >
           <h2 className="text-lg font-semibold text-gray-700 mb-4">
             Personal Information
           </h2>
@@ -326,9 +337,14 @@ export default function Profile() {
               </div>
             )}
           </div>
-        </div>
+        </motion.div>
 
-        <div className="border-b border-gray-200 pb-4">
+        <motion.div
+          className="border-b border-gray-200 pb-4"
+          initial={{ opacity: 0, y: 10, scale: 0.98 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 1, ease: "easeOut", delay: 0.3 }}
+        >
           <h2 className="text-lg font-semibold text-gray-700 mb-4">
             Contact Information
           </h2>
@@ -423,7 +439,7 @@ export default function Profile() {
                       padding: "4px",
                       color: "gray",
                       ml: 1,
-                      flexShrink: 0
+                      flexShrink: 0,
                     }}
                     onClick={() => {
                       setEditData({
@@ -489,13 +505,19 @@ export default function Profile() {
               </div>
             )}
           </div>
-        </div>
+        </motion.div>
 
-        <div>
+        <motion.div
+          initial={{ opacity: 0, y: 10, scale: 0.98 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 1, ease: "easeOut", delay: 0.6 }}
+        >
           <h2 className="text-lg font-semibold text-gray-700 mb-4">
             Account Details
           </h2>
-          <div className={`grid grid-cols-1 md:${session?.user.department ? "grid-cols-2" : "grid-cols-1"} gap-4`}>
+          <div
+            className={`grid grid-cols-1 md:${session?.user.department ? "grid-cols-2" : "grid-cols-1"} gap-4`}
+          >
             {session?.user.department &&
               (departmentEditOn ? (
                 <Autocomplete
@@ -603,7 +625,7 @@ export default function Profile() {
               </div>
             )}
           </div>
-        </div>
+        </motion.div>
         {editMode && (
           <div className="flex justify-end gap-3 pt-4">
             <Button
