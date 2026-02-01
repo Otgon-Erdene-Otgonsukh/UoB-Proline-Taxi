@@ -19,8 +19,6 @@ import {
 } from "@mui/material";
 import NumberField from "@/components/NumberField";
 import { useSession } from "next-auth/react";
-import Image from "next/image";
-import dynamic from "next/dist/shared/lib/dynamic";
 import {
   Map,
   MapMarker,
@@ -31,14 +29,15 @@ import {
 import { Loader2, Clock, Route } from "lucide-react";
 
 export default function BookingPage() {
-  const commonLocations = [
-    "Queens Building",
-    "Merchant Venturers Building",
-    "Richmond Building",
-    "Victoria's Room",
-    "Will's Memorial",
-    "Physics Building",
-  ];
+  // Attach common locations as keys to hashmapped Lat/Lon for routing.
+  const commonLocations = {
+    "Queens Building": {"lat": "51.456890", "lng": "-2.601892"},
+    "Merchant Venturers Building": {"lat": "51.456111", "lng": "-2.602830"},
+    "Richmond Building": {"lat": "51.456996", "lng": "-2.613267"},
+    "Victoria Rooms": {"lat": "51.458173", "lng": "-2.609358"},
+    "Wills Memorial Building": {"lat": "51.455927", "lng": "-2.604696"},
+    "Physics Building": {"lat": "51.458986", "lng": "-2.602204"},
+  };
 
   const session = useSession();
 
@@ -69,6 +68,8 @@ export default function BookingPage() {
     Number: "",
     Email: "",
     AdditionalInfo: "",
+    ReturnTime: "",
+    ReturnDate: "",
   });
 
   const departments = [
@@ -166,14 +167,14 @@ export default function BookingPage() {
       }
 
       loc = formData.CustomLoc;
-    } else if (!isFlightChecked) {
+    } else if (!isFlightChecked && !isManualChecked) {
       // Common Pickup Location / Dropdown
       if (formData.CommonLoc == "") {
         addFormFeedback("CommonLoc", "Please pick one.");
         fail = true;
       }
       loc = formData.CommonLoc;
-    }
+    } else loc = formData.Airport;
 
     // Department check
     if (formData.department.length === 0) {
@@ -203,7 +204,7 @@ export default function BookingPage() {
       if (!flightNumCriteria.test(formData.FlightNum)) {
         addFormFeedback(
           "FlightNum",
-          "Please enter your flight number (formatted AB1234)."
+          "Please enter your flight number (formatted AB1234).",
         );
         fail = true;
       }
@@ -252,6 +253,15 @@ export default function BookingPage() {
       pickupDateTime = targetDateTime;
     }
 
+    // Check for return pick up time cannot be before the initial pick up time of the first trip
+    if (isReturnChecked) {
+      if (returnDateTime <= pickupDateTime) {
+        addFormFeedback("ReturnTime", "Invalid return trip pick-up time");
+        addFormFeedback("ReturnDate", " ");
+        fail = true;
+      }
+    }
+
     // Phone number
     // Some additional leniency for international numbers may need to be added later.
     // Matches UK formatting for mobile numbers (expecting mobile numbers only).
@@ -269,7 +279,7 @@ export default function BookingPage() {
     } else if (formData.FirstName.length > 50) {
       addFormFeedback(
         "FirstName",
-        "First Name too long. Please use an abbreviation."
+        "First Name too long. Please use an abbreviation.",
       );
       fail = true;
     }
@@ -281,7 +291,7 @@ export default function BookingPage() {
     } else if (formData.Surname.length > 50) {
       addFormFeedback(
         "Surname",
-        "Surname too long. Please use an abbreviation."
+        "Surname too long. Please use an abbreviation.",
       );
       fail = true;
     }
@@ -308,7 +318,9 @@ export default function BookingPage() {
         pickup_location: loc,
         dropoff_location: formData.DropoffLoc,
         pickup_time: pickupDateTime,
-        ...(isReturnChecked ? {return_time: returnDateTime, returnTo: formData.ReturnTo} : {}),
+        ...(isReturnChecked
+          ? { return_time: returnDateTime, returnTo: formData.ReturnTo }
+          : {}),
         first_name: formData.FirstName,
         surname: formData.Surname,
         email: formData.Email,
@@ -326,20 +338,21 @@ export default function BookingPage() {
       })
         .then((response) => {
           if (response.status == 200) {
-            router.push("/confirmed"); // Refresh page to (/confirmed) page, to reflect changes once implemented.
+            router.push("/book/confirmed");
           } else {
             // Use additional info box to mark error. Will replace with specific errors in the future.
             addFormFeedback(
               "AdditionalInfo",
-              "Form failed to submit. Please try again or check inputs."
+              "Form failed to submit. Please try again or check inputs.",
             );
           }
         })
         .catch((err) => {
           console.error("Error:", err);
+          setLoadingBar(false);
           addFormFeedback(
             "AdditionalInfo",
-            "Form failed to submit. Please try again later or check your network connection."
+            "Form failed to submit. Please try again later or check your network connection.",
           );
         });
     }
@@ -386,10 +399,6 @@ export default function BookingPage() {
     },
   });
 
-  // MapCN Routing Example
-  const start = { name: "Senate House, University of Bristol", lng: -2.603958, lat: 51.45892 };
-  const end = { name: "Bristol Airport", lng: -2.710774, lat: 51.386765 };
-
   interface RouteData {
     coordinates: [number, number][];
     duration: number; // seconds
@@ -409,41 +418,59 @@ export default function BookingPage() {
     return `${(meters / 1000).toFixed(1)} km`;
   }
 
+  // Use Nominatim to return latitude and longitude from address.
+  async function getLatLon(address: string): Promise<{ lat: string; lon: string } | null> {
+    const result = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`);
+    if (result.ok) {
+      const data = await result.json();
+      if (data && data.length > 0) {
+        return { lat: data[0].lat, lon: data[0].lon };
+      }
+    };
+    return null;
+  }
+
+  const [start, setStart] = useState<{ name: String; lat: string; lng: string } | null>(null);
+  const [end, setEnd] = useState<{ name: String; lat: string; lng: string } | null>(null);
+
   const [routes, setRoutes] = useState<RouteData[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
-      async function fetchRoutes() {
-        try {
-          const response = await fetch(
-            `https://router.project-osrm.org/route/v1/driving/${start.lng},${start.lat};${end.lng},${end.lat}?overview=full&geometries=geojson&alternatives=true`
-          );
-          const data = await response.json();
+  // Only call updateRoute when both start and end are set.
+  async function updateRoute() {
+    if (start != null && end != null) {
+      fetchRoutes(start.lat, start.lng, end.lat, end.lng);
+    }
+  }
 
-          if (data.routes?.length > 0) {
-            const routeData: RouteData[] = data.routes.map(
-              (route: {
-                geometry: { coordinates: [number, number][] };
-                duration: number;
-                distance: number;
-              }) => ({
-                coordinates: route.geometry.coordinates,
-                duration: route.duration,
-                distance: route.distance,
-              })
-            );
-            setRoutes(routeData);
-          }
-        } catch (error) {
-          console.error("Failed to fetch routes:", error);
-        } finally {
-          setIsLoading(false);
-        }
+  async function fetchRoutes(slat : string, slon : string, flat: string, flon: string) {
+    try {
+      const response = await fetch(
+        `https://router.project-osrm.org/route/v1/driving/${slon},${slat};${flon},${flat}?overview=full&geometries=geojson&alternatives=true`
+      );
+      const data = await response.json();
+
+      if (data.routes?.length > 0) {
+        const routeData: RouteData[] = data.routes.map(
+          (route: {
+            geometry: { coordinates: [number, number][] };
+            duration: number;
+            distance: number;
+          }) => ({
+            coordinates: route.geometry.coordinates,
+            duration: route.duration,
+            distance: route.distance,
+          })
+        );
+        setRoutes(routeData);
       }
-
-      fetchRoutes();
-    }, []);
+    } catch (error) {
+      console.error("Failed to fetch routes:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
   
 
     // Sort routes: non-selected first, selected last (renders on top)
@@ -522,6 +549,7 @@ export default function BookingPage() {
                 id="checkboxes"
                 className="flex flex-row justify-start gap-6"
               >
+                {!isFlightChecked && (
                 <label
                   htmlFor="manual"
                   className="inline-flex items-center cursor-pointer gap-2"
@@ -533,11 +561,15 @@ export default function BookingPage() {
                     id="manual"
                     type="checkbox"
                     checked={isManualChecked}
-                    onChange={(e) => setIsManualChecked(e.target.checked)}
+                      onChange={(e) => {
+                        setIsManualChecked(e.target.checked);
+                        setFormData({ ...formData, CustomLoc: "" });
+                      }}
                     className="sr-only peer"
                   />
                   <div className="relative w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-gray-300 peer-checked:bg-[#4a4a4a] peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
                 </label>
+                )}
                 <label
                   htmlFor="flight"
                   className="inline-flex items-center cursor-pointer gap-2"
@@ -549,7 +581,11 @@ export default function BookingPage() {
                     id="flight"
                     type="checkbox"
                     checked={isFlightChecked}
-                    onChange={(e) => setIsFlightChecked(e.target.checked)}
+                    onChange={(e) => {
+                      setIsFlightChecked(e.target.checked);
+                      setIsManualChecked(false);
+                      setFormData({ ...formData, FlightNum: "", Airport: "" });
+                    }}
                     className="sr-only peer"
                   />
                   <div className="relative w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-gray-300 peer-checked:bg-[#4a4a4a] peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
@@ -563,7 +599,10 @@ export default function BookingPage() {
                     id="via"
                     type="checkbox"
                     checked={isViaChecked}
-                    onChange={(e) => setIsViaChecked(e.target.checked)}
+                    onChange={(e) => {
+                      setIsViaChecked(e.target.checked);
+                      setFormData({ ...formData, Via: "" });
+                    }}
                     className="sr-only peer"
                   />
                   <div className="relative w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-gray-300 peer-checked:bg-[#4a4a4a] peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
@@ -706,6 +745,9 @@ export default function BookingPage() {
                   onChange={(e) => {
                     setFormData({ ...formData, DropoffLoc: e.target.value });
                   }}
+                  onBlur={(e) => {
+                    
+                  }}
                   className={`border-2 rounded px-3 py-2 ${
                     formFeedback.DropoffLoc == "" ? "" : "border-red-700"
                   }`}
@@ -769,7 +811,9 @@ export default function BookingPage() {
                       <input
                         id="pickupDate"
                         type="date"
-                        className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0`}
+                        className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0 ${
+                          formFeedback.ReturnDate == "" ? "" : "border-red-700"
+                        }`}
                         onChange={(e) => {
                           setFormData({
                             ...formData,
@@ -780,7 +824,9 @@ export default function BookingPage() {
                       <input
                         id="pickupTime"
                         type="time"
-                        className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0`}
+                        className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0 ${
+                          formFeedback.ReturnTime == "" ? "" : "border-red-700"
+                        }`}
                         onChange={(e) => {
                           setFormData({
                             ...formData,
@@ -789,6 +835,14 @@ export default function BookingPage() {
                         }}
                       ></input>
                     </div>
+                    <FormHelperText
+                      sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
+                      className={`${
+                        formFeedback.ReturnTime != "" ? "" : "hidden"
+                      }`}
+                    >
+                      {formFeedback.ReturnTime}
+                    </FormHelperText>
                   </div>
                 </div>
               )}

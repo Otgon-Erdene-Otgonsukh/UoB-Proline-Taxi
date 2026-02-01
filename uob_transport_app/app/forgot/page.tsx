@@ -8,6 +8,7 @@ import {
   InputAdornment,
   TextField,
   Alert,
+  CircularProgress
 } from "@mui/material";
 import { useState } from "react";
 import EmailIcon from "@mui/icons-material/Email";
@@ -15,6 +16,7 @@ import SendIcon from "@mui/icons-material/Send";
 import { sendResetEmail } from "./reqeust";
 
 export default function Forgot() {
+  const [isLoading, setIsLoading] = useState(false);
   //simple client side validation
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault(); //preventing the default behaviour as no back end is implemented
@@ -32,9 +34,9 @@ export default function Forgot() {
       setInvalidMail(true);
       return;
     } else {
+      setIsLoading(true);
       sendResetEmail(mail).then(res => {
         res.json().then(data => {
-          console.log(data);
           setAlterMessageMeta({
             show: true,
             status: 'success',
@@ -70,7 +72,7 @@ export default function Forgot() {
         elevation={3}
         sx={{
           borderRadius: 5,
-          maxWidth: 500,
+          maxWidth: 450,
           width: "100%",
           mt: 10,
           mb: 20,
@@ -135,6 +137,7 @@ export default function Forgot() {
             value={mail}
             onChange={(e) => {
               setMail(e.target.value);
+              setMailEmpty(false)
             }}
             sx={{
               "& .MuiOutlinedInput-root": {
@@ -184,7 +187,7 @@ export default function Forgot() {
             }}
             endIcon={<SendIcon />}
           >
-            Send Code
+            {isLoading ? <CircularProgress size="23px" color="inherit"/> : "Send Reset Link"}
           </Button>
         </Box>
       </Paper>
