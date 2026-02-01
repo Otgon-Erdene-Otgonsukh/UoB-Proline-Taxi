@@ -52,6 +52,7 @@ export async function POST(req: Request) {
   // Server side role and mail validation
   if (
     (!mail.endsWith("@prolinetaxi.com") && role === "proline_staff") ||
+    (!mail.endsWith("@bristol.ac.uk") && role === "finance_staff") ||
     (departmentName.length === 0 &&
       (role === "normal_user" || role === "finance_staff")) ||
     (role == "proline_staff" && departmentName.length !== 0) ||
