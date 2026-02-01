@@ -393,7 +393,7 @@ const Page = () => {
                         <div className="flex gap-2 justify-center">
                           <CustomizedButton
                             click={() => handleViewDialogOpen(row)}
-                            type="primary"
+                            type="warning"
                             title="View"
                           />
                           {/* super admin can edit user under any circumstances */}
