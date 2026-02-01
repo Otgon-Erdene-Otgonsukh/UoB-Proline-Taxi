@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter, redirect } from "next/navigation";
 import {
   Button,
@@ -25,8 +25,12 @@ import {
   MarkerContent,
   MapRoute,
   MarkerLabel,
+  MapRef,
 } from "@/components/ui/map";
+import { departments } from "@/model/models";
 import { Loader2, Clock, Route } from "lucide-react";
+import { bounds } from "leaflet";
+import { LngLatLike } from "maplibre-gl";
 
 export default function BookingPage() {
   // Attach common locations as keys to hashmapped Lat/Lon for routing.
@@ -71,39 +75,6 @@ export default function BookingPage() {
     ReturnTime: "",
     ReturnDate: "",
   });
-
-  const departments = [
-    "Centre for Academic Language and Development",
-    "Centre for Innovation and Entrepreneurship",
-    "Arts",
-    "Economics",
-    "Education",
-    "Humanities",
-    "Modern Languages",
-    "Policy Studies",
-    "Sociology, Politics and International Studies",
-    "Business",
-    "Law",
-    "Dental",
-    "Medical",
-    "Veterinary",
-    "Health Professions Education",
-    "Anatomy",
-    "Biochemistry",
-    "Biological Sciences",
-    "Cellular and Molecular Medicine",
-    "Physiology, Pharmacology and Neuroscience",
-    "Psychological Science",
-    "Chemistry",
-    "Civil, Aerospace, and Design Engineering",
-    "Computer Science",
-    "Earth Sciences",
-    "Electrical, Electronic and Mechanical Engineering",
-    "Engineering Mathematics and Technology",
-    "Geographical Sciences",
-    "Mathematics",
-    "Physics",
-  ];
 
   const clearFeedback = () => {
     const dict = { ...formFeedback };
@@ -430,21 +401,39 @@ export default function BookingPage() {
     return null;
   }
 
-  const [start, setStart] = useState<{ name: String; lat: string; lng: string } | null>(null);
-  const [end, setEnd] = useState<{ name: String; lat: string; lng: string } | null>(null);
+  const [start, setStart] = useState<{ name: String; lat: number; lng: number } | null>(null);
+  const [end, setEnd] = useState<{ name: String; lat: number; lng: number } | null>(null);
+
+  // Update the route when start or end changes.
+  useEffect(() => {
+    if (end != null && start != null) {
+      updateRoute();
+    }
+  }, [start, end]);
 
   const [routes, setRoutes] = useState<RouteData[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
+
+  const mapRef = useRef<MapRef>(null);
 
   // Only call updateRoute when both start and end are set.
   async function updateRoute() {
     if (start != null && end != null) {
       fetchRoutes(start.lat, start.lng, end.lat, end.lng);
+
+      // Find each corner of the square bounding box using min and max latitudes and longitudes.
+      const swLng = Math.min(start.lng, end.lng);
+      const swLat = Math.min(start.lat, end.lat);
+      const neLng = Math.max(start.lng, end.lng);
+      const neLat = Math.max(start.lat, end.lat);
+
+      // Cast bounds to LngLatLike type for fitBounds function.
+      const bounds: [LngLatLike, LngLatLike] = [[swLng, swLat],[neLng, neLat],];
+      mapRef.current?.fitBounds(bounds, { padding: 50 });
     }
   }
 
-  async function fetchRoutes(slat : string, slon : string, flat: string, flon: string) {
+  async function fetchRoutes(slat : number, slon : number, flat: number, flon: number) {
     try {
       const response = await fetch(
         `https://router.project-osrm.org/route/v1/driving/${slon},${slat};${flon},${flat}?overview=full&geometries=geojson&alternatives=true`
@@ -467,8 +456,6 @@ export default function BookingPage() {
       }
     } catch (error) {
       console.error("Failed to fetch routes:", error);
-    } finally {
-      setIsLoading(false);
     }
   }
   
@@ -521,6 +508,15 @@ export default function BookingPage() {
                       defaultValue=""
                       onChange={(e) => {
                         setFormData({ ...formData, CommonLoc: e.target.value });
+
+                        // Update route
+                        // Ensure that e.target value is a key of commonLocations
+                        type LocKey = keyof typeof commonLocations;
+                        const value = e.target.value as LocKey;
+                        if (e.target.value) {
+                          // Convert lat and long strings to numbers for mapcn
+                          setStart({ name: e.target.value, lat: parseFloat(commonLocations[value].lat), lng: parseFloat(commonLocations[value].lng) });
+                        }
                       }}
                       error={formFeedback.CommonLoc != ""}
                     >
@@ -528,7 +524,7 @@ export default function BookingPage() {
                         <em>Select a location</em>
                       </MenuItem>
                       {/*used an array to store the common locations and used map to populate the menu items*/}
-                      {commonLocations.map((loc) => (
+                      {Object.keys(commonLocations).map((loc) => (
                         <MenuItem key={loc} value={loc}>
                           {loc}
                         </MenuItem>
@@ -639,6 +635,12 @@ export default function BookingPage() {
                     onChange={(e) => {
                       setFormData({ ...formData, CustomLoc: e.target.value });
                     }}
+                    onBlur={async (e) => {
+                      const latlon = await getLatLon(e.target.value)
+                      if (latlon != null) {
+                        setStart({ name: e.target.value, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) });
+                      }
+                    }}
                   ></input>
                   <FormHelperText
                     sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
@@ -745,9 +747,12 @@ export default function BookingPage() {
                   onChange={(e) => {
                     setFormData({ ...formData, DropoffLoc: e.target.value });
                   }}
-                  onBlur={(e) => {
-                    
-                  }}
+                  onBlur={async (e) => {
+                      const latlon = await getLatLon(e.target.value)
+                      if (latlon != null) {
+                        setEnd({ name: e.target.value, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) });
+                      }
+                    }}
                   className={`border-2 rounded px-3 py-2 ${
                     formFeedback.DropoffLoc == "" ? "" : "border-red-700"
                   }`}
@@ -1103,7 +1108,7 @@ export default function BookingPage() {
         { /* https://mapcn.vercel.app/docs/routes */ }
         <div className="container hidden lg:block lg:w-1/2 w-full object-contain min-w-[600px] border-l-3 border-gray-700 rounded-[0px_5px_5px_0px] overflow-hidden">
           { /* Lat and long are inverted by MAPCN here */ }
-          <Map center={[-2.602, 51.458]} zoom={14}>
+          <Map ref={mapRef} center={[-2.602, 51.458]} zoom={14}>
             {sortedRoutes.map(({ route, index }) => {
             const isSelected = index === selectedIndex;
             return (
@@ -1118,26 +1123,24 @@ export default function BookingPage() {
             );
           })}
 
+          {start && start.lat && start.lng && ( // Only render marker when not null
           <MapMarker longitude={start.lng} latitude={start.lat}>
             <MarkerContent>
               <div className="size-5 rounded-full bg-green-500 border-2 border-white shadow-lg" />
               <MarkerLabel position="top">{start.name}</MarkerLabel>
             </MarkerContent>
           </MapMarker>
+          )}
 
+          {end && end.lat && end.lng && (
           <MapMarker longitude={end.lng} latitude={end.lat}>
             <MarkerContent>
               <div className="size-5 rounded-full bg-red-500 border-2 border-white shadow-lg" />
               <MarkerLabel position="bottom">{end.name}</MarkerLabel>
             </MarkerContent>
           </MapMarker>
+          )}
         </Map>
-
-        {isLoading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-background/50">
-            <Loader2 className="size-6 animate-spin text-muted-foreground" />
-          </div>
-        )}
       </div>
         </div>
       </div>
