@@ -16,7 +16,7 @@ export default async function createBooking(
     tel_number: string,
     additional_info: string,
     via: string,
-    returnTo: string,
+    returnTo: string | undefined,
     passenger_num: number,
     department: string,
     airport: string,

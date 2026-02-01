@@ -2,41 +2,9 @@ import { NextResponse } from "next/server";
 import { PrismaClient } from "@/generated/prisma/client";
 import sendReq from "@/backend/register/send_req";
 import bcrypt from "bcryptjs";
+import { departments } from "@/model/models";
 
 const prisma = new PrismaClient();
-
-const departments = [
-    "Centre for Academic Language and Development",
-    "Centre for Innovation and Entrepreneurship",
-    "Arts",
-    "Economics",
-    "Education",
-    "Humanities",
-    "Modern Languages",
-    "Policy Studies",
-    "Sociology, Politics and International Studies",
-    "Business",
-    "Law",
-    "Dental",
-    "Medical",
-    "Veterinary",
-    "Health Professions Education",
-    "Anatomy",
-    "Biochemistry",
-    "Biological Sciences",
-    "Cellular and Molecular Medicine",
-    "Physiology, Pharmacology and Neuroscience",
-    "Psychological Science",
-    "Chemistry",
-    "Civil, Aerospace, and Design Engineering",
-    "Computer Science",
-    "Earth Sciences",
-    "Electrical, Electronic and Mechanical Engineering",
-    "Engineering Mathematics and Technology",
-    "Geographical Sciences",
-    "Mathematics",
-    "Physics",
-  ];
 
 export async function POST(req: Request) {
   const request = await req.json();
