@@ -34,13 +34,11 @@ export default function Profile() {
 
   const [nameEdit, setNameEdit] = useState(false);
   const [surnameEdit, setSurnameEdit] = useState(false);
-  const [usernameEdit, setUsernameEdit] = useState(false);
   const [emailEdit, setEmailEdit] = useState(false);
   const [phoneEdit, setPhoneEdit] = useState(false);
   const [departmentEdit, setDepartmentEdit] = useState(false);
   const [nameEditOn, setNameEditOn] = useState(false);
   const [surnameEditOn, setSurnameEditOn] = useState(false);
-  const [usernameEditOn, setUsernameEditOn] = useState(false);
   const [emailEditOn, setEmailEditOn] = useState(false);
   const [phoneEditOn, setPhoneEditOn] = useState(false);
   const [departmentEditOn, setDepartmentEditOn] = useState(false);
@@ -51,7 +49,6 @@ export default function Profile() {
   const [changeError, setChangeError] = useState({
     name: false,
     surname: false,
-    username: false,
     email: false,
     department: false,
     phone_number: false,
@@ -59,7 +56,6 @@ export default function Profile() {
   const [editData, setEditData] = useState({
     name: "",
     surname: "",
-    username: "",
     email: "",
     department: "",
     phone_number: "",
@@ -86,8 +82,6 @@ export default function Profile() {
     setNameEdit(false);
     setSurnameEdit(false);
     setSurnameEditOn(false);
-    setUsernameEdit(false);
-    setUsernameEditOn(false);
     setEmailEditOn(false);
     setEmailEdit(false);
     setPhoneEdit(false);
@@ -97,7 +91,6 @@ export default function Profile() {
     setChangeError({
       name: false,
       surname: false,
-      username: false,
       email: false,
       department: false,
       phone_number: false,
@@ -118,12 +111,6 @@ export default function Profile() {
     if (surnameEditOn) {
       if (editData.surname.length === 0 || editData.surname.length > 15) {
         newErrors.surname = true;
-        fail = true;
-      }
-    }
-    if (usernameEditOn) {
-      if (editData.username.length === 0 || editData.username.length > 15) {
-        newErrors.username = true;
         fail = true;
       }
     }
@@ -159,7 +146,6 @@ export default function Profile() {
         user_id: session?.user.user_id,
         ...(nameEditOn && { name: editData.name }),
         ...(surnameEditOn && { surname: editData.surname }),
-        ...(usernameEditOn && { username: editData.username }),
         ...(emailEditOn && { email: editData.email }),
         ...(phoneEditOn && { phone_number: editData.phone_number }),
         ...(departmentEditOn && { department: editData.department }),
@@ -179,7 +165,6 @@ export default function Profile() {
               ...session?.user,
               ...(nameEditOn && { name: editData.name }),
               ...(surnameEditOn && { surname: editData.surname }),
-              ...(usernameEditOn && { username: editData.username }),
               ...(emailEditOn && { email: editData.email }),
               ...(phoneEditOn && { phone_number: editData.phone_number }),
               ...(departmentEditOn && { department: editData.department }),
@@ -333,56 +318,6 @@ export default function Profile() {
             Contact Information
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {usernameEditOn ? (
-              <TextField
-                label="Username"
-                color="secondary"
-                sx={{
-                  "& .MuiInputBase-root": {
-                    height: "100%",
-                  },
-                }}
-                focused
-                value={editData.username}
-                onChange={(e) => {
-                  setEditData({ ...editData, username: e.target.value });
-                  setChangeError({ ...changeError, username: false });
-                }}
-                helperText={changeError.username && "Enter a valid username"}
-                error={changeError.username}
-              ></TextField>
-            ) : (
-              <div
-                className="bg-gray-50 p-4 rounded-lg flex justify-between items-center hover:drop-shadow-md/20 hover:-translate-y-1 transition-all ease-in-out duration-200"
-                onMouseEnter={() => setUsernameEdit(true)}
-                onMouseLeave={() => setUsernameEdit(false)}
-              >
-                <div>
-                  <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
-                    Username
-                  </p>
-                  <p className="text-gray-800 font-medium">
-                    {session?.user.username}
-                  </p>
-                </div>
-
-                {usernameEdit && (
-                  <Button
-                    sx={{ minWidth: "auto", padding: "4px", color: "gray" }}
-                    onClick={() => {
-                      setEditData({
-                        ...editData,
-                        username: session?.user.username ?? "",
-                      });
-                      setUsernameEditOn(true);
-                      setEditMode(true);
-                    }}
-                  >
-                    <EditIcon fontSize="small" />
-                  </Button>
-                )}
-              </div>
-            )}
             {emailEditOn ? (
               <TextField
                 label="Email"

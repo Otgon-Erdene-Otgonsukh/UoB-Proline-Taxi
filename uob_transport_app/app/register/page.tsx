@@ -52,12 +52,10 @@ export default function Register() {
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [username, setUsername] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [department, setDepartment] = useState("");
   const [firstNameEmpty, setFirstNameEmpty] = useState(false);
   const [lastNameEmpty, setLastNameEmpty] = useState(false);
-  const [usernameEmpty, setUsernameEmpty] = useState(false);
   const [phoneNumberEmpty, setPhoneNumberEmpty] = useState(false);
   const [departmentEmpty, setDepartmentEmpty] = useState(false);
   const [prolineMailError, setProlineMailError] = useState(false);
@@ -108,7 +106,6 @@ export default function Register() {
     setPasswordEmpty(false);
     setFirstNameEmpty(false);
     setLastNameEmpty(false);
-    setUsernameEmpty(false);
     setPhoneNumberEmpty(false);
     setDepartmentEmpty(false);
 
@@ -150,10 +147,6 @@ export default function Register() {
       setLastNameEmpty(true);
       hasError = true;
     }
-    if (username.length === 0) {
-      setUsernameEmpty(true);
-      hasError = true;
-    }
     if (phoneNumber.length === 0) {
       setPhoneNumberEmpty(true);
       hasError = true;
@@ -180,12 +173,11 @@ export default function Register() {
         lastName: lastName,
         department: department,
         phoneNumber: phoneCode + " " + phoneNumber,
-        username: username,
         role: financeStaff
           ? "finance_staff"
           : proLineStaff
-          ? "proline_staff"
-          : "normal_user",
+            ? "proline_staff"
+            : "normal_user",
       };
       fetch("api/create_user", { method: "POST", body: JSON.stringify(body) })
         .then((res) => res.json())
@@ -282,28 +274,6 @@ export default function Register() {
                     }}
                   />
                 </div>
-                <TextField
-                  fullWidth
-                  error={usernameEmpty}
-                  helperText={usernameEmpty ? "Please enter username" : ""}
-                  label="Username"
-                  id="username"
-                  type="text"
-                  data-testid="textfield"
-                  onChange={(e) => {
-                    setUsername(e.target.value);
-                    setUsernameEmpty(false);
-                  }}
-                  slotProps={{
-                    input: {
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <PersonIcon sx={{ color: "#111827" }} />
-                        </InputAdornment>
-                      ),
-                    },
-                  }}
-                />
                 <div className="flex gap-3">
                   <select
                     className="border-2 rounded-md max-h-14 px-2"
@@ -399,12 +369,12 @@ export default function Register() {
                     emailError
                       ? "Enter a valid email"
                       : emailEmpty
-                      ? "Please enter an email"
-                      : prolineMailError
-                      ? "Enter a valid company email"
-                      : financeStaffMailError
-                      ? "Enter a valid university email"
-                      : ""
+                        ? "Please enter an email"
+                        : prolineMailError
+                          ? "Enter a valid company email"
+                          : financeStaffMailError
+                            ? "Enter a valid university email"
+                            : ""
                   }
                   label="Email"
                   id="email"
@@ -434,8 +404,8 @@ export default function Register() {
                     passwordEmpty
                       ? "Please enter a password"
                       : passwordError
-                      ? "Enter a valid password"
-                      : ""
+                        ? "Enter a valid password"
+                        : ""
                   }
                   label="Password"
                   id="password"

@@ -7,7 +7,6 @@ export async function POST(req: Request) {
   const user_id: number = body.user_id;
   const newName: string | undefined = body.name;
   const newLastName: string | undefined = body.surname;
-  const newUserName: string | undefined = body.username;
   const newEmail: string | undefined = body.email;
   const newPhoneNumber: string | undefined = body.phone_number;
   const newDepartment: string | undefined = body.department;
@@ -26,7 +25,6 @@ export async function POST(req: Request) {
       user_id,
       newName,
       newLastName,
-      newUserName,
       newEmail,
       newPhoneNumber,
       newDepartment,

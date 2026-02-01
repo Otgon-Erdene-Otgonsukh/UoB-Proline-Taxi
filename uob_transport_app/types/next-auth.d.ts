@@ -6,7 +6,6 @@ import NextAuth from "next-auth"
 declare module "next-auth" {
     interface User {
         user_id: number;
-        username: string;
         name: string;
         surname: string | null;
         email: string;
@@ -20,7 +19,6 @@ declare module "next-auth" {
             name: string;
             surname: string;
             email: string;
-            username: string;
             user_id: number;
             phone_number: string;
             department: string | null;
@@ -31,7 +29,6 @@ declare module "next-auth" {
     interface JWT {
         name: string;
         email: string;
-        username: string;
         user_id: number;
         phone_number: string;
         department: string;

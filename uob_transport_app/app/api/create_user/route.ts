@@ -9,7 +9,6 @@ export async function POST(req: Request) {
   const request = await req.json();
   const mail: string = request.mail;
   const password: string = request.password;
-  const username: string = request.username;
   const departmentName: string = request.department;
   const firstName: string = request.firstName;
   const lastName: string = request.lastName;
@@ -50,7 +49,6 @@ export async function POST(req: Request) {
       // for proline staff reg-requests, no department is created, only user entry
       await prisma.user.create({
         data: {
-          username: username,
           name: firstName,
           surname: lastName,
           phone_number: phoneNumber,
@@ -68,7 +66,6 @@ export async function POST(req: Request) {
       await prisma.user.create({
         data: {
           dep_id: newDepartment.dep_id,
-          username: username,
           name: firstName,
           surname: lastName,
           phone_number: phoneNumber,
@@ -82,7 +79,6 @@ export async function POST(req: Request) {
       await prisma.user.create({
         data: {
           dep_id: department.dep_id,
-          username: username,
           name: firstName,
           surname: lastName,
           phone_number: phoneNumber,

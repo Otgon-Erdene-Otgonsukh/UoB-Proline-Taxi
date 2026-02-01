@@ -20,7 +20,7 @@ describe("Register page rendering test", () => {
 
   test("All TextFields and select render correctly.", () => {
     const textFields = screen.getAllByTestId("textfield");
-    expect(textFields.length).toBe(7);
+    expect(textFields.length).toBe(6);
 
     const options = screen.getAllByRole("option");
     expect(options.length).toBe(8);
@@ -46,11 +46,10 @@ describe("Register page rendering test", () => {
     // Fill in the form
     await user.type(screen.getAllByTestId("textfield")[0], "John"); // firstName
     await user.type(screen.getAllByTestId("textfield")[1], "Doe"); // lastName
-    await user.type(screen.getAllByTestId("textfield")[2], "johndoe"); // username
-    await user.type(screen.getAllByTestId("textfield")[3], "1234567890"); // phone
-    await user.type(screen.getAllByTestId("textfield")[4], "Law"); // department
-    await user.type(screen.getAllByTestId("textfield")[5], "john@test.com"); // email
-    await user.type(screen.getAllByTestId("textfield")[6], "password123"); // password
+    await user.type(screen.getAllByTestId("textfield")[2], "1234567890"); // phone
+    await user.type(screen.getAllByTestId("textfield")[3], "Law"); // department
+    await user.type(screen.getAllByTestId("textfield")[4], "john@test.com"); // email
+    await user.type(screen.getAllByTestId("textfield")[5], "password123"); // password
 
     // Click on the text within the first card to select Normal User
     await user.click(screen.getByText("Normal User"));

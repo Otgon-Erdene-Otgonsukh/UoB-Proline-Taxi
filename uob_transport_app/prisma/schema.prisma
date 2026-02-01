@@ -10,7 +10,6 @@ datasource db {
 
 model User {
   user_id      Int           @id @default(autoincrement())
-  username     String        @db.VarChar(100)
   dep_id       Int?
   email        String        @unique @db.VarChar(255)
   password     String        @db.VarChar(255)

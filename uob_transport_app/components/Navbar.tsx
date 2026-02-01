@@ -120,7 +120,7 @@ export const Navbar = () => {
         <div className="pr-6">
           {session ? (
             <div>
-              <Button className="text-lg" sx={{color: "white", fontFamily: "inter"}} onClick={handleClick}>Hi, {session.user?.username}! <ArrowDropDownIcon sx={{mb: 0.4, transform: open ? "rotate(180deg)" : "none"}}/></Button>
+              <Button className="text-lg" sx={{ color: "white", fontFamily: "inter" }} onClick={handleClick}>Hi, {session.user?.name}! <ArrowDropDownIcon sx={{ mb: 0.4, transform: open ? "rotate(180deg)" : "none" }} /></Button>
               <Menu
                 id="basic-menu"
                 anchorEl={anchorEl}
@@ -184,7 +184,7 @@ export const Navbar = () => {
                 transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
               >
-                <MenuItem 
+                <MenuItem
                   onClick={handleCloseMenu}
                   sx={{
                     fontWeight: 500,
@@ -195,7 +195,7 @@ export const Navbar = () => {
                   Profile
                 </MenuItem>
                 <Divider />
-                <MenuItem 
+                <MenuItem
                   onClick={handleOpenSiagnoutDialog}
                   sx={{
                     color: '#d32f2f',
@@ -205,7 +205,7 @@ export const Navbar = () => {
                   }}
                 >
                   <ListItemIcon>
-                    <Logout fontSize="small" sx={{ color: '#d32f2f', ml: 0.5}} />
+                    <Logout fontSize="small" sx={{ color: '#d32f2f', ml: 0.5 }} />
                   </ListItemIcon>
                   <p className="ml-1">Logout</p>
                 </MenuItem>

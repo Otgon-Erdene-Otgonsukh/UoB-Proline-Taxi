@@ -42,7 +42,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             // We do not want the entire user object as it would be quite large and pointless.
             return {
               user_id: userDetail.user_id,
-              username: userDetail.username,
               name: userDetail.name,
               surname: userDetail.surname,
               email: userDetail.email,
@@ -66,7 +65,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.name = user.name;
         token.surname = user.surname;
         token.user_id = user.user_id;
-        token.username = user.username;
         token.phone_number = user.phone_number;
         token.account_type = user.account_type;
         token.department = user.department;
@@ -76,7 +74,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (trigger === "update" && session?.user) {
         token.name = session.user.name;
         token.surname = session.user.surname;
-        token.username = session.user.username;
         token.email = session.user.email;
         token.phone_number = session.user.phone_number;
         token.department = session.user.department;
@@ -92,9 +89,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       }
       if (token?.user_id) {
         session.user.user_id = token.user_id as number;
-      }
-      if (token?.username) {
-        session.user.username = token.username as string;
       }
       if (token?.phone_number) {
         session.user.phone_number = token.phone_number as string;
