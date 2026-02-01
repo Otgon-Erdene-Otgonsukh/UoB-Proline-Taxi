@@ -86,7 +86,6 @@ export type UserRecord = {
   department: department;
   email: string;
   name: string;
-  surname: string;
   phone_number: string;
   role: string;
   user_status: number;

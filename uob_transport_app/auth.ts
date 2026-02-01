@@ -43,7 +43,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             return {
               user_id: userDetail.user_id,
               name: userDetail.name,
-              surname: userDetail.surname,
               email: userDetail.email,
               phone_number: userDetail.phone_number,
               department: userDetail.department?.dep_name,
@@ -63,7 +62,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       // On sign in, populate token from user
       if (user) {
         token.name = user.name;
-        token.surname = user.surname;
         token.user_id = user.user_id;
         token.phone_number = user.phone_number;
         token.account_type = user.account_type;
@@ -73,7 +71,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       // On update, use the session data passed from client to update both token and active session data
       if (trigger === "update" && session?.user) {
         token.name = session.user.name;
-        token.surname = session.user.surname;
         token.email = session.user.email;
         token.phone_number = session.user.phone_number;
         token.department = session.user.department;
@@ -98,9 +95,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       }
       if (token?.account_type) {
         session.user.account_type = token.account_type as string;
-      }
-      if (token?.surname) {
-        session.user.surname = token.surname as string;
       }
       return session;
     },

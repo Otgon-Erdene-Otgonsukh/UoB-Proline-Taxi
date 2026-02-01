@@ -3,15 +3,15 @@ import { PrismaClient } from "@/generated/prisma/client";
 const prisma = new PrismaClient();
 
 export default async function createBooking(
-    userID : number,
-    pickupLocation : string,
-    pickupLatitude : number | null,
-    pickupLongitude : number | null,
-    dropoffLocation : string, dropoffLatitude: number | null, dropoffLongitude: number | null,
-    pickupTime : Date,
-    returnDT : Date | undefined,
-    first_name : string,
-    surname : string,
+    userID: number,
+    pickupLocation: string,
+    pickupLatitude: number | null,
+    pickupLongitude: number | null,
+    dropoffLocation: string, dropoffLatitude: number | null, dropoffLongitude: number | null,
+    pickupTime: Date,
+    returnDT: Date | undefined,
+    first_name: string,
+    surname: string,
     email: string,
     tel_number: string,
     additional_info: string,
@@ -21,8 +21,7 @@ export default async function createBooking(
     department: string,
     airport: string,
     flight_num: string,
-    )
-{
+) {
     // Create a trip for the booking to be bound to.
     const trip = await prisma.trip.create({
         data: {

@@ -14,7 +14,6 @@ model User {
   email        String        @unique @db.VarChar(255)
   password     String        @db.VarChar(255)
   name         String        @db.VarChar(100)
-  surname      String?       @db.VarChar(100)
   phone_number String        @db.VarChar(20)
   time_created DateTime      @default(now()) @db.Timestamp(6)
   role         String        @db.VarChar(255)

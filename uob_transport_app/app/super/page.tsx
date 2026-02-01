@@ -370,7 +370,7 @@ const Page = () => {
                       }}
                     >
                       <StyledTableCell>{new Date(row.time_created).toDateString()}</StyledTableCell>
-                      <StyledTableCell>{row.name + ' ' + row.surname}</StyledTableCell>
+                      <StyledTableCell>{row.name}</StyledTableCell>
                       <StyledTableCell>{row.email}</StyledTableCell>
                       <StyledTableCell>{row.phone_number}</StyledTableCell>
                       <StyledTableCell>{row.department.dep_name}</StyledTableCell>

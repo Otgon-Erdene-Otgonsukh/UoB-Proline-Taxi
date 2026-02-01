@@ -57,7 +57,6 @@ export default function BookingPage() {
     PickupDate: "",
     PickupTime: "",
     FirstName: "",
-    Surname: "",
     Number: "",
     Email: "",
     AdditionalInfo: "",
@@ -91,7 +90,6 @@ export default function BookingPage() {
     ReturnDate: "",
     ReturnTime: "",
     FirstName: "",
-    Surname: "",
     Number: "",
     Email: "",
     department: "",
@@ -232,26 +230,14 @@ export default function BookingPage() {
       addFormFeedback("Number", "Please enter a valid phone number.");
     }
 
-    // First name, between 1 and 50 chars.
+    // First name, between 1 and 100 chars.
     if (formData.FirstName == "") {
       addFormFeedback("FirstName", "Please enter a First Name.");
       fail = true;
-    } else if (formData.FirstName.length > 50) {
+    } else if (formData.FirstName.length > 100) {
       addFormFeedback(
         "FirstName",
         "First Name too long. Please use an abbreviation.",
-      );
-      fail = true;
-    }
-
-    // Surname, between 1 and 50 chars.
-    if (formData.Surname == "") {
-      addFormFeedback("Surname", "Please enter a Surname.");
-      fail = true;
-    } else if (formData.Surname.length > 50) {
-      addFormFeedback(
-        "Surname",
-        "Surname too long. Please use an abbreviation.",
       );
       fail = true;
     }
@@ -282,7 +268,6 @@ export default function BookingPage() {
           ? { return_time: returnDateTime, returnTo: formData.ReturnTo }
           : {}),
         first_name: formData.FirstName,
-        surname: formData.Surname,
         email: formData.Email,
         tel_number: phoneCode + " " + formData.Number,
         additional_info: formData.AdditionalInfo,
@@ -374,9 +359,8 @@ export default function BookingPage() {
             {/*should go to some confirmed page or alike, currently goes to homepage*/}
             <div className="flex flex-col gap-4">
               <div
-                className={`flex flex-col ${
-                  isManualChecked || isFlightChecked ? "text-gray-400" : ""
-                }`}
+                className={`flex flex-col ${isManualChecked || isFlightChecked ? "text-gray-400" : ""
+                  }`}
               >
                 {/*using the custom theme above*/}
                 <ThemeProvider theme={inputTheme}>
@@ -413,9 +397,8 @@ export default function BookingPage() {
                     </Select>
                     <FormHelperText
                       sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
-                      className={`${
-                        formFeedback.CommonLoc != "" ? "" : "hidden"
-                      }`}
+                      className={`${formFeedback.CommonLoc != "" ? "" : "hidden"
+                        }`}
                     >
                       {formFeedback.CommonLoc}
                     </FormHelperText>
@@ -510,18 +493,16 @@ export default function BookingPage() {
                   <input
                     id="custom"
                     placeholder="Enter"
-                    className={`border-2 rounded px-3 py-2 ${
-                      formFeedback.CustomLoc == "" ? "" : "border-red-700"
-                    }`}
+                    className={`border-2 rounded px-3 py-2 ${formFeedback.CustomLoc == "" ? "" : "border-red-700"
+                      }`}
                     onChange={(e) => {
                       setFormData({ ...formData, CustomLoc: e.target.value });
                     }}
                   ></input>
                   <FormHelperText
                     sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
-                    className={`${
-                      formFeedback.CustomLoc != "" ? "" : "hidden"
-                    }`}
+                    className={`${formFeedback.CustomLoc != "" ? "" : "hidden"
+                      }`}
                   >
                     {formFeedback.CustomLoc}
                   </FormHelperText>
@@ -554,18 +535,16 @@ export default function BookingPage() {
                     <input
                       id="flightNum"
                       placeholder="AB1234"
-                      className={`border-2 rounded px-3 py-2 ${
-                        formFeedback.FlightNum == "" ? "" : "border-red-700"
-                      }`}
+                      className={`border-2 rounded px-3 py-2 ${formFeedback.FlightNum == "" ? "" : "border-red-700"
+                        }`}
                       onChange={(e) => {
                         setFormData({ ...formData, FlightNum: e.target.value });
                       }}
                     ></input>
                     <FormHelperText
                       sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
-                      className={`${
-                        formFeedback.FlightNum != "" ? "" : "hidden"
-                      }`}
+                      className={`${formFeedback.FlightNum != "" ? "" : "hidden"
+                        }`}
                     >
                       {formFeedback.FlightNum}
                     </FormHelperText>
@@ -577,18 +556,16 @@ export default function BookingPage() {
                     <input
                       id="airport"
                       placeholder="Bristol Airport"
-                      className={`border-2 rounded px-3 py-2 ${
-                        formFeedback.Airport == "" ? "" : "border-red-700"
-                      }`}
+                      className={`border-2 rounded px-3 py-2 ${formFeedback.Airport == "" ? "" : "border-red-700"
+                        }`}
                       onChange={(e) => {
                         setFormData({ ...formData, Airport: e.target.value });
                       }}
                     ></input>
                     <FormHelperText
                       sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
-                      className={`${
-                        formFeedback.Airport != "" ? "" : "hidden"
-                      }`}
+                      className={`${formFeedback.Airport != "" ? "" : "hidden"
+                        }`}
                     >
                       {formFeedback.Airport}
                     </FormHelperText>
@@ -622,9 +599,8 @@ export default function BookingPage() {
                   onChange={(e) => {
                     setFormData({ ...formData, DropoffLoc: e.target.value });
                   }}
-                  className={`border-2 rounded px-3 py-2 ${
-                    formFeedback.DropoffLoc == "" ? "" : "border-red-700"
-                  }`}
+                  className={`border-2 rounded px-3 py-2 ${formFeedback.DropoffLoc == "" ? "" : "border-red-700"
+                    }`}
                 ></input>
                 <FormHelperText
                   sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
@@ -685,9 +661,8 @@ export default function BookingPage() {
                       <input
                         id="pickupDate"
                         type="date"
-                        className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0 ${
-                          formFeedback.ReturnDate == "" ? "" : "border-red-700"
-                        }`}
+                        className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0 ${formFeedback.ReturnDate == "" ? "" : "border-red-700"
+                          }`}
                         onChange={(e) => {
                           setFormData({
                             ...formData,
@@ -698,9 +673,8 @@ export default function BookingPage() {
                       <input
                         id="pickupTime"
                         type="time"
-                        className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0 ${
-                          formFeedback.ReturnTime == "" ? "" : "border-red-700"
-                        }`}
+                        className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0 ${formFeedback.ReturnTime == "" ? "" : "border-red-700"
+                          }`}
                         onChange={(e) => {
                           setFormData({
                             ...formData,
@@ -711,9 +685,8 @@ export default function BookingPage() {
                     </div>
                     <FormHelperText
                       sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
-                      className={`${
-                        formFeedback.ReturnTime != "" ? "" : "hidden"
-                      }`}
+                      className={`${formFeedback.ReturnTime != "" ? "" : "hidden"
+                        }`}
                     >
                       {formFeedback.ReturnTime}
                     </FormHelperText>
@@ -728,9 +701,8 @@ export default function BookingPage() {
                   <input
                     id="pickupDate"
                     type="date"
-                    className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0 ${
-                      formFeedback.PickupDate == "" ? "" : "border-red-700"
-                    }`}
+                    className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0 ${formFeedback.PickupDate == "" ? "" : "border-red-700"
+                      }`}
                     onChange={(e) => {
                       setFormData({ ...formData, PickupDate: e.target.value });
                     }}
@@ -738,9 +710,8 @@ export default function BookingPage() {
                   <input
                     id="pickupTime"
                     type="time"
-                    className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0 ${
-                      formFeedback.PickupTime == "" ? "" : "border-red-700"
-                    }`}
+                    className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0 ${formFeedback.PickupTime == "" ? "" : "border-red-700"
+                      }`}
                     onChange={(e) => {
                       setFormData({ ...formData, PickupTime: e.target.value });
                     }}
@@ -769,9 +740,8 @@ export default function BookingPage() {
                 <input
                   id="name"
                   type="text"
-                  className={`border-2 rounded px-3 py-2 ${
-                    formFeedback.FirstName == "" ? "" : "border-red-700"
-                  }`}
+                  className={`border-2 rounded px-3 py-2 ${formFeedback.FirstName == "" ? "" : "border-red-700"
+                    }`}
                   onChange={(e) => {
                     setFormData({ ...formData, FirstName: e.target.value });
                   }}
@@ -790,9 +760,8 @@ export default function BookingPage() {
                 <input
                   id="surname"
                   type="text"
-                  className={`border-2 rounded px-3 py-2 ${
-                    formFeedback.Surname == "" ? "" : "border-red-700"
-                  }`}
+                  className={`border-2 rounded px-3 py-2 ${formFeedback.Surname == "" ? "" : "border-red-700"
+                    }`}
                   onChange={(e) => {
                     setFormData({ ...formData, Surname: e.target.value });
                   }}
@@ -828,9 +797,8 @@ export default function BookingPage() {
                     type="tel"
                     id="number"
                     placeholder="1234567890"
-                    className={`border-2 rounded flex-1 sm:px-3 py-2 min-w-0 w-full ${
-                      formFeedback.Number == "" ? "" : "border-red-700"
-                    }`}
+                    className={`border-2 rounded flex-1 sm:px-3 py-2 min-w-0 w-full ${formFeedback.Number == "" ? "" : "border-red-700"
+                      }`}
                     onChange={(e) => {
                       setFormData({ ...formData, Number: e.target.value });
                     }}
@@ -889,9 +857,8 @@ export default function BookingPage() {
                   <input
                     id="mail"
                     type="email"
-                    className={`border-2 rounded px-3 py-2 ${
-                      formFeedback.Email == "" ? "" : "border-red-700"
-                    }`}
+                    className={`border-2 rounded px-3 py-2 ${formFeedback.Email == "" ? "" : "border-red-700"
+                      }`}
                     onChange={(e) => {
                       setFormData({ ...formData, Email: e.target.value });
                     }}
@@ -927,9 +894,8 @@ export default function BookingPage() {
                 </label>
                 <textarea
                   id="addInfo"
-                  className={`border-2 rounded px-3 py-2 min-h-20 ${
-                    formFeedback.AdditionalInfo == "" ? "" : "border-red-700"
-                  }`}
+                  className={`border-2 rounded px-3 py-2 min-h-20 ${formFeedback.AdditionalInfo == "" ? "" : "border-red-700"
+                    }`}
                   onChange={(e) => {
                     setFormData({
                       ...formData,
@@ -941,9 +907,8 @@ export default function BookingPage() {
                 ></textarea>
                 <FormHelperText
                   sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
-                  className={`${
-                    formFeedback.AdditionalInfo != "" ? "" : "hidden"
-                  }`}
+                  className={`${formFeedback.AdditionalInfo != "" ? "" : "hidden"
+                    }`}
                 >
                   {formFeedback.AdditionalInfo}
                 </FormHelperText>

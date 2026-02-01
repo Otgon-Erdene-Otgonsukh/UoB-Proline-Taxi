@@ -6,7 +6,6 @@ export async function POST(req: Request) {
   const body = await req.json();
   const user_id: number = body.user_id;
   const newName: string | undefined = body.name;
-  const newLastName: string | undefined = body.surname;
   const newEmail: string | undefined = body.email;
   const newPhoneNumber: string | undefined = body.phone_number;
   const newDepartment: string | undefined = body.department;

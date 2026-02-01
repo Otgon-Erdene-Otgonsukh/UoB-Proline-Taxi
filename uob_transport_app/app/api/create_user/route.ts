@@ -50,7 +50,6 @@ export async function POST(req: Request) {
       await prisma.user.create({
         data: {
           name: firstName,
-          surname: lastName,
           phone_number: phoneNumber,
           role: role,
           email: mail,
@@ -67,7 +66,6 @@ export async function POST(req: Request) {
         data: {
           dep_id: newDepartment.dep_id,
           name: firstName,
-          surname: lastName,
           phone_number: phoneNumber,
           role: role,
           user_status: role === "normal_user" ? 1 : 0,
@@ -80,7 +78,6 @@ export async function POST(req: Request) {
         data: {
           dep_id: department.dep_id,
           name: firstName,
-          surname: lastName,
           phone_number: phoneNumber,
           role: role,
           user_status: role === "normal_user" ? 1 : 0,

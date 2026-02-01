@@ -7,7 +7,6 @@ declare module "next-auth" {
     interface User {
         user_id: number;
         name: string;
-        surname: string | null;
         email: string;
         phone_number: string;
         department: string | undefined;
@@ -17,7 +16,6 @@ declare module "next-auth" {
     interface Session {
         user: {
             name: string;
-            surname: string;
             email: string;
             user_id: number;
             phone_number: string;
