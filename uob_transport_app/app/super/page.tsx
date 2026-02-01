@@ -23,7 +23,9 @@ import {
   Select,
   MenuItem,
   InputLabel,
-  FormControl
+  FormControl,
+  Alert,
+  Snackbar,
 } from "@mui/material";
 import {
   KeyboardArrowLeft,
@@ -31,6 +33,7 @@ import {
   LastPage,
   FirstPage
 } from "@mui/icons-material"
+import sendRes from "@/backend/register/send_res";
 import { getUsersAsAdmin, updateUserAsAdmin } from "./request";
 import ViewDialog from "./userManageComponents/viewDialog";
 import EditDialog from "./userManageComponents/eidtDialog";
@@ -125,7 +128,9 @@ const Page = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   const [pendingUsersData, setPendingUsersData] = useState<UserRecord[]>([]);
-  const [pendingUserCount, setPendingUserCount] = useState(0)
+  const [pendingUserCount, setPendingUserCount] = useState(0);
+  const [snackOpen, setSnackOpen] = useState(false);
+  const [severity, setSeverity] = useState<"success" | "error">("success")
   const [paginationMeta, setPaginationMeta] = useState({
     page: 0,
     pageSize: 10,
@@ -188,7 +193,6 @@ const Page = () => {
   })
   const handleSubmitSearchForm = (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('submit');
     setIsLoading(true)
     _rerenderTable()
   }
@@ -227,6 +231,11 @@ const Page = () => {
       if (res.status === 200) {
         setIsLoading(true)
         _rerenderTable()
+        setSnackOpen(true)
+        setSeverity("success")         
+      } else {
+        setSnackOpen(true)
+        setSeverity("error")
       }
     })
   };
@@ -240,6 +249,11 @@ const Page = () => {
       if (res.status === 200) {
         setIsLoading(true)
         _rerenderTable()
+        setSnackOpen(true)
+        setSeverity("success")        
+      } else {
+        setSnackOpen(true)
+        setSeverity("error")
       }
     })
   };
@@ -337,11 +351,11 @@ const Page = () => {
         </div>
 
         {isLoading ? (
-          <Typography sx={{ color: "gray", fontSize: 16, textAlign: "center" }}>
+          <Typography sx={{ color: "gray", fontSize: 16, textAlign: "center", my: 10 }}>
             Getting user data...
           </Typography>
         ) : pendingUsersData.length === 0 ? (
-          <Typography sx={{ color: "gray", fontSize: 16, textAlign: "center" }}>
+          <Typography sx={{ color: "gray", fontSize: 16, textAlign: "center", my: 10 }}>
             No users to show.
           </Typography>
         ) : (
@@ -467,6 +481,9 @@ const Page = () => {
         confirmCallBack={() => { handleRejectUserRegister(userDetail!); setConfirmRejectDialogOpen(false); }}
         cancelCallBack={() => { setConfirmRejectDialogOpen(false); }}
       />
+      <Snackbar open={snackOpen} autoHideDuration={4000} onClose={() => {setSnackOpen(false)}} anchorOrigin={{vertical: "top", horizontal: "center"}}>
+        <Alert onClose={() => {setSnackOpen(false)}} severity={severity} variant="filled">{severity === "success" ? "Account registration response email sent!" : "There was an error sending response mail"}</Alert>
+      </Snackbar>
     </div>
   );
 };
