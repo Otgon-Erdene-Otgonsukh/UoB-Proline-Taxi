@@ -19,6 +19,7 @@ export async function getPendingBookings(
     query["trip"] = {
       pickup_location: {
         contains: searchParams.from,
+        mode: "insensitive"
       },
     };
   }
@@ -26,6 +27,7 @@ export async function getPendingBookings(
     query["trip"] = {
       dropoff_location: {
         contains: searchParams.to,
+        mode: "insensitive"
       },
     };
   }
