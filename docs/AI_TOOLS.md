@@ -28,9 +28,12 @@ This document provides an overview of all AI tools utilized in the project, in a
 **Example Prompt:**
  - How to pass an argument to docker build command ?
  - What are the necessary files need to copied for next.js project to run ?
+ - Using React in TypeScript, is there an event that triggers when a user deselects or presses enter on a form field?
+ - How can I ensure that an array in TypeScript is of a pre-defined type, such as "LngLatLike", to avoid compile errors?
 
 **Used in the following files**
  - `Dockerfile`
+ - `/uob_transport_app/app/book/page.tsx`
 
 **Used by:** Ioan Moir
 
