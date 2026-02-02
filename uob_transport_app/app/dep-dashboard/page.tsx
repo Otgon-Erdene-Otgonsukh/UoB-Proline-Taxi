@@ -134,15 +134,19 @@ export default function DepDashboard() {
   const _getBookingListData = () => {
     console.log(searchFormInput);
 
-    // fetch data with current paginationMeta and searchParams
-    getPendingBookingList(
-      paginationMeta.page,
-      paginationMeta.pageSize,
-      {
-        from: searchFormInput.from?.trim(),
-        to: searchFormInput.to?.trim(),
-        passengerName: searchFormInput.passengerName?.trim(),
-        isFlight: searchFormInput.isFlight,
+     // fetch data with current paginationMeta and searchParams
+    getPendingBookingList(paginationMeta.page, paginationMeta.pageSize, {
+      from: searchFormInput.from,
+      to: searchFormInput.to,
+      passengerName: searchFormInput.passengerName,
+      isFlight: searchFormInput.isFlight,
+    }).then((res) => {
+      if (res.status === 200) {
+        res.json().then((data) => {
+          setPendingBookings(data.pendingBookings);
+          setPendingBookingsCount(data.totalNum);
+          setIsLoading(false);
+        });
       }
     });
   };

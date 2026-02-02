@@ -44,7 +44,7 @@ export function Landing_page() {
             <Link href="/about">
               <button
                 type="button"
-                className="w-full lg:w-auto border-1 text-[#303030] font-inter font-medium rounded-md py-3 px-20 text-sm cursor-pointer hover:scale-103 transition-all duration-300 hover:bg-[#f9f7f7] whitespace-nowrap active:bg-[#efefef]"
+                className="w-full lg:w-auto border-1 border-[#2c2c2c] text-[#303030] font-inter font-medium rounded-md py-3 px-20 text-sm cursor-pointer hover:scale-103 transition-all duration-300 hover:bg-[#f9f7f7] whitespace-nowrap active:bg-[#efefef]"
               >
                 MORE INFO
               </button>
