@@ -29,7 +29,6 @@ import {
 } from "@/components/ui/map";
 import { departments } from "@/model/models";
 import { Loader2, Clock, Route } from "lucide-react";
-import { bounds } from "leaflet";
 import { LngLatLike } from "maplibre-gl";
 
 export default function BookingPage() {
@@ -421,15 +420,15 @@ export default function BookingPage() {
     if (start != null && end != null) {
       fetchRoutes(start.lat, start.lng, end.lat, end.lng);
 
-      // Find each corner of the square bounding box using min and max latitudes and longitudes.
+      // Find each corner of the square bounding box from the two points on the map.
       const swLng = Math.min(start.lng, end.lng);
       const swLat = Math.min(start.lat, end.lat);
       const neLng = Math.max(start.lng, end.lng);
       const neLat = Math.max(start.lat, end.lat);
 
-      // Cast bounds to LngLatLike type for fitBounds function.
-      const bounds: [LngLatLike, LngLatLike] = [[swLng, swLat],[neLng, neLat],];
-      mapRef.current?.fitBounds(bounds, { padding: 50 });
+      // Check bounds are LngLatLike type for fitBounds function.
+      const bounds: [LngLatLike, LngLatLike] = [[swLng, swLat],[neLng, neLat]];
+      mapRef.current?.fitBounds(bounds, { padding: 100 });
     }
   }
 
