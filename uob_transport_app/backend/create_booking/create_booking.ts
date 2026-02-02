@@ -17,7 +17,6 @@ export default async function createBooking(
     via: string,
     returnTo: string | undefined,
     passenger_num: number,
-    department: string,
     airport: string,
     flight_num: string,
 ) {
@@ -52,7 +51,6 @@ export default async function createBooking(
             email: email,
             tel_number: tel_number,
             additional_info: additional_info,
-            department: department
         }
     });
 }

@@ -38,7 +38,6 @@ export async function POST(request: Request) {
     const via: string = request_json["via"].toString();
     const returnTo: string | undefined = request_json["returnTo"] ? request_json["returnTo"].toString() : undefined;
     const passenger_num: number = request_json["passengers"];
-    const department: string = request_json["department"].toString();
     const flight_num: string = request_json["flight_num"].toString();
     const airport: string = request_json["airport"].toString();
     const returnDT: Date | undefined = request_json["return_time"] ? new Date(request_json["return_time"]) : undefined;
@@ -61,7 +60,6 @@ export async function POST(request: Request) {
       via,
       returnTo,
       passenger_num,
-      department,
       airport,
       flight_num,
     );
@@ -88,7 +86,6 @@ export async function POST(request: Request) {
         returnTo: returnTo,
         passengerName: passenger_name,
         phoneNumber: tel_number,
-        department: department,
       }),
     );
 

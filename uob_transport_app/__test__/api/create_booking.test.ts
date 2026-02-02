@@ -72,7 +72,6 @@ describe("create booking api route tests", () => {
       additional_info: "Some info",
       via: "Via location",
       passengers: 1,
-      department: "Engineering",
       airport: "LHR",
       flight_num: "BA123",
     };
@@ -102,7 +101,6 @@ describe("create booking api route tests", () => {
       jsonBody.via,
       undefined, // no returnTo
       jsonBody.passengers,
-      jsonBody.department,
       jsonBody.airport,
       jsonBody.flight_num,
     );
@@ -124,7 +122,6 @@ describe("create booking api route tests", () => {
       via: "",
       returnTo: "",
       passengers: 1,
-      department: "",
       airport: "",
       flight_num: "",
     };
