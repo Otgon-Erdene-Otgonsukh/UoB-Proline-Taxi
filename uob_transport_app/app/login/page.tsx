@@ -39,10 +39,11 @@ export default function Log_forgot() {
         email: mail,
         password: password,
       }).then(res => {
-        if (res.status !== 200) {
-          setSnackbarState({ open: true, status: 'fail' })
+        if (res.error) {
+          setWrong(true);
+          setLoadingBar(false);
         } else {
-          setSnackbarState({ open: true, status: 'success' })
+          setSnackbarState({ open: true, status: 'success' });
           router.push("/home");
         }
       })
@@ -55,6 +56,7 @@ export default function Log_forgot() {
   const [mailEmpty, setMailEmpty] = useState(false);
   const [passEmpty, setPassEmpty] = useState(false);
   const [loadingBar, setLoadingBar] = useState(false);
+  const [wrong, setWrong] = useState(false);
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
@@ -96,7 +98,7 @@ export default function Log_forgot() {
       <Paper
         elevation={3}
         sx={{
-          maxWidth: 450,
+          maxWidth: 430,
           width: "100%",
           borderRadius: 5,
           mt: 10,
@@ -144,6 +146,8 @@ export default function Log_forgot() {
             value={mail}
             onChange={(e) => {
               setMail(e.target.value);
+              setWrong(false);
+              setMailEmpty(false);
             }}
             sx={{
               "& .MuiOutlinedInput-root": {
@@ -189,6 +193,8 @@ export default function Log_forgot() {
             value={password}
             onChange={(e) => {
               setPassword(e.target.value);
+              setWrong(false);
+              setPassEmpty(false);
             }}
             sx={{
               "& .MuiOutlinedInput-root": {
@@ -234,8 +240,8 @@ export default function Log_forgot() {
               },
             }}
           />
-
-          <Box sx={{ textAlign: "left" }}>
+          {wrong && <Alert severity="error">Incorrect mail or password. Please enter the correct details or wait for your account approval.</Alert>}
+          <Box sx={{ textAlign: "left"}}>
             <Button variant="text" onClick={handleForgotClick}
               sx={{
                 fontSize: "0.875rem",

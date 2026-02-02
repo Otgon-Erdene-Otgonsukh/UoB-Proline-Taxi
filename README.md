@@ -153,6 +153,44 @@ Benefit from a streamlined booking process, clear driver communication, and stra
 
 <img src="/docs/Tech_stack.jpg" alt="tech stack diagram"/>
 
+## CI/CD Workflow Diagram
+<img src="/docs/CI_CD.png" alt="ci and cd workflow diagram"/>
+
+## User Instructions
+### Passenger / booker flow
+  1. Navigate to the register page from the login page which will be prompted when visiting the website landing page.
+  2. Enter your credentials and select "Register as normal user" card from the three account type selection.
+  3. Click register and you will see a message confirming the sign up success.
+  4. Enter your mail address and password and click login.
+  5. When successful, you will be in the home page that will contain your bookings with their corresponding information.
+  6. To make a new booking, click on the "+ New Booking" button on the top right.
+  7. Enter the required information about the passenger and the location details.
+  8. Click "Confirm booking".
+  9. You will see a confirmation message saying the booking was successful.
+  10. Navigate back to the home page by clicking on the "Go to Home" button.
+  11. In the My bookings table, you can edit, cancel and check the status of your bookings using the buttons.
+  12. An email will be sent to both the passenger and the person who booked when the booking status gets changed by the approver.
+
+### Finance staff of UOB flow
+  1. Navigate to the sign up page and enter details using an official university email.
+  2. Select "Register as Finance Staff" option.
+  3. Click register and wait for account approval by the corresponding department manager.
+  4. An email is sent when the staff registration request is responded.
+  5. When approved, enter the credentials in to the login fields.
+  6. After logging in, navigate to the "Dashboard" tab.
+  7. The table contains the bookings made under the specific department you are registered in.
+  8. The bookings can be Rejected, Approved and Viewed.
+  9. When approving, attach the PO number to the booking using the pop-up dialog window.
+
+### ProLine Staff flow
+  1. Navigate to the sign up page and enter details using the company email address.
+  2. Select "Register as Proline Staff" option.
+  3. Click register and wait for approval by the super-admin (George)
+  4. An email is sent when the registration request is responded.
+  5. The account will have certain permissions that is granted by the super-admin.
+  6. When approved, login and navigate to the dashboard page.
+  7. Depending on your account permissions, you can manage proline staff registration requests or edit bookings.
+
 ## Developer Instructions
 For development, you can get started by cloning the repository, navigating to the root directory of it in the command line, and then do the following to get it running locally:\
 \
@@ -203,4 +241,5 @@ You should be able to see the app running in your web browser by visiting http:/
 | Ioan Moir (Project Manager)  | ok24616@bristol.ac.uk |
 | Otgon-Erdene Otgonsukh       | ww23805@bristol.ac.uk |
 | Yidi Ai                      | nb23869@bristol.ac.uk |
+| Alan Yang                    | ng24695@bristol.ac.uk |
 | Erik Maltby (Client Liaison) | bg24935@bristol.ac.uk |

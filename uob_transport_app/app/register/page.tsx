@@ -13,7 +13,8 @@ import {
   CircularProgress,
   Snackbar,
   Alert,
-  AlertProps
+  AlertProps,
+  Autocomplete,
 } from "@mui/material";
 import EmailIcon from "@mui/icons-material/Email";
 import Visibility from "@mui/icons-material/Visibility";
@@ -23,18 +24,18 @@ import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import PersonSearchIcon from "@mui/icons-material/PersonSearch";
 import CheckIcon from "@mui/icons-material/Check";
 import LocalPhoneIcon from "@mui/icons-material/LocalPhone";
-import ApartmentIcon from "@mui/icons-material/Apartment";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { redirect } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { departments } from "@/model/models";
 
 export default function Register() {
-
   const session = useSession();
 
-  if(session.data) { // if user is logged in, protect this route
+  if (session.data) {
+    // if user is logged in, protect this route
     redirect("/home");
   }
 
@@ -59,9 +60,11 @@ export default function Register() {
   const [usernameEmpty, setUsernameEmpty] = useState(false);
   const [phoneNumberEmpty, setPhoneNumberEmpty] = useState(false);
   const [departmentEmpty, setDepartmentEmpty] = useState(false);
+  const [prolineMailError, setProlineMailError] = useState(false);
+  const [financeStaffMailError, setFinanceStaffMailError] = useState(false);
   const [phoneCode, setPhoneCode] = useState("+44");
   const [loadingBar, setLoadingBar] = useState(false);
-  const [snackState, setSnackState] = useState({open: false, severity: ""});
+  const [snackState, setSnackState] = useState({ open: false, severity: "" });
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -111,8 +114,20 @@ export default function Register() {
 
     let hasError = false;
 
-    if (emailRegex.test(mail) === false && mail.length !== 0) {
+    if (emailRegex.test(mail) === false && mail.length !== 0 && normalUser) {
       setEmailError(true);
+      hasError = true;
+    }
+    if (financeStaff && !mail.endsWith("@bristol.ac.uk") && mail.length !== 0) {
+      setFinanceStaffMailError(true);
+      hasError = true;
+    }
+    if (
+      proLineStaff &&
+      !mail.endsWith("@prolinetaxi.com") &&
+      mail.length !== 0
+    ) {
+      setProlineMailError(true);
       hasError = true;
     }
     if (mail.length === 0) {
@@ -143,7 +158,7 @@ export default function Register() {
       setPhoneNumberEmpty(true);
       hasError = true;
     }
-    if (department.length === 0) {
+    if (department.length === 0 && (normalUser || financeStaff)) {
       setDepartmentEmpty(true);
       hasError = true;
     }
@@ -175,12 +190,17 @@ export default function Register() {
       fetch("api/create_user", { method: "POST", body: JSON.stringify(body) })
         .then((res) => res.json())
         .then((data) => {
-          if (data.status === 200) {
-            setSnackState({open: true, severity: "success"});
-            redirect("/login");
+          if (data.status === 200 && normalUser) {
+            setSnackState({ open: true, severity: "success" });
+            setTimeout(() => {
+              // Giving time to display the success message to inform the user
+              redirect("/login");
+            }, 3000);
+          } else if (data.status === 200 && (financeStaff || proLineStaff)) {
+            redirect("/register/register-req");
           } else {
             setLoadingBar(false);
-            setSnackState({open: true, severity: "error"});
+            setSnackState({ open: true, severity: "error" });
           }
         });
     }
@@ -201,12 +221,29 @@ export default function Register() {
               width={320}
               height={150}
             ></Image>
-            <h1 className="text-white p-5 font-inter font-extralight text-center leading-relaxed text-[18px]">
-              <strong className="font-bold">Register </strong>as a regular user,
-              ProLine staff member, or university finance staff.{" "}
-              <strong className="font-bold">Choose</strong> the option that best
-              matches your intended use!
-            </h1>
+            <div className="text-white p-5 font-inter text-center leading-relaxed">
+              <h1 className="text-[21px] font-bold mb-3">
+                Account Registration Process
+              </h1>
+              <p className="text-[16px] font-light leading-relaxed">
+                <span className="block mb-2">
+                  <strong className="font-semibold">1. Choose</strong> your role
+                  below
+                </span>
+                <span className="block mb-2">
+                  <strong className="font-semibold">2. Submit</strong> your
+                  registration request
+                </span>
+                <span className="block mb-2">
+                  <strong className="font-semibold">3. Wait</strong> for admin
+                  approval
+                </span>
+                <span className="block">
+                  <strong className="font-semibold">4. Access</strong> your
+                  account once granted permission
+                </span>
+              </p>
+            </div>
           </div>
           <div
             id="right"
@@ -309,36 +346,64 @@ export default function Register() {
                     }}
                   />
                 </div>
-                <TextField
-                  fullWidth
-                  error={departmentEmpty}
-                  helperText={departmentEmpty ? "Please enter department" : ""}
-                  label="Department"
-                  id="department"
-                  type="text"
-                  data-testid="textfield"
-                  onChange={(e) => {
-                    setDepartment(e.target.value);
+                <Autocomplete
+                  disablePortal
+                  value={department}
+                  inputValue={department}
+                  onInputChange={(_, dep) => {
+                    setDepartment(dep);
                     setDepartmentEmpty(false);
                   }}
+                  disabled={proLineStaff}
+                  options={departments}
                   slotProps={{
-                    input: {
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <ApartmentIcon sx={{ color: "#111827" }} />
-                        </InputAdornment>
-                      ),
+                    paper: {
+                      sx: {
+                        border: "2px solid #2c2c2c",
+                        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                        mt: 0.5,
+                        "& .MuiAutocomplete-option": {
+                          "&:hover": {
+                            backgroundColor: "#f3f4f6",
+                          },
+                          '&[aria-selected="true"]': {
+                            backgroundColor: "#e5e7eb !important",
+                          },
+                        },
+                      },
                     },
                   }}
-                />
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Department"
+                      error={departmentEmpty}
+                      data-testid="textfield"
+                      helperText={
+                        departmentEmpty
+                          ? "Select a department"
+                          : "Proline staff, please ignore this field"
+                      }
+                    ></TextField>
+                  )}
+                ></Autocomplete>
                 <TextField
                   fullWidth
-                  error={emailError || emailEmpty}
+                  error={
+                    emailError ||
+                    emailEmpty ||
+                    prolineMailError ||
+                    financeStaffMailError
+                  }
                   helperText={
                     emailError
                       ? "Enter a valid email"
                       : emailEmpty
                       ? "Please enter an email"
+                      : prolineMailError
+                      ? "Enter a valid company email"
+                      : financeStaffMailError
+                      ? "Enter a valid university email"
                       : ""
                   }
                   label="Email"
@@ -349,6 +414,8 @@ export default function Register() {
                     setMail(e.target.value);
                     setEmailError(false);
                     setEmailEmpty(false);
+                    setFinanceStaffMailError(false);
+                    setProlineMailError(false);
                   }}
                   slotProps={{
                     input: {
@@ -545,6 +612,8 @@ export default function Register() {
                       }}
                       onClick={() => {
                         setProLineStaff(!proLineStaff);
+                        setDepartment("");
+                        setDepartmentEmpty(false);
                         setNormalUser(false);
                         setFinanceStaff(false);
                         setNoRole(false);
@@ -607,20 +676,44 @@ export default function Register() {
                     transition: "all 0.2s",
                   }}
                 >
-                  {loadingBar ? <CircularProgress data-testid="loadingBar" color="inherit" size="30px"/> : "Sign up"}
+                  {loadingBar ? (
+                    <CircularProgress color="inherit" size="30px" />
+                  ) : (
+                    "Sign up"
+                  )}
                 </Button>
-                <span id="login redirect" className="font-inter text-sm text-center">Already have an account?<Link href="/login" className="text-blue-500"> Log in.</Link></span>
+                <span
+                  id="login redirect"
+                  className="font-inter text-sm text-center"
+                >
+                  Already have an account?
+                  <Link href="/login" className="text-blue-500">
+                    {" "}
+                    Log in.
+                  </Link>
+                </span>
               </form>
             </ThemeProvider>
           </div>
         </div>
       </div>
-      <Snackbar open={snackState.open} onClose={() => {setSnackState({open: false, severity: ""})}} autoHideDuration={6000} anchorOrigin={{vertical: "top", horizontal: "center"}}>
-        <Alert severity={snackState.severity as AlertProps["severity"]} variant="filled">
-            {snackState.severity === "success" ? "Account successfully created" : "Failed to create an account"}
+      <Snackbar
+        open={snackState.open}
+        onClose={() => {
+          setSnackState({ open: false, severity: "" });
+        }}
+        autoHideDuration={6000}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          severity={snackState.severity as AlertProps["severity"]}
+          variant="filled"
+        >
+          {snackState.severity === "success"
+            ? "Account successfully created"
+            : "Failed to create an account"}
         </Alert>
       </Snackbar>
     </div>
-    
   );
 }
