@@ -401,8 +401,8 @@ export default function BookingPage() {
     return null;
   }
 
-  const [start, setStart] = useState<{ name: String; lat: number; lng: number } | null>(null);
-  const [end, setEnd] = useState<{ name: String; lat: number; lng: number } | null>(null);
+  const [start, setStart] = useState<{ name: string; lat: number; lng: number } | null>(null);
+  const [end, setEnd] = useState<{ name: string; lat: number; lng: number } | null>(null);
 
   // Update the route when start or end changes.
   useEffect(() => {
