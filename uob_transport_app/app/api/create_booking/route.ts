@@ -30,8 +30,7 @@ export async function POST(request: Request) {
     const user_id = session.user.user_id; // Use the user ID from the session.
     const pickup_loc: string = request_json["pickup_location"].toString();
     const dropoff_loc: string = request_json["dropoff_location"].toString();
-    const first_name: string = request_json["first_name"].toString();
-    const surname: string = request_json["surname"].toString();
+    const passenger_name: string = request_json["passenger_name"].toString();
     const email: string = request_json["email"].toString();
     const tel_number: string = request_json["tel_number"].toString();
     const pickup_time = new Date(request_json["pickup_time"]);
@@ -55,8 +54,7 @@ export async function POST(request: Request) {
       null,
       pickup_time,
       returnDT,
-      first_name,
-      surname,
+      passenger_name,
       email,
       tel_number,
       additional_info,
@@ -88,8 +86,7 @@ export async function POST(request: Request) {
         pickUpTime: pickup_time,
         returnTime: returnDT,
         returnTo: returnTo,
-        firstName: first_name,
-        surName: surname,
+        passengerName: passenger_name,
         phoneNumber: tel_number,
         department: department,
       }),

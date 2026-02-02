@@ -20,8 +20,7 @@ export default function BookingInfo({
   pickUpTime,
   returnTime,
   returnTo,
-  firstName,
-  surName,
+  passengerName,
   phoneNumber,
   department,
 }: {
@@ -33,8 +32,7 @@ export default function BookingInfo({
   pickUpTime: Date;
   returnTime?: Date;
   returnTo?: string;
-  firstName: string;
-  surName: string;
+  passengerName: string;
   phoneNumber: string;
   department: string;
 }) {
@@ -62,7 +60,7 @@ export default function BookingInfo({
                 Passenger Information
               </Text>
               <Text className="text-gray-700 mb-2">
-                <strong>Name:</strong> {firstName} {surName}
+                <strong>Name:</strong> {passengerName}
               </Text>
               <Text className="text-gray-700 mb-2">
                 <strong>Department:</strong> {department}

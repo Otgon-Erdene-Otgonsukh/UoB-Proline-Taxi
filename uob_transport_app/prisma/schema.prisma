@@ -31,8 +31,7 @@ model booking {
   trip_id         Int?
   booking_status  String?   @default("Pending")
   time_created    DateTime? @default(now()) @db.Timestamp(6)
-  first_name      String?
-  surname         String?
+  passenger_name  String?
   tel_number      String?
   email           String?
   additional_info String?

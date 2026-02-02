@@ -56,7 +56,7 @@ export default function BookingPage() {
     DropoffLoc: "",
     PickupDate: "",
     PickupTime: "",
-    FirstName: "",
+    passengerName: "",
     Number: "",
     Email: "",
     AdditionalInfo: "",
@@ -89,7 +89,7 @@ export default function BookingPage() {
     PickupTime: "",
     ReturnDate: "",
     ReturnTime: "",
-    FirstName: "",
+    PassengerName: "",
     Number: "",
     Email: "",
     department: "",
@@ -230,14 +230,14 @@ export default function BookingPage() {
       addFormFeedback("Number", "Please enter a valid phone number.");
     }
 
-    // First name, between 1 and 100 chars.
-    if (formData.FirstName == "") {
-      addFormFeedback("FirstName", "Please enter a First Name.");
+    // Passenger name, between 1 and 100 chars.
+    if (formData.PassengerName == "") {
+      addFormFeedback("PassengerName", "Please enter the passenger's name.");
       fail = true;
-    } else if (formData.FirstName.length > 100) {
+    } else if (formData.PassengerName.length > 100) {
       addFormFeedback(
-        "FirstName",
-        "First Name too long. Please use an abbreviation.",
+        "Passenger",
+        "Passenger Name too long. Please use an abbreviation.",
       );
       fail = true;
     }
@@ -267,7 +267,7 @@ export default function BookingPage() {
         ...(isReturnChecked
           ? { return_time: returnDateTime, returnTo: formData.ReturnTo }
           : {}),
-        first_name: formData.FirstName,
+        passenger_name: formData.PassengerName,
         email: formData.Email,
         tel_number: phoneCode + " " + formData.Number,
         additional_info: formData.AdditionalInfo,
@@ -735,42 +735,22 @@ export default function BookingPage() {
               </div>
               <div className="flex flex-col">
                 <label htmlFor="name" className="mb-1 text-sm">
-                  First name
+                  Passenger Name
                 </label>
                 <input
                   id="name"
                   type="text"
-                  className={`border-2 rounded px-3 py-2 ${formFeedback.FirstName == "" ? "" : "border-red-700"
+                  className={`border-2 rounded px-3 py-2 ${formFeedback.passengerName == "" ? "" : "border-red-700"
                     }`}
                   onChange={(e) => {
-                    setFormData({ ...formData, FirstName: e.target.value });
+                    setFormData({ ...formData, PassengerName: e.target.value });
                   }}
                 ></input>
                 <FormHelperText
                   sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
-                  className={`${formFeedback.FirstName != "" ? "" : "hidden"}`}
+                  className={`${formFeedback.passengerName != "" ? "" : "hidden"}`}
                 >
-                  {formFeedback.FirstName}
-                </FormHelperText>
-              </div>
-              <div className="flex flex-col">
-                <label htmlFor="surname" className="mb-1 text-sm">
-                  Last name
-                </label>
-                <input
-                  id="surname"
-                  type="text"
-                  className={`border-2 rounded px-3 py-2 ${formFeedback.Surname == "" ? "" : "border-red-700"
-                    }`}
-                  onChange={(e) => {
-                    setFormData({ ...formData, Surname: e.target.value });
-                  }}
-                ></input>
-                <FormHelperText
-                  sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
-                  className={`${formFeedback.Surname != "" ? "" : "hidden"}`}
-                >
-                  {formFeedback.Surname}
+                  {formFeedback.passengerName}
                 </FormHelperText>
               </div>
               <div className="flex flex-col">

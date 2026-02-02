@@ -315,7 +315,7 @@ export default function DepDashboard() {
                         </StyledTableCell>
                         <StyledTableCell>
                           <span>
-                            {row.first_name + " " + row.surname}
+                            {row.passenger_name}
                           </span>
                         </StyledTableCell>
                         <StyledTableCell>

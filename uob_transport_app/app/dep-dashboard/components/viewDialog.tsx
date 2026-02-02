@@ -59,24 +59,11 @@ export default function Page({ open, handleDialogClose, viewData }: { open: bool
           }}
         >
           <Typography gutterBottom sx={{ fontWeight: "bold" }}>
-            First name:
+            Passenger name:
           </Typography>
           <Typography gutterBottom>
-            {viewData?.first_name}
+            {viewData?.passenger_name}
           </Typography>
-        </Stack>
-        <Stack
-          direction="row"
-          sx={{
-            justifyContent: "space-between",
-            alignItems: "center",
-            width: "400px",
-          }}
-        >
-          <Typography gutterBottom sx={{ fontWeight: "bold" }}>
-            Last name:
-          </Typography>
-          <Typography gutterBottom>{viewData?.surname}</Typography>
         </Stack>
         <Stack
           direction="row"
