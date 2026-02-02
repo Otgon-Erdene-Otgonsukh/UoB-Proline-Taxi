@@ -230,7 +230,7 @@ describe("User Management Page", () => {
     expect(screen.getByText("john@test.com")).toBeInTheDocument();
     expect(screen.getByText("IT")).toBeInTheDocument();
     expect(screen.getByText("Normal User")).toBeInTheDocument();
-    expect(screen.getByText("approved")).toBeInTheDocument();
+    expect(screen.getByText("Approved")).toBeInTheDocument();
   });
 
   test("opens edit dialog when clicking Edit", async () => {
@@ -263,7 +263,7 @@ describe("User Management Page", () => {
     expect(screen.getByText("john@test.com")).toBeInTheDocument();
     expect(screen.getByText("IT")).toBeInTheDocument();
     expect(screen.getByText("Normal User")).toBeInTheDocument();
-    expect(screen.getByText("approved")).toBeInTheDocument();
+    expect(screen.getByText("Approved")).toBeInTheDocument();
   });
 
   test("opens confirm dialog when clicking Accept", async () => {

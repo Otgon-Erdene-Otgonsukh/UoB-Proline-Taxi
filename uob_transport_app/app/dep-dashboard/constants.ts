@@ -10,3 +10,11 @@ export type BookingWithTrip = booking & {
   trip: trip;
   User: User & { department: department };
 };
+
+export type BookingData = {
+  total: number,
+  pending: number,
+  approved: number,
+  rejected: number,
+  overdue: number
+}
