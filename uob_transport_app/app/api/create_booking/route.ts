@@ -100,9 +100,10 @@ export async function POST(request: Request) {
         FromEmailAddress: `UoB Taxi & Chauffeur <${process.env.SES_FROM_EMAIL!}>`,
         Destination: {
           ToAddresses:
-            userEmail.email === email
-              ? [userEmail.email]
-              : [userEmail.email, email.trim()],
+            //userEmail.email === email
+              //? [userEmail.email]
+              //: [userEmail.email, email.trim()],
+              ["janedoe@ioanm.com"]
         },
         Content: {
           Simple: {
