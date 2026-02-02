@@ -84,7 +84,6 @@ export default function AboutPage() {
             <div className="items-start mb-10">
               <Assignment
                 sx={{ fontSize: 60 }}
-                className="hover:scale-110 transition-all duration-300"
               />
               <br />
               <p className="text-lg font-bold mt-1">
@@ -95,7 +94,6 @@ export default function AboutPage() {
             <div className="items-start mb-10">
               <CheckCircle
                 sx={{ fontSize: 60 }}
-                className="hover:scale-110 transition-all duration-300"
               />
               <br />
               <p className="text-lg font-bold mt-1">2. Get approval</p>
@@ -104,7 +102,6 @@ export default function AboutPage() {
             <div className="items-start mb-10">
               <Sms
                 sx={{ fontSize: 60 }}
-                className="hover:scale-110 transition-all duration-300"
               />
               <br />
               <p className="text-lg font-bold mt-1">
@@ -115,7 +112,6 @@ export default function AboutPage() {
             <div className="items-start mb-10">
               <DirectionsCar
                 sx={{ fontSize: 60 }}
-                className="hover:scale-110 transition-all duration-300"
               />
               <br />
               <p className="text-lg font-bold mt-1">4. Off you go!</p>
