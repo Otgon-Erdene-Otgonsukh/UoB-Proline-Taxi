@@ -23,8 +23,18 @@ import {
   Select,
   MenuItem,
   InputLabel,
-  FormControl
+  FormControl,
+  Drawer,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+  ListItemIcon,
+  Divider
+
 } from "@mui/material";
+import PeopleIcon from '@mui/icons-material/People';
+import MenuIcon from '@mui/icons-material/Menu';
 import {
   KeyboardArrowLeft,
   KeyboardArrowRight,
@@ -255,13 +265,55 @@ const Page = () => {
     })
   }
 
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
+  if (event.type === 'keydown' && ((event as React.KeyboardEvent).key === 'Tab' || (event as React.KeyboardEvent).key === 'Shift')) {
+    return;
+  }
+  setIsDrawerOpen(open);
+};
+
   return (
-    <div className="flex justify-center font-inter p-4">
-      <div className="bg-white shadow-lg/20 rounded-lg p-6 md:p-8 w-full max-w-6xl my-15 mt-20">
+    <div className="flex-col font-inter">
+      <header className="w-full bg-[#2c2c2c] text-white p-3 shadow-lg items-center flex gap-4">
+        <Button 
+              onClick={toggleDrawer(true)} 
+              sx={{ color: "white", minWidth: '40px' }}
+            >
+              <MenuIcon fontSize="medium" />
+        </Button>
+        <span className="font-aleo text-2xl sm:text-3xl font-semibold">User Management</span>
+      </header>
+      <Drawer
+  anchor="left"
+  open={isDrawerOpen}
+  onClose={toggleDrawer(false)}
+>
+  <Box
+    sx={{ width: 250 }}
+    role="presentation"
+    onClick={toggleDrawer(false)}
+    onKeyDown={toggleDrawer(false)}
+  >
+    <Typography variant="h6" sx={{ p: 2, fontWeight: 'bold' }}>
+      Admin Menu
+    </Typography>
+    <Divider />
+    <List>
+      {['Users', 'Bookings', 'Admin Settings'].map((text) => (
+        <ListItem key={text} disablePadding>
+          <ListItemButton>
+            <ListItemText primary={text} />
+          </ListItemButton>
+        </ListItem>
+      ))}
+    </List>
+  </Box>
+</Drawer>
+      <div className="w-full p-4">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="font-aleo text-2xl sm:text-3xl font-semibold text-shadow-lg/20">
-            User Management
-          </h1>
+          
           <Box
             component="form"
             onSubmit={handleSubmitSearchForm}
@@ -280,7 +332,7 @@ const Page = () => {
               sx={{ minWidth: 150 }}
             />
             <FormControl sx={{ minWidth: 150 }}>
-              <InputLabel id="searchUserStatusInput">Role</InputLabel>
+              <InputLabel id="searchUserStatusInput">Account Type</InputLabel>
               <Select
                 label="UserStatus"
                 id="searchUserStatusInput"
@@ -351,10 +403,10 @@ const Page = () => {
                 <TableRow>
                   <StyledTableCell>Time Created</StyledTableCell>
                   <StyledTableCell>Name</StyledTableCell>
-                  <StyledTableCell>email</StyledTableCell>
+                  <StyledTableCell>Email</StyledTableCell>
                   <StyledTableCell>Phone Number</StyledTableCell>
                   <StyledTableCell>Department</StyledTableCell>
-                  <StyledTableCell>Role</StyledTableCell>
+                  <StyledTableCell>Account Type</StyledTableCell>
                   <StyledTableCell>User Status</StyledTableCell>
                   <StyledTableCell>Operation</StyledTableCell>
                 </TableRow>
