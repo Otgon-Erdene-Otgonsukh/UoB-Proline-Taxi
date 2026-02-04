@@ -178,28 +178,31 @@ const Page = () => {
 
   const handleSubmitSearchForm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(searchFormInput);
-    setIsLoading(true);
-    _getBookingListData();
-  };
+    setIsLoading(true)
+    _getBookingListData()
+  }
 
   const _getBookingListData = () => {
-    getUserBookingList(paginationMeta.page, paginationMeta.pageSize, {
-      ...searchFormInput,
-      bookingStatus:
-        searchFormInput.bookingStatus === "All"
-          ? ""
-          : searchFormInput.bookingStatus,
-    }).then((res) => {
-      if (res.status === 200) {
-        res.json().then((data) => {
-          setBookingListData(data.bookings);
-          setBookingListCount(data.totalNum);
-          setIsLoading(false);
-        });
-      }
-    });
-  };
+    getUserBookingList(
+      paginationMeta.page,
+      paginationMeta.pageSize,
+      {
+        pickUpTimeFrom: searchFormInput.pickUpTimeFrom?.trim(),
+        pickUpTimeTo: searchFormInput.pickUpTimeTo?.trim(),
+        from: searchFormInput.from?.toLowerCase().trim(),
+        to: searchFormInput.to?.toLowerCase().trim(),
+        bookingStatus: searchFormInput.bookingStatus === 'All' ? '' : searchFormInput.bookingStatus
+      })
+      .then((res) => {
+        if (res.status === 200) {
+          res.json().then((data) => {
+            setBookingListData(data.bookings);
+            setBookingListCount(data.totalNum);
+            setIsLoading(false);
+          });
+        }
+      });
+  }
 
   // Do nothing if we get a status. Await for this check to be carried out in useEffect.
   if (status === "loading" || status === "unauthenticated") {
