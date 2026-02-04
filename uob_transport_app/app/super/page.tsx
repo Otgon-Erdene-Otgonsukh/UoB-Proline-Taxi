@@ -30,11 +30,16 @@ import {
   ListItemButton,
   ListItemText,
   ListItemIcon,
-  Divider
-
+  Divider,
+  Tabs,
+  Tab
 } from "@mui/material";
 import PeopleIcon from '@mui/icons-material/People';
 import MenuIcon from '@mui/icons-material/Menu';
+import LocalTaxiIcon from '@mui/icons-material/LocalTaxi';
+import SettingsIcon from '@mui/icons-material/Settings';
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import GroupsIcon from '@mui/icons-material/Groups';
 import {
   KeyboardArrowLeft,
   KeyboardArrowRight,
@@ -47,6 +52,7 @@ import EditDialog from "./userManageComponents/eidtDialog";
 import { userStatusToIntMap, userStatusToStrMap, roleStrMap, roles, roleReadableStrMap } from "./constants";
 import { getDepartmentsList } from "./requests";
 import ConfirmDialog from "@/components/confirmDIalog";
+import { text } from "stream/consumers";
 
 interface TablePaginationActionsProps {
   count: number;
@@ -272,47 +278,86 @@ const Page = () => {
     return;
   }
   setIsDrawerOpen(open);
-};
+
+ 
+  };
+
+  const [tabValue, setTabValue] = useState(0);
+
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setTabValue(newValue);
+  };
+
+  function a11yProps(index: number) {
+    return {
+      id: `simple-tab-${index}`,
+      'aria-controls': `simple-tabpanel-${index}`,
+    };
+  }
 
   return (
     <div className="flex-col font-inter">
       <header className="w-full bg-[#2c2c2c] text-white p-3 shadow-lg items-center flex gap-4">
-        <Button 
-              onClick={toggleDrawer(true)} 
-              sx={{ color: "white", minWidth: '40px' }}
-            >
-              <MenuIcon fontSize="medium" />
+        <Button
+          onClick={toggleDrawer(true)}
+          sx={{ color: "white", minWidth: '40px' }}
+        >
+          <MenuIcon fontSize="medium" />
         </Button>
         <span className="font-aleo text-2xl sm:text-3xl font-semibold">User Management</span>
+          <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center' }}>
+            <Tabs 
+              value={tabValue} 
+              onChange={handleTabChange}
+              sx={{
+                '& .MuiTabs-indicator': { bgcolor: 'rgba(255,255,255, 1)' }, 
+                '& .MuiTab-root': { color: 'rgba(255,255,255,0.75) !important' },
+                '& .Mui-selected': { color: 'rgba(255,255,255,1) !important' },
+              }}
+            >
+              <Tab label="Users" {...a11yProps(0)} />
+              <Tab label="Bookings" {...a11yProps(1)} />
+              <Tab label="Departments" {...a11yProps(2)} />
+            </Tabs>
+          </Box>
       </header>
       <Drawer
-  anchor="left"
-  open={isDrawerOpen}
-  onClose={toggleDrawer(false)}
->
-  <Box
-    sx={{ width: 250 }}
-    role="presentation"
-    onClick={toggleDrawer(false)}
-    onKeyDown={toggleDrawer(false)}
-  >
-    <Typography variant="h6" sx={{ p: 2, fontWeight: 'bold' }}>
-      Admin Menu
-    </Typography>
-    <Divider />
-    <List>
-      {['Users', 'Bookings', 'Admin Settings'].map((text) => (
-        <ListItem key={text} disablePadding>
-          <ListItemButton>
-            <ListItemText primary={text} />
-          </ListItemButton>
-        </ListItem>
-      ))}
-    </List>
-  </Box>
-</Drawer>
+        anchor="left"
+        open={isDrawerOpen}
+        onClose={toggleDrawer(false)}
+      >
+        <Box
+          sx={{ width: 250 }}
+          role="presentation"
+          onClick={toggleDrawer(false)}
+          onKeyDown={toggleDrawer(false)}
+        >
+          <Typography variant="h6" sx={{ p: 2, fontWeight: 'bold' }}>
+            Admin Menu
+          </Typography>
+          <Divider />
+          <List>
+            {[
+              { text: 'Users', icon: <PeopleIcon /> },
+              { text: 'Departments', icon: <GroupsIcon /> },
+              { text: 'Bookings', icon: <LocalTaxiIcon /> },
+              { text: 'Export Bookings', icon: <FileDownloadIcon /> },
+              { text: 'Admin Settings', icon: <SettingsIcon /> },
+            ].map((item) => (
+              <ListItem key={item.text} disablePadding>
+                <ListItemButton>
+                  <ListItemIcon>
+                    {item.icon}
+                  </ListItemIcon>
+                  <ListItemText primary={item.text} />
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
+        </Box>
+      </Drawer>
       <div className="w-full p-4">
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-center items-center mb-4">
           
           <Box
             component="form"
