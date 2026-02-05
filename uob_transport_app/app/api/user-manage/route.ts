@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
   const requestJson = await request.json()
   const userData = requestJson.userData
 
-  const updateResult = await updateUserAccess(session.user.user_id, {
+  const updateResult = await updateUserAccess(userData.user_id, {
     name: userData.name!,
     email: userData.email,
     phone_number: userData.phone_number!,

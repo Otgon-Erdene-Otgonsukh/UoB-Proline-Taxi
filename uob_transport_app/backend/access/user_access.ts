@@ -86,7 +86,7 @@ export const getUserCountAccess = async (name?: string, role?: string, userStatu
 export const updateUserAccess = async (userId: number, updateData: { [key: string]: string | number | object }): Promise<User | null> => {
   return prisma.user.update({
     where: {
-      email: updateData.email as string | undefined
+      user_id: userId
     },
     data: {
       ...updateData,

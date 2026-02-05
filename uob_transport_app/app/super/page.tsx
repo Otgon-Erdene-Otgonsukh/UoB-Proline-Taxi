@@ -393,7 +393,7 @@ const Page = () => {
                       <StyledTableCell>{row.name + ' ' + row.surname}</StyledTableCell>
                       <StyledTableCell>{row.email}</StyledTableCell>
                       <StyledTableCell>{row.phone_number}</StyledTableCell>
-                      {searchFormInput.role !== roleStrMap.normalUser ? (
+                      {searchFormInput.role !== roleStrMap.normalUser && searchFormInput.role !== roleStrMap.financeStaff ? (
                         <StyledTableCell>N/A</StyledTableCell>
                       ) : (
                         <StyledTableCell>{row.department?.dep_name}</StyledTableCell>
