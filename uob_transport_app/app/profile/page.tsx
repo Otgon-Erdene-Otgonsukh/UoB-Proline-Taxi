@@ -194,7 +194,7 @@ export default function Profile() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {nameEditOn ? (
               <TextField
-                label="First Name"
+                label="Name"
                 color="secondary"
                 sx={{
                   "& .MuiInputBase-root": {
@@ -207,7 +207,7 @@ export default function Profile() {
                   setEditData({ ...editData, name: e.target.value });
                   setChangeError({ ...changeError, name: false });
                 }}
-                helperText={changeError.name && "Enter a valid first name"}
+                helperText={changeError.name && "Enter a valid name"}
                 error={changeError.name}
               ></TextField>
             ) : (
@@ -220,7 +220,7 @@ export default function Profile() {
               >
                 <div>
                   <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
-                    First Name
+                    Name
                   </p>
                   <p className="text-gray-800 font-medium">
                     {session?.user.name}

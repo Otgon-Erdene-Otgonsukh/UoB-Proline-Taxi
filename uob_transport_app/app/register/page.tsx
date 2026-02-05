@@ -250,8 +250,8 @@ export default function Register() {
                   <TextField
                     fullWidth
                     error={firstNameEmpty}
-                    helperText={firstNameEmpty ? "Please enter first name" : ""}
-                    label="First Name"
+                    helperText={firstNameEmpty ? "Please enter name" : ""}
+                    label="Name"
                     id="firstName"
                     type="text"
                     data-testid="textfield"
