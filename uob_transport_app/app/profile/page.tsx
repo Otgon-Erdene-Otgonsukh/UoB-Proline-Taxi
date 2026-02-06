@@ -191,7 +191,7 @@ export default function Profile() {
           <h2 className="text-lg font-semibold text-gray-700 mb-4">
             Personal Information
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
             {nameEditOn ? (
               <TextField
                 label="Name"
@@ -220,7 +220,7 @@ export default function Profile() {
               >
                 <div>
                   <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
-                    Name
+                    Full Name
                   </p>
                   <p className="text-gray-800 font-medium">
                     {session?.user.name}
@@ -251,7 +251,7 @@ export default function Profile() {
           <h2 className="text-lg font-semibold text-gray-700 mb-4">
             Contact Information
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {emailEditOn ? (
               <TextField
                 label="Email"
