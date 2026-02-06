@@ -67,7 +67,7 @@ const mockSession: Session = {
     user_id: 6,
     phone_number: "0123456789",
     department: null,
-    account_type: "superUser",
+    account_type: "super_admin",
   },
   expires: "2099-01-01",
 };
