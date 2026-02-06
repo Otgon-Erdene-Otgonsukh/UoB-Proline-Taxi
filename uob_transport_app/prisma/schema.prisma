@@ -18,7 +18,7 @@ model User {
   time_created DateTime      @default(now()) @db.Timestamp(6)
   role         String        @db.VarChar(255)
   user_status  Int           @default(0)
-  department   department   @relation(fields: [dep_id], references: [dep_id], onUpdate: NoAction)
+  department   department?   @relation(fields: [dep_id], references: [dep_id], onUpdate: NoAction)
   booking      booking[]
 
   @@index([dep_id], map: "idx_user_dep_id")

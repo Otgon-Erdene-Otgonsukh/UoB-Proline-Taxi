@@ -49,7 +49,7 @@ export async function POST(req: Request) {
       // for proline staff reg-requests, no department is created, only user entry
       await prisma.user.create({
         data: {
-          name: firstName + " " + lastName,
+          full_name: firstName + " " + lastName,
           phone_number: phoneNumber,
           role: role,
           email: mail,
@@ -65,7 +65,7 @@ export async function POST(req: Request) {
       await prisma.user.create({
         data: {
           dep_id: newDepartment.dep_id,
-          name: firstName + " " + lastName,
+          full_name: firstName + " " + lastName,
           phone_number: phoneNumber,
           role: role,
           user_status: role === "normal_user" ? 1 : 0,
@@ -77,7 +77,7 @@ export async function POST(req: Request) {
       await prisma.user.create({
         data: {
           dep_id: department.dep_id,
-          name: firstName + " " + lastName,
+          full_name: firstName + " " + lastName,
           phone_number: phoneNumber,
           role: role,
           user_status: role === "normal_user" ? 1 : 0,

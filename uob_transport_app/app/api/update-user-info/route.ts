@@ -23,7 +23,6 @@ export async function POST(req: Request) {
     await update_user(
       user_id,
       newName,
-      newLastName,
       newEmail,
       newPhoneNumber,
       newDepartment,

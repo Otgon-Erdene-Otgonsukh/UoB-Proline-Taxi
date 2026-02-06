@@ -5,7 +5,6 @@ const prisma = new PrismaClient();
 export default async function updateUserInfo(
   user_id: number,
   newName: string | undefined,
-  newLastName: string | undefined,
   newEmail: string | undefined,
   newPhoneNumber: string | undefined,
   newDepartment: string | undefined
