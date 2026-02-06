@@ -54,6 +54,8 @@ export default function DepDashboard() {
   const [snackBar, setSnackBar] = useState(false);
   const [bookingData, setBookingData] = useState<BookingData | null>(null);
   const [cardLoading, setCardLoading] = useState(true);
+  const [rejectOpen, setRejectOpen] = useState(false);
+  const [rejectId, setRejectId] = useState(-1);
   const [totalApplied, setTotalApplied] = useState(false);
   const [statusApplied, setStatusApplied] = useState(false);
   const [overdueApplied, setOverdueApplied] = useState(false);
