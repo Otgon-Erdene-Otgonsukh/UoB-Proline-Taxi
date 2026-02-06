@@ -7,6 +7,7 @@ import NumbersIcon from "@mui/icons-material/Numbers";
 import ReceiptIcon from "@mui/icons-material/Receipt";
 import InfoIcon from "@mui/icons-material/Info";
 import HailIcon from "@mui/icons-material/Hail";
+import CancelIcon from "@mui/icons-material/Cancel";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import { motion } from "framer-motion";
 import {
@@ -51,7 +52,14 @@ export default function DepDashboard() {
   const [snackBar, setSnackBar] = useState(false);
   const [bookingData, setBookingData] = useState<BookingData | null>(null);
   const [cardLoading, setCardLoading] = useState(true);
-
+  const [totalApplied, setTotalApplied] = useState(false);
+  const [statusApplied, setStatusApplied] = useState(false);
+  const [overdueApplied, setOverdueApplied] = useState(false);
+  const [hovered, setHovered] = useState({
+    total: false,
+    status: false,
+    overdue: false,
+  });
   const [isLoading, setIsLoading] = useState(true);
 
   // Get NextAuth Session.
@@ -131,9 +139,18 @@ export default function DepDashboard() {
     setPaginationMeta({
       page: 0,
       pageSize: paginationMeta.pageSize,
-    })
+    });
     _getBookingListData(0, paginationMeta.pageSize);
   };
+
+  useEffect(() => {
+    setIsLoading(true);
+    setPaginationMeta({
+      page: 0,
+      pageSize: paginationMeta.pageSize,
+    });
+    _getBookingListData(0, paginationMeta.pageSize);
+  }, [totalApplied, statusApplied, overdueApplied])
 
   const _getBookingListData = (page: number, pageSize: number) => {
     // fetch data with current paginationMeta and searchParams
@@ -142,6 +159,9 @@ export default function DepDashboard() {
       to: searchFormInput.to,
       passengerName: searchFormInput.passengerName,
       isFlight: searchFormInput.isFlight,
+      total: totalApplied,
+      status: statusApplied,
+      overdue: overdueApplied,
     }).then((res) => {
       if (res.status === 200) {
         res.json().then((data) => {
@@ -183,10 +203,10 @@ export default function DepDashboard() {
           prev.map((b) =>
             b.booking_id === pendingBookingId
               ? {
-                ...b,
-                booking_status: "Approved",
-                trip: { ...b.trip, PO: poNumber },
-              }
+                  ...b,
+                  booking_status: "Approved",
+                  trip: { ...b.trip, PO: poNumber },
+                }
               : b,
           ),
         );
@@ -225,114 +245,162 @@ export default function DepDashboard() {
 
   return (
     <div className="flex flex-col min-h-screen items-center pt-15 p-4">
-      <div className="flex gap-20 mb-10">
-        <motion.div
-          className="flex bg-white rounded-lg overflow-hidden drop-shadow-blue-600 drop-shadow-lg/30 cursor-pointer border-r-4 border-r-blue-500"
-          initial={{ opacity: 0, y: 10, scale: 0.98 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 1, ease: "easeOut", delay: 0 }}
-          whileHover={{
-            y: -4,
-            transition: { duration: 0.12, ease: "easeOut" },
-          }}
-        >
-          <div className="bg-gradient-to-br from-blue-300 via-blue-500 to-blue-700 rounded-lg p-2">
-            <HailIcon sx={{ color: "white", fontSize: 80 }} />
-          </div>
+      <div className="flex gap-20 mb-5">
+        <div className="flex flex-col gap-3 items-center">
           <motion.div
-            className="flex flex-col items-end px-5 py-3 justify-center"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: "easeOut", delay: 0.08 }}
+            className="flex bg-white rounded-lg overflow-hidden drop-shadow-blue-600 drop-shadow-lg/30 cursor-pointer border-r-4 border-r-blue-500"
+            initial={{ opacity: 0, y: 10, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 1, ease: "easeOut", delay: 0 }}
+            whileHover={{
+              y: -4,
+              transition: { duration: 0.12, ease: "easeOut" },
+            }}
+            onMouseEnter={() => setHovered({ ...hovered, total: true })}
+            onMouseLeave={() => setHovered({ ...hovered, total: false })}
+            onClick={() => {setTotalApplied((prev) => !prev); setStatusApplied(false); setOverdueApplied(false)}}
           >
-            {cardLoading ? (
-              <CircularProgress color="inherit" size={30} />
-            ) : (
-              <>
-                <h1 className="text-3xl font-bold text-blue-600">
-                  {bookingData?.total && bookingData.total}
-                </h1>
-                <p className="text-gray-600">Total Bookings</p>
-              </>
-            )}
+            <div className="bg-gradient-to-br from-blue-300 via-blue-500 to-blue-700 rounded-lg p-2">
+              <HailIcon sx={{ color: "white", fontSize: 80 }} />
+            </div>
+            <motion.div
+              className="flex flex-col items-end px-5 py-3 justify-center"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, ease: "easeOut", delay: 0.08 }}
+            >
+              {cardLoading ? (
+                <CircularProgress color="inherit" size={30} />
+              ) : (
+                <>
+                  <h1 className="text-3xl font-bold text-blue-600">
+                    {bookingData?.total && bookingData.total}
+                  </h1>
+                  <p className="text-gray-600">Total Bookings</p>
+                </>
+              )}
+            </motion.div>
           </motion.div>
-        </motion.div>
-        <motion.div
-          className="flex bg-white rounded-lg overflow-hidden drop-shadow-yellow-600 drop-shadow-lg/30 cursor-pointer border-r-4 border-r-yellow-500"
-          initial={{ opacity: 0, y: 10, scale: 0.98 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 1, ease: "easeOut", delay: 0.24 }}
-          whileHover={{
-            y: -4,
-            transition: { duration: 0.12, ease: "easeOut" },
-          }}
-        >
-          <div className="bg-gradient-to-br from-yellow-400 via-yellow-600 to-yellow-700 rounded-lg p-2 flex justify-center items-center">
-            <InfoIcon sx={{ color: "white", fontSize: 70 }} />
-          </div>
+          <p
+            className={`text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded mt-2 border border-blue-200 transition-opacity ease-in-out duration-200 ${hovered.total || totalApplied ? "opacity-100" : "opacity-0"}`}
+          >
+            {totalApplied ? (
+              <Button sx={{ fontSize: 12, fontWeight: "bold", maxHeight: 20, textTransform: "none" }} onClick={() => setTotalApplied(false)}>
+                <CancelIcon sx={{ fontSize: 17, mr: 1 }} /> Clear filter
+              </Button>
+            ) : (
+              "🔍 Click to filter"
+            )}
+          </p>
+        </div>
+        <div className="flex flex-col gap-3 items-center">
           <motion.div
-            className="flex flex-col items-end pl-8 pr-5 py-1 justify-center text-gray-600 text-[15px]"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: "easeOut", delay: 0.32 }}
+            className="flex bg-white rounded-lg overflow-hidden drop-shadow-yellow-600 drop-shadow-lg/30 cursor-pointer border-r-4 border-r-yellow-500"
+            initial={{ opacity: 0, y: 10, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 1, ease: "easeOut", delay: 0.24 }}
+            whileHover={{
+              y: -4,
+              transition: { duration: 0.12, ease: "easeOut" },
+            }}
+            onMouseEnter={() => setHovered({ ...hovered, status: true })}
+            onMouseLeave={() => setHovered({ ...hovered, status: false })}
+            onClick={() => {setStatusApplied((prev) => !prev); setTotalApplied(false); setOverdueApplied(false)}}
           >
-            {cardLoading ? (
-              <CircularProgress color="inherit" size={30} />
-            ) : (
-              <>
-                <div>
-                  Pending:{" "}
-                  <span className="text-yellow-500 font-bold">
-                    {bookingData?.pending && bookingData.pending}
-                  </span>
-                </div>
-                <div>
-                  Approved:{" "}
-                  <span className="text-green-500 font-bold">
-                    {bookingData?.approved && bookingData.approved}
-                  </span>
-                </div>
-                <div>
-                  Rejected:{" "}
-                  <span className="text-red-500 font-bold">
-                    {bookingData?.rejected && bookingData.rejected}
-                  </span>
-                </div>
-              </>
-            )}
+            <div className="bg-gradient-to-br from-yellow-400 via-yellow-600 to-yellow-700 rounded-lg p-2 py-[13px] flex justify-center items-center">
+              <InfoIcon sx={{ color: "white", fontSize: 70 }} />
+            </div>
+            <motion.div
+              className="flex flex-col items-end pl-8 pr-5 py-1 justify-center text-gray-600 text-[15px]"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, ease: "easeOut", delay: 0.32 }}
+            >
+              {cardLoading ? (
+                <CircularProgress color="inherit" size={30} />
+              ) : (
+                <>
+                  <div>
+                    Pending:{" "}
+                    <span className="text-yellow-500 font-bold">
+                      {bookingData?.pending && bookingData.pending}
+                    </span>
+                  </div>
+                  <div>
+                    Approved:{" "}
+                    <span className="text-green-500 font-bold">
+                      {bookingData?.approved && bookingData.approved}
+                    </span>
+                  </div>
+                  <div>
+                    Rejected:{" "}
+                    <span className="text-red-500 font-bold">
+                      {bookingData?.rejected && bookingData.rejected}
+                    </span>
+                  </div>
+                </>
+              )}
+            </motion.div>
           </motion.div>
-        </motion.div>
-        <motion.div
-          className="flex bg-white rounded-lg overflow-hidden drop-shadow-red-600 drop-shadow-lg/30 cursor-pointer border-r-4 border-r-red-500"
-          initial={{ opacity: 0, y: 10, scale: 0.98 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 1, ease: "easeOut", delay: 0.48 }}
-          whileHover={{
-            y: -4,
-            transition: { duration: 0.12, ease: "easeOut" },
-          }}
-        >
-          <div className="bg-gradient-to-br from-red-300 via-red-500 to-red-700 rounded-lg p-2 flex justify-center items-center">
-            <AccessTimeIcon sx={{ color: "white", fontSize: 70 }} />
-          </div>
+          <p
+            className={`text-xs font-semibold text-yellow-700 bg-yellow-50 px-2 py-1 rounded mt-2 border border-yellow-300 transition-opacity ease-in-out duration-200 ${hovered.status || statusApplied ? "opacity-100" : "opacity-0"}`}
+          >
+            {statusApplied ? (
+              <Button sx={{ fontSize: 12, fontWeight: "bold", maxHeight: 20, textTransform: "none", color: "#b7410e" }} onClick={() => setStatusApplied(false)}>
+                <CancelIcon sx={{ fontSize: 17, mr: 1 }} /> Clear filter
+              </Button>
+            ) : (
+              "🔍 Click to filter"
+            )}
+          </p>
+        </div>
+        <div className="flex flex-col gap-3 items-center">
           <motion.div
-            className="flex flex-col items-end px-5 py-3 justify-center"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: "easeOut", delay: 0.56 }}
+            className="flex bg-white rounded-lg overflow-hidden drop-shadow-red-600 drop-shadow-lg/30 cursor-pointer border-r-4 border-r-red-500"
+            initial={{ opacity: 0, y: 10, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 1, ease: "easeOut", delay: 0.48 }}
+            whileHover={{
+              y: -4,
+              transition: { duration: 0.12, ease: "easeOut" },
+            }}
+            onMouseEnter={() => setHovered({ ...hovered, overdue: true })}
+            onMouseLeave={() => setHovered({ ...hovered, overdue: false })}
+            onClick={() => {setOverdueApplied((prev) => !prev); setTotalApplied(false); setStatusApplied(false)}}
           >
-            {cardLoading ? (
-              <CircularProgress color="inherit" size={30} />
-            ) : (
-              <>
-                <h1 className="text-3xl font-bold text-red-600">
-                  {bookingData?.overdue && bookingData.overdue}
-                </h1>
-                <p className="text-gray-600 text-[15px]">Overdue Bookings</p>
-              </>
-            )}
+            <div className="bg-gradient-to-br from-red-300 via-red-500 to-red-700 rounded-lg p-2 py-[13px] flex justify-center items-center">
+              <AccessTimeIcon sx={{ color: "white", fontSize: 70 }} />
+            </div>
+            <motion.div
+              className="flex flex-col items-end px-5 py-3 justify-center"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, ease: "easeOut", delay: 0.56 }}
+            >
+              {cardLoading ? (
+                <CircularProgress color="inherit" size={30} />
+              ) : (
+                <>
+                  <h1 className="text-3xl font-bold text-red-600">
+                    {bookingData?.overdue && bookingData.overdue}
+                  </h1>
+                  <p className="text-gray-600 text-[15px]">Overdue Bookings</p>
+                </>
+              )}
+            </motion.div>
           </motion.div>
-        </motion.div>
+          <p
+            className={`text-xs font-semibold text-red-600 bg-red-50 px-2 py-1 rounded mt-2 border border-red-200 transition-opacity ease-in-out duration-200 ${hovered.overdue || overdueApplied ? "opacity-100" : "opacity-0"}`}
+          >
+            {overdueApplied ? (
+              <Button sx={{ fontSize: 12, fontWeight: "bold", maxHeight: 20, textTransform: "none", color: "red" }} onClick={() => setOverdueApplied(false)}>
+                <CancelIcon sx={{ fontSize: 17, mr: 1 }} /> Clear filter
+              </Button>
+            ) : (
+              "🔍 Click to filter"
+            )}
+          </p>
+        </div>
       </div>
       <motion.div
         className="bg-white shadow-lg rounded-lg p-6 md:p-8 w-full max-w-6xl mb-8 h-fit"
@@ -399,7 +467,7 @@ export default function DepDashboard() {
               size="small"
               sx={{ minWidth: 150 }}
             />
-            <CustomizedButton title="Search" type="warning" click={() => { }} />
+            <CustomizedButton title="Search" type="warning" click={() => {}} />
           </Box>
         </div>
         {isLoading ? (
