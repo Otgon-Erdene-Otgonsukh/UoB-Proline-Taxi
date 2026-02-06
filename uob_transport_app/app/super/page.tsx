@@ -40,7 +40,6 @@ import EditDialog from "./userManageComponents/eidtDialog";
 import { userStatusToIntMap, userStatusToStrMap, roleStrMap, roles, roleReadableStrMap } from "./constants";
 import { getDepartmentsList } from "./requests";
 import ConfirmDialog from "@/components/confirmDIalog";
-import page from "../page";
 
 interface TablePaginationActionsProps {
   count: number;
@@ -167,7 +166,7 @@ const Page = () => {
       page: newPage
     })
     setIsLoading(true);
-    _getData(newPage, paginationMeta.pageSize)
+    _rerenderTable()
   };
 
   const handleChangePageSize = (
@@ -178,7 +177,7 @@ const Page = () => {
       pageSize: parseInt(event.target.value, 10),
     });
     setIsLoading(true)
-    _getData(0, parseInt(event.target.value, 10))
+    _rerenderTable()
   };
 
   // search form
@@ -195,11 +194,7 @@ const Page = () => {
   const handleSubmitSearchForm = (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-    setPaginationMeta({
-      page: 0,
-      pageSize: paginationMeta.pageSize,
-    })
-    _getData(0, paginationMeta.pageSize)
+    _rerenderTable()
   }
 
   const [userDetail, setUserDetail] = useState<UserRecord>()
@@ -263,12 +258,12 @@ const Page = () => {
     })
   };
 
-  const _getData = (page: number, pageSize: number) => {
+  const _rerenderTable = () => {
     getUsersAsAdmin({
       name: undefined,
       ...searchFormInput,
-      page,
-      pageSize
+      page: paginationMeta.page,
+      pageSize: paginationMeta.pageSize
     }).then(res => {
       if (res.status === 200) {
         res.json().then(data => {
