@@ -74,7 +74,7 @@ const mockUsers = [
   {
     user_id: 1,
     time_created: new Date().toISOString(),
-    name: "John",
+    name: "John Doe",
     email: "john@test.com",
     phone_number: "12345678",
     department: { dep_name: "IT" },
