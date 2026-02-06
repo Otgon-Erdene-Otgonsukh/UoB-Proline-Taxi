@@ -28,7 +28,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         // Server side validation.
         if (email.length < 1 || password.length < 1) {
           throw new Error("Email or password too short.");
-        } else if (email.length > 32 || password.length > 64) {
+        } else if (email.length > 64 || password.length > 64) {
           throw new Error("Email or password too long.");
         }
 

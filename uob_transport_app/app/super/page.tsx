@@ -373,7 +373,11 @@ const Page = () => {
                       <StyledTableCell>{row.name}</StyledTableCell>
                       <StyledTableCell>{row.email}</StyledTableCell>
                       <StyledTableCell>{row.phone_number}</StyledTableCell>
-                      <StyledTableCell>{row.department.dep_name}</StyledTableCell>
+                      {searchFormInput.role !== roleStrMap.normalUser ? (
+                        <StyledTableCell>N/A</StyledTableCell>
+                      ) : (
+                        <StyledTableCell>{row.department?.dep_name}</StyledTableCell>
+                      )}
                       <StyledTableCell>{roleReadableStrMap[row.role]}</StyledTableCell>
                       <StyledTableCell>
                         <span
@@ -393,7 +397,7 @@ const Page = () => {
                         <div className="flex gap-2 justify-center">
                           <CustomizedButton
                             click={() => handleViewDialogOpen(row)}
-                            type="primary"
+                            type="warning"
                             title="View"
                           />
                           {/* super admin can edit user under any circumstances */}
@@ -402,6 +406,7 @@ const Page = () => {
                             type="warning"
                             title="Edit"
                           />
+                          {/* Accept and Reject button occurs only when user is pending */}
                           {row.user_status === userStatusToIntMap.pending && (
                             <CustomizedButton
                               click={() => { setConfirmAcceptDialogOpen(true); setUserDetail(row); }}

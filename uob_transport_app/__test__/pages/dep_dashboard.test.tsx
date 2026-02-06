@@ -16,6 +16,8 @@ jest.mock("next/navigation", () => ({
   }),
 }));
 
+global.fetch = jest.fn()
+
 jest.mock("@/app/dep-dashboard/requests", () => ({
   getPendingBookingList: jest.fn().mockResolvedValue({
     status: 200,
@@ -54,6 +56,9 @@ jest.mock("@/app/dep-dashboard/requests", () => ({
 
 describe("dashboard page renders correctly", () => {
   test("fetched booking is displayed", async () => {
+    (global.fetch as jest.Mock).mockResolvedValue({
+      json: jest.fn()
+    })
 
     render(<Dashboard />);
 
