@@ -389,12 +389,13 @@ export default function BookingPage() {
   }
 
   // Use Nominatim to return latitude and longitude from address.
-  async function getLatLon(address: string): Promise<{ lat: string; lon: string } | null> {
+  async function getLatLon(address: string): Promise<{ lat: string; lon: string; name: string } | null> {
+    address = address.replace("UK", "").replace("united kingdom", "").trim() + ", United Kingdom"; // Specify UK to improve accuracy
     const result = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`);
     if (result.ok) {
       const data = await result.json();
       if (data && data.length > 0) {
-        return { lat: data[0].lat, lon: data[0].lon };
+        return { lat: data[0].lat, lon: data[0].lon, name: data[0].name };
       }
     };
     return null;
@@ -637,7 +638,8 @@ export default function BookingPage() {
                     onBlur={async (e) => {
                       const latlon = await getLatLon(e.target.value)
                       if (latlon != null) {
-                        setStart({ name: e.target.value, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) });
+                        setStart({ name: latlon.name, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) });
+                        e.target.value = latlon.name;
                       }
                     }}
                   ></input>
@@ -749,7 +751,8 @@ export default function BookingPage() {
                   onBlur={async (e) => {
                       const latlon = await getLatLon(e.target.value)
                       if (latlon != null) {
-                        setEnd({ name: e.target.value, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) });
+                        setEnd({ name: latlon.name, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) });
+                        e.target.value = latlon.name;
                       }
                     }}
                   className={`border-2 rounded px-3 py-2 ${
