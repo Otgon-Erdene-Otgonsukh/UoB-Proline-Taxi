@@ -154,7 +154,7 @@ export default function DepDashboard() {
       pageSize: paginationMeta.pageSize,
     });
     _getBookingListData(0, paginationMeta.pageSize);
-  }, [totalApplied, statusApplied, overdueApplied]);
+  }, [totalApplied, statusApplied, overdueApplied, searchFormInput.isFlight]);
 
   const _getBookingListData = (page: number, pageSize: number) => {
     // fetch data with current paginationMeta and searchParams
@@ -520,7 +520,9 @@ export default function DepDashboard() {
                 ? "text-green-600"
                 : overdueApplied
                   ? "text-red-600"
-                  : "text-yellow-600"
+                  : searchFormInput.isFlight
+                    ? "text-cyan-700"
+                    : "text-yellow-600"
           }`}
         >
           {totalApplied
@@ -529,7 +531,9 @@ export default function DepDashboard() {
               ? "All Bookings with Statuses"
               : overdueApplied
                 ? "Overdue Bookings"
-                : "Pending Bookings"}
+                : searchFormInput.isFlight
+                  ? "Flight Bookings ✈"
+                  : "Pending Bookings"}
         </p>
         {isLoading ? (
           <Typography
