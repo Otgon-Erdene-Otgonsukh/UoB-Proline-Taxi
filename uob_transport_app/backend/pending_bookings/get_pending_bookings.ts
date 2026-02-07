@@ -6,6 +6,7 @@ export async function getPendingBookings(page: number, pageSize: number, searchP
   const query: { [key: string]: string | object } = {};
   if (searchParams.from !== undefined) {
     query["trip"] = {
+      ...query.trip as object,
       pickup_location: {
         contains: searchParams.from,
         mode: "insensitive"
@@ -14,14 +15,17 @@ export async function getPendingBookings(page: number, pageSize: number, searchP
   }
   if (searchParams.to !== undefined) {
     query["trip"] = {
+      ...query.trip as object,
       dropoff_location: {
-        contains: searchParams.to
+        contains: searchParams.to,
+        mode: "insensitive"
       }
     }
   }
 
   if (searchParams.overdue) {
     query['trip'] = {
+      ...query.trip as object,
       pickup_time: {
         lt: new Date()
       }
@@ -29,10 +33,9 @@ export async function getPendingBookings(page: number, pageSize: number, searchP
   }
   if (searchParams.passengerName !== undefined) {
     // Here we assume passengerName refers to the first name of the user, ignore the last name for simplicity
-    query['firstName'] = {
-      name: {
-        contains: searchParams.passengerName
-      }
+    query['first_name'] = {
+        contains: searchParams.passengerName,
+        mode: "insensitive"
     }
   }
   if (searchParams.isFlight) {
@@ -96,22 +99,6 @@ export async function getPendingBookings(page: number, pageSize: number, searchP
     return prisma.booking.findMany({
     where: {
       booking_status: "Pending",
-      ...(searchParams.passengerName && {
-        OR: [
-          {
-            first_name: {
-              contains: searchParams.passengerName,
-              mode: "insensitive",
-            },
-          },
-          {
-            surname: {
-              contains: searchParams.passengerName,
-              mode: "insensitive",
-            },
-          },
-        ],
-      }),
       ...query,
     },
     orderBy: {
@@ -140,59 +127,41 @@ export async function getPendingBookingsCount(searchParams: { from?: string, to?
     query["trip"] = {
       pickup_location: {
         contains: searchParams.from,
+        mode: "insensitive"
       },
     };
   }
   if (searchParams.to !== undefined) {
     query["trip"] = {
+      ...query.trip as object,
       dropoff_location: {
         contains: searchParams.to,
+        mode: "insensitive"
       },
     };
   }
   if (searchParams.passengerName !== undefined) {
     // Here we assume passengerName refers to the first name of the user, ignore the last name for simplicity
-    query['firstName'] = {
-      name: {
-        contains: searchParams.passengerName
-      }
+    query['first_name'] = {
+        contains: searchParams.passengerName,
+        mode: "insensitive"
     }
   }
    if (searchParams.overdue) {
     query['trip'] = {
+      ...query.trip as object,
       pickup_time: {
         lt: new Date()
       }
     }
   }
-  if (searchParams.passengerName !== undefined) {
-    // Here we assume passengerName refers to the first name of the user, ignore the last name for simplicity
-    query["first_name"] = {
-      contains: searchParams.passengerName,
-      mode: "insensitive",
-    };
-    query["surname"] = {
-      contains: searchParams.passengerName,
-      mode: "insensitive",
-    };
-  }
    if (searchParams.overdue) {
     query['trip'] = {
+      ...query.trip as object,
       pickup_time: {
         lt: new Date()
       }
     }
-  }
-  if (searchParams.passengerName !== undefined) {
-    // Here we assume passengerName refers to the first name of the user, ignore the last name for simplicity
-    query["first_name"] = {
-      contains: searchParams.passengerName,
-      mode: "insensitive",
-    };
-    query["surname"] = {
-      contains: searchParams.passengerName,
-      mode: "insensitive",
-    };
   }
   if (searchParams.isFlight) {
     query['trip'] = {
@@ -224,22 +193,6 @@ export async function getPendingBookingsCount(searchParams: { from?: string, to?
     return prisma.booking.count({
     where: {
       booking_status: "Pending",
-      ...(searchParams.passengerName && {
-        OR: [
-          {
-            first_name: {
-              contains: searchParams.passengerName,
-              mode: "insensitive",
-            },
-          },
-          {
-            surname: {
-              contains: searchParams.passengerName,
-              mode: "insensitive",
-            },
-          },
-        ],
-      }),
       ...query,
     },
   });
