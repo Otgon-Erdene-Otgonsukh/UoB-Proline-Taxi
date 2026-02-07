@@ -138,7 +138,6 @@ export default function DepDashboard() {
   });
   const handleSubmitSearchForm = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("submit");
     setIsLoading(true);
     setPaginationMeta({
       page: 0,
@@ -147,6 +146,7 @@ export default function DepDashboard() {
     _getBookingListData(0, paginationMeta.pageSize);
   };
 
+  // Trigger search on changes to card filters
   useEffect(() => {
     setIsLoading(true);
     setPaginationMeta({
@@ -154,7 +154,7 @@ export default function DepDashboard() {
       pageSize: paginationMeta.pageSize,
     });
     _getBookingListData(0, paginationMeta.pageSize);
-  }, [totalApplied, statusApplied, overdueApplied])
+  }, [totalApplied, statusApplied, overdueApplied]);
 
   const _getBookingListData = (page: number, pageSize: number) => {
     // fetch data with current paginationMeta and searchParams
@@ -262,7 +262,11 @@ export default function DepDashboard() {
             }}
             onMouseEnter={() => setHovered({ ...hovered, total: true })}
             onMouseLeave={() => setHovered({ ...hovered, total: false })}
-            onClick={() => {setTotalApplied((prev) => !prev); setStatusApplied(false); setOverdueApplied(false)}}
+            onClick={() => {
+              setTotalApplied((prev) => !prev);
+              setStatusApplied(false);
+              setOverdueApplied(false);
+            }}
           >
             <div className="bg-gradient-to-br from-blue-300 via-blue-500 to-blue-700 rounded-lg p-2">
               <HailIcon sx={{ color: "white", fontSize: 80 }} />
@@ -289,7 +293,15 @@ export default function DepDashboard() {
             className={`text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded mt-2 border border-blue-200 transition-opacity ease-in-out duration-200 ${hovered.total || totalApplied ? "opacity-100" : "opacity-0"}`}
           >
             {totalApplied ? (
-              <Button sx={{ fontSize: 12, fontWeight: "bold", maxHeight: 20, textTransform: "none" }} onClick={() => setTotalApplied(false)}>
+              <Button
+                sx={{
+                  fontSize: 12,
+                  fontWeight: "bold",
+                  maxHeight: 20,
+                  textTransform: "none",
+                }}
+                onClick={() => setTotalApplied(false)}
+              >
                 <CancelIcon sx={{ fontSize: 17, mr: 1 }} /> Clear filter
               </Button>
             ) : (
@@ -309,7 +321,11 @@ export default function DepDashboard() {
             }}
             onMouseEnter={() => setHovered({ ...hovered, status: true })}
             onMouseLeave={() => setHovered({ ...hovered, status: false })}
-            onClick={() => {setStatusApplied((prev) => !prev); setTotalApplied(false); setOverdueApplied(false)}}
+            onClick={() => {
+              setStatusApplied((prev) => !prev);
+              setTotalApplied(false);
+              setOverdueApplied(false);
+            }}
           >
             <div className="bg-gradient-to-br from-yellow-400 via-yellow-600 to-yellow-700 rounded-lg p-2 py-[13px] flex justify-center items-center">
               <InfoIcon sx={{ color: "white", fontSize: 70 }} />
@@ -350,7 +366,16 @@ export default function DepDashboard() {
             className={`text-xs font-semibold text-yellow-700 bg-yellow-50 px-2 py-1 rounded mt-2 border border-yellow-300 transition-opacity ease-in-out duration-200 ${hovered.status || statusApplied ? "opacity-100" : "opacity-0"}`}
           >
             {statusApplied ? (
-              <Button sx={{ fontSize: 12, fontWeight: "bold", maxHeight: 20, textTransform: "none", color: "#b7410e" }} onClick={() => setStatusApplied(false)}>
+              <Button
+                sx={{
+                  fontSize: 12,
+                  fontWeight: "bold",
+                  maxHeight: 20,
+                  textTransform: "none",
+                  color: "#b7410e",
+                }}
+                onClick={() => setStatusApplied(false)}
+              >
                 <CancelIcon sx={{ fontSize: 17, mr: 1 }} /> Clear filter
               </Button>
             ) : (
@@ -370,7 +395,11 @@ export default function DepDashboard() {
             }}
             onMouseEnter={() => setHovered({ ...hovered, overdue: true })}
             onMouseLeave={() => setHovered({ ...hovered, overdue: false })}
-            onClick={() => {setOverdueApplied((prev) => !prev); setTotalApplied(false); setStatusApplied(false)}}
+            onClick={() => {
+              setOverdueApplied((prev) => !prev);
+              setTotalApplied(false);
+              setStatusApplied(false);
+            }}
           >
             <div className="bg-gradient-to-br from-red-300 via-red-500 to-red-700 rounded-lg p-2 py-[13px] flex justify-center items-center">
               <AccessTimeIcon sx={{ color: "white", fontSize: 70 }} />
@@ -397,7 +426,16 @@ export default function DepDashboard() {
             className={`text-xs font-semibold text-red-600 bg-red-50 px-2 py-1 rounded mt-2 border border-red-200 transition-opacity ease-in-out duration-200 ${hovered.overdue || overdueApplied ? "opacity-100" : "opacity-0"}`}
           >
             {overdueApplied ? (
-              <Button sx={{ fontSize: 12, fontWeight: "bold", maxHeight: 20, textTransform: "none", color: "red" }} onClick={() => setOverdueApplied(false)}>
+              <Button
+                sx={{
+                  fontSize: 12,
+                  fontWeight: "bold",
+                  maxHeight: 20,
+                  textTransform: "none",
+                  color: "red",
+                }}
+                onClick={() => setOverdueApplied(false)}
+              >
                 <CancelIcon sx={{ fontSize: 17, mr: 1 }} /> Clear filter
               </Button>
             ) : (
@@ -474,6 +512,25 @@ export default function DepDashboard() {
             <CustomizedButton title="Search" type="warning" click={() => {}} />
           </Box>
         </div>
+        <p
+          className={`text-lg font-semibold mt-3 ${
+            totalApplied
+              ? "text-blue-600"
+              : statusApplied
+                ? "text-green-600"
+                : overdueApplied
+                  ? "text-red-600"
+                  : "text-yellow-600"
+          }`}
+        >
+          {totalApplied
+            ? "All Bookings"
+            : statusApplied
+              ? "All Bookings with Statuses"
+              : overdueApplied
+                ? "Overdue Bookings"
+                : "Pending Bookings"}
+        </p>
         {isLoading ? (
           <Typography
             sx={{ color: "gray", fontSize: 16, textAlign: "center", my: 10 }}
@@ -516,9 +573,28 @@ export default function DepDashboard() {
                         }}
                       >
                         <StyledTableCell>
-                          {row.trip.pickup_time
-                            ? new Date(row.trip.pickup_time).toLocaleString()
-                            : "N/A"}
+                          <div
+                            className={`flex items-center gap-3 ${statusApplied ? "justify-start" : "justify-center"}`}
+                          >
+                            {statusApplied && (
+                              <div
+                                className={`h-4 w-4 rounded-full border-2 ${
+                                  row.booking_status === "Pending"
+                                    ? "bg-yellow-300 border-yellow-500"
+                                    : row.booking_status === "Approved"
+                                      ? "bg-green-400 border-green-700"
+                                      : "bg-red-400 border-red-800"
+                                }`}
+                              ></div>
+                            )}
+                            <span>
+                              {row.trip.pickup_time
+                                ? new Date(
+                                    row.trip.pickup_time,
+                                  ).toLocaleString()
+                                : "N/A"}
+                            </span>
+                          </div>
                         </StyledTableCell>
                         <StyledTableCell>
                           {row.trip.airport === "" || row.trip.airport === null
@@ -546,7 +622,10 @@ export default function DepDashboard() {
                                   title="Approve"
                                 />
                                 <CustomizedButton
-                                  click={() => {setRejectId(row.booking_id); setRejectOpen(true)}}
+                                  click={() => {
+                                    setRejectId(row.booking_id);
+                                    setRejectOpen(true);
+                                  }}
                                   type="error"
                                   title="Reject"
                                 />
@@ -737,7 +816,12 @@ export default function DepDashboard() {
             PO number has been successfully attached!
           </Alert>
         </Snackbar>
-        <Dialog open={rejectOpen} onClose={() => {setRejectOpen(false)}}>
+        <Dialog
+          open={rejectOpen}
+          onClose={() => {
+            setRejectOpen(false);
+          }}
+        >
           <DialogTitle
             sx={{
               color: "white",
@@ -786,7 +870,9 @@ export default function DepDashboard() {
                 textTransform: "none",
                 px: 3,
               }}
-              onClick={() => {setRejectOpen(false)}}
+              onClick={() => {
+                setRejectOpen(false);
+              }}
             >
               Cancel
             </Button>
@@ -801,7 +887,10 @@ export default function DepDashboard() {
                 textTransform: "none",
                 px: 3,
               }}
-              onClick={() => {handleReject(rejectId); setRejectOpen(false)}}
+              onClick={() => {
+                handleReject(rejectId);
+                setRejectOpen(false);
+              }}
             >
               Yes, reject
             </Button>
