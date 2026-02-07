@@ -43,7 +43,7 @@ export async function getPendingBookings(page: number, pageSize: number, searchP
       ...query.trip as object,
       flight_num: {
         not: null,
-        notIn: [" "],
+        notIn: [""],
       }
     }
   }
@@ -168,7 +168,7 @@ export async function getPendingBookingsCount(searchParams: { from?: string, to?
       ...query.trip as object,
       flight_num: {
         not: null,
-        notIn: [" "],
+        notIn: [""],
       }
     }
   }
