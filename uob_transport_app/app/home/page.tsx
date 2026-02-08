@@ -251,7 +251,7 @@ const Page = () => {
               className="object-cover mt-1"
             />
             <div className="leading-relaxed px-4 py-3 text-center">
-              Efficiently <strong>manage</strong> all your department's{" "}
+              Efficiently <strong>manage</strong> all your department&apos;s{" "}
               <strong>bookings</strong> with a <strong>dashboard </strong>
               designed to make management a breeze.
             </div>
