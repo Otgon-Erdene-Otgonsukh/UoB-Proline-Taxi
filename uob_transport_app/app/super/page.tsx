@@ -37,6 +37,7 @@ import EditDialog from "./userManageComponents/eidtDialog";
 import { userStatusToIntMap, userStatusToStrMap, roleStrMap, roles, roleReadableStrMap } from "./constants";
 import { getDepartmentsList } from "./requests";
 import ConfirmDialog from "@/components/confirmDIalog";
+import page from "../page";
 
 interface TablePaginationActionsProps {
   count: number;
@@ -139,7 +140,7 @@ const Page = () => {
       return;
     }
 
-    _rerenderTable()
+    _getData(0, paginationMeta.pageSize)
 
     getDepartmentsList().then(async res => {
       if (res.status === 200) {
@@ -155,7 +156,7 @@ const Page = () => {
       page: newPage
     })
     setIsLoading(true);
-    _rerenderTable()
+    _getData(newPage, paginationMeta.pageSize)
   };
 
   const handleChangePageSize = (
@@ -166,7 +167,7 @@ const Page = () => {
       pageSize: parseInt(event.target.value, 10),
     });
     setIsLoading(true)
-    _rerenderTable()
+    _getData(0, parseInt(event.target.value, 10))
   };
 
   // search form
@@ -184,7 +185,11 @@ const Page = () => {
     e.preventDefault()
     console.log('submit');
     setIsLoading(true)
-    _rerenderTable()
+    setPaginationMeta({
+      page: 0,
+      pageSize: paginationMeta.pageSize,
+    })
+    _getData(0, paginationMeta.pageSize)
   }
 
   const [userDetail, setUserDetail] = useState<UserRecord>()
@@ -231,19 +236,17 @@ const Page = () => {
       ...row,
       user_status: userStatusToIntMap.rejected
     }).then(res => {
-      if (res.status === 200) {
-        setIsLoading(true)
-        _rerenderTable()
-      }
+      setIsLoading(true)
+      _rerenderTable()
     })
   };
 
-  const _rerenderTable = () => {
+  const _getData = (page: number, pageSize: number) => {
     getUsersAsAdmin({
       name: undefined,
       ...searchFormInput,
-      page: paginationMeta.page,
-      pageSize: paginationMeta.pageSize
+      page,
+      pageSize
     }).then(res => {
       if (res.status === 200) {
         res.json().then(data => {
@@ -253,6 +256,20 @@ const Page = () => {
         })
       }
     })
+  }
+
+  const _rerenderTable = () => {
+    if (pendingUsersData.length === 1 && paginationMeta.page > 0) {
+      // if the last item on the current page is rejected, go back one page
+      setPaginationMeta({
+        page: paginationMeta.page - 1,
+        pageSize: paginationMeta.pageSize,
+      })
+      _getData(paginationMeta.page - 1, paginationMeta.pageSize)
+      return
+    } else {
+      _getData(paginationMeta.page, paginationMeta.pageSize)
+    }
   }
 
   return (
