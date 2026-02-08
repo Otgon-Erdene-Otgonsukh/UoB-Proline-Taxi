@@ -28,7 +28,7 @@ import {
   MapRef,
 } from "@/components/ui/map";
 import { departments } from "@/model/models";
-import { Loader2, Clock, Route } from "lucide-react";
+import { Clock, Route } from "lucide-react";
 import { LngLatLike } from "maplibre-gl";
 
 export default function BookingPage() {
@@ -389,13 +389,13 @@ export default function BookingPage() {
   }
 
   // Use Nominatim to return latitude and longitude from address.
-  async function getLatLon(address: string): Promise<{ lat: string; lon: string; name: string } | null> {
+  async function getLatLon(address: string): Promise<{ lat: string; lon: string; name: string; full_address: string } | null> {
     address = address.replace("UK", "").replace("united kingdom", "").trim() + ", United Kingdom"; // Specify UK to improve accuracy
     const result = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`);
     if (result.ok) {
       const data = await result.json();
       if (data && data.length > 0) {
-        return { lat: data[0].lat, lon: data[0].lon, name: data[0].name };
+        return { lat: data[0].lat, lon: data[0].lon, name: data[0].name, full_address: data[0].display_name };
       }
     };
     return null;
@@ -458,16 +458,6 @@ export default function BookingPage() {
       console.error("Failed to fetch routes:", error);
     }
   }
-  
-
-    // Sort routes: non-selected first, selected last (renders on top)
-    const sortedRoutes = routes
-      .map((route, index) => ({ route, index }))
-      .sort((a, b) => {
-        if (a.index === selectedIndex) return 1;
-        if (b.index === selectedIndex) return -1;
-        return 0;
-      });
 
   return (
     <div className="flex min-h-screen justify-center items-center font-inter p-4">
@@ -639,7 +629,7 @@ export default function BookingPage() {
                       const latlon = await getLatLon(e.target.value)
                       if (latlon != null) {
                         setStart({ name: latlon.name, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) });
-                        e.target.value = latlon.name;
+                        e.target.value = latlon.full_address;
                       }
                     }}
                   ></input>
@@ -752,7 +742,7 @@ export default function BookingPage() {
                       const latlon = await getLatLon(e.target.value)
                       if (latlon != null) {
                         setEnd({ name: latlon.name, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) });
-                        e.target.value = latlon.name;
+                        e.target.value = latlon.full_address;
                       }
                     }}
                   className={`border-2 rounded px-3 py-2 ${
@@ -1111,37 +1101,53 @@ export default function BookingPage() {
         <div className="container hidden lg:block lg:w-1/2 w-full object-contain min-w-[600px] border-l-3 border-gray-700 rounded-[0px_5px_5px_0px] overflow-hidden">
           { /* Lat and long are inverted by MAPCN here */ }
           <Map ref={mapRef} center={[-2.602, 51.458]} zoom={14}>
-            {sortedRoutes.map(({ route, index }) => {
-            const isSelected = index === selectedIndex;
-            return (
+            { start && end && routes && (
               <MapRoute
-                key={index}
-                coordinates={route.coordinates}
-                color={isSelected ? "#6366f1" : "#94a3b8"}
-                width={isSelected ? 6 : 5}
-                opacity={isSelected ? 1 : 0.6}
-                onClick={() => setSelectedIndex(index)}
+                coordinates={routes[0].coordinates}
+                color={"#6366f1"}
+                width={6}
+                opacity={1}
               />
-            );
-          })}
+            )};
 
-          {start && start.lat && start.lng && ( // Only render marker when not null
-          <MapMarker longitude={start.lng} latitude={start.lat}>
-            <MarkerContent>
-              <div className="size-5 rounded-full bg-green-500 border-2 border-white shadow-lg" />
-              <MarkerLabel position="top">{start.name}</MarkerLabel>
-            </MarkerContent>
-          </MapMarker>
-          )}
+            {start && start.lat && start.lng && ( // Only render marker when not null
+            <MapMarker longitude={start.lng} latitude={start.lat}>
+              <MarkerContent>
+                <div className="size-5 rounded-full bg-green-500 border-2 border-white shadow-lg" />
+                <MarkerLabel position="top">{start.name}</MarkerLabel>
+              </MarkerContent>
+            </MapMarker>
+            )}
 
-          {end && end.lat && end.lng && (
-          <MapMarker longitude={end.lng} latitude={end.lat}>
-            <MarkerContent>
-              <div className="size-5 rounded-full bg-red-500 border-2 border-white shadow-lg" />
-              <MarkerLabel position="bottom">{end.name}</MarkerLabel>
-            </MarkerContent>
-          </MapMarker>
-          )}
+            {end && end.lat && end.lng && (
+            <MapMarker longitude={end.lng} latitude={end.lat}>
+              <MarkerContent>
+                <div className="size-5 rounded-full bg-red-500 border-2 border-white shadow-lg" />
+                <MarkerLabel position="bottom">{end.name}</MarkerLabel>
+              </MarkerContent>
+            </MapMarker>
+            )}
+
+            { start && end && (
+              <div className="absolute top-3 left-3 flex flex-col gap-2">
+                <Button
+                  variant="default"
+                  size="sm"
+                  className="justify-start gap-3"
+                >
+                  <div className="flex items-center gap-1.5">
+                    <Clock className="size-3.5" />
+                    <span className="font-medium">
+                      {formatDuration(routes[0].duration)}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-xs opacity-80">
+                    <Route className="size-3" />
+                    {formatDistance(routes[0].distance)}
+                  </div>
+                </Button>
+              </div>
+            )}
         </Map>
       </div>
         </div>
