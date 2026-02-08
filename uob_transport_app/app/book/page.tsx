@@ -384,13 +384,14 @@ export default function BookingPage() {
   }
 
   function formatDistance(meters: number): string {
-    if (meters < 1000) return `${Math.round(meters)} m`;
-    return `${(meters / 1000).toFixed(1)} km`;
+    // We use yards and miles in the UK, so convert metres to miles and yards.
+    if (meters / 0.9144 < 1760) return `${Math.round(meters / 0.9144)} yd`;
+    return `${(meters / 1609.344).toFixed(1)} mi`;
   }
 
   // Use Nominatim to return latitude and longitude from address.
   async function getLatLon(address: string): Promise<{ lat: string; lon: string; name: string; full_address: string } | null> {
-    address = address.replace("UK", "").replace("united kingdom", "").trim() + ", United Kingdom"; // Specify UK to improve accuracy
+    address = address.toUpperCase().replace("UK", "").replace("UNITED KINGDOM", "").trim() + ", United Kingdom"; // Specify UK to improve accuracy
     const result = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`);
     if (result.ok) {
       const data = await result.json();
@@ -626,6 +627,9 @@ export default function BookingPage() {
                       setFormData({ ...formData, CustomLoc: e.target.value });
                     }}
                     onBlur={async (e) => {
+                      if (e.target.value == "") {
+                        return; // Do not try to update route if field is empty
+                      }
                       const latlon = await getLatLon(e.target.value)
                       if (latlon != null) {
                         setStart({ name: latlon.name, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) });
@@ -739,6 +743,9 @@ export default function BookingPage() {
                     setFormData({ ...formData, DropoffLoc: e.target.value });
                   }}
                   onBlur={async (e) => {
+                      if (e.target.value == "") {
+                        return; // Do not try to update route if field is empty
+                      }
                       const latlon = await getLatLon(e.target.value)
                       if (latlon != null) {
                         setEnd({ name: latlon.name, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) });
@@ -1101,7 +1108,7 @@ export default function BookingPage() {
         <div className="container hidden lg:block lg:w-1/2 w-full object-contain min-w-[600px] border-l-3 border-gray-700 rounded-[0px_5px_5px_0px] overflow-hidden">
           { /* Lat and long are inverted by MAPCN here */ }
           <Map ref={mapRef} center={[-2.602, 51.458]} zoom={14}>
-            { start && end && routes && (
+            { start && routes && routes.length > 0 && (
               <MapRoute
                 coordinates={routes[0].coordinates}
                 color={"#6366f1"}
@@ -1128,16 +1135,11 @@ export default function BookingPage() {
             </MapMarker>
             )}
 
-            { start && end && (
-              <div className="absolute top-3 left-3 flex flex-col gap-2">
-                <Button
-                  variant="default"
-                  size="sm"
-                  className="justify-start gap-3"
-                >
+            { routes && routes.length > 0 && (
+              <div className="absolute top-3 left-3 bg-white opacity-80 rounded-md gap-2 p-2">
                   <div className="flex items-center gap-1.5">
                     <Clock className="size-3.5" />
-                    <span className="font-medium">
+                    <span className="text-md">
                       {formatDuration(routes[0].duration)}
                     </span>
                   </div>
@@ -1145,7 +1147,7 @@ export default function BookingPage() {
                     <Route className="size-3" />
                     {formatDistance(routes[0].distance)}
                   </div>
-                </Button>
+                  <p className="text-xs opacity-80">Subject to traffic and weather conditions</p>
               </div>
             )}
         </Map>
