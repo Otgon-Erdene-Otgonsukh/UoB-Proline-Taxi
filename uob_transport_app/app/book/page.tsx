@@ -391,7 +391,9 @@ export default function BookingPage() {
 
   // Use Nominatim to return latitude and longitude from address.
   async function getLatLon(address: string): Promise<{ lat: string; lon: string; name: string; full_address: string } | null> {
-    address = address.toUpperCase().replace("UK", "").replace("UNITED KINGDOM", "").trim() + ", United Kingdom"; // Specify UK to improve accuracy
+    // Specify UK to improve accuracy
+    // Arbitrary but effective way to limit search to the UK without imposing distance limits
+    address = address.toUpperCase().replace("UK", "").replace("UNITED KINGDOM", "").trim() + ", United Kingdom";
     const result = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`);
     if (result.ok) {
       const data = await result.json();
@@ -413,8 +415,6 @@ export default function BookingPage() {
   }, [start, end]);
 
   const [routes, setRoutes] = useState<RouteData[]>([]);
-  const [selectedIndex, setSelectedIndex] = useState(0);
-
   const mapRef = useRef<MapRef>(null);
 
   // Only call updateRoute when both start and end are set.
