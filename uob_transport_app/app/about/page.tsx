@@ -20,7 +20,7 @@ export default function AboutPage() {
               src="/aboutlogo.png"
               width="300"
               height="30"
-              className="md:-ml-10 mr-4 mix-blend-darken ml-2"
+              className="md:-ml-19 mr-4 mix-blend-darken ml-2"
               alt="Collab photo of UoB university logo and the Proline taxi logo"
             ></Image>
             <div className="flex flex-col gap-2">
