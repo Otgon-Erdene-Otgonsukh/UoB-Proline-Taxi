@@ -1,9 +1,6 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@/generated/prisma/client";
 import bcrypt from "bcryptjs";
-import { departments } from "@/model/models";
-
-const prisma = new PrismaClient();
+import prisma from "@/utils/client";
 
 export async function POST(req: Request) {
   const request = await req.json();
@@ -22,13 +19,12 @@ export async function POST(req: Request) {
     (!mail.endsWith("@bristol.ac.uk") && role === "finance_staff") ||
     (departmentName.length === 0 &&
       (role === "normal_user" || role === "finance_staff")) ||
-    (role == "proline_staff" && departmentName.length !== 0) ||
-    (!departments.includes(departmentName))
+    (role == "proline_staff" && departmentName.length !== 0)
   ) {
     return NextResponse.json({
       status: 500,
       message: "There was an error creating an user",
-    });
+    }, { status: 500 });
   }
 
   // hashing

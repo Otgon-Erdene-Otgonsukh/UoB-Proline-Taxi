@@ -1,6 +1,4 @@
-import { PrismaClient } from "@/generated/prisma/client";
-
-const prisma = new PrismaClient();
+import prisma from '@/utils/client';
 
 export async function getPendingBookings(page: number, pageSize: number, searchParams: { from?: string, to?: string, passengerName?: string, pickUpTimeFrom?: string, pickUpTimeTo?: string, isFlight: boolean }) {
   const query: { [key: string]: string | object } = {};

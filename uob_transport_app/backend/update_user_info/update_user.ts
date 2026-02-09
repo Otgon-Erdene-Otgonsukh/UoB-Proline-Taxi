@@ -1,6 +1,4 @@
-import { PrismaClient } from "@/generated/prisma/client";
-
-const prisma = new PrismaClient();
+import prisma from '@/utils/client';
 
 export default async function updateUserInfo(
   user_id: number,

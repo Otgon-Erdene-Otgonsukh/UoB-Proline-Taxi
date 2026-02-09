@@ -7,7 +7,6 @@ import createBooking from "@/backend/create_booking/create_booking";
 import { auth } from "@/auth";
 import { render } from "@react-email/components";
 import { sesClient } from "@/utils/ses_client";
-import { PrismaClient } from "@/generated/prisma/client";
 
 jest.mock("../../backend/create_booking/create_booking.ts");
 jest.mock("../../auth", () => ({
