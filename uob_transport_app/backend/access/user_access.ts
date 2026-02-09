@@ -1,6 +1,5 @@
-import { department, PrismaClient, User } from '@/generated/prisma/client'
-
-const prisma = new PrismaClient();
+import { department, User } from '@/generated/prisma/client'
+import prisma from '@/utils/client';
 
 export const searchUserAccess = async (
   email: string

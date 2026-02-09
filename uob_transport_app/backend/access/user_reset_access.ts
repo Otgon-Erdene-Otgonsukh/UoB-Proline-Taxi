@@ -1,6 +1,5 @@
-import { PrismaClient, user_reset } from '@/generated/prisma/client'
-
-const prisma = new PrismaClient()
+import { user_reset } from '@/generated/prisma/client'
+import prisma from '@/utils/client'
 
 export const createUserResetAccess = async (email: string, uuid: string): Promise<user_reset | null> => {
   const tomorrow = new Date()
