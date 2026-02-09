@@ -73,7 +73,7 @@ export default function AboutPage() {
       </div>
 
       {/* Right hand side of page on md screen. */}
-      <div className="md:w-2/5 w-full flex items-center justify-center shadow-lg ml-[8px] md:ml-5 md:mr-3 my-3 rounded-md border-2 border-[#2c2c2c]">
+      <div className="md:w-2/5 w-full flex items-center justify-center shadow-lg ml-[8px] md:ml-5 md:mr-3 my-3 rounded-md">
         <div className="text-center w-full flex flex-col md:gap-5 gap-10 font-inter">
           <div className="items-center">
             <h1 className="text-3xl font-aleo text-shadow-lg/10 font-bold md:mb-15 md:-mt-2 mt-10">
