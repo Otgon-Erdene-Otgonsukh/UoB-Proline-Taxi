@@ -38,7 +38,7 @@ export default function AboutPage() {
           </div>
         </div>
 
-        <div className="shadow-lg/20 rounded-md w-full h-full p-15 ml-4 mb-3 -mt-2 border-2 border-[#2c2c2c]">
+        <div className="shadow-lg/20 rounded-md w-full h-full p-15 ml-4 mb-3 -mt-2">
           <div className="flex flex-col items-center">
             <RateReview sx={{ fontSize: 60 }} />
             <br />
