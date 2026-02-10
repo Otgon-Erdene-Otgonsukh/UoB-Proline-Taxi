@@ -5,9 +5,11 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { CircularProgress } from "@mui/material";
+import { useSession } from "next-auth/react";
 
 export function Landing_page() {
   const [loading, setLoading] = useState(false);
+  const { data: session } = useSession();
   return (
     <div>
       <motion.div
@@ -32,13 +34,37 @@ export function Landing_page() {
             <strong>Proline Taxi</strong>.
           </h1>
           <div className="mt-8 lg:ml-6 flex flex-col lg:flex-row gap-4 max-w-md mx-auto lg:mx-5">
-            <Link href="/login">
+            <Link
+              href={
+                !session
+                  ? "/login"
+                  : session.user.account_type === "normal_user"
+                    ? "/home"
+                    : session.user.account_type === "super_admin" ||
+                        session.user.account_type === "proline_staff"
+                      ? "/super"
+                      : "/dep-dashboard"
+              }
+            >
               <button
                 onClick={() => setLoading(true)}
                 type="button"
                 className="w-full lg:min-w-[250px] lg:w-auto border-[#2c2c2c] border-1 bg-[#2c2c2c] text-white font-inter font-light rounded-md py-3 px-11 text-sm cursor-pointer hover:scale-103 hover:bg-[#393939] transition-all duration-300 active:bg-[#4d4d4d] whitespace-nowrap"
               >
-                {loading ? <CircularProgress size="15px" color="inherit"></CircularProgress> : "LOGIN TO BOOK NOW"}
+                {loading ? (
+                  <CircularProgress
+                    size="15px"
+                    color="inherit"
+                  ></CircularProgress>
+                ) : !session ? (
+                  "LOGIN TO BOOK NOW"
+                ) : session.user.account_type === "super_admin" ||
+                  session.user.account_type === "finance_staff" ||
+                  session.user.account_type === "proline_staff" ? (
+                  "MANAGE BOOKINGS"
+                ) : (
+                  "VIEW BOOKINGS"
+                )}
               </button>
             </Link>
             <Link href="/about">
