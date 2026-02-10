@@ -458,7 +458,7 @@ export default function BookingPage() {
     const osrmRoutes = []; // Clear previous routes
     try {
       // Construct via list like this lon,lat;lon,lat;lon,lat for OSRM
-      const viaList = `${locations[0].lng},${locations[0].lat}`;
+      let viaList = `${locations[0].lng},${locations[0].lat}`;
       for (let i = 1; i < locations.length; i++) {
         viaList = viaList + `;${locations[i].lng},${locations[i].lat}`
       }
