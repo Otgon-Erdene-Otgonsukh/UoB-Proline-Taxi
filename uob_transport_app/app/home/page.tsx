@@ -53,8 +53,8 @@ const Page = () => {
       return;
     }
 
-    _getBookingListData();
-  }, [status, paginationMeta.page, paginationMeta.pageSize, router]);
+    _getBookingListData(0, 10);
+  }, [status, router]);
 
   const handleClick = () => {
     router.push("/book");
@@ -69,16 +69,19 @@ const Page = () => {
       ...paginationMeta,
       page: newPage,
     });
-    _getBookingListData();
+    _getBookingListData(newPage, paginationMeta.pageSize);
   };
 
   const handleChangePageSize = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
+    setIsLoading(true);
+    const newPageSize = parseInt(event.target.value, 10);
     setPaginationMeta({
       page: 0,
-      pageSize: parseInt(event.target.value, 10),
+      pageSize: newPageSize,
     });
+    _getBookingListData(0, newPageSize);
   };
 
   const [bookingListData, setBookingListData] = useState<BookingRecord[]>([]);
@@ -180,16 +183,20 @@ const Page = () => {
     e.preventDefault();
     console.log(searchFormInput);
     setIsLoading(true);
-    _getBookingListData();
+    setPaginationMeta({
+      page: 0,
+      pageSize: paginationMeta.pageSize,
+    })
+    _getBookingListData(0, paginationMeta.pageSize);
   };
 
-  const _getBookingListData = () => {
-    getUserBookingList(paginationMeta.page, paginationMeta.pageSize, {
+  const _getBookingListData = (page: number, pageSize: number) => {
+    getUserBookingList(page, pageSize, {
       ...searchFormInput,
       bookingStatus:
-        searchFormInput.bookingStatus === "All"
+        searchFormInput?.bookingStatus === "All"
           ? ""
-          : searchFormInput.bookingStatus,
+          : searchFormInput?.bookingStatus,
     }).then((res) => {
       if (res.status === 200) {
         res.json().then((data) => {

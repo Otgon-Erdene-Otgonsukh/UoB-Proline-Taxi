@@ -1,7 +1,6 @@
 import { screen, render, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import Dashboard from "@/app/dep-dashboard/page";
-import { json } from "stream/consumers";
 
 // mock next-auth
 jest.mock("next-auth/react", () => ({
