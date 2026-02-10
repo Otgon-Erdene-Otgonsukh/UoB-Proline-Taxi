@@ -223,6 +223,23 @@ export default function BookingPage() {
       pickupDateTime = targetDateTime;
     }
 
+    if (isReturnChecked) {
+      if (formData.ReturnDate == "") {
+        addFormFeedback("ReturnDate", "Please select a return Date.");
+        fail = true;
+      } else if (formData.ReturnTime == "") {
+        addFormFeedback("ReturnTime", "Please select a return Time.");
+        fail = true;
+      }
+      const targetDateTime = new Date(formData.PickupDate);
+      const [h, m] = formData.PickupTime.split(":").map(Number);
+      targetDateTime.setHours(h, m, 0, 0);
+      if (pickupDateTime >= targetDateTime) {
+        addFormFeedback("ReturnDate", "Return Booking must be after pick-up.");
+        addFormFeedback("ReturnTime", ""); // Make both boxes go red, hacky workaround.
+        fail = true;
+      }
+    }
 
     // Phone number
     // Some additional leniency for international numbers may need to be added later.
@@ -859,8 +876,13 @@ export default function BookingPage() {
                     </div>
                     <FormHelperText
                       sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
-                      className={`${formFeedback.ReturnTime != "" ? "" : "hidden"
-                        }`}
+                      className={`${formFeedback.ReturnDate != "" ? "" : "hidden"}`}
+                    >
+                      {formFeedback.ReturnDate}
+                    </FormHelperText>
+                    <FormHelperText
+                      sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
+                      className={`${formFeedback.ReturnTime != "" ? "" : "hidden"}`}
                     >
                       {formFeedback.ReturnTime}
                     </FormHelperText>
