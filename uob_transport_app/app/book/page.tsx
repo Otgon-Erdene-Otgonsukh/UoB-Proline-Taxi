@@ -643,7 +643,13 @@ export default function BookingPage() {
                       const latlon = await getLatLon(e.target.value)
                       if (latlon != null) {
                         setStart({ name: latlon.name, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) });
+                        addFormFeedback("CustomLoc", ""); // Reset any validation errors
                         e.target.value = latlon.full_address;
+                      } else {
+                        // Reset start and routes if no result is found.
+                        addFormFeedback("CustomLoc", "No results found for this search term.");
+                        setStart(null);
+                        setRoutes([]);
                       }
                     }}
                   ></input>
@@ -759,7 +765,13 @@ export default function BookingPage() {
                       const latlon = await getLatLon(e.target.value)
                       if (latlon != null) {
                         setEnd({ name: latlon.name, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) });
+                        addFormFeedback("DropoffLoc", ""); // Reset any validation errors
                         e.target.value = latlon.full_address;
+                      } else {
+                        // Reset destination and show error if there are no results.
+                        addFormFeedback("DropoffLoc", "No results found for this search term.");
+                        setEnd(null);
+                        setRoutes([]);
                       }
                     }}
                   className={`border-2 rounded px-3 py-2 ${
