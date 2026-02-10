@@ -1,4 +1,5 @@
 import { department, PrismaClient, User } from '@/generated/prisma/client'
+type noPasswordUser = Omit<User, "password">
 
 const prisma = new PrismaClient();
 
@@ -39,7 +40,7 @@ export const getUserByEmailAccess = async (
   })
 }
 
-export const getUserListAccess = async (page: number, pageSize: number, name?: string, role?: string, userStatus?: number): Promise<User[] | null> => {
+export const getUserListAccess = async (page: number, pageSize: number, name?: string, role?: string, userStatus?: number): Promise<noPasswordUser[] | null> => {
   const query: { [key: string]: string | number | object } = {}
   if (name !== undefined) {
     query['name'] = {
@@ -60,6 +61,9 @@ export const getUserListAccess = async (page: number, pageSize: number, name?: s
     },
     orderBy: {
       time_created: 'desc'
+    },
+    omit: {
+      password: true
     },
     skip: page * pageSize,
     take: pageSize
