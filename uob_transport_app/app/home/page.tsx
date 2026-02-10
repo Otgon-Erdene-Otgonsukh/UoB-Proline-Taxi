@@ -181,10 +181,10 @@ const Page = () => {
     bookingStatus: "All",
   });
 
-  const dateTimePickerAnchorRef = useRef<HTMLDivElement>(null);
+  const dateTimePickerFromAnchorRef = useRef<HTMLDivElement>(null);
   const dateTimePickerToAnchorRef = useRef<HTMLDivElement>(null);
-  const [dateTimePickerFromOpen, setDateTimePickerFromOpen] = useState(true);
-  const [dateTimePickerToOpen, setDateTimePickerToOpen] = useState(true);
+  const [dateTimePickerFromOpen, setDateTimePickerFromOpen] = useState(false);
+  const [dateTimePickerToOpen, setDateTimePickerToOpen] = useState(false);
 
   const handleSubmitSearchForm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -400,7 +400,7 @@ const Page = () => {
             label="PickUp Time From"
             size="small"
             sx={{ minWidth: 150 }}
-            ref={dateTimePickerAnchorRef}
+            ref={dateTimePickerFromAnchorRef}
             defaultValue={searchFormInput.pickUpTimeFrom?.toLocaleString()}
             slotProps={{ inputLabel: { shrink: searchFormInput.pickUpTimeFrom !== undefined } }}
           />
@@ -417,7 +417,7 @@ const Page = () => {
           <DateTimePicker
             open={dateTimePickerFromOpen}
             onClose={() => setDateTimePickerFromOpen(false)}
-            anchorEl={dateTimePickerAnchorRef}
+            anchorEl={dateTimePickerFromAnchorRef}
             selectedDate={searchFormInput.pickUpTimeFrom || null}
             onDateChange={(date) => {
               setSearchFormInput({ ...searchFormInput, pickUpTimeFrom: date });
