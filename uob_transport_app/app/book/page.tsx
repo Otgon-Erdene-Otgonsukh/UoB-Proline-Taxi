@@ -432,7 +432,7 @@ export default function BookingPage() {
   async function updateRoute() {
     if (start != null && end != null) {
       // Create a route array.
-      var route = [];
+      const route = [];
       route.push({ name: start.name, lat: start.lat, lng: start.lng });
       for (let i = 0; i < vias.length; i++) {
         route.push({ name: vias[i].name, lat: vias[i].lat, lng: vias[i].lng });
@@ -458,7 +458,7 @@ export default function BookingPage() {
     const osrmRoutes = []; // Clear previous routes
     try {
       // Construct via list like this lon,lat;lon,lat;lon,lat for OSRM
-      var viaList = `${locations[0].lng},${locations[0].lat}`;
+      const viaList = `${locations[0].lng},${locations[0].lat}`;
       for (let i = 1; i < locations.length; i++) {
         viaList = viaList + `;${locations[i].lng},${locations[i].lat}`
       }
