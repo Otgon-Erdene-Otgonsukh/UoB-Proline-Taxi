@@ -55,7 +55,6 @@ export const Navbar = () => {
 
   const handleCloseMenu = () => {
     setAnchorEl(null);
-    router.push("/profile");
   };
 
   const [signoutDialogOpen, setSignoutDialogOpen] = useState(false)

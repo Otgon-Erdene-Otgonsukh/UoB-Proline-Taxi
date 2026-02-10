@@ -207,10 +207,10 @@ export default function DepDashboard() {
           prev.map((b) =>
             b.booking_id === pendingBookingId
               ? {
-                  ...b,
-                  booking_status: "Approved",
-                  trip: { ...b.trip, PO: poNumber },
-                }
+                ...b,
+                booking_status: "Approved",
+                trip: { ...b.trip, PO: poNumber },
+              }
               : b,
           ),
         );
@@ -509,7 +509,7 @@ export default function DepDashboard() {
               size="small"
               sx={{ minWidth: 150 }}
             />
-            <CustomizedButton title="Search" type="warning" click={() => {}} />
+            <CustomizedButton title="Search" type="warning" click={() => { }} />
           </Box>
         </div>
         <p
