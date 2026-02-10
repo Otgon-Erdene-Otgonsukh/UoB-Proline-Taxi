@@ -4,10 +4,13 @@
 import { POST } from "@/app/api/create_user/route";
 import { prismaMock } from "@/utils/singleton";
 import bcrypt from "bcryptjs";
+import sendReq from "@/backend/register/send_req";
 
 jest.mock("bcryptjs", () => ({
   hash: jest.fn(),
 }));
+
+jest.mock("@/backend/register/send_req", () => jest.fn())
 
 describe("Registration tests with ensuring behaviour", () => {
   beforeEach(() => {
@@ -35,6 +38,7 @@ describe("Registration tests with ensuring behaviour", () => {
   });
 
   test("When department exists, appointment is made to the user", async () => {
+    (sendReq as jest.Mock).mockResolvedValue(undefined);
     prismaMock.department.findFirst.mockResolvedValue({
       dep_id: 1,
       dep_name: "Arts",
