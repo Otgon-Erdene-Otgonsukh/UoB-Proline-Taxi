@@ -491,6 +491,9 @@ export default function BookingPage() {
           <form action="/" onSubmit={handleSubmit} method="POST">
             {/*should go to some confirmed page or alike, currently goes to homepage*/}
             <div className="flex flex-col gap-4">
+              <div>
+                <h3 className="font-bold">Trip details:</h3>
+              </div>
               <div
                 className={`flex flex-col ${isManualChecked || isFlightChecked ? "text-gray-400" : ""
                   }`}
