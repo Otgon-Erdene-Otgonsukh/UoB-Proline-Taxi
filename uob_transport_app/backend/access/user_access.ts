@@ -43,7 +43,8 @@ export const getUserListAccess = async (page: number, pageSize: number, name?: s
   const query: { [key: string]: string | number | object } = {}
   if (name !== undefined) {
     query['name'] = {
-      contains: name
+      contains: name,
+      mode: "insensitive"
     }
   }
   if (role !== undefined) {
@@ -69,13 +70,14 @@ export const getUserCountAccess = async (name?: string, role?: string, userStatu
   const query: { [key: string]: string | number | object } = {}
   if (name) {
     query['name'] = {
-      contains: name
+      contains: name,
+      mode: "insensitive"
     }
   }
   if (role) {
     query['role'] = role
   }
-  if (userStatus) {
+  if (userStatus !== undefined) {
     query['user_status'] = userStatus
   }
   return prisma.user.count({
