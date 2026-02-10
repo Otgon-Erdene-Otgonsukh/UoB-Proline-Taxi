@@ -188,7 +188,16 @@ const Page = () => {
 
   const handleSubmitSearchForm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(searchFormInput);
+
+    if (searchFormInput.pickUpTimeTo && searchFormInput.pickUpTimeFrom && searchFormInput.pickUpTimeFrom > searchFormInput.pickUpTimeTo) {
+      setSnackbarState({
+        open: true,
+        status: "error",
+        message: "'PickUp Time To' must be later than 'PickUp Time From'!",
+      });
+      return;
+    }
+
     setIsLoading(true);
     setPaginationMeta({
       page: 0,
@@ -201,10 +210,10 @@ const Page = () => {
     getUserBookingList(page, pageSize, {
       ...searchFormInput,
       pickUpTimeFrom: searchFormInput.pickUpTimeFrom
-        ? searchFormInput.pickUpTimeFrom.toISOString()
+        ? searchFormInput.pickUpTimeFrom.toUTCString()
         : "",
       pickUpTimeTo: searchFormInput.pickUpTimeTo
-        ? searchFormInput.pickUpTimeTo.toISOString()
+        ? searchFormInput.pickUpTimeTo.toUTCString()
         : "",
       bookingStatus:
         searchFormInput?.bookingStatus === "All"
