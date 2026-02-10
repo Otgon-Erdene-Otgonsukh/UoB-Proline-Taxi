@@ -71,7 +71,7 @@ export default function DepDashboard() {
   }, [status, router]);
 
   useEffect(() => {
-    _getBookingListData();
+    _getBookingListData(0, paginationMeta.pageSize);
   }, []);
 
   useEffect(() => {
@@ -99,7 +99,7 @@ export default function DepDashboard() {
       ...paginationMeta,
       page: newPage,
     });
-    _getBookingListData();
+    _getBookingListData(newPage, paginationMeta.pageSize);
   };
   const handleChangePageSize = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -109,7 +109,7 @@ export default function DepDashboard() {
       page: 0,
       pageSize: parseInt(event.target.value, 10),
     });
-    _getBookingListData();
+    _getBookingListData(0, parseInt(event.target.value, 10));
   };
 
   // booking data
@@ -132,14 +132,16 @@ export default function DepDashboard() {
     e.preventDefault();
     console.log("submit");
     setIsLoading(true);
-    _getBookingListData();
+    setPaginationMeta({
+      page: 0,
+      pageSize: paginationMeta.pageSize,
+    })
+    _getBookingListData(0, paginationMeta.pageSize);
   };
 
-  const _getBookingListData = () => {
-    console.log(searchFormInput);
-
+  const _getBookingListData = (page: number, pageSize: number) => {
     // fetch data with current paginationMeta and searchParams
-    getPendingBookingList(paginationMeta.page, paginationMeta.pageSize, {
+    getPendingBookingList(page, pageSize, {
       from: searchFormInput.from,
       to: searchFormInput.to,
       passengerName: searchFormInput.passengerName,
@@ -185,10 +187,10 @@ export default function DepDashboard() {
           prev.map((b) =>
             b.booking_id === pendingBookingId
               ? {
-                  ...b,
-                  booking_status: "Approved",
-                  trip: { ...b.trip, PO: poNumber },
-                }
+                ...b,
+                booking_status: "Approved",
+                trip: { ...b.trip, PO: poNumber },
+              }
               : b,
           ),
         );
@@ -401,7 +403,7 @@ export default function DepDashboard() {
               size="small"
               sx={{ minWidth: 150 }}
             />
-            <CustomizedButton title="Search" type="warning" click={() => {}} />
+            <CustomizedButton title="Search" type="warning" click={() => { }} />
           </Box>
         </div>
         {isLoading ? (

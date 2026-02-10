@@ -1,5 +1,4 @@
 import { NextRequest } from "next/server";
-import { auth } from "@/auth";
 import { getDepartmentsListAccess } from "@/backend/access/departments";
 
 export async function GET(request: NextRequest) {
