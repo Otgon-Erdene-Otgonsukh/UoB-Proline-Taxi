@@ -30,6 +30,7 @@ import {
 import { departments } from "@/model/models";
 import { Clock, Route } from "lucide-react";
 import { LngLatLike } from "maplibre-gl";
+import { StartOutlined } from "@mui/icons-material";
 
 export default function BookingPage() {
   // Attach common locations as keys to hashmapped Lat/Lon for routing.
@@ -416,13 +417,14 @@ export default function BookingPage() {
 
   const [start, setStart] = useState<{ name: string; lat: number; lng: number } | null>(null);
   const [end, setEnd] = useState<{ name: string; lat: number; lng: number } | null>(null);
+  const [vias, setVias] = useState<{ name: string; lat: number; lng: number }[]>([]);
 
   // Update the route when start or end changes.
   useEffect(() => {
     if (end != null && start != null) {
       updateRoute();
     }
-  }, [start, end]);
+  }, [start, end, vias]);
 
   const [routes, setRoutes] = useState<RouteData[]>([]);
   const mapRef = useRef<MapRef>(null);
@@ -430,7 +432,14 @@ export default function BookingPage() {
   // Only call updateRoute when both start and end are set.
   async function updateRoute() {
     if (start != null && end != null) {
-      fetchRoutes(start.lat, start.lng, end.lat, end.lng);
+      // Create a route array.
+      var route = [];
+      route.push({ name: start.name, lat: start.lat, lng: start.lng });
+      for (let i = 0; i < vias.length; i++) {
+        route.push({ name: vias[i].name, lat: vias[i].lat, lng: vias[i].lng });
+      }
+      route.push({ name: end.name, lat: end.lat, lng: end.lng });
+      fetchRoutes(route);
 
       // Find each corner of the square bounding box from the two points on the map.
       const swLng = Math.min(start.lng, end.lng);
@@ -444,27 +453,28 @@ export default function BookingPage() {
     }
   }
 
-  async function fetchRoutes(slat : number, slon : number, flat: number, flon: number) {
+  type LocList = { name: string; lat: number; lng: number }[];
+
+  async function fetchRoutes(locations : LocList) {
+    const osrmRoutes = []; // Clear previous routes
     try {
+      // Construct via list like this lon,lat;lon,lat;lon,lat for OSRM
+      var viaList = `${locations[0].lng},${locations[0].lat}`;
+      for (let i = 1; i < locations.length; i++) {
+        viaList = viaList + `;${locations[i].lng},${locations[i].lat}`
+      }
       const response = await fetch(
-        `https://router.project-osrm.org/route/v1/driving/${slon},${slat};${flon},${flat}?overview=full&geometries=geojson&alternatives=true`
+        `https://router.project-osrm.org/route/v1/driving/${viaList}?overview=full&geometries=geojson&alternatives=false`
       );
       const data = await response.json();
-
       if (data.routes?.length > 0) {
-        const routeData: RouteData[] = data.routes.map(
-          (route: {
-            geometry: { coordinates: [number, number][] };
-            duration: number;
-            distance: number;
-          }) => ({
-            coordinates: route.geometry.coordinates,
-            duration: route.duration,
-            distance: route.distance,
-          })
-        );
-        setRoutes(routeData);
-      }
+        osrmRoutes.push({
+            coordinates: data.routes[0].geometry.coordinates,
+            duration: data.routes[0].duration,
+            distance: data.routes[0].distance}
+          );
+        }
+        setRoutes(osrmRoutes);
     } catch (error) {
       console.error("Failed to fetch routes:", error);
     }
@@ -616,6 +626,21 @@ export default function BookingPage() {
                     className="border-2 rounded px-3 py-2"
                     onChange={(e) => {
                       setFormData({ ...formData, Via: e.target.value });
+                    }}
+                    onBlur={async (e) => {
+                      if (e.target.value == "") {
+                        return; // Do not try to update route if field is empty
+                      }
+                      const latlon = await getLatLon(e.target.value)
+                      if (latlon != null) {
+                        setVias([{ name: latlon.name, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) }]);
+                        addFormFeedback("Via", ""); // Reset any validation errors
+                        e.target.value = latlon.full_address;
+                      } else {
+                        // Reset start and routes if no result is found.
+                        addFormFeedback("Via", "No results found for this search term.");
+                        setVias([]);
+                      }
                     }}
                   ></input>
                 </div>
@@ -1143,16 +1168,27 @@ export default function BookingPage() {
             <MapMarker longitude={start.lng} latitude={start.lat}>
               <MarkerContent>
                 <div className="size-5 rounded-full bg-green-500 border-2 border-white shadow-lg" />
-                <MarkerLabel position="top">{start.name}</MarkerLabel>
+                <MarkerLabel position="top" className="bg-white p-1 rounded opacity-80">{start.name}</MarkerLabel>
               </MarkerContent>
             </MapMarker>
             )}
+
+            { vias && vias.length > 0 && vias.map((via, index) => (
+              via.lat && via.lng && (
+                <MapMarker key={index} longitude={via.lng} latitude={via.lat}>
+                  <MarkerContent>
+                    <div className="size-5 rounded-full bg-yellow-500 border-2 border-white shadow-lg" />
+                    <MarkerLabel position="top" className="bg-white p-1 rounded opacity-80">{via.name}</MarkerLabel>
+                  </MarkerContent>
+                </MapMarker>
+              )
+            ))}
 
             {end && end.lat && end.lng && (
             <MapMarker longitude={end.lng} latitude={end.lat}>
               <MarkerContent>
                 <div className="size-5 rounded-full bg-red-500 border-2 border-white shadow-lg" />
-                <MarkerLabel position="bottom">{end.name}</MarkerLabel>
+                <MarkerLabel position="top" className="bg-white p-1 rounded opacity-80">{end.name}</MarkerLabel>
               </MarkerContent>
             </MapMarker>
             )}
