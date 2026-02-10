@@ -163,6 +163,8 @@ export default function BookingPage() {
     } else if (formData.DropoffLoc.length > 100) {
       addFormFeedback("DropoffLoc", "Drop-off location too long.");
       fail = true;
+    } else if (!routes || routes.length == 0) {
+      addFormFeedback("DropoffLoc", "Unable to find route. Please check the address or try a different location.");
     }
 
     // Flight number (LLN{1,4}) and Airport
@@ -391,14 +393,22 @@ export default function BookingPage() {
 
   // Use Nominatim to return latitude and longitude from address.
   async function getLatLon(address: string): Promise<{ lat: string; lon: string; name: string; full_address: string } | null> {
-    // Specify UK to improve accuracy
-    // Arbitrary but effective way to limit search to the UK without imposing distance limits
-    address = address.toUpperCase().replace("UK", "").replace("UNITED KINGDOM", "").trim() + ", United Kingdom";
-    const result = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`);
+    // Specify English for results regardless of browser.
+    const headers = new Headers();
+    headers.append("Accept-Language", "en-GB");
+    const result = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`, { headers });
     if (result.ok) {
       const data = await result.json();
       if (data && data.length > 0) {
-        return { lat: data[0].lat, lon: data[0].lon, name: data[0].name, full_address: data[0].display_name };
+        const display_name = data[0].display_name
+        // Check if last item in the array made by splititng with , is United Kingdom to ensure location is not abroad.
+        if (display_name.split(",")[display_name.split(",").length-1].trim() === "United Kingdom") {
+          return { lat: data[0].lat, lon: data[0].lon, name: data[0].name, full_address: display_name };
+        } else {
+          if (!address.includes("United Kingdom")) {
+            return getLatLon(address + ", United Kingdom"); // Try appending "United Kingdom" to the search query if initial search isn't a place in the UK.
+          }
+        }
       }
     };
     return null;
