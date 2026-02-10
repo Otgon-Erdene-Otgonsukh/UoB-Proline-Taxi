@@ -554,7 +554,7 @@ export function SimpleCalendar({
             if (monthOnly || yearOnly) {
                 return (
                     <Typography variant="body2" fontWeight={600}>
-                        연도 선택
+                        Choose Year
                     </Typography>
                 );
             }
@@ -579,7 +579,7 @@ export function SimpleCalendar({
                         fontWeight={600}
                         sx={{ flex: 1, textAlign: "center" }}
                     >
-                        연도 선택
+                        Choose Year
                     </Typography>
                     <Box sx={{ width: 28 }} />
                 </>
