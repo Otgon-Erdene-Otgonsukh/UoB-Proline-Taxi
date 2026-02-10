@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import sendReq from "@/backend/register/send_req";
 import bcrypt from "bcryptjs";
 import prisma from "@/utils/client";
 
@@ -89,6 +90,7 @@ export async function POST(req: Request) {
         },
       });
     }
+    await sendReq(firstName, mail)
     return NextResponse.json({
       status: 200,
       message: "User is created successfully.",

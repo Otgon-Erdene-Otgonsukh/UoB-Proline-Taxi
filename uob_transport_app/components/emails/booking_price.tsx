@@ -9,7 +9,7 @@ import {
   Hr,
 } from "@react-email/components";
 
-export default function BookingInfo({
+export default function BookingPrice({
   from,
   via,
   to,
@@ -22,6 +22,7 @@ export default function BookingInfo({
   surName,
   phoneNumber,
   department,
+  price="100",
 }: {
   from: string;
   via: string;
@@ -35,6 +36,7 @@ export default function BookingInfo({
   surName: string;
   phoneNumber: string;
   department: string;
+  price: string;
 }) {
   return (
     <Html>
@@ -43,22 +45,40 @@ export default function BookingInfo({
         <Container className="mx-auto p-1 bg-gray-50">
           <Section className="bg-white rounded-lg p-6 max-w-2xl mx-auto">
             {/* Header */}
-            <Section className="text-center mb-6 bg-yellow-100 p-6 rounded-lg">
-              <Text className="text-2xl font-bold text-yellow-600 mb-2">
-                Booking Submitted Successfully! ➤
+            <Section className="text-center mb-6 bg-blue-100 p-6 rounded-lg">
+              <Text className="text-2xl font-bold text-blue-600 mb-2">
+                Action Required: Booking Price Assigned
               </Text>
               <Text className="text-lg text-gray-600">
-                Your booking is awaiting approval
+                Please review and approve this booking
               </Text>
             </Section>
 
             <Hr className="border-gray-300 my-3" />
 
-            <Text>
-              Your booking with the following details has been forwarded to
-              admin and university staff, who will assign a purchase order (PO)
-              number and pricing.
+            <Text className="text-gray-700 mb-4">
+              The <strong>admin</strong> has reviewed this booking and attached a <strong>price</strong>. As finance staff, please review the
+              booking details below and take the following actions:
             </Text>
+            <Text className="text-gray-700 mb-2 ml-4">
+              <strong>1.</strong> Review the journey details and pricing
+            </Text>
+            <Text className="text-gray-700 mb-2 ml-4">
+              <strong>2.</strong> Approve or reject this booking
+            </Text>
+            <Text className="text-gray-700 mb-4 ml-4">
+              <strong>3.</strong> If approved, attach the purchase order (PO)
+              number
+            </Text>
+
+            <Section className="bg-blue-50 p-4 rounded-lg mb-4">
+              <Text className="text-gray-700">
+                <strong>Booking Price:</strong>{" "}
+                <span className="text-[16px] text-green-600 font-semibold">
+                  £{price}
+                </span>
+              </Text>
+            </Section>
 
             <Hr className="border-gray-300 my-3" />
             <Text className="text-2xl font-semibold text-gray-800">
@@ -191,19 +211,20 @@ export default function BookingInfo({
                 className="bg-blue-600 text-white font-semibold py-3 px-8 rounded-lg cursor-pointer"
                 href={
                   process.env.NODE_ENV === "development"
-                    ? "http://localhost:3000/home"
-                    : "http://uob-transport-alb-848507222.eu-west-2.elb.amazonaws.com/home"
+                    ? "http://localhost:3000/dep-dashboard"
+                    : "http://uob-transport-alb-848507222.eu-west-2.elb.amazonaws.com/dep-dashboard"
                 }
               >
-                Check Booking Status
+                Review Booking
               </Button>
             </Section>
 
             {/* Footer */}
             <Section className="mt-8">
               <Text className="text-sm text-gray-500 text-center">
-                You will receive a confirmation email once your booking has been
-                resonded by the department and admin.
+                Please process this booking at your earliest convenience. The
+                passenger will be notified once you approve or reject the
+                booking.
               </Text>
               <Text className="text-sm text-gray-500 text-center mt-2">
                 Thank you for using UoB Taxi & Chauffeur!
