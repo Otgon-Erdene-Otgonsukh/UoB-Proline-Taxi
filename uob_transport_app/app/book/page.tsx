@@ -34,12 +34,12 @@ import { LngLatLike } from "maplibre-gl";
 export default function BookingPage() {
   // Attach common locations as keys to hashmapped Lat/Lon for routing.
   const commonLocations = {
-    "Queens Building": {"lat": "51.456890", "lng": "-2.601892"},
-    "Merchant Venturers Building": {"lat": "51.456111", "lng": "-2.602830"},
-    "Richmond Building": {"lat": "51.456996", "lng": "-2.613267"},
-    "Victoria Rooms": {"lat": "51.458173", "lng": "-2.609358"},
-    "Wills Memorial Building": {"lat": "51.455927", "lng": "-2.604696"},
-    "Physics Building": {"lat": "51.458986", "lng": "-2.602204"},
+    "Queens Building": { "lat": "51.456890", "lng": "-2.601892" },
+    "Merchant Venturers Building": { "lat": "51.456111", "lng": "-2.602830" },
+    "Richmond Building": { "lat": "51.456996", "lng": "-2.613267" },
+    "Victoria Rooms": { "lat": "51.458173", "lng": "-2.609358" },
+    "Wills Memorial Building": { "lat": "51.455927", "lng": "-2.604696" },
+    "Physics Building": { "lat": "51.458986", "lng": "-2.602204" },
   };
 
   const session = useSession();
@@ -223,14 +223,6 @@ export default function BookingPage() {
       pickupDateTime = targetDateTime;
     }
 
-    // Check for return pick up time cannot be before the initial pick up time of the first trip
-    if (isReturnChecked) {
-      if (returnDateTime <= pickupDateTime) {
-        addFormFeedback("ReturnTime", "Invalid return trip pick-up time");
-        addFormFeedback("ReturnDate", " ");
-        fail = true;
-      }
-    }
 
     // Phone number
     // Some additional leniency for international numbers may need to be added later.
@@ -427,12 +419,12 @@ export default function BookingPage() {
       const neLat = Math.max(start.lat, end.lat);
 
       // Check bounds are LngLatLike type for fitBounds function.
-      const bounds: [LngLatLike, LngLatLike] = [[swLng, swLat],[neLng, neLat]];
+      const bounds: [LngLatLike, LngLatLike] = [[swLng, swLat], [neLng, neLat]];
       mapRef.current?.fitBounds(bounds, { padding: 100 });
     }
   }
 
-  async function fetchRoutes(slat : number, slon : number, flat: number, flon: number) {
+  async function fetchRoutes(slat: number, slon: number, flat: number, flon: number) {
     try {
       const response = await fetch(
         `https://router.project-osrm.org/route/v1/driving/${slon},${slat};${flon},${flat}?overview=full&geometries=geojson&alternatives=true`
@@ -457,16 +449,16 @@ export default function BookingPage() {
       console.error("Failed to fetch routes:", error);
     }
   }
-  
 
-    // Sort routes: non-selected first, selected last (renders on top)
-    const sortedRoutes = routes
-      .map((route, index) => ({ route, index }))
-      .sort((a, b) => {
-        if (a.index === selectedIndex) return 1;
-        if (b.index === selectedIndex) return -1;
-        return 0;
-      });
+
+  // Sort routes: non-selected first, selected last (renders on top)
+  const sortedRoutes = routes
+    .map((route, index) => ({ route, index }))
+    .sort((a, b) => {
+      if (a.index === selectedIndex) return 1;
+      if (b.index === selectedIndex) return -1;
+      return 0;
+    });
 
   return (
     <div className="flex min-h-screen justify-center items-center font-inter p-4">
@@ -483,9 +475,8 @@ export default function BookingPage() {
             {/*should go to some confirmed page or alike, currently goes to homepage*/}
             <div className="flex flex-col gap-4">
               <div
-                className={`flex flex-col ${
-                  isManualChecked || isFlightChecked ? "text-gray-400" : ""
-                }`}
+                className={`flex flex-col ${isManualChecked || isFlightChecked ? "text-gray-400" : ""
+                  }`}
               >
                 {/*using the custom theme above*/}
                 <ThemeProvider theme={inputTheme}>
@@ -531,9 +522,8 @@ export default function BookingPage() {
                     </Select>
                     <FormHelperText
                       sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
-                      className={`${
-                        formFeedback.CommonLoc != "" ? "" : "hidden"
-                      }`}
+                      className={`${formFeedback.CommonLoc != "" ? "" : "hidden"
+                        }`}
                     >
                       {formFeedback.CommonLoc}
                     </FormHelperText>
@@ -545,25 +535,25 @@ export default function BookingPage() {
                 className="flex flex-row justify-start gap-6"
               >
                 {!isFlightChecked && (
-                <label
-                  htmlFor="manual"
-                  className="inline-flex items-center cursor-pointer gap-2"
-                >
-                  <span className="text-sm font-medium text-gray-900">
-                    Manually Enter
-                  </span>
-                  <input
-                    id="manual"
-                    type="checkbox"
-                    checked={isManualChecked}
+                  <label
+                    htmlFor="manual"
+                    className="inline-flex items-center cursor-pointer gap-2"
+                  >
+                    <span className="text-sm font-medium text-gray-900">
+                      Manually Enter
+                    </span>
+                    <input
+                      id="manual"
+                      type="checkbox"
+                      checked={isManualChecked}
                       onChange={(e) => {
                         setIsManualChecked(e.target.checked);
                         setFormData({ ...formData, CustomLoc: "" });
                       }}
-                    className="sr-only peer"
-                  />
-                  <div className="relative w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-gray-300 peer-checked:bg-[#4a4a4a] peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
-                </label>
+                      className="sr-only peer"
+                    />
+                    <div className="relative w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-gray-300 peer-checked:bg-[#4a4a4a] peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+                  </label>
                 )}
                 <label
                   htmlFor="flight"
@@ -628,9 +618,8 @@ export default function BookingPage() {
                   <input
                     id="custom"
                     placeholder="Enter"
-                    className={`border-2 rounded px-3 py-2 ${
-                      formFeedback.CustomLoc == "" ? "" : "border-red-700"
-                    }`}
+                    className={`border-2 rounded px-3 py-2 ${formFeedback.CustomLoc == "" ? "" : "border-red-700"
+                      }`}
                     onChange={(e) => {
                       setFormData({ ...formData, CustomLoc: e.target.value });
                     }}
@@ -643,9 +632,8 @@ export default function BookingPage() {
                   ></input>
                   <FormHelperText
                     sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
-                    className={`${
-                      formFeedback.CustomLoc != "" ? "" : "hidden"
-                    }`}
+                    className={`${formFeedback.CustomLoc != "" ? "" : "hidden"
+                      }`}
                   >
                     {formFeedback.CustomLoc}
                   </FormHelperText>
@@ -678,18 +666,16 @@ export default function BookingPage() {
                     <input
                       id="flightNum"
                       placeholder="AB1234"
-                      className={`border-2 rounded px-3 py-2 ${
-                        formFeedback.FlightNum == "" ? "" : "border-red-700"
-                      }`}
+                      className={`border-2 rounded px-3 py-2 ${formFeedback.FlightNum == "" ? "" : "border-red-700"
+                        }`}
                       onChange={(e) => {
                         setFormData({ ...formData, FlightNum: e.target.value });
                       }}
                     ></input>
                     <FormHelperText
                       sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
-                      className={`${
-                        formFeedback.FlightNum != "" ? "" : "hidden"
-                      }`}
+                      className={`${formFeedback.FlightNum != "" ? "" : "hidden"
+                        }`}
                     >
                       {formFeedback.FlightNum}
                     </FormHelperText>
@@ -701,18 +687,16 @@ export default function BookingPage() {
                     <input
                       id="airport"
                       placeholder="Bristol Airport"
-                      className={`border-2 rounded px-3 py-2 ${
-                        formFeedback.Airport == "" ? "" : "border-red-700"
-                      }`}
+                      className={`border-2 rounded px-3 py-2 ${formFeedback.Airport == "" ? "" : "border-red-700"
+                        }`}
                       onChange={(e) => {
                         setFormData({ ...formData, Airport: e.target.value });
                       }}
                     ></input>
                     <FormHelperText
                       sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
-                      className={`${
-                        formFeedback.Airport != "" ? "" : "hidden"
-                      }`}
+                      className={`${formFeedback.Airport != "" ? "" : "hidden"
+                        }`}
                     >
                       {formFeedback.Airport}
                     </FormHelperText>
@@ -747,20 +731,56 @@ export default function BookingPage() {
                     setFormData({ ...formData, DropoffLoc: e.target.value });
                   }}
                   onBlur={async (e) => {
-                      const latlon = await getLatLon(e.target.value)
-                      if (latlon != null) {
-                        setEnd({ name: e.target.value, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) });
-                      }
-                    }}
-                  className={`border-2 rounded px-3 py-2 ${
-                    formFeedback.DropoffLoc == "" ? "" : "border-red-700"
-                  }`}
+                    const latlon = await getLatLon(e.target.value)
+                    if (latlon != null) {
+                      setEnd({ name: e.target.value, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) });
+                    }
+                  }}
+                  className={`border-2 rounded px-3 py-2 ${formFeedback.DropoffLoc == "" ? "" : "border-red-700"
+                    }`}
                 ></input>
                 <FormHelperText
                   sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
                   className={`${formFeedback.DropoffLoc != "" ? "" : "hidden"}`}
                 >
                   {formFeedback.DropoffLoc}
+                </FormHelperText>
+              </div>
+              <div className="flex flex-col text-sm">
+                <label htmlFor="pickupDate" className="mb-1">
+                  Pick-up date and time
+                </label>
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-2.5">
+                  <input
+                    id="pickupDate"
+                    type="date"
+                    className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0 ${formFeedback.PickupDate == "" ? "" : "border-red-700"
+                      }`}
+                    onChange={(e) => {
+                      setFormData({ ...formData, PickupDate: e.target.value });
+                    }}
+                  ></input>
+                  <input
+                    id="pickupTime"
+                    type="time"
+                    className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0 ${formFeedback.PickupTime == "" ? "" : "border-red-700"
+                      }`}
+                    onChange={(e) => {
+                      setFormData({ ...formData, PickupTime: e.target.value });
+                    }}
+                  ></input>
+                </div>
+                <FormHelperText
+                  sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
+                  className={`${formFeedback.PickupDate != "" ? "" : "hidden"}`}
+                >
+                  {formFeedback.PickupDate}
+                </FormHelperText>
+                <FormHelperText
+                  sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
+                  className={`${formFeedback.PickupTime != "" ? "" : "hidden"}`}
+                >
+                  {formFeedback.PickupTime}
                 </FormHelperText>
               </div>
               <div>
@@ -785,7 +805,7 @@ export default function BookingPage() {
                 <div className="flex flex-col gap-4">
                   <div className="flex flex-col">
                     <label htmlFor="returnPickUp" className="mb-1 text-sm">
-                      Pick-up location
+                      Retur Trip Pick-up location
                     </label>
                     <input
                       id="returnPickUp"
@@ -796,7 +816,7 @@ export default function BookingPage() {
                   </div>
                   <div className="flex flex-col">
                     <label htmlFor="returnDropOff" className="mb-1 text-sm">
-                      Drop-off location
+                      Retur Trip Drop-off location
                     </label>
                     <input
                       id="returnDropOff"
@@ -808,16 +828,15 @@ export default function BookingPage() {
                     ></input>
                   </div>
                   <div className="flex flex-col text-sm">
-                    <label htmlFor="pickupDate" className="mb-1">
+                    <label htmlFor="returnDate" className="mb-1">
                       Return trip pick-up date and time
                     </label>
                     <div className="flex flex-col sm:flex-row gap-2 sm:gap-2.5">
                       <input
-                        id="pickupDate"
+                        id="returnDate"
                         type="date"
-                        className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0 ${
-                          formFeedback.ReturnDate == "" ? "" : "border-red-700"
-                        }`}
+                        className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0 ${formFeedback.ReturnDate == "" ? "" : "border-red-700"
+                          }`}
                         onChange={(e) => {
                           setFormData({
                             ...formData,
@@ -826,11 +845,10 @@ export default function BookingPage() {
                         }}
                       ></input>
                       <input
-                        id="pickupTime"
+                        id="returnTime"
                         type="time"
-                        className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0 ${
-                          formFeedback.ReturnTime == "" ? "" : "border-red-700"
-                        }`}
+                        className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0 ${formFeedback.ReturnTime == "" ? "" : "border-red-700"
+                          }`}
                         onChange={(e) => {
                           setFormData({
                             ...formData,
@@ -841,54 +859,14 @@ export default function BookingPage() {
                     </div>
                     <FormHelperText
                       sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
-                      className={`${
-                        formFeedback.ReturnTime != "" ? "" : "hidden"
-                      }`}
+                      className={`${formFeedback.ReturnTime != "" ? "" : "hidden"
+                        }`}
                     >
                       {formFeedback.ReturnTime}
                     </FormHelperText>
                   </div>
                 </div>
               )}
-              <div className="flex flex-col text-sm">
-                <label htmlFor="pickupDate" className="mb-1">
-                  Pick-up date and time
-                </label>
-                <div className="flex flex-col sm:flex-row gap-2 sm:gap-2.5">
-                  <input
-                    id="pickupDate"
-                    type="date"
-                    className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0 ${
-                      formFeedback.PickupDate == "" ? "" : "border-red-700"
-                    }`}
-                    onChange={(e) => {
-                      setFormData({ ...formData, PickupDate: e.target.value });
-                    }}
-                  ></input>
-                  <input
-                    id="pickupTime"
-                    type="time"
-                    className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0 ${
-                      formFeedback.PickupTime == "" ? "" : "border-red-700"
-                    }`}
-                    onChange={(e) => {
-                      setFormData({ ...formData, PickupTime: e.target.value });
-                    }}
-                  ></input>
-                </div>
-                <FormHelperText
-                  sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
-                  className={`${formFeedback.PickupDate != "" ? "" : "hidden"}`}
-                >
-                  {formFeedback.PickupDate}
-                </FormHelperText>
-                <FormHelperText
-                  sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
-                  className={`${formFeedback.PickupTime != "" ? "" : "hidden"}`}
-                >
-                  {formFeedback.PickupTime}
-                </FormHelperText>
-              </div>
               <div>
                 <h3 className="font-bold">Lead passenger details:</h3>
               </div>
@@ -899,9 +877,8 @@ export default function BookingPage() {
                 <input
                   id="name"
                   type="text"
-                  className={`border-2 rounded px-3 py-2 ${
-                    formFeedback.FirstName == "" ? "" : "border-red-700"
-                  }`}
+                  className={`border-2 rounded px-3 py-2 ${formFeedback.FirstName == "" ? "" : "border-red-700"
+                    }`}
                   onChange={(e) => {
                     setFormData({ ...formData, FirstName: e.target.value });
                   }}
@@ -920,9 +897,8 @@ export default function BookingPage() {
                 <input
                   id="surname"
                   type="text"
-                  className={`border-2 rounded px-3 py-2 ${
-                    formFeedback.Surname == "" ? "" : "border-red-700"
-                  }`}
+                  className={`border-2 rounded px-3 py-2 ${formFeedback.Surname == "" ? "" : "border-red-700"
+                    }`}
                   onChange={(e) => {
                     setFormData({ ...formData, Surname: e.target.value });
                   }}
@@ -958,9 +934,8 @@ export default function BookingPage() {
                     type="tel"
                     id="number"
                     placeholder="1234567890"
-                    className={`border-2 rounded flex-1 sm:px-3 py-2 min-w-0 w-full ${
-                      formFeedback.Number == "" ? "" : "border-red-700"
-                    }`}
+                    className={`border-2 rounded flex-1 sm:px-3 py-2 min-w-0 w-full ${formFeedback.Number == "" ? "" : "border-red-700"
+                      }`}
                     onChange={(e) => {
                       setFormData({ ...formData, Number: e.target.value });
                     }}
@@ -1019,9 +994,8 @@ export default function BookingPage() {
                   <input
                     id="mail"
                     type="email"
-                    className={`border-2 rounded px-3 py-2 ${
-                      formFeedback.Email == "" ? "" : "border-red-700"
-                    }`}
+                    className={`border-2 rounded px-3 py-2 ${formFeedback.Email == "" ? "" : "border-red-700"
+                      }`}
                     onChange={(e) => {
                       setFormData({ ...formData, Email: e.target.value });
                     }}
@@ -1057,9 +1031,8 @@ export default function BookingPage() {
                 </label>
                 <textarea
                   id="addInfo"
-                  className={`border-2 rounded px-3 py-2 min-h-20 ${
-                    formFeedback.AdditionalInfo == "" ? "" : "border-red-700"
-                  }`}
+                  className={`border-2 rounded px-3 py-2 min-h-20 ${formFeedback.AdditionalInfo == "" ? "" : "border-red-700"
+                    }`}
                   onChange={(e) => {
                     setFormData({
                       ...formData,
@@ -1071,9 +1044,8 @@ export default function BookingPage() {
                 ></textarea>
                 <FormHelperText
                   sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
-                  className={`${
-                    formFeedback.AdditionalInfo != "" ? "" : "hidden"
-                  }`}
+                  className={`${formFeedback.AdditionalInfo != "" ? "" : "hidden"
+                    }`}
                 >
                   {formFeedback.AdditionalInfo}
                 </FormHelperText>
@@ -1104,44 +1076,44 @@ export default function BookingPage() {
         </div>
 
         {/* Map Section */}
-        { /* https://mapcn.vercel.app/docs/routes */ }
+        { /* https://mapcn.vercel.app/docs/routes */}
         <div className="container hidden lg:block lg:w-1/2 w-full object-contain min-w-[600px] border-l-3 border-gray-700 rounded-[0px_5px_5px_0px] overflow-hidden">
-          { /* Lat and long are inverted by MAPCN here */ }
+          { /* Lat and long are inverted by MAPCN here */}
           <Map ref={mapRef} center={[-2.602, 51.458]} zoom={14}>
             {sortedRoutes.map(({ route, index }) => {
-            const isSelected = index === selectedIndex;
-            return (
-              <MapRoute
-                key={index}
-                coordinates={route.coordinates}
-                color={isSelected ? "#6366f1" : "#94a3b8"}
-                width={isSelected ? 6 : 5}
-                opacity={isSelected ? 1 : 0.6}
-                onClick={() => setSelectedIndex(index)}
-              />
-            );
-          })}
+              const isSelected = index === selectedIndex;
+              return (
+                <MapRoute
+                  key={index}
+                  coordinates={route.coordinates}
+                  color={isSelected ? "#6366f1" : "#94a3b8"}
+                  width={isSelected ? 6 : 5}
+                  opacity={isSelected ? 1 : 0.6}
+                  onClick={() => setSelectedIndex(index)}
+                />
+              );
+            })}
 
-          {start && start.lat && start.lng && ( // Only render marker when not null
-          <MapMarker longitude={start.lng} latitude={start.lat}>
-            <MarkerContent>
-              <div className="size-5 rounded-full bg-green-500 border-2 border-white shadow-lg" />
-              <MarkerLabel position="top">{start.name}</MarkerLabel>
-            </MarkerContent>
-          </MapMarker>
-          )}
+            {start && start.lat && start.lng && ( // Only render marker when not null
+              <MapMarker longitude={start.lng} latitude={start.lat}>
+                <MarkerContent>
+                  <div className="size-5 rounded-full bg-green-500 border-2 border-white shadow-lg" />
+                  <MarkerLabel position="top">{start.name}</MarkerLabel>
+                </MarkerContent>
+              </MapMarker>
+            )}
 
-          {end && end.lat && end.lng && (
-          <MapMarker longitude={end.lng} latitude={end.lat}>
-            <MarkerContent>
-              <div className="size-5 rounded-full bg-red-500 border-2 border-white shadow-lg" />
-              <MarkerLabel position="bottom">{end.name}</MarkerLabel>
-            </MarkerContent>
-          </MapMarker>
-          )}
-        </Map>
-      </div>
+            {end && end.lat && end.lng && (
+              <MapMarker longitude={end.lng} latitude={end.lat}>
+                <MarkerContent>
+                  <div className="size-5 rounded-full bg-red-500 border-2 border-white shadow-lg" />
+                  <MarkerLabel position="bottom">{end.name}</MarkerLabel>
+                </MarkerContent>
+              </MapMarker>
+            )}
+          </Map>
         </div>
       </div>
+    </div>
   );
 }
