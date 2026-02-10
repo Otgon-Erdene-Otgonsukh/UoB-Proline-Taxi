@@ -30,7 +30,6 @@ import {
 import { departments } from "@/model/models";
 import { Clock, Route } from "lucide-react";
 import { LngLatLike } from "maplibre-gl";
-import { StartOutlined } from "@mui/icons-material";
 
 export default function BookingPage() {
   // Attach common locations as keys to hashmapped Lat/Lon for routing.
