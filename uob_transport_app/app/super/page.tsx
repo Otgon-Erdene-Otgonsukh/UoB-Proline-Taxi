@@ -23,7 +23,9 @@ import {
   Select,
   MenuItem,
   InputLabel,
-  FormControl
+  FormControl,
+  Alert,
+  Snackbar,
 } from "@mui/material";
 import {
   KeyboardArrowLeft,
@@ -31,12 +33,14 @@ import {
   LastPage,
   FirstPage
 } from "@mui/icons-material"
+import sendRes from "@/backend/register/send_res";
 import { getUsersAsAdmin, updateUserAsAdmin } from "./request";
 import ViewDialog from "./userManageComponents/viewDialog";
 import EditDialog from "./userManageComponents/eidtDialog";
 import { userStatusToIntMap, userStatusToStrMap, roleStrMap, roles, roleReadableStrMap } from "./constants";
 import { getDepartmentsList } from "./requests";
 import ConfirmDialog from "@/components/confirmDIalog";
+import page from "../page";
 
 interface TablePaginationActionsProps {
   count: number;
@@ -119,13 +123,15 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
 
 const Page = () => {
   // Get NextAuth Session.
-  const { status } = useSession();
+  const { status, data } = useSession();
 
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
 
   const [pendingUsersData, setPendingUsersData] = useState<UserRecord[]>([]);
-  const [pendingUserCount, setPendingUserCount] = useState(0)
+  const [pendingUserCount, setPendingUserCount] = useState(0);
+  const [snackOpen, setSnackOpen] = useState(false);
+  const [severity, setSeverity] = useState<"success" | "error">("success")
   const [paginationMeta, setPaginationMeta] = useState({
     page: 0,
     pageSize: 10,
@@ -136,6 +142,12 @@ const Page = () => {
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/login");
+      return;
+    }
+
+    // Protect this route from logged in not admin users
+    if (status === "authenticated" && data.user.account_type !== "super_admin" && data.user.account_type !== "proline_staff") {
+      router.push("/home");
       return;
     }
 
@@ -155,7 +167,7 @@ const Page = () => {
       page: newPage
     })
     setIsLoading(true);
-    _rerenderTable()
+    _getData(newPage, paginationMeta.pageSize)
   };
 
   const handleChangePageSize = (
@@ -166,7 +178,7 @@ const Page = () => {
       pageSize: parseInt(event.target.value, 10),
     });
     setIsLoading(true)
-    _rerenderTable()
+    _getData(0, parseInt(event.target.value, 10))
   };
 
   // search form
@@ -182,9 +194,12 @@ const Page = () => {
   })
   const handleSubmitSearchForm = (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('submit');
     setIsLoading(true)
-    _rerenderTable()
+    setPaginationMeta({
+      page: 0,
+      pageSize: paginationMeta.pageSize,
+    })
+    _getData(0, paginationMeta.pageSize)
   }
 
   const [userDetail, setUserDetail] = useState<UserRecord>()
@@ -221,6 +236,11 @@ const Page = () => {
       if (res.status === 200) {
         setIsLoading(true)
         _rerenderTable()
+        setSnackOpen(true)
+        setSeverity("success")         
+      } else {
+        setSnackOpen(true)
+        setSeverity("error")
       }
     })
   };
@@ -234,16 +254,21 @@ const Page = () => {
       if (res.status === 200) {
         setIsLoading(true)
         _rerenderTable()
+        setSnackOpen(true)
+        setSeverity("success")        
+      } else {
+        setSnackOpen(true)
+        setSeverity("error")
       }
     })
   };
 
-  const _rerenderTable = () => {
+  const _getData = (page: number, pageSize: number) => {
     getUsersAsAdmin({
       name: undefined,
       ...searchFormInput,
-      page: paginationMeta.page,
-      pageSize: paginationMeta.pageSize
+      page,
+      pageSize
     }).then(res => {
       if (res.status === 200) {
         res.json().then(data => {
@@ -253,6 +278,20 @@ const Page = () => {
         })
       }
     })
+  }
+
+  const _rerenderTable = () => {
+    if (pendingUsersData.length === 1 && paginationMeta.page > 0) {
+      // if the last item on the current page is rejected, go back one page
+      setPaginationMeta({
+        page: paginationMeta.page - 1,
+        pageSize: paginationMeta.pageSize,
+      })
+      _getData(paginationMeta.page - 1, paginationMeta.pageSize)
+      return
+    } else {
+      _getData(paginationMeta.page, paginationMeta.pageSize)
+    }
   }
 
   return (
@@ -331,11 +370,11 @@ const Page = () => {
         </div>
 
         {isLoading ? (
-          <Typography sx={{ color: "gray", fontSize: 16, textAlign: "center" }}>
+          <Typography sx={{ color: "gray", fontSize: 16, textAlign: "center", my: 10 }}>
             Getting user data...
           </Typography>
         ) : pendingUsersData.length === 0 ? (
-          <Typography sx={{ color: "gray", fontSize: 16, textAlign: "center" }}>
+          <Typography sx={{ color: "gray", fontSize: 16, textAlign: "center", my: 10 }}>
             No users to show.
           </Typography>
         ) : (
@@ -373,7 +412,7 @@ const Page = () => {
                       <StyledTableCell>{row.name + ' ' + row.surname}</StyledTableCell>
                       <StyledTableCell>{row.email}</StyledTableCell>
                       <StyledTableCell>{row.phone_number}</StyledTableCell>
-                      {searchFormInput.role !== roleStrMap.normalUser ? (
+                      {searchFormInput.role !== roleStrMap.normalUser && searchFormInput.role !== roleStrMap.financeStaff ? (
                         <StyledTableCell>N/A</StyledTableCell>
                       ) : (
                         <StyledTableCell>{row.department?.dep_name}</StyledTableCell>
@@ -466,6 +505,9 @@ const Page = () => {
         confirmCallBack={() => { handleRejectUserRegister(userDetail!); setConfirmRejectDialogOpen(false); }}
         cancelCallBack={() => { setConfirmRejectDialogOpen(false); }}
       />
+      <Snackbar open={snackOpen} autoHideDuration={4000} onClose={() => {setSnackOpen(false)}} anchorOrigin={{vertical: "top", horizontal: "center"}}>
+        <Alert onClose={() => {setSnackOpen(false)}} severity={severity} variant="filled">{severity === "success" ? "Account registration response email sent!" : "There was an error sending response mail"}</Alert>
+      </Snackbar>
     </div>
   );
 };
