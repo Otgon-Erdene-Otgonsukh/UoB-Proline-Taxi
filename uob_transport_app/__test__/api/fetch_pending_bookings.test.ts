@@ -4,6 +4,7 @@
 import { NextRequest } from "next/server";
 import { GET } from "../../app/api/get_pending_bookings/route";
 import { getPendingBookings, getPendingBookingsCount } from "@/backend/pending_bookings/get_pending_bookings";
+import { auth } from "@/auth";
 
 // Mock the database function
 jest.mock("../../backend/pending_bookings/get_pending_bookings");
@@ -14,7 +15,7 @@ jest.mock("../../auth", () => ({
   })
 }));
 
-test("check if the res status is good", async () => {
+test("check if the res status is success", async () => {
   // Mock return value - fake booking data
   const mockBookings = [
     {
@@ -49,5 +50,37 @@ test("check if the res status is good", async () => {
   });
   expect(getPendingBookings).toHaveBeenCalledTimes(1);
 });
+
+test("check res status is fail when the api fails", async () => {  
+  (getPendingBookings as jest.Mock).mockRejectedValue(new Error("fail"));
+  const req = new NextRequest("http://localhost:3000/api/get_pending_bookings?page=1&pageSize=10", {
+    method: "GET",
+  });
+
+  const res = await GET(req);
+  expect(res.status).toBe(500);
+})
+
+test("the api responds with a fail status when session does not exist", async () => {
+  (auth as jest.Mock).mockResolvedValue(null);
+  const req = new NextRequest("http://localhost:3000/api/get_pending_bookings?page=1&pageSize=10", {
+    method: "GET",
+  });
+  
+  const res = await GET(req);
+  expect(res.status).toBe(401)
+})
+
+test("the api responds with fail status when page or pagesize query params are missing", async () => {
+  (auth as jest.Mock).mockResolvedValue({
+    user_id: 3
+  });
+  const req = new NextRequest("http://localhost:3000/api/get_pending_bookings", {
+    method: "GET",
+  });
+  
+  const res = await GET(req);
+  expect(res.status).toBe(201);
+})
 
 jest.clearAllMocks();
