@@ -43,9 +43,6 @@ export async function POST(request: Request) {
     const returnDT: Date | undefined = request_json["return_time"] ? new Date(request_json["return_time"]) : undefined;
     const dep_id: number = request_json["dep_id"];
 
-    console.log(dep_id);
-
-
     // Lat/lon fields are null as we introduce lat/lon automatically later on / vice versa.
     await createBooking(
       user_id,
@@ -119,7 +116,7 @@ export async function POST(request: Request) {
       });
 
       // Send Email
-      // await sesClient.send(input);
+      await sesClient.send(input);
     }
 
     return NextResponse.json({ status: 200 });
