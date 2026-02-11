@@ -13,7 +13,7 @@ import Image from "next/image";
 
 export default function AboutPage() {
   return (
-      <main className="flex flex-col ml-1 mx-5 md:mx-2 md:flex-row min-h-screen bg-gray-50">
+      <main className="flex flex-col ml-1 mx-5 md:mx-2 md:flex-row min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
         {/* Left hand side of page on md screen. */}
         <div className="md:w-3/5 flex flex-col items-center justify-center">
           <div className="shadow-lg/20 rounded-md w-full h-full p-15 ml-4 mt-3 mb-5 border-2 border-[#2c2c2c]">
