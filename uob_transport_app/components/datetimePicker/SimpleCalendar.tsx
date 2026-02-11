@@ -1,11 +1,3 @@
-/**
- * SimpleCalendar.tsx
- *
- * @license MIT
- * @copyright 2025 김영진 (Kim Young Jin)
- * @author 김영진 (ehfuse@gmail.com)
- */
-
 import React, {
     useState,
     useMemo,
@@ -22,24 +14,9 @@ import type { SimpleCalendarProps, ViewMode } from "./types";
 import { resolveLocale } from "./locale";
 import { getWeekInfo, isSameDay, isSameWeek } from "./utils";
 
-// 상수
 const HEADER_HEIGHT = 48;
 const FOOTER_HEIGHT = 48;
 
-/**
- * 간단한 MUI 스타일 달력 컴포넌트
- *
- * 구조:
- * calendar-root (flex column, 100% height)
- * ├── calendar-header (공통, 고정 높이 40px)
- * │   - viewMode에 따라 내용 변경
- * ├── calendar-content (flex: 1)
- * │   - [calendar] 요일 헤더 + 날짜 그리드
- * │   - [year] 연도 그리드 (OverlayScrollbar)
- * │   - [month] 월 그리드
- * └── calendar-footer (공통, 고정 높이 40px)
- *     - viewMode에 따라 버튼 변경
- */
 export function SimpleCalendar({
     selectedDate,
     onSelect,
@@ -51,15 +28,14 @@ export function SimpleCalendar({
     showToday = true,
     showFooter: showFooterProp = true,
     autoApply = false,
-    // 년월만 선택
+
     monthOnly = false,
-    // 년도만 선택
     yearOnly = false,
-    // 년월/년도 변경 콜백
+
     onMonthChange,
     onYearChange,
     onWeekChange,
-    // 시간 선택 관련
+
     showTimePicker = false,
     timeValue,
     onTimeChange,
@@ -69,24 +45,23 @@ export function SimpleCalendar({
     minuteStep = 1,
     secondStep = 1,
     hideDisabledTime = false,
-    // 로케일 관련
     locale,
     texts,
 }: SimpleCalendarProps) {
-    // 스타일 옵션 추출 (기본값 적용)
+
     const selectedColor = styles?.selectedColor ?? "primary.main";
     const todayBorderColor = styles?.todayBorderColor ?? selectedColor;
     const holidayColor = styles?.holidayColor ?? "error.main";
     const saturdayColor = styles?.saturdayColor ?? "primary.main";
 
-    // 로케일 해석 및 병합 (texts가 있으면 부분 덮어쓰기)
+
     const resolvedLocale = resolveLocale(locale);
     const mergedLocale = useMemo(
         () => (texts ? { ...resolvedLocale, ...texts } : resolvedLocale),
         [resolvedLocale, texts],
     );
 
-    // 유효하지 않은 Date 필터링
+
     const validHolidays = useMemo(
         () => holidays.filter((d) => d instanceof Date && !isNaN(d.getTime())),
         [holidays],
@@ -97,22 +72,22 @@ export function SimpleCalendar({
         if (selectedDate) return new Date(selectedDate);
         return new Date(today.getFullYear(), today.getMonth(), 1);
     });
-    // yearOnly일 때는 year 뷰로, monthOnly일 때는 month 뷰로 시작
+
     const [viewMode, setViewMode] = useState<ViewMode>(
         yearOnly ? "year" : monthOnly ? "month" : "calendar",
     );
     const [tempYear, setTempYear] = useState<number>(viewDate.getFullYear());
-    // monthOnly 모드에서 임시 월 상태 (autoApply가 false일 때 사용)
+
     const [tempMonth, setTempMonth] = useState<number | null>(null);
-    // yearOnly 모드에서 임시 년도 상태 (autoApply가 false일 때 사용)
+
     const [tempSelectedYear, setTempSelectedYear] = useState<number | null>(
         null,
     );
-    // 임시 선택 날짜 (확인 버튼 누르기 전까지 보관)
+
     const [tempSelectedDate, setTempSelectedDate] = useState<Date | null>(
         selectedDate,
     );
-    // 임시 시간 (확인 버튼 누르기 전까지 보관)
+
     const [tempTime, setTempTime] = useState<{
         hour: number;
         minute: number;
@@ -136,11 +111,11 @@ export function SimpleCalendar({
     const year = viewDate.getFullYear();
     const month = viewDate.getMonth();
 
-    // refs
+
     const yearScrollRef = useRef<OverlayScrollbarRef>(null);
     const contentRef = useRef<HTMLDivElement>(null);
 
-    // 달력 날짜 생성 (항상 42칸 = 6주, 이전/다음 달 포함)
+
     const calendarDays = useMemo(() => {
         const firstDay = new Date(year, month, 1);
         const lastDay = new Date(year, month + 1, 0);
@@ -149,19 +124,19 @@ export function SimpleCalendar({
 
         const days: Date[] = [];
 
-        // 이전 달 날짜
-        const prevMonth = new Date(year, month, 0); // 이전 달 마지막 날
+
+        const prevMonth = new Date(year, month, 0);
         const prevMonthDays = prevMonth.getDate();
         for (let i = startPadding - 1; i >= 0; i--) {
             days.push(new Date(year, month - 1, prevMonthDays - i));
         }
 
-        // 현재 달
+
         for (let d = 1; d <= daysInMonth; d++) {
             days.push(new Date(year, month, d));
         }
 
-        // 다음 달 날짜 (42칸 채우기)
+
         let nextDay = 1;
         while (days.length < 42) {
             days.push(new Date(year, month + 1, nextDay++));
@@ -170,7 +145,7 @@ export function SimpleCalendar({
         return days;
     }, [year, month]);
 
-    // 연도 목록 생성 (과거 50년 ~ 미래 50년)
+
     const yearList = useMemo(() => {
         const currentYear = today.getFullYear();
         const years: number[] = [];
@@ -206,7 +181,7 @@ export function SimpleCalendar({
         return false;
     };
 
-    // 시간이 변경되었는지 확인
+
     const isTimeChanged = (
         hour: number,
         minute: number,
@@ -225,13 +200,13 @@ export function SimpleCalendar({
         return false;
     };
 
-    // 년도가 변경되었는지 확인 (selectedDate 또는 오늘 날짜 기준)
+
     const isYearChanged = (newYear: number): boolean => {
         const compareDate = selectedDate || today;
         return compareDate.getFullYear() !== newYear;
     };
 
-    // 월이 변경되었는지 확인 (selectedDate 또는 오늘 날짜 기준, month는 1-indexed)
+
     const isMonthChanged = (newYear: number, newMonth: number): boolean => {
         const compareDate = selectedDate || today;
         return (
@@ -240,7 +215,7 @@ export function SimpleCalendar({
         );
     };
 
-    // 주가 변경되었는지 확인
+
     const isWeekChanged = (date: Date): boolean => {
         const compareDate = selectedDate || today;
         return !isSameWeek(date, compareDate);
@@ -250,7 +225,7 @@ export function SimpleCalendar({
         const newDate = new Date(year, month - 1, 1);
         setViewDate(newDate);
         setTempSelectedDate(null);
-        // 월 변경 콜백 호출
+
         onMonthChange?.(newDate.getFullYear(), newDate.getMonth() + 1);
     };
 
@@ -258,11 +233,11 @@ export function SimpleCalendar({
         const newDate = new Date(year, month + 1, 1);
         setViewDate(newDate);
         setTempSelectedDate(null);
-        // 월 변경 콜백 호출
+
         onMonthChange?.(newDate.getFullYear(), newDate.getMonth() + 1);
     };
 
-    // 휠 이벤트로 이전/다음 달 이동
+
     const handleWheel = useCallback(
         (e: React.WheelEvent) => {
             if (viewMode !== "calendar") return;
@@ -279,11 +254,11 @@ export function SimpleCalendar({
     const handleDateClick = (date: Date) => {
         if (!isDateDisabled(date)) {
             if (autoApply) {
-                // autoApply가 true면 바로 적용 (닫지 않음)
-                // 날짜가 변경되었을 때만 이벤트 발생
+
+
                 if (!isSameDay(selectedDate, date)) {
                     onSelect(date);
-                    // 주 변경 콜백 (변경되었을 때만)
+
                     if (isWeekChanged(date)) {
                         const weekInfo = getWeekInfo(date);
                         onWeekChange?.(
@@ -293,7 +268,7 @@ export function SimpleCalendar({
                         );
                     }
                 }
-                // 시간 선택이 있으면 시간도 같이 적용 (변경되었을 때만)
+
                 if (
                     showTimePicker &&
                     onTimeChange &&
@@ -323,19 +298,19 @@ export function SimpleCalendar({
             const todayMonth = today.getMonth();
 
             if (autoApply) {
-                // autoApply가 true면 바로 적용 (닫지 않음)
-                // 현재 viewDate와 비교해서 년/월 이벤트 발생
+
+
                 if (year !== todayYear) {
                     onYearChange?.(todayYear);
                 }
                 if (year !== todayYear || month !== todayMonth) {
                     onMonthChange?.(todayYear, todayMonth + 1);
                 }
-                // 날짜가 변경되었을 때만 onSelect 발생
+
                 if (!isSameDay(selectedDate, today)) {
                     onSelect(today);
                 }
-                // 시간 선택이 있으면 시간도 같이 적용 (변경되었을 때만)
+
                 if (
                     showTimePicker &&
                     onTimeChange &&
@@ -363,10 +338,10 @@ export function SimpleCalendar({
 
     const handleConfirm = () => {
         if (tempSelectedDate) {
-            // 날짜가 변경되었을 때만 이벤트 발생
+
             if (!isSameDay(selectedDate, tempSelectedDate)) {
                 onSelect(tempSelectedDate);
-                // 주 변경 콜백 (변경되었을 때만)
+
                 if (isWeekChanged(tempSelectedDate)) {
                     const weekInfo = getWeekInfo(tempSelectedDate);
                     onWeekChange?.(
@@ -377,7 +352,7 @@ export function SimpleCalendar({
                 }
             }
         }
-        // 시간 선택이 있으면 시간도 적용 (변경되었을 때만)
+
         if (
             showTimePicker &&
             onTimeChange &&
@@ -394,7 +369,7 @@ export function SimpleCalendar({
         onClose();
     };
 
-    // 임시 시간 변경 핸들러
+
     const handleTempTimeChange = (
         hour: number,
         minute: number,
@@ -406,7 +381,7 @@ export function SimpleCalendar({
             second: second ?? 0,
         });
 
-        // autoApply면 바로 적용 (변경되었을 때만)
+
         if (autoApply && onTimeChange && isTimeChanged(hour, minute, second)) {
             const hasSeconds =
                 timeFormat === "HH:mm:ss" || timeFormat === "hh:mm:ss";
@@ -414,31 +389,31 @@ export function SimpleCalendar({
         }
     };
 
-    // 년월 타이틀 클릭 → 연도 선택 모드
+
     const handleTitleClick = () => {
         setTempYear(year);
         setViewMode("year");
     };
 
-    // 연도 선택
+
     const handleYearSelect = (selectedYear: number) => {
         if (yearOnly) {
             if (autoApply) {
-                // autoApply가 true면 바로 적용하고 닫기 (변경되었을 때만)
+
                 if (isYearChanged(selectedYear)) {
                     onYearChange?.(selectedYear);
                 }
                 onClose();
             } else {
-                // autoApply가 false면 임시 저장만
+
                 setTempSelectedYear(selectedYear);
             }
         } else if (monthOnly) {
-            // monthOnly 모드: 월까지 선택해야 최종이므로 년도 선택 시에는 이벤트 발생 안함
+
             setTempYear(selectedYear);
             setViewMode("month");
         } else {
-            // 일반 캘린더 모드: 년도 선택 시 onYearChange 호출 (현재 viewDate 기준)
+
             if (year !== selectedYear) {
                 onYearChange?.(selectedYear);
             }
@@ -447,10 +422,10 @@ export function SimpleCalendar({
         }
     };
 
-    // yearOnly 모드에서 확인 버튼 클릭
+
     const handleYearConfirm = () => {
         if (tempSelectedYear !== null) {
-            // 년도가 변경되었을 때만 이벤트 발생
+
             if (isYearChanged(tempSelectedYear)) {
                 onYearChange?.(tempSelectedYear);
             }
@@ -458,11 +433,11 @@ export function SimpleCalendar({
         onClose();
     };
 
-    // 월 선택
+
     const handleMonthSelect = (selectedMonth: number) => {
         if (monthOnly) {
             if (autoApply) {
-                // autoApply가 true면 바로 적용하고 닫기 (변경되었을 때만)
+
                 if (isYearChanged(tempYear)) {
                     onYearChange?.(tempYear);
                 }
@@ -471,13 +446,13 @@ export function SimpleCalendar({
                 }
                 onClose();
             } else {
-                // autoApply가 false면 임시 저장만
+
                 setTempMonth(selectedMonth);
             }
         } else {
-            // 일반 캘린더 모드: 년/월 선택 뷰에서 월을 선택하면 해당 월로 이동
+
             const newDate = new Date(tempYear, selectedMonth, 1);
-            // 월 변경 콜백 호출 (현재 viewDate 기준으로 변경되었을 때만)
+
             if (year !== tempYear || month !== selectedMonth) {
                 onMonthChange?.(tempYear, selectedMonth + 1);
             }
@@ -487,10 +462,10 @@ export function SimpleCalendar({
         }
     };
 
-    // monthOnly 모드에서 확인 버튼 클릭
+
     const handleMonthConfirm = () => {
         if (tempMonth !== null) {
-            // 년월이 변경되었을 때만 이벤트 발생
+
             if (isYearChanged(tempYear)) {
                 onYearChange?.(tempYear);
             }
@@ -501,14 +476,14 @@ export function SimpleCalendar({
         onClose();
     };
 
-    // 연도 선택 뷰가 열릴 때 현재년도를 중앙에 위치
+
     useEffect(() => {
         if (
             viewMode === "year" &&
             yearScrollRef.current &&
             contentRef.current
         ) {
-            // DOM이 렌더링된 후 실제 높이를 계산
+
             requestAnimationFrame(() => {
                 if (!yearScrollRef.current || !contentRef.current) return;
 
@@ -516,7 +491,7 @@ export function SimpleCalendar({
                 const yearIndex = yearList.findIndex((y) => y === currentYear);
                 if (yearIndex < 0) return;
 
-                // 실제 그리드 요소 찾기
+
                 const scrollContainer = contentRef.current.querySelector(
                     ".overlay-scrollbar-content",
                 ) as HTMLElement;
@@ -526,12 +501,12 @@ export function SimpleCalendar({
 
                 if (!gridElement) return;
 
-                // 첫 번째 연도 아이템의 실제 높이 가져오기
+
                 const firstYearItem = gridElement.children[0] as HTMLElement;
                 if (!firstYearItem) return;
 
                 const itemHeight = firstYearItem.offsetHeight;
-                const gap = 4; // gap: 0.5 = 4px
+                const gap = 4;
                 const rowHeight = itemHeight + gap;
 
                 const rowIndex = Math.floor(yearIndex / 4);
@@ -547,10 +522,10 @@ export function SimpleCalendar({
         }
     }, [viewMode, yearList, today]);
 
-    // 헤더 렌더링 (viewMode에 따라 다름)
+
     const renderHeader = () => {
         if (viewMode === "year") {
-            // monthOnly 또는 yearOnly 모드에서는 뒤로 갈 곳이 없으므로 < 버튼 숨김
+
             if (monthOnly || yearOnly) {
                 return (
                     <Typography variant="body2" fontWeight={600}>
@@ -558,13 +533,13 @@ export function SimpleCalendar({
                     </Typography>
                 );
             }
-            // 일반 캘린더에서 년도 선택으로 왔을 때는 < 버튼 표시
+
             return (
                 <>
                     <IconButton
                         size="small"
                         onClick={() => {
-                            // 뒤로가기 시 tempYear가 현재 viewDate의 year와 다르면 onYearChange 발생
+
                             if (tempYear !== year) {
                                 onYearChange?.(year);
                             }
@@ -601,11 +576,10 @@ export function SimpleCalendar({
                     >
                         {tempYear}
                     </Typography>
-                    <Box sx={{ width: 28 }} /> {/* 균형을 위한 빈 공간 */}
+                    <Box sx={{ width: 28 }} />
                 </>
             );
         }
-        // calendar mode
         return (
             <>
                 <IconButton size="small" onClick={goToPrevMonth}>
@@ -635,7 +609,7 @@ export function SimpleCalendar({
         );
     };
 
-    // 콘텐츠 렌더링 (viewMode에 따라 다름)
+
     const renderContent = () => {
         if (viewMode === "year") {
             return (
@@ -655,7 +629,7 @@ export function SimpleCalendar({
                         }}
                     >
                         {yearList.map((y) => {
-                            // yearOnly 모드에서는 tempSelectedYear를, 그 외에는 tempYear를 기준으로 선택 표시
+
                             const isSelected = yearOnly
                                 ? tempSelectedYear === y
                                 : y === tempYear;
@@ -731,7 +705,7 @@ export function SimpleCalendar({
                 >
                     {mergedLocale.months.map(
                         (monthName: string, index: number) => {
-                            // monthOnly 모드에서는 tempMonth를, 그 외에는 현재 viewDate의 month를 기준으로 선택 표시
+
                             const isSelected = monthOnly
                                 ? tempMonth === index
                                 : tempYear === year && index === month;
@@ -779,7 +753,7 @@ export function SimpleCalendar({
             );
         }
 
-        // calendar mode
+
         return (
             <Box
                 className="calendar-grid"
@@ -793,7 +767,6 @@ export function SimpleCalendar({
                     flexDirection: "column",
                 }}
             >
-                {/* 요일 헤더 */}
                 <Box
                     sx={{
                         display: "grid",
@@ -836,7 +809,7 @@ export function SimpleCalendar({
                     }}
                 >
                     {calendarDays.map((date, index) => {
-                        // autoApply일 때는 selectedDate만, 아닐 때는 tempSelectedDate 우선
+
                         const isSelected = autoApply
                             ? isSameDay(date, selectedDate)
                             : isSameDay(date, tempSelectedDate ?? selectedDate);
@@ -902,15 +875,15 @@ export function SimpleCalendar({
         );
     };
 
-    // 푸터 렌더링 (viewMode에 따라 다름)
+
     const renderFooter = () => {
-        // yearOnly 모드일 때
+
         if (yearOnly) {
             if (autoApply) {
-                // autoApply가 true면 푸터 불필요
+
                 return null;
             }
-            // autoApply가 false면 확인/취소 버튼 표시
+
             return (
                 <>
                     <Box sx={{ flex: 1 }} />
@@ -929,13 +902,13 @@ export function SimpleCalendar({
             );
         }
 
-        // monthOnly 모드일 때
+
         if (monthOnly) {
             if (autoApply) {
-                // autoApply가 true면 푸터 불필요
+
                 return null;
             }
-            // autoApply가 false면 확인/취소 버튼 표시
+
             return (
                 <>
                     <Box sx={{ flex: 1 }} />
@@ -972,7 +945,7 @@ export function SimpleCalendar({
                 </Button>
             );
         }
-        // calendar mode - autoApply면 닫기 버튼만 표시
+
         if (autoApply) {
             return (
                 <>
@@ -1019,16 +992,16 @@ export function SimpleCalendar({
         );
     };
 
-    // 푸터 표시 여부 결정 (showFooterProp이 false면 무조건 숨김)
+
     const showFooter =
         showFooterProp &&
         (yearOnly
-            ? !autoApply // yearOnly일 때는 autoApply가 false면 항상 표시
+            ? !autoApply
             : monthOnly
-                ? !autoApply // monthOnly일 때는 autoApply가 false면 항상 표시 (year/month 뷰 모두)
-                : !(autoApply && !showToday) && viewMode === "calendar"); // calendar 뷰일 때만 표시, year/month 뷰는 푸터 숨김
+                ? !autoApply
+                : !(autoApply && !showToday) && viewMode === "calendar");
 
-    // 통합된 구조로 렌더링
+
     const calendarContent = (
         <Box
             className={`calendar-root calendar-${viewMode}-view`}
@@ -1040,7 +1013,6 @@ export function SimpleCalendar({
                 boxSizing: "border-box",
             }}
         >
-            {/* 공통 헤더 */}
             <Box
                 className="calendar-header"
                 sx={{
@@ -1060,7 +1032,6 @@ export function SimpleCalendar({
                 {renderHeader()}
             </Box>
 
-            {/* 콘텐츠 영역 */}
             <Box
                 ref={contentRef}
                 className="calendar-content"
@@ -1078,7 +1049,7 @@ export function SimpleCalendar({
         </Box>
     );
 
-    // 공통 푸터 컴포넌트
+
     const footerContent = showFooter ? (
         <Box
             className="calendar-footer"
@@ -1098,7 +1069,7 @@ export function SimpleCalendar({
         </Box>
     ) : null;
 
-    // 시간 선택이 없으면 달력 + 푸터
+
     if (!showTimePicker) {
         return (
             <Box
@@ -1115,7 +1086,6 @@ export function SimpleCalendar({
         );
     }
 
-    // 시간 선택이 있으면 전체 column: 상단(달력+시간 row) + 하단(footer)
     return (
         <Box
             sx={{
@@ -1125,7 +1095,6 @@ export function SimpleCalendar({
                 userSelect: "none",
             }}
         >
-            {/* 상단: 달력 + 시간 (row) */}
             <Box
                 sx={{
                     display: "flex",
@@ -1134,7 +1103,6 @@ export function SimpleCalendar({
                     overflow: "hidden",
                 }}
             >
-                {/* 달력 영역 - 고정 너비 300px */}
                 <Box
                     sx={{
                         width: 300,
@@ -1146,7 +1114,6 @@ export function SimpleCalendar({
                     {calendarContent}
                 </Box>
 
-                {/* 시간 선택 영역 */}
                 <Box
                     sx={{
                         flex: 1,
@@ -1175,7 +1142,6 @@ export function SimpleCalendar({
                 </Box>
             </Box>
 
-            {/* 하단: 푸터 (전체 너비) */}
             {footerContent}
         </Box>
     );
