@@ -272,7 +272,7 @@ const handleCloseNav = () => {
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
               >
                 <MenuItem 
-                  onClick={handleCloseMenu}
+                  onClick={() => {handleCloseMenu(); router.push("/profile")}}
                   sx={{
                     fontWeight: 500,
                     color: '#2C2C2C',
