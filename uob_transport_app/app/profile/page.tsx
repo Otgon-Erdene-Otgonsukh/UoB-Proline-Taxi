@@ -14,8 +14,9 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import EditIcon from "@mui/icons-material/Edit";
 import { useState, useEffect } from "react";
-import { departments } from "@/model/models";
 import { motion } from "framer-motion";
+import { getDepartments } from "@/app/requets/departments";
+import { department } from "@/generated/prisma/client";
 
 const role: Record<string, string> = {
   normal_user: "Normal User",
@@ -54,7 +55,7 @@ export default function Profile() {
   const [editData, setEditData] = useState({
     name: "",
     email: "",
-    department: "",
+    dep_id: 0,
     phone_number: "",
   });
 
@@ -63,6 +64,17 @@ export default function Profile() {
       router.push("/");
     }
   }, [status, router]);
+
+  const [departments, setDepartmentList] = useState<department[]>([]);
+  useEffect(() => {
+    getDepartments().then((res) => {
+      if (res.status === 200) {
+        res.json().then(data => {
+          setDepartmentList(data);
+        })
+      }
+    });
+  }, [])
 
   if (status === "loading") {
     // display a loading bar for feedback
@@ -117,12 +129,12 @@ export default function Profile() {
         fail = true;
       }
     }
-    if (departmentEditOn) {
-      if (!departments.includes(editData.department)) {
-        newErrors.department = true;
-        fail = true;
-      }
-    }
+    // if (departmentEditOn) {
+    //   if (!departments.includes(editData.department)) {
+    //     newErrors.department = true;
+    //     fail = true;
+    //   }
+    // }
 
     // Set all errors for feedback
     setChangeError(newErrors);
@@ -135,7 +147,7 @@ export default function Profile() {
         ...(nameEditOn && { name: editData.name }),
         ...(emailEditOn && { email: editData.email }),
         ...(phoneEditOn && { phone_number: editData.phone_number }),
-        ...(departmentEditOn && { department: editData.department }),
+        ...(departmentEditOn && { dep_id: editData.dep_id }),
       };
       fetch("/api/update-user-info", {
         body: JSON.stringify(data),
@@ -153,7 +165,7 @@ export default function Profile() {
               ...(nameEditOn && { name: editData.name }),
               ...(emailEditOn && { email: editData.email }),
               ...(phoneEditOn && { phone_number: editData.phone_number }),
-              ...(departmentEditOn && { department: editData.department }),
+              ...(departmentEditOn && { dep_id: editData.dep_id }),
             },
           });
         } else {
@@ -385,9 +397,9 @@ export default function Profile() {
             Account Details
           </h2>
           <div
-            className={`grid grid-cols-1 md:${session?.user.department ? "grid-cols-2" : "grid-cols-1"} gap-4`}
+            className={`grid grid-cols-1 md:${session?.user.dep_id ? "grid-cols-2" : "grid-cols-1"} gap-4`}
           >
-            {session?.user.department &&
+            {session?.user.dep_id &&
               (departmentEditOn ? (
                 <Autocomplete
                   sx={{
@@ -425,12 +437,13 @@ export default function Profile() {
                     },
                   }}
                   autoFocus
-                  value={editData.department}
-                  onInputChange={(_, dep) => {
-                    setEditData({ ...editData, department: dep });
+                  onChange={(_, dep) => {
+                    setEditData({ ...editData, dep_id: dep!.dep_id });
                     setChangeError({ ...changeError, department: false });
                   }}
                   options={departments}
+                  getOptionKey={(department) => department.dep_id}
+                  getOptionLabel={(department) => department.dep_name}
                   renderInput={(params) => (
                     <TextField
                       {...params}
@@ -455,7 +468,7 @@ export default function Profile() {
                       Department
                     </p>
                     <p className="text-gray-800 font-medium">
-                      {session.user.department}
+                      {session.user.dep_name}
                     </p>
                   </div>
 
@@ -469,7 +482,7 @@ export default function Profile() {
                       onClick={() => {
                         setEditData({
                           ...editData,
-                          department: session?.user.department ?? "",
+                          dep_id: session?.user.dep_id ?? 0,
                         });
                         setDepartmentEditOn(true);
                         setEditMode(true);

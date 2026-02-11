@@ -9,7 +9,8 @@ declare module "next-auth" {
         name: string;
         email: string;
         phone_number: string;
-        department: string | undefined;
+        dep_id: number | null;
+        dep_name: string | null;
         account_type: string;
     }
 
@@ -19,7 +20,8 @@ declare module "next-auth" {
             email: string;
             user_id: number;
             phone_number: string;
-            department: string | null;
+            dep_id: number | null;
+            dep_name: string | null;
             account_type: string;
         };
     }
@@ -29,7 +31,8 @@ declare module "next-auth" {
         email: string;
         user_id: number;
         phone_number: string;
-        department: string;
+        dep_id: number | null;
+        dep_name: string | null;
         account_type: string;
     }
 }

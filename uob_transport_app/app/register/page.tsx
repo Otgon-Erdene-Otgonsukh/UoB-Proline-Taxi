@@ -26,10 +26,11 @@ import CheckIcon from "@mui/icons-material/Check";
 import LocalPhoneIcon from "@mui/icons-material/LocalPhone";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { redirect } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { departments } from "@/model/models";
+import { getDepartments } from "@/app/requets/departments";
+import { department } from "@/generated/prisma/client";
 
 export default function Register() {
   const session = useSession();
@@ -38,6 +39,17 @@ export default function Register() {
     // if user is logged in, protect this route
     redirect("/home");
   }
+
+  const [departments, setDepartmentList] = useState<department[]>([]);
+  useEffect(() => {
+    getDepartments().then((res) => {
+      if (res.status === 200) {
+        res.json().then(data => {
+          setDepartmentList(data);
+        })
+      }
+    });
+  }, [])
 
   const [normalUser, setNormalUser] = useState(false);
   const [financeStaff, setFinanceStaff] = useState(false);
@@ -53,7 +65,7 @@ export default function Register() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [department, setDepartment] = useState("");
+  const [depId, setDepId] = useState(0);
   const [firstNameEmpty, setFirstNameEmpty] = useState(false);
   const [lastNameEmpty, setLastNameEmpty] = useState(false);
   const [phoneNumberEmpty, setPhoneNumberEmpty] = useState(false);
@@ -151,7 +163,7 @@ export default function Register() {
       setPhoneNumberEmpty(true);
       hasError = true;
     }
-    if (department.length === 0 && (normalUser || financeStaff)) {
+    if (depId === 0 && (normalUser || financeStaff)) {
       setDepartmentEmpty(true);
       hasError = true;
     }
@@ -171,7 +183,7 @@ export default function Register() {
         password: password,
         firstName: firstName,
         lastName: lastName,
-        department: department,
+        dep_id: depId,
         phoneNumber: phoneCode + " " + phoneNumber,
         role: financeStaff
           ? "finance_staff"
@@ -318,14 +330,13 @@ export default function Register() {
                 </div>
                 <Autocomplete
                   disablePortal
-                  value={department}
-                  inputValue={department}
-                  onInputChange={(_, dep) => {
-                    setDepartment(dep);
-                    setDepartmentEmpty(false);
+                  onChange={(_, dep) => {
+                    setDepId(dep!.dep_id);
                   }}
-                  disabled={proLineStaff}
                   options={departments}
+                  getOptionKey={(department) => department.dep_id}
+                  getOptionLabel={(department) => department.dep_name}
+                  disabled={proLineStaff}
                   slotProps={{
                     paper: {
                       sx: {
@@ -582,7 +593,7 @@ export default function Register() {
                       }}
                       onClick={() => {
                         setProLineStaff(!proLineStaff);
-                        setDepartment("");
+                        setDepId(0);
                         setDepartmentEmpty(false);
                         setNormalUser(false);
                         setFinanceStaff(false);
