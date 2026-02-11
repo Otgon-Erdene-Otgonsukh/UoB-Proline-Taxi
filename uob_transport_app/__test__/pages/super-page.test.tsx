@@ -291,7 +291,7 @@ describe("User Management Page", () => {
     fireEvent.click(acceptButton);
 
     expect(
-      screen.getByText("Accept User Registeration")
+      screen.getByText("Accept User Registration")
     ).toBeInTheDocument();
   });
 
@@ -320,7 +320,7 @@ describe("User Management Page", () => {
     fireEvent.click(acceptButton);
 
     expect(
-      screen.getByText("Reject User Registeration")
+      screen.getByText("Reject User Registration")
     ).toBeInTheDocument();
   });
 
