@@ -1,12 +1,3 @@
-/**
- * TimeSelector.tsx
- * 시간 선택 UI 컴포넌트 (재사용 가능)
- *
- * @license MIT
- * @copyright 2025 김영진 (Kim Young Jin)
- * @author 김영진 (ehfuse@gmail.com)
- */
-
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Box, Typography } from "@mui/material";
 import { OverlayScrollbar } from "@ehfuse/overlay-scrollbar";
@@ -51,7 +42,6 @@ export function TimeSelector({
     const maxHour = is12Hour ? 12 : 23;
     const minHourValue = is12Hour ? 1 : 0;
 
-    // 시간 배열 생성
     const hours = Array.from(
         { length: maxHour - minHourValue + 1 },
         (_, i) => minHourValue + i,
@@ -62,12 +52,11 @@ export function TimeSelector({
     );
     const seconds = hasSeconds
         ? Array.from(
-              { length: Math.ceil(60 / secondStep) },
-              (_, i) => i * secondStep,
-          )
+            { length: Math.ceil(60 / secondStep) },
+            (_, i) => i * secondStep,
+        )
         : [];
 
-    // 선택된 항목으로 스크롤 (세로 중앙에 오도록)
     const scrollToCenter = useCallback(
         (
             scrollbarRef: React.RefObject<OverlayScrollbarRef | null>,
@@ -94,7 +83,6 @@ export function TimeSelector({
         [],
     );
 
-    // 초기 스크롤 (한 번만)
     useEffect(() => {
         if (initialScrollDone.current) return;
         if (selectedHour === null || selectedMinute === null) return;
@@ -117,7 +105,6 @@ export function TimeSelector({
         scrollToCenter,
     ]);
 
-    // 시간 범위 체크
     const isTimeInRange = (h: number, m: number, s: number = 0): boolean => {
         const timeValue = h * 3600 + m * 60 + s;
 
@@ -142,7 +129,6 @@ export function TimeSelector({
         return true;
     };
 
-    // 선택 핸들러 - 선택 시 바로 onChange 호출
     const handleHourSelect = (hour: number) => {
         setSelectedHour(hour);
         onChange(
@@ -166,7 +152,6 @@ export function TimeSelector({
         onChange(selectedHour ?? 0, selectedMinute ?? 0, second);
     };
 
-    // 아이템 렌더링
     const renderItem = (
         val: number,
         selected: boolean,
@@ -187,16 +172,16 @@ export function TimeSelector({
                 color: disabled
                     ? "text.disabled"
                     : selected
-                      ? "primary.contrastText"
-                      : "text.primary",
+                        ? "primary.contrastText"
+                        : "text.primary",
                 opacity: disabled ? 0.4 : 1,
                 transition: "background-color 0.15s, color 0.15s",
                 "&:hover": {
                     backgroundColor: disabled
                         ? "transparent"
                         : selected
-                          ? "primary.dark"
-                          : "action.hover",
+                            ? "primary.dark"
+                            : "action.hover",
                 },
                 fontVariantNumeric: "tabular-nums",
                 minWidth: 32,
@@ -211,7 +196,6 @@ export function TimeSelector({
         </Box>
     );
 
-    // 열 렌더링
     const renderColumn = (
         ref: React.RefObject<OverlayScrollbarRef | null>,
         items: number[],
@@ -223,12 +207,11 @@ export function TimeSelector({
             ref={ref as React.RefObject<OverlayScrollbarRef>}
             style={{ height: "100%" }}
             thumb={{ width: 4 }}
-            track={{ alignment: "right" }}
+            track={{ alignment: "outside" }}
         >
             <div style={{ padding: "0.25rem" }}>
                 {items.map((item) => {
                     const isDisabled = checkDisabled(item);
-                    // hideDisabledTime이 true이고 disabled면 렌더링하지 않음
                     if (hideDisabledTime && isDisabled) return null;
                     return renderItem(
                         item,
@@ -241,7 +224,6 @@ export function TimeSelector({
         </OverlayScrollbar>
     );
 
-    // 시간 비활성화 체크
     const isHourDisabled = (hour: number): boolean => {
         for (const minute of minutes) {
             if (hasSeconds) {
@@ -280,7 +262,6 @@ export function TimeSelector({
                 userSelect: "none",
             }}
         >
-            {/* 현재 선택된 시간 표시 */}
             {showHeader && (
                 <Box
                     sx={{
@@ -353,7 +334,6 @@ export function TimeSelector({
                 </Box>
             )}
 
-            {/* 시간 선택 컸럼 */}
             <Box
                 sx={{
                     display: "flex",
