@@ -19,6 +19,7 @@ export default async function createBooking(
     passenger_num: number,
     airport: string,
     flight_num: string,
+    dep_id: number
 ) {
     // Create a trip for the booking to be bound to.
     const trip = await prisma.trip.create({
@@ -51,6 +52,7 @@ export default async function createBooking(
             email: email,
             tel_number: tel_number,
             additional_info: additional_info,
+            dep_id: dep_id,
         }
     });
 }

@@ -41,6 +41,10 @@ export async function POST(request: Request) {
     const flight_num: string = request_json["flight_num"].toString();
     const airport: string = request_json["airport"].toString();
     const returnDT: Date | undefined = request_json["return_time"] ? new Date(request_json["return_time"]) : undefined;
+    const dep_id: number = request_json["dep_id"];
+
+    console.log(dep_id);
+
 
     // Lat/lon fields are null as we introduce lat/lon automatically later on / vice versa.
     await createBooking(
@@ -62,6 +66,7 @@ export async function POST(request: Request) {
       passenger_num,
       airport,
       flight_num,
+      dep_id
     );
 
     // Email sending with AWS SES
@@ -95,9 +100,9 @@ export async function POST(request: Request) {
         Destination: {
           ToAddresses:
             //userEmail.email === email
-              //? [userEmail.email]
-              //: [userEmail.email, email.trim()],
-              ["janedoe@ioanm.com"]
+            //? [userEmail.email]
+            //: [userEmail.email, email.trim()],
+            ["janedoe@ioanm.com"]
         },
         Content: {
           Simple: {
@@ -114,7 +119,7 @@ export async function POST(request: Request) {
       });
 
       // Send Email
-      await sesClient.send(input);
+      // await sesClient.send(input);
     }
 
     return NextResponse.json({ status: 200 });

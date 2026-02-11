@@ -27,9 +27,9 @@ import {
   MarkerLabel,
   MapRef,
 } from "@/components/ui/map";
-import { departments } from "@/model/models";
-import { Loader2, Clock, Route } from "lucide-react";
 import { LngLatLike } from "maplibre-gl";
+import { getDepartments } from "./requests";
+import { department } from "@/generated/prisma/client";
 
 export default function BookingPage() {
   // Attach common locations as keys to hashmapped Lat/Lon for routing.
@@ -102,7 +102,7 @@ export default function BookingPage() {
     PassengerName: "",
     Number: "",
     Email: "",
-    department: "",
+    dep_id: 0,
     Passengers: 1,
     AdditionalInfo: "",
   });
@@ -120,6 +120,9 @@ export default function BookingPage() {
     clearFeedback();
 
     let loc = "";
+
+    console.log(formData);
+
 
     // Custom Location
     if (isManualChecked) {
@@ -145,7 +148,7 @@ export default function BookingPage() {
     } else loc = formData.Airport;
 
     // Department check
-    if (formData.department.length === 0) {
+    if (formData.dep_id === 0) {
       setDepartmentEmpty(true);
       fail = true;
     }
@@ -283,10 +286,11 @@ export default function BookingPage() {
         additional_info: formData.AdditionalInfo,
         via: formData.Via,
         passengers: formData.Passengers,
-        department: formData.department,
+        dep_id: formData.dep_id,
         airport: formData.Airport,
         flight_num: formData.FlightNum,
       };
+
       fetch("/api/create_booking", {
         method: "POST",
         body: JSON.stringify(jsonBody),
@@ -394,6 +398,19 @@ export default function BookingPage() {
       updateRoute();
     }
   }, [start, end]);
+
+
+  const [departmentList, setDepartmentList] = useState<department[]>([]);
+
+  useEffect(() => {
+    getDepartments().then(res => {
+      if (res.status === 200) {
+        res.json().then(data => {
+          setDepartmentList(data);
+        })
+      }
+    })
+  }, [])
 
   const [routes, setRoutes] = useState<RouteData[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -925,13 +942,13 @@ export default function BookingPage() {
                 <Autocomplete
                   sx={{ my: 1 }}
                   disablePortal
-                  value={formData.department}
-                  inputValue={formData.department}
-                  onInputChange={(_, dep) => {
-                    setFormData({ ...formData, department: dep });
+                  onChange={(_, dep) => {
+                    setFormData({ ...formData, dep_id: dep!.dep_id });
                     setDepartmentEmpty(false);
                   }}
-                  options={departments}
+                  options={departmentList}
+                  getOptionKey={(department) => department.dep_id}
+                  getOptionLabel={(department) => department.dep_name}
                   slotProps={{
                     paper: {
                       sx: {
