@@ -105,7 +105,7 @@ export default function Page({ open, handleDialogClose, viewData }: { open: bool
             Department:
           </Typography>
           <Typography gutterBottom sx={{ textAlign: "end" }}>
-            {viewData?.department}
+            {viewData?.department.dep_name}
           </Typography>
         </Stack>
         <Stack

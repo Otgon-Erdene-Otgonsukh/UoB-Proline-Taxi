@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { PrismaClient } from "@/generated/prisma/client";
 import sendReq from "@/backend/register/send_req";
 import bcrypt from "bcryptjs";
-import { departments } from "@/model/models";
 
 const prisma = new PrismaClient();
 
@@ -22,8 +21,7 @@ export async function POST(req: Request) {
     (!mail.endsWith("@bristol.ac.uk") && role === "finance_staff") ||
     (departmentName.length === 0 &&
       (role === "normal_user" || role === "finance_staff")) ||
-    (role == "proline_staff" && departmentName.length !== 0) ||
-    (!departments.includes(departmentName))
+    (role == "proline_staff" && departmentName.length !== 0)
   ) {
     return NextResponse.json({
       status: 500,
