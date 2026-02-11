@@ -28,7 +28,7 @@ import {
   MapRef,
 } from "@/components/ui/map";
 import { LngLatLike } from "maplibre-gl";
-import { getDepartments } from "@/app/requets/departments";
+import { getDepartments } from "@/app/requests/departments";
 import { department } from "@/generated/prisma/client";
 
 export default function BookingPage() {

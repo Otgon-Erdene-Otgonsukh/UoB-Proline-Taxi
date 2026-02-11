@@ -15,7 +15,7 @@ import { useRouter } from "next/navigation";
 import EditIcon from "@mui/icons-material/Edit";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { getDepartments } from "@/app/requets/departments";
+import { getDepartments } from "@/app/requests/departments";
 import { department } from "@/generated/prisma/client";
 
 const role: Record<string, string> = {

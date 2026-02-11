@@ -29,7 +29,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { redirect } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { getDepartments } from "@/app/requets/departments";
+import { getDepartments } from "@/app/requests/departments";
 import { department } from "@/generated/prisma/client";
 
 export default function Register() {

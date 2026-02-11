@@ -2,6 +2,7 @@ import "@testing-library/jest-dom";
 import { screen, render, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import Register from "@/app/register/page";
+import { getDepartments } from "@/app/requests/departments";
 
 jest.mock("next/navigation", () => ({
   redirect: jest.fn()
@@ -12,6 +13,14 @@ jest.mock("next-auth/react", () => ({
     data: true,
   }))
 }))
+
+jest.mock("@/app/requests/departments", () => ({
+  getDepartments: jest.fn(() => Promise.resolve([
+    { dep_id: 1, dep_name: "Law" },
+    { dep_id: 2, dep_name: "Engineering" },
+    { dep_id: 3, dep_name: "Medicine" },
+  ])),
+}));
 
 describe("Register page rendering test", () => {
   beforeEach(() => {

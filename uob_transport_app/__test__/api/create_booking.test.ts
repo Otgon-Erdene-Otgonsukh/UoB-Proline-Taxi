@@ -74,6 +74,7 @@ describe("create booking api route tests", () => {
       passengers: 1,
       airport: "LHR",
       flight_num: "BA123",
+      dep_id: 2,
     };
 
     const req = new Request("http://localhost:3000/api/create_booking", {
@@ -103,6 +104,7 @@ describe("create booking api route tests", () => {
       jsonBody.passengers,
       jsonBody.airport,
       jsonBody.flight_num,
+      2
     );
   });
 
