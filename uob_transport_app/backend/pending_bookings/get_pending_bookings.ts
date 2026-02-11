@@ -100,15 +100,12 @@ export async function getPendingBookings(page: number, pageSize: number, searchP
     return prisma.booking.findMany({
       where: {
         booking_status: "Pending",
-<<<<<<< HEAD
         ...(searchParams.passengerName && {
           passenger_name: {
             contains: searchParams.passengerName,
             mode: "insensitive",
           },
         }),
-=======
->>>>>>> dev
         ...query,
       },
       orderBy: {
@@ -151,33 +148,11 @@ export async function getPendingBookingsCount(searchParams: { from?: string, to?
     };
   }
   if (searchParams.passengerName !== undefined) {
-<<<<<<< HEAD
     // Here we assume passengerName refers to the name of the user, ignore the last name for simplicity
     query['passenger_name'] = {
       name: {
         contains: searchParams.passengerName,
         mode: "insensitive",
-=======
-    // Here we assume passengerName refers to the first name of the user, ignore the last name for simplicity
-    query['first_name'] = {
-        contains: searchParams.passengerName,
-        mode: "insensitive"
-    }
-  }
-   if (searchParams.overdue) {
-    query['trip'] = {
-      ...query.trip as object,
-      pickup_time: {
-        lt: new Date()
-      }
-    }
-  }
-   if (searchParams.overdue) {
-    query['trip'] = {
-      ...query.trip as object,
-      pickup_time: {
-        lt: new Date()
->>>>>>> dev
       }
     }
   }
@@ -211,15 +186,12 @@ export async function getPendingBookingsCount(searchParams: { from?: string, to?
     return prisma.booking.count({
       where: {
         booking_status: "Pending",
-<<<<<<< HEAD
         ...(searchParams.passengerName && {
           passenger_name: {
             contains: searchParams.passengerName,
             mode: "insensitive",
           },
         }),
-=======
->>>>>>> dev
         ...query,
       },
     });
