@@ -625,7 +625,7 @@ export default function BookingPage() {
                     onChange={(e) => {
                       setFormData({ ...formData, Via: e.target.value });
                     }}
-                  ></input>
+                  />
                 </div>
               )}
 
@@ -649,7 +649,7 @@ export default function BookingPage() {
                         setStart({ name: e.target.value, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) });
                       }
                     }}
-                  ></input>
+                  />
                   <FormHelperText
                     sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
                     className={`${formFeedback.CustomLoc != "" ? "" : "hidden"
@@ -672,7 +672,7 @@ export default function BookingPage() {
                     onChange={(e) => {
                       setFormData({ ...formData, Via: e.target.value });
                     }}
-                  ></input>
+                  />
                 </div>
               )}
 
@@ -691,7 +691,7 @@ export default function BookingPage() {
                       onChange={(e) => {
                         setFormData({ ...formData, FlightNum: e.target.value });
                       }}
-                    ></input>
+                    />
                     <FormHelperText
                       sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
                       className={`${formFeedback.FlightNum != "" ? "" : "hidden"
@@ -712,7 +712,7 @@ export default function BookingPage() {
                       onChange={(e) => {
                         setFormData({ ...formData, Airport: e.target.value });
                       }}
-                    ></input>
+                    />
                     <FormHelperText
                       sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
                       className={`${formFeedback.Airport != "" ? "" : "hidden"
@@ -733,7 +733,7 @@ export default function BookingPage() {
                         onChange={(e) => {
                           setFormData({ ...formData, Via: e.target.value });
                         }}
-                      ></input>
+                      />
                     </div>
                   )}
                 </div>
@@ -758,7 +758,7 @@ export default function BookingPage() {
                   }}
                   className={`border-2 rounded px-3 py-2 ${formFeedback.DropoffLoc == "" ? "" : "border-red-700"
                     }`}
-                ></input>
+                />
                 <FormHelperText
                   sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
                   className={`${formFeedback.DropoffLoc != "" ? "" : "hidden"}`}
@@ -779,7 +779,7 @@ export default function BookingPage() {
                     onChange={(e) => {
                       setFormData({ ...formData, PickupDate: e.target.value });
                     }}
-                  ></input>
+                  />
                   <input
                     id="pickupTime"
                     type="time"
@@ -788,7 +788,7 @@ export default function BookingPage() {
                     onChange={(e) => {
                       setFormData({ ...formData, PickupTime: e.target.value });
                     }}
-                  ></input>
+                  />
                 </div>
                 <FormHelperText
                   sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
@@ -825,18 +825,18 @@ export default function BookingPage() {
                 <div className="flex flex-col gap-4">
                   <div className="flex flex-col">
                     <label htmlFor="returnPickUp" className="mb-1 text-sm">
-                      Retur Trip Pick-up location
+                      Return Trip Pick-up location
                     </label>
                     <input
                       id="returnPickUp"
                       className="border-2 rounded px-3 py-2"
                       value={formData.DropoffLoc}
                       disabled
-                    ></input>
+                    />
                   </div>
                   <div className="flex flex-col">
                     <label htmlFor="returnDropOff" className="mb-1 text-sm">
-                      Retur Trip Drop-off location
+                      Return Trip Drop-off location
                     </label>
                     <input
                       id="returnDropOff"
@@ -845,7 +845,7 @@ export default function BookingPage() {
                       onChange={(e) => {
                         setFormData({ ...formData, ReturnTo: e.target.value });
                       }}
-                    ></input>
+                    />
                   </div>
                   <div className="flex flex-col text-sm">
                     <label htmlFor="returnDate" className="mb-1">
@@ -863,7 +863,7 @@ export default function BookingPage() {
                             ReturnDate: e.target.value,
                           });
                         }}
-                      ></input>
+                      />
                       <input
                         id="returnTime"
                         type="time"
@@ -875,7 +875,7 @@ export default function BookingPage() {
                             ReturnTime: e.target.value,
                           });
                         }}
-                      ></input>
+                      />
                     </div>
                     <FormHelperText
                       sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
@@ -907,7 +907,7 @@ export default function BookingPage() {
                   onChange={(e) => {
                     setFormData({ ...formData, FirstName: e.target.value });
                   }}
-                ></input>
+                />
                 <FormHelperText
                   sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
                   className={`${formFeedback.FirstName != "" ? "" : "hidden"}`}
@@ -927,7 +927,7 @@ export default function BookingPage() {
                   onChange={(e) => {
                     setFormData({ ...formData, Surname: e.target.value });
                   }}
-                ></input>
+                />
                 <FormHelperText
                   sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
                   className={`${formFeedback.Surname != "" ? "" : "hidden"}`}
@@ -1024,7 +1024,7 @@ export default function BookingPage() {
                     onChange={(e) => {
                       setFormData({ ...formData, Email: e.target.value });
                     }}
-                  ></input>
+                  />
                   <FormHelperText
                     sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
                     className={`${formFeedback.Email != "" ? "" : "hidden"}`}
