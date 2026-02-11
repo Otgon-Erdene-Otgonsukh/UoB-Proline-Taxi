@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@/generated/prisma/client";
+import sendReq from "@/backend/register/send_req";
 import bcrypt from "bcryptjs";
 import { departments } from "@/model/models";
 
@@ -86,6 +87,7 @@ export async function POST(req: Request) {
         },
       });
     }
+    await sendReq(firstName, mail)
     return NextResponse.json({
       status: 200,
       message: "User is created successfully.",

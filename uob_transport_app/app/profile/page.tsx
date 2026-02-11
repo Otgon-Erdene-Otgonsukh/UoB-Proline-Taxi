@@ -354,7 +354,7 @@ export default function Profile() {
                   <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
                     Phone Number
                   </p>
-                  <p>{session?.user.phone_number}</p>
+                  <p className="font-medium">{session?.user.phone_number}</p>
                 </div>
                 {phoneEdit && (
                   <Button

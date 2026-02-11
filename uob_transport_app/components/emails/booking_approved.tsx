@@ -9,7 +9,7 @@ import {
   Hr,
 } from "@react-email/components";
 
-export default function BookingInfo({
+export default function BookingPoAttach({
   from,
   via,
   to,
@@ -18,8 +18,11 @@ export default function BookingInfo({
   pickUpTime,
   returnTime,
   returnTo,
-  passengerName,
+  firstName,
+  surName,
   phoneNumber,
+  department,
+  price="87",
 }: {
   from: string;
   via: string;
@@ -29,8 +32,11 @@ export default function BookingInfo({
   pickUpTime: Date;
   returnTime?: Date;
   returnTo?: string;
-  passengerName: string;
+  firstName: string;
+  surName: string;
   phoneNumber: string;
+  department: string;
+  price: string;
 }) {
   return (
     <Html>
@@ -39,22 +45,33 @@ export default function BookingInfo({
         <Container className="mx-auto p-1 bg-gray-50">
           <Section className="bg-white rounded-lg p-6 max-w-2xl mx-auto">
             {/* Header */}
-            <Section className="text-center mb-6 bg-yellow-100 p-6 rounded-lg">
-              <Text className="text-2xl font-bold text-yellow-600 mb-2">
-                Booking Submitted Successfully! ➤
+            <Section className="text-center mb-6 bg-green-100 p-6 rounded-lg">
+              <Text className="text-2xl font-bold text-green-600 mb-2">
+                ✓ Booking Approved
               </Text>
               <Text className="text-lg text-gray-600">
-                Your booking is awaiting approval
+                Your booking has been approved, Ride Away!
               </Text>
             </Section>
 
             <Hr className="border-gray-300 my-3" />
-
-            <Text>
-              Your booking with the following details has been forwarded to
-              admin and university staff, who will assign a purchase order (PO)
-              number and pricing.
+            <Text className="font-bold text-[17px]">
+                Hello, {firstName}
             </Text>
+
+            <Text className="text-gray-700 mb-4 text-[16px]">
+              Your department finance staff has <strong>approved</strong>{" "}
+              the booking with the following details. The price is attached below and enjoy the ride! 
+            </Text>
+
+            <Section className="bg-blue-50 p-4 rounded-lg mb-4">
+              <Text className="text-gray-700">
+                <strong>Booking Price:</strong>{" "}
+                <span className="text-[16px] text-green-600 font-semibold">
+                  £{price}
+                </span>
+              </Text>
+            </Section>
 
             <Hr className="border-gray-300 my-3" />
             <Text className="text-2xl font-semibold text-gray-800">
@@ -67,7 +84,10 @@ export default function BookingInfo({
                 Passenger Information
               </Text>
               <Text className="text-gray-700 mb-2">
-                <strong>Name:</strong> {passengerName}
+                <strong>Name:</strong> {firstName} {surName}
+              </Text>
+              <Text className="text-gray-700 mb-2">
+                <strong>Department:</strong> {department}
               </Text>
               <Text className="text-gray-700 mb-2">
                 <strong>Phone:</strong> {phoneNumber}
@@ -181,25 +201,23 @@ export default function BookingInfo({
             {/* Button */}
             <Section className="text-center mt-8">
               <Button
-                className="bg-blue-600 text-white font-semibold py-3 px-8 rounded-lg cursor-pointer"
+                className="bg-green-600 text-white font-semibold py-3 px-8 rounded-lg cursor-pointer"
                 href={
                   process.env.NODE_ENV === "development"
                     ? "http://localhost:3000/home"
                     : "http://uob-transport-alb-848507222.eu-west-2.elb.amazonaws.com/home"
                 }
               >
-                Check Booking Status
+                Go to Home
               </Button>
             </Section>
 
             {/* Footer */}
             <Section className="mt-8">
-              <Text className="text-sm text-gray-500 text-center">
-                You will receive a confirmation email once your booking has been
-                resonded by the department and admin.
-              </Text>
-              <Text className="text-sm text-gray-500 text-center mt-2">
-                Thank you for using UoB Taxi & Chauffeur!
+              <Text className="text-gray-500 text-xs text-center">
+                UoB Taxi & Chauffeur
+                <br />
+                This is an automated message, please do not reply to this email.
               </Text>
             </Section>
           </Section>

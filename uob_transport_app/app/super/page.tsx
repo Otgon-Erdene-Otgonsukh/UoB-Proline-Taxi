@@ -23,7 +23,9 @@ import {
   Select,
   MenuItem,
   InputLabel,
-  FormControl
+  FormControl,
+  Alert,
+  Snackbar,
 } from "@mui/material";
 import {
   KeyboardArrowLeft,
@@ -31,6 +33,7 @@ import {
   LastPage,
   FirstPage
 } from "@mui/icons-material"
+import sendRes from "@/backend/register/send_res";
 import { getUsersAsAdmin, updateUserAsAdmin } from "./request";
 import ViewDialog from "./userManageComponents/viewDialog";
 import EditDialog from "./userManageComponents/eidtDialog";
@@ -120,13 +123,15 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
 
 const Page = () => {
   // Get NextAuth Session.
-  const { status } = useSession();
+  const { status, data } = useSession();
 
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
 
   const [pendingUsersData, setPendingUsersData] = useState<UserRecord[]>([]);
-  const [pendingUserCount, setPendingUserCount] = useState(0)
+  const [pendingUserCount, setPendingUserCount] = useState(0);
+  const [snackOpen, setSnackOpen] = useState(false);
+  const [severity, setSeverity] = useState<"success" | "error">("success")
   const [paginationMeta, setPaginationMeta] = useState({
     page: 0,
     pageSize: 10,
@@ -140,7 +145,13 @@ const Page = () => {
       return;
     }
 
-    _getData(0, paginationMeta.pageSize)
+    // Protect this route from logged in not admin users
+    if (status === "authenticated" && data.user.account_type !== "super_admin" && data.user.account_type !== "proline_staff") {
+      router.push("/home");
+      return;
+    }
+
+    _rerenderTable()
 
     getDepartmentsList().then(async res => {
       if (res.status === 200) {
@@ -183,7 +194,6 @@ const Page = () => {
   })
   const handleSubmitSearchForm = (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('submit');
     setIsLoading(true)
     setPaginationMeta({
       page: 0,
@@ -226,6 +236,11 @@ const Page = () => {
       if (res.status === 200) {
         setIsLoading(true)
         _rerenderTable()
+        setSnackOpen(true)
+        setSeverity("success")         
+      } else {
+        setSnackOpen(true)
+        setSeverity("error")
       }
     })
   };
@@ -236,8 +251,15 @@ const Page = () => {
       ...row,
       user_status: userStatusToIntMap.rejected
     }).then(res => {
-      setIsLoading(true)
-      _rerenderTable()
+      if (res.status === 200) {
+        setIsLoading(true)
+        _rerenderTable()
+        setSnackOpen(true)
+        setSeverity("success")        
+      } else {
+        setSnackOpen(true)
+        setSeverity("error")
+      }
     })
   };
 
@@ -348,11 +370,11 @@ const Page = () => {
         </div>
 
         {isLoading ? (
-          <Typography sx={{ color: "gray", fontSize: 16, textAlign: "center" }}>
+          <Typography sx={{ color: "gray", fontSize: 16, textAlign: "center", my: 10 }}>
             Getting user data...
           </Typography>
         ) : pendingUsersData.length === 0 ? (
-          <Typography sx={{ color: "gray", fontSize: 16, textAlign: "center" }}>
+          <Typography sx={{ color: "gray", fontSize: 16, textAlign: "center", my: 10 }}>
             No users to show.
           </Typography>
         ) : (
@@ -390,7 +412,7 @@ const Page = () => {
                       <StyledTableCell>{row.name}</StyledTableCell>
                       <StyledTableCell>{row.email}</StyledTableCell>
                       <StyledTableCell>{row.phone_number}</StyledTableCell>
-                      {searchFormInput.role !== roleStrMap.normalUser ? (
+                      {searchFormInput.role !== roleStrMap.normalUser && searchFormInput.role !== roleStrMap.financeStaff ? (
                         <StyledTableCell>N/A</StyledTableCell>
                       ) : (
                         <StyledTableCell>{row.department?.dep_name}</StyledTableCell>
@@ -483,6 +505,9 @@ const Page = () => {
         confirmCallBack={() => { handleRejectUserRegister(userDetail!); setConfirmRejectDialogOpen(false); }}
         cancelCallBack={() => { setConfirmRejectDialogOpen(false); }}
       />
+      <Snackbar open={snackOpen} autoHideDuration={4000} onClose={() => {setSnackOpen(false)}} anchorOrigin={{vertical: "top", horizontal: "center"}}>
+        <Alert onClose={() => {setSnackOpen(false)}} severity={severity} variant="filled">{severity === "success" ? "Account registration response email sent!" : "There was an error sending response mail"}</Alert>
+      </Snackbar>
     </div>
   );
 };

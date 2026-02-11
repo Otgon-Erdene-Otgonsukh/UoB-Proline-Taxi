@@ -8,6 +8,7 @@ import ReceiptIcon from "@mui/icons-material/Receipt";
 import InfoIcon from "@mui/icons-material/Info";
 import HailIcon from "@mui/icons-material/Hail";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import WarningIcon from "@mui/icons-material/Warning";
 import { motion } from "framer-motion";
 import {
   Box,
@@ -30,6 +31,7 @@ import {
   Paper,
   TablePagination,
   CircularProgress,
+  Chip,
 } from "@mui/material";
 import { StyledTableCell } from "@/components/StyledTableCell";
 import CustomizedButton from "@/components/CustomizedButton";
@@ -51,6 +53,8 @@ export default function DepDashboard() {
   const [snackBar, setSnackBar] = useState(false);
   const [bookingData, setBookingData] = useState<BookingData | null>(null);
   const [cardLoading, setCardLoading] = useState(true);
+  const [rejectOpen, setRejectOpen] = useState(false);
+  const [rejectId, setRejectId] = useState(-1);
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -341,7 +345,7 @@ export default function DepDashboard() {
         transition={{ duration: 1, ease: "easeOut", delay: 0.24 }}
       >
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-aleo md:text-3xl font-semibold text-shadow-lg/20">
+          <h1 className="text-xl font-aleo md:text-3xl font-semibold text-shadow-lg/20">
             Department Bookings
           </h1>
           <Box
@@ -468,7 +472,7 @@ export default function DepDashboard() {
                               type="warning"
                               title="View"
                             />
-                            {row.booking_status === "Pending" && (
+                            {(row.booking_status === "Pending" && (
                               <>
                                 <CustomizedButton
                                   click={() => handleApprove(row.booking_id)}
@@ -476,10 +480,39 @@ export default function DepDashboard() {
                                   title="Approve"
                                 />
                                 <CustomizedButton
-                                  click={() => handleReject(row.booking_id)}
+                                  click={() => {setRejectId(row.booking_id); setRejectOpen(true)}}
                                   type="error"
                                   title="Reject"
                                 />
+                              </>
+                            )) || (
+                              <>
+                                <Chip
+                                  label={row.booking_status}
+                                  sx={{
+                                    bgcolor:
+                                      row.booking_status === "Approved"
+                                        ? "#86efac"
+                                        : "#fca5a5",
+                                    border: 2,
+                                    borderColor:
+                                      row.booking_status === "Approved"
+                                        ? "#16a34a"
+                                        : "#dc2626",
+                                    px: 1,
+                                  }}
+                                />
+                                {row.booking_status === "Approved" && (
+                                  <Chip
+                                    label={row.trip.PO}
+                                    deleteIcon={<ReceiptIcon />}
+                                    sx={{
+                                      px: 1,
+                                      border: 2,
+                                      borderColor: "gray",
+                                    }}
+                                  ></Chip>
+                                )}
                               </>
                             )}
                           </div>
@@ -638,6 +671,76 @@ export default function DepDashboard() {
             PO number has been successfully attached!
           </Alert>
         </Snackbar>
+        <Dialog open={rejectOpen} onClose={() => {setRejectOpen(false)}}>
+          <DialogTitle
+            sx={{
+              color: "white",
+              textAlign: "center",
+              fontSize: 24,
+              fontWeight: "bold",
+              bgcolor: "#dc2626",
+              fontFamily: "aleo",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 1,
+            }}
+          >
+            <WarningIcon sx={{ fontSize: 28 }} />
+            Confirm Rejection
+          </DialogTitle>
+          <DialogContent sx={{ mt: 3, mb: 2 }}>
+            <DialogContentText
+              sx={{
+                fontFamily: "inter",
+                fontWeight: 500,
+                maxWidth: 350,
+                textAlign: "center",
+                fontSize: 16,
+                color: "#374151",
+              }}
+            >
+              Are you sure you want to reject this booking? This action cannot
+              be undone.
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions
+            sx={{ pb: 2, px: 3, justifyContent: "center", gap: 1 }}
+          >
+            <Button
+              variant="outlined"
+              sx={{
+                color: "#6b7280",
+                borderColor: "#d1d5db",
+                transition: "all ease 300ms",
+                ":hover": {
+                  bgcolor: "#f3f4f6",
+                  borderColor: "#9ca3af",
+                },
+                textTransform: "none",
+                px: 3,
+              }}
+              onClick={() => {setRejectOpen(false)}}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="contained"
+              sx={{
+                bgcolor: "#dc2626",
+                transition: "all 300ms",
+                ":hover": {
+                  bgcolor: "#b91c1c",
+                },
+                textTransform: "none",
+                px: 3,
+              }}
+              onClick={() => {handleReject(rejectId); setRejectOpen(false)}}
+            >
+              Yes, reject
+            </Button>
+          </DialogActions>
+        </Dialog>
       </motion.div>
     </div>
   );

@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { auth } from "@/auth";
 import { getUserListAccess, getUserCountAccess, updateUserAccess } from "@/backend/access/user_access";
+import sendRes from "@/backend/register/send_res";
 import { isAdmin } from "@/backend/access/user_access";
 
 export async function GET(request: NextRequest) {
@@ -79,9 +80,7 @@ export async function POST(request: NextRequest) {
   const requestJson = await request.json()
   const userData = requestJson.userData
 
-  const userId = userData.user_id
-
-  const updateResult = await updateUserAccess(userId!, {
+  const updateResult = await updateUserAccess(userData.user_id, {
     name: userData.name!,
     email: userData.email,
     phone_number: userData.phone_number!,
@@ -91,6 +90,12 @@ export async function POST(request: NextRequest) {
   })
 
   if (updateResult) {
+    // send approval/rejection email from the server side
+    try {
+      await sendRes(userData.name!, userData.email, userData.user_status);
+    } catch (err) {
+      console.error("Failed to send registration response email:", err);
+    }
     return new Response(JSON.stringify({
       message: 'update user success'
     }), {
