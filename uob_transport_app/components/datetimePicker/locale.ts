@@ -1,15 +1,5 @@
-/**
- * locale.ts
- * 캘린더 로케일 정의
- *
- * @license MIT
- * @copyright 2025 김영진 (Kim Young Jin)
- * @author 김영진 (ehfuse@gmail.com)
- */
-
-/** 캘린더 로케일 타입 (텍스트 커스터마이징) */
 export interface CalendarLocale {
-    weekdays: [string, string, string, string, string, string, string]; // 요일 (일~토)
+    weekdays: [string, string, string, string, string, string, string];
     months: [
         string,
         string,
@@ -23,17 +13,17 @@ export interface CalendarLocale {
         string,
         string,
         string
-    ]; // 월 (1~12월)
-    today: string; // 오늘 버튼
-    confirm: string; // 확인 버튼
-    cancel: string; // 취소 버튼
-    close: string; // 닫기 버튼
+    ];
+    today: string;
+    confirm: string;
+    cancel: string;
+    close: string;
 }
 
-/** 캘린더 텍스트 타입 (부분 커스터마이징용) */
+
 export type CalendarTexts = Partial<CalendarLocale>;
 
-/** 한국어 로케일 */
+
 export const koLocale: CalendarLocale = {
     weekdays: ["일", "월", "화", "수", "목", "금", "토"],
     months: [
@@ -56,7 +46,7 @@ export const koLocale: CalendarLocale = {
     close: "닫기",
 };
 
-/** 영어 로케일 */
+
 export const enLocale: CalendarLocale = {
     weekdays: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
     months: [
@@ -79,7 +69,7 @@ export const enLocale: CalendarLocale = {
     close: "Close",
 };
 
-/** 일본어 로케일 */
+
 export const jaLocale: CalendarLocale = {
     weekdays: ["日", "月", "火", "水", "木", "金", "土"],
     months: [
@@ -102,7 +92,7 @@ export const jaLocale: CalendarLocale = {
     close: "閉じる",
 };
 
-/** 중국어 간체 로케일 */
+
 export const zhCNLocale: CalendarLocale = {
     weekdays: ["日", "一", "二", "三", "四", "五", "六"],
     months: [
@@ -125,7 +115,7 @@ export const zhCNLocale: CalendarLocale = {
     close: "关闭",
 };
 
-/** 중국어 번체 로케일 */
+
 export const zhTWLocale: CalendarLocale = {
     weekdays: ["日", "一", "二", "三", "四", "五", "六"],
     months: [
@@ -148,7 +138,7 @@ export const zhTWLocale: CalendarLocale = {
     close: "關閉",
 };
 
-/** 스페인어 로케일 */
+
 export const esLocale: CalendarLocale = {
     weekdays: ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"],
     months: [
@@ -171,7 +161,7 @@ export const esLocale: CalendarLocale = {
     close: "Cerrar",
 };
 
-/** 프랑스어 로케일 */
+
 export const frLocale: CalendarLocale = {
     weekdays: ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"],
     months: [
@@ -194,7 +184,7 @@ export const frLocale: CalendarLocale = {
     close: "Fermer",
 };
 
-/** 독일어 로케일 */
+
 export const deLocale: CalendarLocale = {
     weekdays: ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"],
     months: [
@@ -217,7 +207,7 @@ export const deLocale: CalendarLocale = {
     close: "Schließen",
 };
 
-/** 포르투갈어 로케일 */
+
 export const ptLocale: CalendarLocale = {
     weekdays: ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"],
     months: [
@@ -240,7 +230,7 @@ export const ptLocale: CalendarLocale = {
     close: "Fechar",
 };
 
-/** 러시아어 로케일 */
+
 export const ruLocale: CalendarLocale = {
     weekdays: ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"],
     months: [
@@ -263,7 +253,7 @@ export const ruLocale: CalendarLocale = {
     close: "Закрыть",
 };
 
-/** 이탈리아어 로케일 */
+
 export const itLocale: CalendarLocale = {
     weekdays: ["Dom", "Lun", "Mar", "Mer", "Gio", "Ven", "Sab"],
     months: [
@@ -286,7 +276,7 @@ export const itLocale: CalendarLocale = {
     close: "Chiudi",
 };
 
-/** 아랍어 로케일 */
+
 export const arLocale: CalendarLocale = {
     weekdays: ["أحد", "إثن", "ثلا", "أرب", "خمي", "جمع", "سبت"],
     months: [
@@ -309,7 +299,7 @@ export const arLocale: CalendarLocale = {
     close: "إغلاق",
 };
 
-/** 힌디어 로케일 */
+
 export const hiLocale: CalendarLocale = {
     weekdays: ["रवि", "सोम", "मंगल", "बुध", "गुरु", "शुक्र", "शनि"],
     months: [
@@ -332,7 +322,7 @@ export const hiLocale: CalendarLocale = {
     close: "बंद",
 };
 
-/** 베트남어 로케일 */
+
 export const viLocale: CalendarLocale = {
     weekdays: ["CN", "T2", "T3", "T4", "T5", "T6", "T7"],
     months: [
@@ -355,7 +345,7 @@ export const viLocale: CalendarLocale = {
     close: "Đóng",
 };
 
-/** 태국어 로케일 */
+
 export const thLocale: CalendarLocale = {
     weekdays: ["อา", "จ", "อ", "พ", "พฤ", "ศ", "ส"],
     months: [
@@ -378,7 +368,7 @@ export const thLocale: CalendarLocale = {
     close: "ปิด",
 };
 
-/** 인도네시아어 로케일 */
+
 export const idLocale: CalendarLocale = {
     weekdays: ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"],
     months: [
@@ -401,7 +391,7 @@ export const idLocale: CalendarLocale = {
     close: "Tutup",
 };
 
-/** 네덜란드어 로케일 */
+
 export const nlLocale: CalendarLocale = {
     weekdays: ["Zo", "Ma", "Di", "Wo", "Do", "Vr", "Za"],
     months: [
@@ -424,7 +414,7 @@ export const nlLocale: CalendarLocale = {
     close: "Sluiten",
 };
 
-/** 폴란드어 로케일 */
+
 export const plLocale: CalendarLocale = {
     weekdays: ["Nd", "Pn", "Wt", "Śr", "Cz", "Pt", "So"],
     months: [
@@ -447,7 +437,6 @@ export const plLocale: CalendarLocale = {
     close: "Zamknij",
 };
 
-/** 터키어 로케일 */
 export const trLocale: CalendarLocale = {
     weekdays: ["Paz", "Pzt", "Sal", "Çar", "Per", "Cum", "Cmt"],
     months: [
@@ -470,10 +459,8 @@ export const trLocale: CalendarLocale = {
     close: "Kapat",
 };
 
-/** 기본 로케일 (한국어) */
 export const defaultLocale = koLocale;
 
-/** 로케일 맵 */
 export const locales = {
     ko: koLocale,
     en: enLocale,
@@ -496,17 +483,10 @@ export const locales = {
     tr: trLocale,
 } as const;
 
-/** 로케일 키 타입 */
 export type LocaleKey = keyof typeof locales;
 
-/** 로케일 프롭 타입 (객체 또는 문자열) */
 export type LocaleProp = CalendarLocale | LocaleKey;
 
-/**
- * 로케일 프롭을 CalendarLocale 객체로 변환
- * @param locale - CalendarLocale 객체 또는 로케일 키 문자열 (예: 'ko', 'en')
- * @returns CalendarLocale 객체
- */
 export function resolveLocale(locale: LocaleProp | undefined): CalendarLocale {
     if (!locale) return defaultLocale;
     if (typeof locale === "string") {
