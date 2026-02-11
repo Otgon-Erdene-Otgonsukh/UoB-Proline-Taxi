@@ -6,7 +6,6 @@ CREATE TABLE "User" (
     "email" VARCHAR(255) NOT NULL,
     "password" VARCHAR(255) NOT NULL,
     "name" VARCHAR(100),
-    "surname" VARCHAR(100),
     "phone_number" VARCHAR(20),
     "time_created" BIGINT DEFAULT (EXTRACT(epoch FROM now()))::bigint,
 

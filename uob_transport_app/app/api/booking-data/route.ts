@@ -35,9 +35,7 @@ export async function GET() {
           lt: new Date(),
         },
         booking: {
-          some: {
-            booking_status: "Pending",
-          },
+          booking_status: "Pending",
         },
       },
     });
