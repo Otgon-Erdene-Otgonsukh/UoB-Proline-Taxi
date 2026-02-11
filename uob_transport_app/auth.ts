@@ -28,7 +28,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         // Server side validation.
         if (email.length < 1 || password.length < 1) {
           throw new Error("Email or password too short.");
-        } else if (email.length > 32 || password.length > 64) {
+        } else if (email.length > 64 || password.length > 64) {
           throw new Error("Email or password too long.");
         }
 
@@ -37,7 +37,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         if (userDetail) {
           // Compare the password against the hashed + salted password against the DB.
-          if (bcrypt.compareSync(password, userDetail.password)) {
+          if (bcrypt.compareSync(password, userDetail.password) && userDetail.user_status === 1) {
             // Stripped down user object / info to transform into the JWT by NextAuth.
             // We do not want the entire user object as it would be quite large and pointless.
             return {

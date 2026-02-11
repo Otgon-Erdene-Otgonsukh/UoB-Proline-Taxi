@@ -197,12 +197,12 @@ export default function Register() {
               redirect("/login");
             }, 3000);
           } else if (data.status === 200 && (financeStaff || proLineStaff)) {
-            redirect("/register/register-req");
+            redirect("/register/register-req")
           } else {
             setLoadingBar(false);
             setSnackState({ open: true, severity: "error" });
           }
-        });
+        })
     }
   };
 
