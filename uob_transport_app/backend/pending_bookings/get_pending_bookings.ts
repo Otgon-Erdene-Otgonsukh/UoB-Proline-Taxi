@@ -20,7 +20,7 @@ export async function getPendingBookings(page: number, pageSize: number, searchP
   }
   if (searchParams.passengerName !== undefined) {
     // Here we assume passengerName refers to the name of the user, ignore the last name for simplicity
-    query['firstName'] = {
+    query['passenger_name'] = {
       name: {
         contains: searchParams.passengerName
       }
@@ -76,7 +76,7 @@ export async function getPendingBookingsCount(searchParams: { from?: string, to?
   }
   if (searchParams.passengerName !== undefined) {
     // Here we assume passengerName refers to the name of the user, ignore the last name for simplicity
-    query['firstName'] = {
+    query['passenger_name'] = {
       name: {
         contains: searchParams.passengerName
       }
