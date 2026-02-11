@@ -30,8 +30,7 @@ export async function POST(request: Request) {
     const user_id = session.user.user_id; // Use the user ID from the session.
     const pickup_loc: string = request_json["pickup_location"].toString();
     const dropoff_loc: string = request_json["dropoff_location"].toString();
-    const first_name: string = request_json["first_name"].toString();
-    const surname: string = request_json["surname"].toString();
+    const passenger_name: string = request_json["passenger_name"].toString();
     const email: string = request_json["email"].toString();
     const tel_number: string = request_json["tel_number"].toString();
     const pickup_time = new Date(request_json["pickup_time"]);
@@ -39,10 +38,10 @@ export async function POST(request: Request) {
     const via: string = request_json["via"].toString();
     const returnTo: string | undefined = request_json["returnTo"] ? request_json["returnTo"].toString() : undefined;
     const passenger_num: number = request_json["passengers"];
-    const department: string = request_json["department"].toString();
     const flight_num: string = request_json["flight_num"].toString();
     const airport: string = request_json["airport"].toString();
     const returnDT: Date | undefined = request_json["return_time"] ? new Date(request_json["return_time"]) : undefined;
+    const dep_id: number = request_json["dep_id"];
 
     // Lat/lon fields are null as we introduce lat/lon automatically later on / vice versa.
     await createBooking(
@@ -55,17 +54,16 @@ export async function POST(request: Request) {
       null,
       pickup_time,
       returnDT,
-      first_name,
-      surname,
+      passenger_name,
       email,
       tel_number,
       additional_info,
       via,
       returnTo,
       passenger_num,
-      department,
       airport,
       flight_num,
+      dep_id
     );
 
     // Email sending with AWS SES
@@ -88,10 +86,8 @@ export async function POST(request: Request) {
         pickUpTime: pickup_time,
         returnTime: returnDT,
         returnTo: returnTo,
-        firstName: first_name,
-        surName: surname,
+        passengerName: passenger_name,
         phoneNumber: tel_number,
-        department: department,
       }),
     );
 
@@ -101,9 +97,9 @@ export async function POST(request: Request) {
         Destination: {
           ToAddresses:
             //userEmail.email === email
-              //? [userEmail.email]
-              //: [userEmail.email, email.trim()],
-              ["janedoe@ioanm.com"]
+            //? [userEmail.email]
+            //: [userEmail.email, email.trim()],
+            ["janedoe@ioanm.com"]
         },
         Content: {
           Simple: {

@@ -142,14 +142,14 @@ const sessionObj = useSession();
 const session = sessionObj.data;
 // or alternatively
 // const { data: session } = useSession();
-const username = session.user.name; 
+const name = session.user.name; 
 ...
 ```
 As for accessing session from a server side component, we can use the provided `auth` function from the file `@/auth` that was discussed above. The session is extracted as follows:
 
 ``` ts
 const session = await auth(); // auth is an asynchronous function
-const username = session.user.name;
+const name = session.user.name;
 ```
 
 > [!TIP]

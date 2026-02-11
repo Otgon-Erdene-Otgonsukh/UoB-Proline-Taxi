@@ -609,7 +609,9 @@ export default function DepDashboard() {
                           {row.trip.dropoff_location}
                         </StyledTableCell>
                         <StyledTableCell>
-                          <span>{row.first_name + " " + row.surname}</span>
+                          <span>
+                            {row.passenger_name}
+                          </span>
                         </StyledTableCell>
                         <StyledTableCell>
                           <div className="flex gap-2 justify-center">

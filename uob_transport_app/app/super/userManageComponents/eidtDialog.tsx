@@ -79,7 +79,6 @@ const Page = ({ editData, dialogOpen, handleDialogClose, departmentList }: { edi
       user_id: editData.user_id,
       time_created: editData.time_created,
       name: formInput.name,
-      surname: editData.surname, // TODO not need
       email: formInput.email,
       phone_number: formInput.countryCode + " " + formInput.phoneNumber,
       role: formInput.role,
