@@ -24,7 +24,6 @@ describe("Update user info api route correctly calls the backend function relate
             user_id: 2,
             name: "Test",
             surname: "test",
-            username: "no",
             email: "sdasdasd",
             phone_number: "12341312",
             department: "Damn"
@@ -79,8 +78,6 @@ describe("Update user info api route correctly calls the backend function relate
         const data = {
             user_id: 2,
             name: "Test",
-            surname: "test",
-            username: "no",
             email: "sdasdasd",
             phone_number: "12341312",
             department: "Damn"
@@ -95,6 +92,6 @@ describe("Update user info api route correctly calls the backend function relate
         // Status code is unauthorized and the update user function is not called
         expect(res.status).toBe(200);
         expect(update_user as jest.Mock).toHaveBeenCalledTimes(1);
-        expect(update_user as jest.Mock).toHaveBeenCalledWith(2, "Test", "test", "no", "sdasdasd", "12341312", "Damn")
+        expect(update_user as jest.Mock).toHaveBeenCalledWith(2, "Test", "sdasdasd", "12341312", "Damn")
     })
 })

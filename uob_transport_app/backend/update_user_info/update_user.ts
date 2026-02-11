@@ -21,7 +21,7 @@ export default async function updateUserInfo(
           user_id: user_id,
         },
         data: {
-          ...(newName !== undefined && { name: newName }),
+          ...(newName !== undefined && { full_name: newName }),
           ...(newEmail !== undefined && { email: newEmail }),
           ...(newPhoneNumber !== undefined && { phone_number: newPhoneNumber }),
           dep_id: department.dep_id
@@ -39,7 +39,7 @@ export default async function updateUserInfo(
           user_id: user_id,
         },
         data: {
-          ...(newName !== undefined && { name: newName }),
+          ...(newName !== undefined && { full_name: newName }),
           ...(newEmail !== undefined && { email: newEmail }),
           ...(newPhoneNumber !== undefined && { phone_number: newPhoneNumber }),
           dep_id: createdDepartment.dep_id
@@ -52,7 +52,7 @@ export default async function updateUserInfo(
         user_id: user_id,
       },
       data: {
-        ...(newName !== undefined && { name: newName }),
+        ...(newName !== undefined && { full_name: newName }),
         ...(newEmail !== undefined && { email: newEmail }),
         ...(newPhoneNumber !== undefined && { phone_number: newPhoneNumber }),
       },
