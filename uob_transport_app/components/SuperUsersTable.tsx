@@ -7,6 +7,7 @@ import { StyledTableCell } from "@/components/StyledTableCell";
 import CustomizedButton from "@/components/CustomizedButton";
 import { UserRecord } from "@/model/models";
 import { userStatusToIntMap, userStatusToStrMap, roleReadableStrMap } from "@/app/super/constants";
+import { TablePaginationProps } from "@mui/material";
 
 interface UserTableViewProps {
     data: UserRecord[];
@@ -15,7 +16,7 @@ interface UserTableViewProps {
     pageSize: number;
     onPageChange: (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => void;
     onPageSizeChange: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
-    ActionsComponent: any;
+    ActionsComponent: TablePaginationProps['ActionsComponent']
     onViewDetails: (user: UserRecord) => void;
     onEditUser: (user: UserRecord) => void;
     onAcceptUser: (user: UserRecord) => void;
