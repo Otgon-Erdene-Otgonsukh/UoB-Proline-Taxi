@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { UserRecord } from "@/model/models";
 import { useTheme } from "@mui/material/styles";
+import { motion } from "framer-motion";
 import {
   Box,
   Button,
@@ -287,16 +288,7 @@ const Page = () => {
 
 
   return (
-    <div className="flex-col font-inter">
-      <header className="w-full bg-[#2c2c2c] text-white p-2 shadow-lg items-center flex gap-4">
-        <Button
-          onClick={toggleDrawer(true)}
-          sx={{ color: "white", minWidth: '40px' }}
-        >
-          <MenuIcon fontSize="medium" />
-        </Button>
-        <span className="font-aleo text-2xl sm:text-3xl font-semibold">Management Panel</span>
-      </header>
+    <div className="flex flex-col min-h-screen items-center pt-15 p-4">
       <Drawer
         anchor="left"
         open={isDrawerOpen}
@@ -308,7 +300,7 @@ const Page = () => {
           onClick={toggleDrawer(false)}
           onKeyDown={toggleDrawer(false)}
         >
-          <Typography variant="h6" sx={{ p: 2, fontWeight: 'bold' }}>
+          <Typography variant="h6" sx={{ p: 2, fontWeight: 'bold', fontFamily: "aleo", fontSize: 25 }}>
             Admin Menu
           </Typography>
           <Divider />
@@ -332,12 +324,32 @@ const Page = () => {
           </List>
         </Box>
       </Drawer>
-      <div className="w-full p-4">
-
+      
+      <motion.div
+        className="bg-white shadow-lg rounded-lg p-6 md:p-8 w-full max-w-6xl mb-8 h-fit"
+        initial={{ opacity: 0, y: 7, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 1, ease: "easeOut", delay: 0.24 }}
+      >
         {tabValue === 0 && (
           <>
-            <div className="flex justify-center items-center mb-4">
-
+            <div className="flex justify-between items-center mb-4">
+              <div className="flex items-center gap-2 -ml-2">
+                <IconButton
+                  onClick={toggleDrawer(true)}
+                  sx={{
+                    color: '#2c2c2c',
+                    '&:hover': {
+                      bgcolor: '#f3f4f6',
+                    },
+                  }}
+                >
+                  <MenuIcon />
+                </IconButton>
+                <h1 className="text-xl font-aleo md:text-3xl font-semibold text-shadow-lg/20">
+                  User Management
+                </h1>
+              </div>
               <Box
                 component="form"
                 onSubmit={handleSubmitSearchForm}
@@ -358,7 +370,7 @@ const Page = () => {
                 <FormControl sx={{ minWidth: 150 }}>
                   <InputLabel id="searchUserStatusInput">Account Type</InputLabel>
                   <Select
-                    label="UserStatus"
+                    label="Account Type"
                     id="searchUserStatusInput"
                     value={searchFormInput.role}
                     onChange={(e) => { setSearchFormInput({ ...searchFormInput, role: e.target.value }); }}
@@ -407,35 +419,58 @@ const Page = () => {
             </div>
 
             {isLoading ? (
-              <Typography sx={{ color: "gray", fontSize: 16, textAlign: "center" }}>
+              <Typography sx={{ color: "gray", fontSize: 16, textAlign: "center", my: 10 }}>
                 Getting user data...
               </Typography>
             ) : pendingUsersData.length === 0 ? (
-              <Typography sx={{ color: "gray", fontSize: 16, textAlign: "center" }}>
+              <Typography sx={{ color: "gray", fontSize: 16, textAlign: "center", my: 10 }}>
                 No users to show.
               </Typography>
             ) : (
-              <UserTable
-                data={pendingUsersData}
-                count={pendingUserCount}
-                page={paginationMeta.page}
-                pageSize={paginationMeta.pageSize}
-                onPageChange={handleChangePage}
-                onPageSizeChange={handleChangePageSize}
-                onViewDetails={handleViewDialogOpen}
-                onEditUser={handleEditDialogOpen}
-                onAcceptUser={(u) => { setUserDetail(u); setConfirmAcceptDialogOpen(true); }}
-                onRejectUser={(u) => { setUserDetail(u); setConfirmRejectDialogOpen(true); }}
-                ActionsComponent={TablePaginationActions}
-              />
+              <div className="mt-7">
+                <UserTable
+                  data={pendingUsersData}
+                  count={pendingUserCount}
+                  page={paginationMeta.page}
+                  pageSize={paginationMeta.pageSize}
+                  onPageChange={handleChangePage}
+                  onPageSizeChange={handleChangePageSize}
+                  onViewDetails={handleViewDialogOpen}
+                  onEditUser={handleEditDialogOpen}
+                  onAcceptUser={(u) => { setUserDetail(u); setConfirmAcceptDialogOpen(true); }}
+                  onRejectUser={(u) => { setUserDetail(u); setConfirmRejectDialogOpen(true); }}
+                  ActionsComponent={TablePaginationActions}
+                />
+              </div>
             )}
           </>
         )}
 
         {tabValue === 1 && (
-          <div>Departments Table View (to be implemented)</div>
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <IconButton
+                onClick={toggleDrawer(true)}
+                sx={{
+                  color: '#2c2c2c',
+                  '&:hover': {
+                    bgcolor: '#f3f4f6',
+                  },
+                }}
+              >
+                <MenuIcon />
+              </IconButton>
+              <h1 className="text-xl font-aleo md:text-3xl font-semibold text-shadow-lg/20">
+                Departments
+              </h1>
+            </div>
+            <Typography sx={{ color: "gray", fontSize: 16, textAlign: "center", my: 10 }}>
+              Departments Table View (to be implemented)
+            </Typography>
+          </div>
         )}
-      </div>
+      </motion.div>
+      
       {userDetail && (
         <ViewDialog 
           viewData={userDetail} 

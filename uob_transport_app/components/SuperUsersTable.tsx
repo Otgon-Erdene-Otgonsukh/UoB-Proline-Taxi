@@ -31,20 +31,19 @@ export const UserTable = ({ data, count, page, pageSize, onPageChange, onPageSiz
                 sx={{ boxShadow: "none", border: "none" }}
             >
                 <Table
-                    size="small"
                     sx={{ minWidth: 500, borderCollapse: "collapse" }}
                     aria-label="user table"
                 >
                     <TableHead>
                         <TableRow>
-                            <StyledTableCell sx={{ p: 0 }}>Time Created</StyledTableCell>
-                            <StyledTableCell sx={{ p: 0 }}>Name</StyledTableCell>
-                            <StyledTableCell sx={{ p: 0 }}>Email</StyledTableCell>
-                            <StyledTableCell sx={{ p: 0 }}>Phone Number</StyledTableCell>
-                            <StyledTableCell sx={{ p: 0 }}>Department</StyledTableCell>
-                            <StyledTableCell sx={{ p: 0 }}>Account Type</StyledTableCell>
-                            <StyledTableCell sx={{ p: 0 }}>User Status</StyledTableCell>
-                            <StyledTableCell sx={{ p: 0 }}>Operation</StyledTableCell>
+                            <StyledTableCell>Time Created</StyledTableCell>
+                            <StyledTableCell>Name</StyledTableCell>
+                            <StyledTableCell>Email</StyledTableCell>
+                            <StyledTableCell>Phone Number</StyledTableCell>
+                            <StyledTableCell>Department</StyledTableCell>
+                            <StyledTableCell>Account Type</StyledTableCell>
+                            <StyledTableCell>User Status</StyledTableCell>
+                            <StyledTableCell>Operation</StyledTableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -53,8 +52,8 @@ export const UserTable = ({ data, count, page, pageSize, onPageChange, onPageSiz
                                 <TableRow
                                     key={index}
                                     sx={{
-                                        "&:hover": { bgcolor: "#ebebeb" },
-                                        '& td': { p: 0 },
+                                        "&:hover": { bgcolor: "#f9fafb" },
+                                        transition: "background-color 0.3s",
                                     }}
                                 >
                                     <StyledTableCell>{new Date(row.time_created).toDateString()}</StyledTableCell>
@@ -81,7 +80,7 @@ export const UserTable = ({ data, count, page, pageSize, onPageChange, onPageSiz
                                         <div className="flex gap-2 justify-center">
                                             <CustomizedButton
                                                 click={() => onViewDetails(row)}
-                                                type="primary"
+                                                type="warning"
                                                 title="View"
                                             />
                                             {/* super admin can edit user under any circumstances */}
