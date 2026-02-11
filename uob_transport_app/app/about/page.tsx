@@ -144,10 +144,10 @@ export default function AboutPage() {
               <h3 className="font-semibold text-gray-800 mb-3">Need Help?</h3>
               <div className="flex flex-col gap-2 text-sm">
                 <a href="tel:+441179289000" className="flex items-center justify-center gap-2 text-blue-600 hover:text-blue-700 transition-colors">
-                  <Phone fontSize="small" /> +44 117 928 9000
+                  <Phone fontSize="small" /> +44 790 445 9504
                 </a>
                 <a href="mailto:transport@bristol.ac.uk" className="flex items-center justify-center gap-2 text-blue-600 hover:text-blue-700 transition-colors">
-                  <Email fontSize="small" /> transport@bristol.ac.uk
+                  <Email fontSize="small" /> sales@prolinetaxi.com
                 </a>
               </div>
             </div>
