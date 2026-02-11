@@ -35,7 +35,8 @@ export async function getPendingBookings(
     // Here we assume passengerName refers to the name of the user, ignore the last name for simplicity
     query['passenger_name'] = {
       name: {
-        contains: searchParams.passengerName
+        contains: searchParams.passengerName,
+        mode: "insensitive"
       }
     }
   }
