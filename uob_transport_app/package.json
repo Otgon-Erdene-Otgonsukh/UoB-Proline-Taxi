@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "jest --silent",
+    "test": "jest --silent --coverage",
     "email": "npx react-email dev --dir components/emails"
   },
   "dependencies": {
