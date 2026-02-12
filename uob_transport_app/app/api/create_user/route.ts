@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { PrismaClient } from "@/generated/prisma/client";
 import sendReq from "@/backend/register/send_req";
 import bcrypt from "bcryptjs";
-import { departments } from "@/model/models";
 
 const prisma = new PrismaClient();
 
@@ -10,7 +9,6 @@ export async function POST(req: Request) {
   const request = await req.json();
   const mail: string = request.mail;
   const password: string = request.password;
-  const username: string = request.username;
   const departmentName: string = request.department;
   const firstName: string = request.firstName;
   const lastName: string = request.lastName;
@@ -23,8 +21,7 @@ export async function POST(req: Request) {
     (!mail.endsWith("@bristol.ac.uk") && role === "finance_staff") ||
     (departmentName.length === 0 &&
       (role === "normal_user" || role === "finance_staff")) ||
-    (role == "proline_staff" && departmentName.length !== 0) ||
-    (!departments.includes(departmentName))
+    (role == "proline_staff" && departmentName.length !== 0)
   ) {
     return NextResponse.json({
       status: 500,
@@ -51,9 +48,7 @@ export async function POST(req: Request) {
       // for proline staff reg-requests, no department is created, only user entry
       await prisma.user.create({
         data: {
-          username: username,
-          name: firstName,
-          surname: lastName,
+          full_name: firstName + " " + lastName,
           phone_number: phoneNumber,
           role: role,
           email: mail,
@@ -69,9 +64,7 @@ export async function POST(req: Request) {
       await prisma.user.create({
         data: {
           dep_id: newDepartment.dep_id,
-          username: username,
-          name: firstName,
-          surname: lastName,
+          full_name: firstName + " " + lastName,
           phone_number: phoneNumber,
           role: role,
           user_status: role === "normal_user" ? 1 : 0,
@@ -83,9 +76,7 @@ export async function POST(req: Request) {
       await prisma.user.create({
         data: {
           dep_id: department.dep_id,
-          username: username,
-          name: firstName,
-          surname: lastName,
+          full_name: firstName + " " + lastName,
           phone_number: phoneNumber,
           role: role,
           user_status: role === "normal_user" ? 1 : 0,
