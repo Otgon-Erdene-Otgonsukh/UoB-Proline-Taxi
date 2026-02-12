@@ -25,7 +25,6 @@ test("check if the res status is success", async () => {
       booking_status: "Pending",
       time_created: new Date("2025-01-01").toLocaleString(),
       first_name: "John",
-      surname: "Doe",
       tel_number: "1234567890",
       email: "john@test.com",
       additional_info: "Test booking",

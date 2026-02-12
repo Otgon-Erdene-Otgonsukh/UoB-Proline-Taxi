@@ -20,7 +20,6 @@ export async function getPendingBookings(page: number, pageSize: number, searchP
       }
     }
   }
-
   if (searchParams.overdue) {
     query['trip'] = {
       ...query.trip as object,
@@ -30,10 +29,12 @@ export async function getPendingBookings(page: number, pageSize: number, searchP
     }
   }
   if (searchParams.passengerName !== undefined) {
-    // Here we assume passengerName refers to the first name of the user, ignore the last name for simplicity
-    query['first_name'] = {
+    // Here we assume passengerName refers to the name of the user, ignore the last name for simplicity
+    query['passenger_name'] = {
+      name: {
         contains: searchParams.passengerName,
         mode: "insensitive"
+      }
     }
   }
   if (searchParams.isFlight) {
@@ -66,11 +67,11 @@ export async function getPendingBookings(page: number, pageSize: number, searchP
         },
       },
     });
-    
+
     // Taking Pending first and the others after
     const statusOrder: Record<string, number> = { 'Pending': 1, 'Approved': 2, 'Rejected': 3 };
     allBookings.sort((a, b) => statusOrder[a.booking_status!] - statusOrder[b.booking_status!]);
-    
+
     // Return paginated results
     return allBookings.slice(page * pageSize, page * pageSize + pageSize);
   } else if (searchParams.overdue) {
@@ -93,30 +94,36 @@ export async function getPendingBookings(page: number, pageSize: number, searchP
       skip: page * pageSize,
       take: pageSize
     })
-  } else 
+  } else
     return prisma.booking.findMany({
-    where: {
-      booking_status: "Pending",
-      ...query,
-    },
-    orderBy: {
-      time_created: "desc", // latest one shows up at the top
-    },
-    include: {
-      // fetching the connected trip and User and department tables to fill out the dep-dashboard table and view
-      trip: true,
-      User: {
-        include: {
-          department: true,
-        },
-        omit: {
-          password: true,
+      where: {
+        booking_status: "Pending",
+        ...(searchParams.passengerName && {
+          passenger_name: {
+            contains: searchParams.passengerName,
+            mode: "insensitive",
+          },
+        }),
+        ...query,
+      },
+      orderBy: {
+        time_created: "desc", // latest one shows up at the top
+      },
+      include: {
+        // fetching the connected trip and User and department tables to fill out the dep-dashboard table and view
+        trip: true,
+        User: {
+          include: {
+            department: true,
+          },
+          omit: {
+            password: true,
+          },
         },
       },
-    },
-    skip: page * pageSize,
-    take: pageSize,
-  });
+      skip: page * pageSize,
+      take: pageSize,
+    });
 }
 
 export async function getPendingBookingsCount(searchParams: { from?: string, to?: string, passengerName?: string, pickUpTimeFrom?: string, pickUpTimeTo?: string, isFlight: boolean, total: boolean, status: boolean, overdue: boolean }) {
@@ -139,25 +146,11 @@ export async function getPendingBookingsCount(searchParams: { from?: string, to?
     };
   }
   if (searchParams.passengerName !== undefined) {
-    // Here we assume passengerName refers to the first name of the user, ignore the last name for simplicity
-    query['first_name'] = {
+    // Here we assume passengerName refers to the name of the user, ignore the last name for simplicity
+    query['passenger_name'] = {
+      name: {
         contains: searchParams.passengerName,
-        mode: "insensitive"
-    }
-  }
-   if (searchParams.overdue) {
-    query['trip'] = {
-      ...query.trip as object,
-      pickup_time: {
-        lt: new Date()
-      }
-    }
-  }
-   if (searchParams.overdue) {
-    query['trip'] = {
-      ...query.trip as object,
-      pickup_time: {
-        lt: new Date()
+        mode: "insensitive",
       }
     }
   }
@@ -187,11 +180,17 @@ export async function getPendingBookingsCount(searchParams: { from?: string, to?
         booking_status: "Pending",
       },
     })
-  } else 
+  } else
     return prisma.booking.count({
-    where: {
-      booking_status: "Pending",
-      ...query,
-    },
-  });
+      where: {
+        booking_status: "Pending",
+        ...(searchParams.passengerName && {
+          passenger_name: {
+            contains: searchParams.passengerName,
+            mode: "insensitive",
+          },
+        }),
+        ...query,
+      },
+    });
 }

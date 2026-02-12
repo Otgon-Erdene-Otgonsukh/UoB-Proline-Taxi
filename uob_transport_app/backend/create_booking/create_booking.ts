@@ -1,26 +1,24 @@
 import prisma from '@/utils/client';
 
 export default async function createBooking(
-    userID : number,
-    pickupLocation : string,
-    pickupLatitude : number | null,
-    pickupLongitude : number | null,
-    dropoffLocation : string, dropoffLatitude: number | null, dropoffLongitude: number | null,
-    pickupTime : Date,
-    returnDT : Date | undefined,
-    first_name : string,
-    surname : string,
+    userID: number,
+    pickupLocation: string,
+    pickupLatitude: number | null,
+    pickupLongitude: number | null,
+    dropoffLocation: string, dropoffLatitude: number | null, dropoffLongitude: number | null,
+    pickupTime: Date,
+    returnDT: Date | undefined,
+    passengerName: string,
     email: string,
     tel_number: string,
     additional_info: string,
     via: string,
     returnTo: string | undefined,
     passenger_num: number,
-    department: string,
     airport: string,
     flight_num: string,
-    )
-{
+    dep_id: number
+) {
     // Create a trip for the booking to be bound to.
     const trip = await prisma.trip.create({
         data: {
@@ -48,12 +46,11 @@ export default async function createBooking(
             trip_id: trip.trip_id,
             time_created: new Date(), // Current date/time.
             booking_status: "Pending",
-            first_name: first_name,
-            surname: surname,
+            passenger_name: passengerName,
             email: email,
             tel_number: tel_number,
             additional_info: additional_info,
-            department: department
+            dep_id: dep_id,
         }
     });
 }
