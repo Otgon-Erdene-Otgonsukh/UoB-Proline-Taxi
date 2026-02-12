@@ -26,10 +26,12 @@ import CheckIcon from "@mui/icons-material/Check";
 import LocalPhoneIcon from "@mui/icons-material/LocalPhone";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { redirect } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { departments } from "@/model/models";
+import { getDepartments } from "@/app/requests/departments";
+import { department } from "@/generated/prisma/client";
+import { motion } from "framer-motion";
 
 export default function Register() {
   const session = useSession();
@@ -38,6 +40,17 @@ export default function Register() {
     // if user is logged in, protect this route
     redirect("/home");
   }
+
+  const [departments, setDepartmentList] = useState<department[]>([]);
+  useEffect(() => {
+    getDepartments().then((res) => {
+      if (res.status === 200) {
+        res.json().then(data => {
+          setDepartmentList(data);
+        })
+      }
+    });
+  }, [])
 
   const [normalUser, setNormalUser] = useState(false);
   const [financeStaff, setFinanceStaff] = useState(false);
@@ -52,12 +65,10 @@ export default function Register() {
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [username, setUsername] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [department, setDepartment] = useState("");
+  const [depId, setDepId] = useState(0);
   const [firstNameEmpty, setFirstNameEmpty] = useState(false);
   const [lastNameEmpty, setLastNameEmpty] = useState(false);
-  const [usernameEmpty, setUsernameEmpty] = useState(false);
   const [phoneNumberEmpty, setPhoneNumberEmpty] = useState(false);
   const [departmentEmpty, setDepartmentEmpty] = useState(false);
   const [prolineMailError, setProlineMailError] = useState(false);
@@ -108,7 +119,6 @@ export default function Register() {
     setPasswordEmpty(false);
     setFirstNameEmpty(false);
     setLastNameEmpty(false);
-    setUsernameEmpty(false);
     setPhoneNumberEmpty(false);
     setDepartmentEmpty(false);
 
@@ -150,15 +160,11 @@ export default function Register() {
       setLastNameEmpty(true);
       hasError = true;
     }
-    if (username.length === 0) {
-      setUsernameEmpty(true);
-      hasError = true;
-    }
     if (phoneNumber.length === 0) {
       setPhoneNumberEmpty(true);
       hasError = true;
     }
-    if (department.length === 0 && (normalUser || financeStaff)) {
+    if (depId === 0 && (normalUser || financeStaff)) {
       setDepartmentEmpty(true);
       hasError = true;
     }
@@ -178,14 +184,13 @@ export default function Register() {
         password: password,
         firstName: firstName,
         lastName: lastName,
-        department: department,
+        dep_id: depId,
         phoneNumber: phoneCode + " " + phoneNumber,
-        username: username,
         role: financeStaff
           ? "finance_staff"
           : proLineStaff
-          ? "proline_staff"
-          : "normal_user",
+            ? "proline_staff"
+            : "normal_user",
       };
       fetch("api/create_user", { method: "POST", body: JSON.stringify(body) })
         .then((res) => res.json())
@@ -197,18 +202,18 @@ export default function Register() {
               redirect("/login");
             }, 3000);
           } else if (data.status === 200 && (financeStaff || proLineStaff)) {
-            redirect("/register/register-req");
+            redirect("/register/register-req")
           } else {
             setLoadingBar(false);
             setSnackState({ open: true, severity: "error" });
           }
-        });
+        })
     }
   };
 
   return (
     <div className="min-h-screen flex justify-center items-center">
-      <div className="bg-white shadow-lg/20 max-w-3xl rounded-md border-4 border-[#2c2c2c] mt-20 mb-20">
+      <motion.div className="bg-white shadow-lg/40 max-w-3xl rounded-md border-4 border-[#2c2c2c] mt-20 mb-20" initial={{opacity: 0, y: 6, scale: 0.98}} animate={{opacity: 1, y: 0, scale: 1}} transition={{duration: 0.5, ease: "easeInOut"}}>
         <div className="flex">
           <div
             id="left"
@@ -258,8 +263,8 @@ export default function Register() {
                   <TextField
                     fullWidth
                     error={firstNameEmpty}
-                    helperText={firstNameEmpty ? "Please enter first name" : ""}
-                    label="First Name"
+                    helperText={firstNameEmpty ? "Please enter name" : ""}
+                    label="Name"
                     id="firstName"
                     type="text"
                     data-testid="textfield"
@@ -282,31 +287,9 @@ export default function Register() {
                     }}
                   />
                 </div>
-                <TextField
-                  fullWidth
-                  error={usernameEmpty}
-                  helperText={usernameEmpty ? "Please enter username" : ""}
-                  label="Username"
-                  id="username"
-                  type="text"
-                  data-testid="textfield"
-                  onChange={(e) => {
-                    setUsername(e.target.value);
-                    setUsernameEmpty(false);
-                  }}
-                  slotProps={{
-                    input: {
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <PersonIcon sx={{ color: "#111827" }} />
-                        </InputAdornment>
-                      ),
-                    },
-                  }}
-                />
                 <div className="flex gap-3">
                   <select
-                    className="border-2 rounded-md max-h-14 px-2"
+                    className="border-2 border-[#2c2c2c] rounded-md min-h-14 px-2"
                     defaultValue="+44"
                     onChange={(e) => {
                       setPhoneCode(e.target.value);
@@ -348,14 +331,13 @@ export default function Register() {
                 </div>
                 <Autocomplete
                   disablePortal
-                  value={department}
-                  inputValue={department}
-                  onInputChange={(_, dep) => {
-                    setDepartment(dep);
-                    setDepartmentEmpty(false);
+                  onChange={(_, dep) => {
+                    setDepId(dep!.dep_id);
                   }}
-                  disabled={proLineStaff}
                   options={departments}
+                  getOptionKey={(department) => department.dep_id}
+                  getOptionLabel={(department) => department.dep_name}
+                  disabled={proLineStaff}
                   slotProps={{
                     paper: {
                       sx: {
@@ -399,12 +381,12 @@ export default function Register() {
                     emailError
                       ? "Enter a valid email"
                       : emailEmpty
-                      ? "Please enter an email"
-                      : prolineMailError
-                      ? "Enter a valid company email"
-                      : financeStaffMailError
-                      ? "Enter a valid university email"
-                      : ""
+                        ? "Please enter an email"
+                        : prolineMailError
+                          ? "Enter a valid company email"
+                          : financeStaffMailError
+                            ? "Enter a valid university email"
+                            : ""
                   }
                   label="Email"
                   id="email"
@@ -434,8 +416,8 @@ export default function Register() {
                     passwordEmpty
                       ? "Please enter a password"
                       : passwordError
-                      ? "Enter a valid password"
-                      : ""
+                        ? "Enter a valid password"
+                        : ""
                   }
                   label="Password"
                   id="password"
@@ -612,7 +594,7 @@ export default function Register() {
                       }}
                       onClick={() => {
                         setProLineStaff(!proLineStaff);
-                        setDepartment("");
+                        setDepId(0);
                         setDepartmentEmpty(false);
                         setNormalUser(false);
                         setFinanceStaff(false);
@@ -696,7 +678,7 @@ export default function Register() {
             </ThemeProvider>
           </div>
         </div>
-      </div>
+      </motion.div>
       <Snackbar
         open={snackState.open}
         onClose={() => {

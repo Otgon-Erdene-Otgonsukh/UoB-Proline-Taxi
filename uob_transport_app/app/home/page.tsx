@@ -221,7 +221,7 @@ const Page = () => {
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 1, ease: "easeOut" }}
       >
-        Welcome, {data?.user.username}!
+        Welcome, {data?.user.name.split(" ")[0]}!
         <p className="text-gray-600 text-lg font-normal">To Your Booking Space</p>
       </motion.div>
       <div className="flex mt-7 gap-10 max-w-6xl">
@@ -430,12 +430,12 @@ const Page = () => {
                       <StyledTableCell>
                         <span
                           className={`inline-block px-5 py-1 rounded-full text-xs font-medium ${row.booking_status === "Approved"
-                            ? "bg-green-100 text-green-800 border border-green-800"
-                            : row.booking_status === "Rejected"
-                              ? "bg-red-100 text-red-800 border border-red-800"
-                              : row.booking_status === "Cancelled"
-                                ? "bg-gray-300 text-gray-900 border border-gray-900"
-                                : "bg-yellow-100 text-yellow-800 border border-yellow-800"
+                              ? "bg-green-100 text-green-800 border border-green-800"
+                              : row.booking_status === "Rejected"
+                                ? "bg-red-100 text-red-800 border border-red-800"
+                                : row.booking_status === "Cancelled"
+                                  ? "bg-gray-300 text-gray-900 border border-gray-900"
+                                  : "bg-yellow-100 text-yellow-800 border border-yellow-800"
                             }`}
                         >
                           {row.booking_status}

@@ -27,9 +27,9 @@ import {
   MarkerLabel,
   MapRef,
 } from "@/components/ui/map";
-import { departments } from "@/model/models";
-import { Loader2, Clock, Route } from "lucide-react";
 import { LngLatLike } from "maplibre-gl";
+import { getDepartments } from "@/app/requests/departments";
+import { department } from "@/generated/prisma/client";
 
 export default function BookingPage() {
   // Attach common locations as keys to hashmapped Lat/Lon for routing.
@@ -66,8 +66,7 @@ export default function BookingPage() {
     DropoffLoc: "",
     PickupDate: "",
     PickupTime: "",
-    FirstName: "",
-    Surname: "",
+    passengerName: "",
     Number: "",
     Email: "",
     AdditionalInfo: "",
@@ -100,11 +99,10 @@ export default function BookingPage() {
     PickupTime: "",
     ReturnDate: "",
     ReturnTime: "",
-    FirstName: "",
-    Surname: "",
+    PassengerName: "",
     Number: "",
     Email: "",
-    department: "",
+    dep_id: 0,
     Passengers: 1,
     AdditionalInfo: "",
   });
@@ -122,6 +120,9 @@ export default function BookingPage() {
     clearFeedback();
 
     let loc = "";
+
+    console.log(formData);
+
 
     // Custom Location
     if (isManualChecked) {
@@ -147,7 +148,7 @@ export default function BookingPage() {
     } else loc = formData.Airport;
 
     // Department check
-    if (formData.department.length === 0) {
+    if (formData.dep_id === 0) {
       setDepartmentEmpty(true);
       fail = true;
     }
@@ -251,26 +252,14 @@ export default function BookingPage() {
       addFormFeedback("Number", "Please enter a valid phone number.");
     }
 
-    // First name, between 1 and 50 chars.
-    if (formData.FirstName == "") {
-      addFormFeedback("FirstName", "Please enter a First Name.");
+    // Passenger name, between 1 and 100 chars.
+    if (formData.PassengerName == "") {
+      addFormFeedback("PassengerName", "Please enter the passenger's name.");
       fail = true;
-    } else if (formData.FirstName.length > 50) {
+    } else if (formData.PassengerName.length > 100) {
       addFormFeedback(
-        "FirstName",
-        "First Name too long. Please use an abbreviation.",
-      );
-      fail = true;
-    }
-
-    // Surname, between 1 and 50 chars.
-    if (formData.Surname == "") {
-      addFormFeedback("Surname", "Please enter a Surname.");
-      fail = true;
-    } else if (formData.Surname.length > 50) {
-      addFormFeedback(
-        "Surname",
-        "Surname too long. Please use an abbreviation.",
+        "Passenger",
+        "Passenger Name too long. Please use an abbreviation.",
       );
       fail = true;
     }
@@ -300,17 +289,17 @@ export default function BookingPage() {
         ...(isReturnChecked
           ? { return_time: returnDateTime, returnTo: formData.ReturnTo }
           : {}),
-        first_name: formData.FirstName,
-        surname: formData.Surname,
+        passenger_name: formData.PassengerName,
         email: formData.Email,
         tel_number: phoneCode + " " + formData.Number,
         additional_info: formData.AdditionalInfo,
         via: formData.Via,
         passengers: formData.Passengers,
-        department: formData.department,
+        dep_id: formData.dep_id,
         airport: formData.Airport,
         flight_num: formData.FlightNum,
       };
+
       fetch("/api/create_booking", {
         method: "POST",
         body: JSON.stringify(jsonBody),
@@ -418,6 +407,19 @@ export default function BookingPage() {
       updateRoute();
     }
   }, [start, end]);
+
+
+  const [departmentList, setDepartmentList] = useState<department[]>([]);
+
+  useEffect(() => {
+    getDepartments().then(res => {
+      if (res.status === 200) {
+        res.json().then(data => {
+          setDepartmentList(data);
+        })
+      }
+    })
+  }, [])
 
   const [routes, setRoutes] = useState<RouteData[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -897,7 +899,7 @@ export default function BookingPage() {
               </div>
               <div className="flex flex-col">
                 <label htmlFor="name" className="mb-1 text-sm">
-                  First name
+                  Passenger Name
                 </label>
                 <input
                   id="name"
@@ -925,14 +927,14 @@ export default function BookingPage() {
                   className={`border-2 rounded px-3 py-2 ${formFeedback.Surname == "" ? "" : "border-red-700"
                     }`}
                   onChange={(e) => {
-                    setFormData({ ...formData, Surname: e.target.value });
+                    setFormData({ ...formData, PassengerName: e.target.value });
                   }}
                 />
                 <FormHelperText
                   sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
-                  className={`${formFeedback.Surname != "" ? "" : "hidden"}`}
+                  className={`${formFeedback.passengerName != "" ? "" : "hidden"}`}
                 >
-                  {formFeedback.Surname}
+                  {formFeedback.passengerName}
                 </FormHelperText>
               </div>
               <div className="flex flex-col">
@@ -977,13 +979,13 @@ export default function BookingPage() {
                 <Autocomplete
                   sx={{ my: 1 }}
                   disablePortal
-                  value={formData.department}
-                  inputValue={formData.department}
-                  onInputChange={(_, dep) => {
-                    setFormData({ ...formData, department: dep });
+                  onChange={(_, dep) => {
+                    setFormData({ ...formData, dep_id: dep!.dep_id });
                     setDepartmentEmpty(false);
                   }}
-                  options={departments}
+                  options={departmentList}
+                  getOptionKey={(department) => department.dep_id}
+                  getOptionLabel={(department) => department.dep_name}
                   slotProps={{
                     paper: {
                       sx: {

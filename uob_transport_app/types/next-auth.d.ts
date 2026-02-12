@@ -6,24 +6,22 @@ import NextAuth from "next-auth"
 declare module "next-auth" {
     interface User {
         user_id: number;
-        username: string;
         name: string;
-        surname: string | null;
         email: string;
         phone_number: string;
-        department: string | undefined;
+        dep_id: number | null;
+        dep_name: string | null;
         account_type: string;
     }
 
     interface Session {
         user: {
             name: string;
-            surname: string;
             email: string;
-            username: string;
             user_id: number;
             phone_number: string;
-            department: string | null;
+            dep_id: number | null;
+            dep_name: string | null;
             account_type: string;
         };
     }
@@ -31,10 +29,10 @@ declare module "next-auth" {
     interface JWT {
         name: string;
         email: string;
-        username: string;
         user_id: number;
         phone_number: string;
-        department: string;
+        dep_id: number | null;
+        dep_name: string | null;
         account_type: string;
     }
 }
