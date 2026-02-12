@@ -203,7 +203,7 @@ export const Navbar = () => {
           </div>
           {session ? (
             <div>
-              <Button className="text-lg" sx={{ color: "white", fontFamily: "inter" }} onClick={handleClick}>Hi, {session.user?.name}! <ArrowDropDownIcon sx={{ mb: 0.4, transform: open ? "rotate(180deg)" : "none" }} /></Button>
+              <Button className="text-lg" sx={{ color: "white", fontFamily: "inter" }} onClick={handleClick}>Hi, {session.user?.name.split(" ")[0]}! <ArrowDropDownIcon sx={{ mb: 0.4, transform: open ? "rotate(180deg)" : "none" }} /></Button>
               <Menu
                 id="basic-menu"
                 anchorEl={anchorEl}
@@ -272,7 +272,7 @@ export const Navbar = () => {
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
               >
                 <MenuItem
-                  onClick={handleCloseMenu}
+                  onClick={() => {handleCloseMenu(); router.push("/profile")}}
                   sx={{
                     fontWeight: 500,
                     color: '#2C2C2C',
