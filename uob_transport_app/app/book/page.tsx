@@ -904,17 +904,17 @@ export default function BookingPage() {
                 <input
                   id="name"
                   type="text"
-                  className={`border-2 rounded px-3 py-2 ${formFeedback.FirstName == "" ? "" : "border-red-700"
+                  className={`border-2 rounded px-3 py-2 ${formFeedback.passengerName == "" ? "" : "border-red-700"
                     }`}
                   onChange={(e) => {
-                    setFormData({ ...formData, FirstName: e.target.value });
+                    setFormData({ ...formData, PassengerName: e.target.value });
                   }}
                 />
                 <FormHelperText
                   sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
-                  className={`${formFeedback.FirstName != "" ? "" : "hidden"}`}
+                  className={`${formFeedback.passengerName != "" ? "" : "hidden"}`}
                 >
-                  {formFeedback.FirstName}
+                  {formFeedback.passengerName}
                 </FormHelperText>
               </div>
               <div className="flex flex-col">
@@ -924,7 +924,7 @@ export default function BookingPage() {
                 <input
                   id="surname"
                   type="text"
-                  className={`border-2 rounded px-3 py-2 ${formFeedback.Surname == "" ? "" : "border-red-700"
+                  className={`border-2 rounded px-3 py-2 ${formFeedback.passengerName == "" ? "" : "border-red-700"
                     }`}
                   onChange={(e) => {
                     setFormData({ ...formData, PassengerName: e.target.value });
