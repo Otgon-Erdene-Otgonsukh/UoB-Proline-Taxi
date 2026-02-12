@@ -7,14 +7,18 @@ export const getUserBookingsAccess = async (userId: number, page: number, pageSi
   if (searchParams.from !== undefined) {
     query['trip'] = {
       pickup_location: {
-        contains: searchParams.from
+        // case insensitive
+        contains: searchParams.from.toLowerCase().trim(),
+        mode: 'insensitive'
       }
     }
   }
   if (searchParams.to !== undefined) {
     query['trip'] = {
       dropoff_location: {
-        contains: searchParams.to
+        // case insensitive
+        contains: searchParams.to.toLowerCase().trim(),
+        mode: 'insensitive'
       }
     }
   }
@@ -37,8 +41,8 @@ export const getUserBookingsAccess = async (userId: number, page: number, pageSi
   }
   return prisma.booking.findMany({
     where: {
+      ...query,
       user_id: userId,
-      ...query
     },
     include: {
       trip: true,
@@ -87,14 +91,18 @@ export const getUserBookingsCountAccess = async (userId: number, searchParams: {
   if (searchParams.from !== undefined) {
     query['trip'] = {
       pickup_location: {
-        contains: searchParams.from
+        // case insensitive
+        contains: searchParams.from.toLowerCase().trim(),
+        mode: 'insensitive'
       }
     }
   }
   if (searchParams.to !== undefined) {
     query['trip'] = {
       dropoff_location: {
-        contains: searchParams.to
+        // case insensitive
+        contains: searchParams.to.toLowerCase().trim(),
+        mode: 'insensitive'
       }
     }
   }
@@ -118,8 +126,8 @@ export const getUserBookingsCountAccess = async (userId: number, searchParams: {
 
   return prisma.booking.count({
     where: {
+      ...query,
       user_id: userId,
-      ...query
     },
   })
 }

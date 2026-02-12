@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter, redirect } from "next/navigation";
 import {
   Button,
@@ -19,18 +19,28 @@ import {
 } from "@mui/material";
 import NumberField from "@/components/NumberField";
 import { useSession } from "next-auth/react";
-import Image from "next/image";
-import { departments } from "@/model/models";
+import {
+  Map,
+  MapMarker,
+  MarkerContent,
+  MapRoute,
+  MarkerLabel,
+  MapRef,
+} from "@/components/ui/map";
+import { LngLatLike } from "maplibre-gl";
+import { getDepartments } from "@/app/requests/departments";
+import { department } from "@/generated/prisma/client";
 
 export default function BookingPage() {
-  const commonLocations = [
-    "Queens Building",
-    "Merchant Venturers Building",
-    "Richmond Building",
-    "Victoria's Room",
-    "Will's Memorial",
-    "Physics Building",
-  ];
+  // Attach common locations as keys to hashmapped Lat/Lon for routing.
+  const commonLocations = {
+    "Queens Building": { "lat": "51.456890", "lng": "-2.601892" },
+    "Merchant Venturers Building": { "lat": "51.456111", "lng": "-2.602830" },
+    "Richmond Building": { "lat": "51.456996", "lng": "-2.613267" },
+    "Victoria Rooms": { "lat": "51.458173", "lng": "-2.609358" },
+    "Wills Memorial Building": { "lat": "51.455927", "lng": "-2.604696" },
+    "Physics Building": { "lat": "51.458986", "lng": "-2.602204" },
+  };
 
   const session = useSession();
 
@@ -56,8 +66,7 @@ export default function BookingPage() {
     DropoffLoc: "",
     PickupDate: "",
     PickupTime: "",
-    FirstName: "",
-    Surname: "",
+    passengerName: "",
     Number: "",
     Email: "",
     AdditionalInfo: "",
@@ -90,11 +99,10 @@ export default function BookingPage() {
     PickupTime: "",
     ReturnDate: "",
     ReturnTime: "",
-    FirstName: "",
-    Surname: "",
+    PassengerName: "",
     Number: "",
     Email: "",
-    department: "",
+    dep_id: 0,
     Passengers: 1,
     AdditionalInfo: "",
   });
@@ -112,6 +120,9 @@ export default function BookingPage() {
     clearFeedback();
 
     let loc = "";
+
+    console.log(formData);
+
 
     // Custom Location
     if (isManualChecked) {
@@ -137,7 +148,7 @@ export default function BookingPage() {
     } else loc = formData.Airport;
 
     // Department check
-    if (formData.department.length === 0) {
+    if (formData.dep_id === 0) {
       setDepartmentEmpty(true);
       fail = true;
     }
@@ -232,26 +243,14 @@ export default function BookingPage() {
       addFormFeedback("Number", "Please enter a valid phone number.");
     }
 
-    // First name, between 1 and 50 chars.
-    if (formData.FirstName == "") {
-      addFormFeedback("FirstName", "Please enter a First Name.");
+    // Passenger name, between 1 and 100 chars.
+    if (formData.PassengerName == "") {
+      addFormFeedback("PassengerName", "Please enter the passenger's name.");
       fail = true;
-    } else if (formData.FirstName.length > 50) {
+    } else if (formData.PassengerName.length > 100) {
       addFormFeedback(
-        "FirstName",
-        "First Name too long. Please use an abbreviation.",
-      );
-      fail = true;
-    }
-
-    // Surname, between 1 and 50 chars.
-    if (formData.Surname == "") {
-      addFormFeedback("Surname", "Please enter a Surname.");
-      fail = true;
-    } else if (formData.Surname.length > 50) {
-      addFormFeedback(
-        "Surname",
-        "Surname too long. Please use an abbreviation.",
+        "Passenger",
+        "Passenger Name too long. Please use an abbreviation.",
       );
       fail = true;
     }
@@ -281,17 +280,17 @@ export default function BookingPage() {
         ...(isReturnChecked
           ? { return_time: returnDateTime, returnTo: formData.ReturnTo }
           : {}),
-        first_name: formData.FirstName,
-        surname: formData.Surname,
+        passenger_name: formData.PassengerName,
         email: formData.Email,
         tel_number: phoneCode + " " + formData.Number,
         additional_info: formData.AdditionalInfo,
         via: formData.Via,
         passengers: formData.Passengers,
-        department: formData.department,
+        dep_id: formData.dep_id,
         airport: formData.Airport,
         flight_num: formData.FlightNum,
       };
+
       fetch("/api/create_booking", {
         method: "POST",
         body: JSON.stringify(jsonBody),
@@ -359,12 +358,124 @@ export default function BookingPage() {
     },
   });
 
+  interface RouteData {
+    coordinates: [number, number][];
+    duration: number; // seconds
+    distance: number; // meters
+  }
+
+  function formatDuration(seconds: number): string {
+    const mins = Math.round(seconds / 60);
+    if (mins < 60) return `${mins} min`;
+    const hours = Math.floor(mins / 60);
+    const remainingMins = mins % 60;
+    return `${hours}h ${remainingMins}m`;
+  }
+
+  function formatDistance(meters: number): string {
+    if (meters < 1000) return `${Math.round(meters)} m`;
+    return `${(meters / 1000).toFixed(1)} km`;
+  }
+
+  // Use Nominatim to return latitude and longitude from address.
+  async function getLatLon(address: string): Promise<{ lat: string; lon: string } | null> {
+    const result = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`);
+    if (result.ok) {
+      const data = await result.json();
+      if (data && data.length > 0) {
+        return { lat: data[0].lat, lon: data[0].lon };
+      }
+    };
+    return null;
+  }
+
+  const [start, setStart] = useState<{ name: string; lat: number; lng: number } | null>(null);
+  const [end, setEnd] = useState<{ name: string; lat: number; lng: number } | null>(null);
+
+  // Update the route when start or end changes.
+  useEffect(() => {
+    if (end != null && start != null) {
+      updateRoute();
+    }
+  }, [start, end]);
+
+
+  const [departmentList, setDepartmentList] = useState<department[]>([]);
+
+  useEffect(() => {
+    getDepartments().then(res => {
+      if (res.status === 200) {
+        res.json().then(data => {
+          setDepartmentList(data);
+        })
+      }
+    })
+  }, [])
+
+  const [routes, setRoutes] = useState<RouteData[]>([]);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
+  const mapRef = useRef<MapRef>(null);
+
+  // Only call updateRoute when both start and end are set.
+  async function updateRoute() {
+    if (start != null && end != null) {
+      fetchRoutes(start.lat, start.lng, end.lat, end.lng);
+
+      // Find each corner of the square bounding box from the two points on the map.
+      const swLng = Math.min(start.lng, end.lng);
+      const swLat = Math.min(start.lat, end.lat);
+      const neLng = Math.max(start.lng, end.lng);
+      const neLat = Math.max(start.lat, end.lat);
+
+      // Check bounds are LngLatLike type for fitBounds function.
+      const bounds: [LngLatLike, LngLatLike] = [[swLng, swLat], [neLng, neLat]];
+      mapRef.current?.fitBounds(bounds, { padding: 100 });
+    }
+  }
+
+  async function fetchRoutes(slat: number, slon: number, flat: number, flon: number) {
+    try {
+      const response = await fetch(
+        `https://router.project-osrm.org/route/v1/driving/${slon},${slat};${flon},${flat}?overview=full&geometries=geojson&alternatives=true`
+      );
+      const data = await response.json();
+
+      if (data.routes?.length > 0) {
+        const routeData: RouteData[] = data.routes.map(
+          (route: {
+            geometry: { coordinates: [number, number][] };
+            duration: number;
+            distance: number;
+          }) => ({
+            coordinates: route.geometry.coordinates,
+            duration: route.duration,
+            distance: route.distance,
+          })
+        );
+        setRoutes(routeData);
+      }
+    } catch (error) {
+      console.error("Failed to fetch routes:", error);
+    }
+  }
+
+
+  // Sort routes: non-selected first, selected last (renders on top)
+  const sortedRoutes = routes
+    .map((route, index) => ({ route, index }))
+    .sort((a, b) => {
+      if (a.index === selectedIndex) return 1;
+      if (b.index === selectedIndex) return -1;
+      return 0;
+    });
+
   return (
     <div className="flex min-h-screen justify-center items-center font-inter p-4">
-      <div className="border-3 border-[#2c2c2c] flex flex-col lg:flex-row bg-white shadow-lg rounded-lg my-8 max-w-5xl overflow-hidden">
+      <div className="border-3 border-[#2c2c2c] flex flex-col lg:flex-row bg-white shadow-lg rounded-lg my-8 max-w-10xl overflow-hidden">
         {/* Booking Form Section */}
         <div className="p-4 sm:p-6 md:p-8 w-full lg:w-1/2">
-          <div className="bg-[#2c2c2c] text-white py-4 -mx-4 sm:-mx-6 md:-mx-8 px-4 sm:px-6 md:px-8 -mt-4 sm:-mt-6 md:-mt-8 mb-6">
+          <div className="bg-[#2c2c2c] text-white py-6 -mx-4 sm:-mx-6 md:-mx-8 px-4 sm:px-6 md:px-8 -mt-4 sm:-mt-6 md:-mt-8 mb-6">
             <h1 className="font-aleo text-2xl sm:text-3xl font-semibold text-center">
               BOOKING DETAILS
             </h1>
@@ -374,9 +485,8 @@ export default function BookingPage() {
             {/*should go to some confirmed page or alike, currently goes to homepage*/}
             <div className="flex flex-col gap-4">
               <div
-                className={`flex flex-col ${
-                  isManualChecked || isFlightChecked ? "text-gray-400" : ""
-                }`}
+                className={`flex flex-col ${isManualChecked || isFlightChecked ? "text-gray-400" : ""
+                  }`}
               >
                 {/*using the custom theme above*/}
                 <ThemeProvider theme={inputTheme}>
@@ -398,6 +508,15 @@ export default function BookingPage() {
                       defaultValue=""
                       onChange={(e) => {
                         setFormData({ ...formData, CommonLoc: e.target.value });
+
+                        // Update route
+                        // Ensure that e.target value is a key of commonLocations
+                        type LocKey = keyof typeof commonLocations;
+                        const value = e.target.value as LocKey;
+                        if (e.target.value) {
+                          // Convert lat and long strings to numbers for mapcn
+                          setStart({ name: e.target.value, lat: parseFloat(commonLocations[value].lat), lng: parseFloat(commonLocations[value].lng) });
+                        }
                       }}
                       error={formFeedback.CommonLoc != ""}
                     >
@@ -405,7 +524,7 @@ export default function BookingPage() {
                         <em>Select a location</em>
                       </MenuItem>
                       {/*used an array to store the common locations and used map to populate the menu items*/}
-                      {commonLocations.map((loc) => (
+                      {Object.keys(commonLocations).map((loc) => (
                         <MenuItem key={loc} value={loc}>
                           {loc}
                         </MenuItem>
@@ -413,9 +532,8 @@ export default function BookingPage() {
                     </Select>
                     <FormHelperText
                       sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
-                      className={`${
-                        formFeedback.CommonLoc != "" ? "" : "hidden"
-                      }`}
+                      className={`${formFeedback.CommonLoc != "" ? "" : "hidden"
+                        }`}
                     >
                       {formFeedback.CommonLoc}
                     </FormHelperText>
@@ -510,18 +628,22 @@ export default function BookingPage() {
                   <input
                     id="custom"
                     placeholder="Enter"
-                    className={`border-2 rounded px-3 py-2 ${
-                      formFeedback.CustomLoc == "" ? "" : "border-red-700"
-                    }`}
+                    className={`border-2 rounded px-3 py-2 ${formFeedback.CustomLoc == "" ? "" : "border-red-700"
+                      }`}
                     onChange={(e) => {
                       setFormData({ ...formData, CustomLoc: e.target.value });
+                    }}
+                    onBlur={async (e) => {
+                      const latlon = await getLatLon(e.target.value)
+                      if (latlon != null) {
+                        setStart({ name: e.target.value, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) });
+                      }
                     }}
                   ></input>
                   <FormHelperText
                     sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
-                    className={`${
-                      formFeedback.CustomLoc != "" ? "" : "hidden"
-                    }`}
+                    className={`${formFeedback.CustomLoc != "" ? "" : "hidden"
+                      }`}
                   >
                     {formFeedback.CustomLoc}
                   </FormHelperText>
@@ -554,18 +676,16 @@ export default function BookingPage() {
                     <input
                       id="flightNum"
                       placeholder="AB1234"
-                      className={`border-2 rounded px-3 py-2 ${
-                        formFeedback.FlightNum == "" ? "" : "border-red-700"
-                      }`}
+                      className={`border-2 rounded px-3 py-2 ${formFeedback.FlightNum == "" ? "" : "border-red-700"
+                        }`}
                       onChange={(e) => {
                         setFormData({ ...formData, FlightNum: e.target.value });
                       }}
                     ></input>
                     <FormHelperText
                       sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
-                      className={`${
-                        formFeedback.FlightNum != "" ? "" : "hidden"
-                      }`}
+                      className={`${formFeedback.FlightNum != "" ? "" : "hidden"
+                        }`}
                     >
                       {formFeedback.FlightNum}
                     </FormHelperText>
@@ -577,18 +697,16 @@ export default function BookingPage() {
                     <input
                       id="airport"
                       placeholder="Bristol Airport"
-                      className={`border-2 rounded px-3 py-2 ${
-                        formFeedback.Airport == "" ? "" : "border-red-700"
-                      }`}
+                      className={`border-2 rounded px-3 py-2 ${formFeedback.Airport == "" ? "" : "border-red-700"
+                        }`}
                       onChange={(e) => {
                         setFormData({ ...formData, Airport: e.target.value });
                       }}
                     ></input>
                     <FormHelperText
                       sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
-                      className={`${
-                        formFeedback.Airport != "" ? "" : "hidden"
-                      }`}
+                      className={`${formFeedback.Airport != "" ? "" : "hidden"
+                        }`}
                     >
                       {formFeedback.Airport}
                     </FormHelperText>
@@ -622,9 +740,14 @@ export default function BookingPage() {
                   onChange={(e) => {
                     setFormData({ ...formData, DropoffLoc: e.target.value });
                   }}
-                  className={`border-2 rounded px-3 py-2 ${
-                    formFeedback.DropoffLoc == "" ? "" : "border-red-700"
-                  }`}
+                  onBlur={async (e) => {
+                    const latlon = await getLatLon(e.target.value)
+                    if (latlon != null) {
+                      setEnd({ name: e.target.value, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) });
+                    }
+                  }}
+                  className={`border-2 rounded px-3 py-2 ${formFeedback.DropoffLoc == "" ? "" : "border-red-700"
+                    }`}
                 ></input>
                 <FormHelperText
                   sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
@@ -685,9 +808,8 @@ export default function BookingPage() {
                       <input
                         id="pickupDate"
                         type="date"
-                        className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0 ${
-                          formFeedback.ReturnDate == "" ? "" : "border-red-700"
-                        }`}
+                        className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0 ${formFeedback.ReturnDate == "" ? "" : "border-red-700"
+                          }`}
                         onChange={(e) => {
                           setFormData({
                             ...formData,
@@ -698,9 +820,8 @@ export default function BookingPage() {
                       <input
                         id="pickupTime"
                         type="time"
-                        className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0 ${
-                          formFeedback.ReturnTime == "" ? "" : "border-red-700"
-                        }`}
+                        className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0 ${formFeedback.ReturnTime == "" ? "" : "border-red-700"
+                          }`}
                         onChange={(e) => {
                           setFormData({
                             ...formData,
@@ -711,9 +832,8 @@ export default function BookingPage() {
                     </div>
                     <FormHelperText
                       sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
-                      className={`${
-                        formFeedback.ReturnTime != "" ? "" : "hidden"
-                      }`}
+                      className={`${formFeedback.ReturnTime != "" ? "" : "hidden"
+                        }`}
                     >
                       {formFeedback.ReturnTime}
                     </FormHelperText>
@@ -728,9 +848,8 @@ export default function BookingPage() {
                   <input
                     id="pickupDate"
                     type="date"
-                    className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0 ${
-                      formFeedback.PickupDate == "" ? "" : "border-red-700"
-                    }`}
+                    className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0 ${formFeedback.PickupDate == "" ? "" : "border-red-700"
+                      }`}
                     onChange={(e) => {
                       setFormData({ ...formData, PickupDate: e.target.value });
                     }}
@@ -738,9 +857,8 @@ export default function BookingPage() {
                   <input
                     id="pickupTime"
                     type="time"
-                    className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0 ${
-                      formFeedback.PickupTime == "" ? "" : "border-red-700"
-                    }`}
+                    className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0 ${formFeedback.PickupTime == "" ? "" : "border-red-700"
+                      }`}
                     onChange={(e) => {
                       setFormData({ ...formData, PickupTime: e.target.value });
                     }}
@@ -764,44 +882,22 @@ export default function BookingPage() {
               </div>
               <div className="flex flex-col">
                 <label htmlFor="name" className="mb-1 text-sm">
-                  First name
+                  Passenger Name
                 </label>
                 <input
                   id="name"
                   type="text"
-                  className={`border-2 rounded px-3 py-2 ${
-                    formFeedback.FirstName == "" ? "" : "border-red-700"
-                  }`}
+                  className={`border-2 rounded px-3 py-2 ${formFeedback.passengerName == "" ? "" : "border-red-700"
+                    }`}
                   onChange={(e) => {
-                    setFormData({ ...formData, FirstName: e.target.value });
+                    setFormData({ ...formData, PassengerName: e.target.value });
                   }}
                 ></input>
                 <FormHelperText
                   sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
-                  className={`${formFeedback.FirstName != "" ? "" : "hidden"}`}
+                  className={`${formFeedback.passengerName != "" ? "" : "hidden"}`}
                 >
-                  {formFeedback.FirstName}
-                </FormHelperText>
-              </div>
-              <div className="flex flex-col">
-                <label htmlFor="surname" className="mb-1 text-sm">
-                  Last name
-                </label>
-                <input
-                  id="surname"
-                  type="text"
-                  className={`border-2 rounded px-3 py-2 ${
-                    formFeedback.Surname == "" ? "" : "border-red-700"
-                  }`}
-                  onChange={(e) => {
-                    setFormData({ ...formData, Surname: e.target.value });
-                  }}
-                ></input>
-                <FormHelperText
-                  sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
-                  className={`${formFeedback.Surname != "" ? "" : "hidden"}`}
-                >
-                  {formFeedback.Surname}
+                  {formFeedback.passengerName}
                 </FormHelperText>
               </div>
               <div className="flex flex-col">
@@ -828,9 +924,8 @@ export default function BookingPage() {
                     type="tel"
                     id="number"
                     placeholder="1234567890"
-                    className={`border-2 rounded flex-1 sm:px-3 py-2 min-w-0 w-full ${
-                      formFeedback.Number == "" ? "" : "border-red-700"
-                    }`}
+                    className={`border-2 rounded flex-1 sm:px-3 py-2 min-w-0 w-full ${formFeedback.Number == "" ? "" : "border-red-700"
+                      }`}
                     onChange={(e) => {
                       setFormData({ ...formData, Number: e.target.value });
                     }}
@@ -847,13 +942,13 @@ export default function BookingPage() {
                 <Autocomplete
                   sx={{ my: 1 }}
                   disablePortal
-                  value={formData.department}
-                  inputValue={formData.department}
-                  onInputChange={(_, dep) => {
-                    setFormData({ ...formData, department: dep });
+                  onChange={(_, dep) => {
+                    setFormData({ ...formData, dep_id: dep!.dep_id });
                     setDepartmentEmpty(false);
                   }}
-                  options={departments}
+                  options={departmentList}
+                  getOptionKey={(department) => department.dep_id}
+                  getOptionLabel={(department) => department.dep_name}
                   slotProps={{
                     paper: {
                       sx: {
@@ -889,9 +984,8 @@ export default function BookingPage() {
                   <input
                     id="mail"
                     type="email"
-                    className={`border-2 rounded px-3 py-2 ${
-                      formFeedback.Email == "" ? "" : "border-red-700"
-                    }`}
+                    className={`border-2 rounded px-3 py-2 ${formFeedback.Email == "" ? "" : "border-red-700"
+                      }`}
                     onChange={(e) => {
                       setFormData({ ...formData, Email: e.target.value });
                     }}
@@ -927,9 +1021,8 @@ export default function BookingPage() {
                 </label>
                 <textarea
                   id="addInfo"
-                  className={`border-2 rounded px-3 py-2 min-h-20 ${
-                    formFeedback.AdditionalInfo == "" ? "" : "border-red-700"
-                  }`}
+                  className={`border-2 rounded px-3 py-2 min-h-20 ${formFeedback.AdditionalInfo == "" ? "" : "border-red-700"
+                    }`}
                   onChange={(e) => {
                     setFormData({
                       ...formData,
@@ -941,9 +1034,8 @@ export default function BookingPage() {
                 ></textarea>
                 <FormHelperText
                   sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
-                  className={`${
-                    formFeedback.AdditionalInfo != "" ? "" : "hidden"
-                  }`}
+                  className={`${formFeedback.AdditionalInfo != "" ? "" : "hidden"
+                    }`}
                 >
                   {formFeedback.AdditionalInfo}
                 </FormHelperText>
@@ -973,15 +1065,43 @@ export default function BookingPage() {
           </form>
         </div>
 
-        {/* Image Section */}
-        <div className="hidden lg:block lg:w-1/2 object-contain">
-          <Image
-            src="/emptymap.png"
-            alt="Map"
-            className="w-full h-full object-cover border-l-3 border-[#2c2c2c]"
-            width={330}
-            height={500}
-          />
+        {/* Map Section */}
+        { /* https://mapcn.vercel.app/docs/routes */}
+        <div className="container hidden lg:block lg:w-1/2 w-full object-contain min-w-[600px] border-l-3 border-gray-700 rounded-[0px_5px_5px_0px] overflow-hidden">
+          { /* Lat and long are inverted by MAPCN here */}
+          <Map ref={mapRef} center={[-2.602, 51.458]} zoom={14}>
+            {sortedRoutes.map(({ route, index }) => {
+              const isSelected = index === selectedIndex;
+              return (
+                <MapRoute
+                  key={index}
+                  coordinates={route.coordinates}
+                  color={isSelected ? "#6366f1" : "#94a3b8"}
+                  width={isSelected ? 6 : 5}
+                  opacity={isSelected ? 1 : 0.6}
+                  onClick={() => setSelectedIndex(index)}
+                />
+              );
+            })}
+
+            {start && start.lat && start.lng && ( // Only render marker when not null
+              <MapMarker longitude={start.lng} latitude={start.lat}>
+                <MarkerContent>
+                  <div className="size-5 rounded-full bg-green-500 border-2 border-white shadow-lg" />
+                  <MarkerLabel position="top">{start.name}</MarkerLabel>
+                </MarkerContent>
+              </MapMarker>
+            )}
+
+            {end && end.lat && end.lng && (
+              <MapMarker longitude={end.lng} latitude={end.lat}>
+                <MarkerContent>
+                  <div className="size-5 rounded-full bg-red-500 border-2 border-white shadow-lg" />
+                  <MarkerLabel position="bottom">{end.name}</MarkerLabel>
+                </MarkerContent>
+              </MapMarker>
+            )}
+          </Map>
         </div>
       </div>
     </div>

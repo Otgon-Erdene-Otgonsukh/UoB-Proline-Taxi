@@ -5,6 +5,12 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import NumbersIcon from "@mui/icons-material/Numbers";
 import ReceiptIcon from "@mui/icons-material/Receipt";
+import InfoIcon from "@mui/icons-material/Info";
+import HailIcon from "@mui/icons-material/Hail";
+import CancelIcon from "@mui/icons-material/Cancel";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import WarningIcon from "@mui/icons-material/Warning";
+import { motion } from "framer-motion";
 import {
   Box,
   Dialog,
@@ -25,6 +31,8 @@ import {
   TableBody,
   Paper,
   TablePagination,
+  CircularProgress,
+  Chip,
 } from "@mui/material";
 import { StyledTableCell } from "@/components/StyledTableCell";
 import CustomizedButton from "@/components/CustomizedButton";
@@ -32,7 +40,7 @@ import { getPendingBookingList } from "./requests";
 import { TablePaginationActions } from "@/components/paginationActions";
 import ViewDialog from "./components/viewDialog";
 import CustomSwitch from "@/components/CustomSwitch";
-import type { BookingWithTrip } from "./constants";
+import type { BookingWithTrip, BookingData } from "./constants";
 
 export default function DepDashboard() {
   const [selectedBooking, setSelectedBooking] =
@@ -44,9 +52,19 @@ export default function DepDashboard() {
   const [poTooLong, setPoTooLong] = useState(false);
   const [pendingBookingId, setPendingBookingId] = useState<number | null>(null);
   const [snackBar, setSnackBar] = useState(false);
-
+  const [bookingData, setBookingData] = useState<BookingData | null>(null);
+  const [cardLoading, setCardLoading] = useState(true);
+  const [rejectOpen, setRejectOpen] = useState(false);
+  const [rejectId, setRejectId] = useState(-1);
+  const [totalApplied, setTotalApplied] = useState(false);
+  const [statusApplied, setStatusApplied] = useState(false);
+  const [overdueApplied, setOverdueApplied] = useState(false);
+  const [hovered, setHovered] = useState({
+    total: false,
+    status: false,
+    overdue: false,
+  });
   const [isLoading, setIsLoading] = useState(true);
-
 
   // Get NextAuth Session.
   const { status } = useSession();
@@ -61,7 +79,18 @@ export default function DepDashboard() {
   }, [status, router]);
 
   useEffect(() => {
-    _getBookingListData()
+    _getBookingListData(0, paginationMeta.pageSize);
+  }, []);
+
+  useEffect(() => {
+    fetch("api/booking-data", {
+      method: "GET",
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setBookingData(data);
+        setCardLoading(false);
+      });
   }, []);
 
   // pagination
@@ -71,24 +100,24 @@ export default function DepDashboard() {
   });
   const handleChangePage = (
     _: React.MouseEvent<HTMLButtonElement> | null,
-    newPage: number
+    newPage: number,
   ) => {
     setIsLoading(true);
     setPaginationMeta({
       ...paginationMeta,
       page: newPage,
     });
-    _getBookingListData()
+    _getBookingListData(newPage, paginationMeta.pageSize);
   };
   const handleChangePageSize = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     setIsLoading(true);
     setPaginationMeta({
       page: 0,
       pageSize: parseInt(event.target.value, 10),
     });
-    _getBookingListData()
+    _getBookingListData(0, parseInt(event.target.value, 10));
   };
 
   // booking data
@@ -96,48 +125,57 @@ export default function DepDashboard() {
   const [pendingBookingsCount, setPendingBookingsCount] = useState(0);
   // search form
   type SearchFormProps = {
-    passengerName?: string,
-    from?: string,
-    to?: string,
-    isFlight: boolean,
-  }
+    passengerName?: string;
+    from?: string;
+    to?: string;
+    isFlight: boolean;
+  };
   const [searchFormInput, setSearchFormInput] = useState<SearchFormProps>({
     passengerName: "",
     from: "",
     to: "",
     isFlight: false,
-  })
+  });
   const handleSubmitSearchForm = (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log('submit');
-    setIsLoading(true)
-    _getBookingListData()
-  }
+    e.preventDefault();
+    setIsLoading(true);
+    setPaginationMeta({
+      page: 0,
+      pageSize: paginationMeta.pageSize,
+    });
+    _getBookingListData(0, paginationMeta.pageSize);
+  };
 
-  const _getBookingListData = () => {
-    console.log(searchFormInput);
+  // Trigger search on changes to card filters
+  useEffect(() => {
+    setIsLoading(true);
+    setPaginationMeta({
+      page: 0,
+      pageSize: paginationMeta.pageSize,
+    });
+    _getBookingListData(0, paginationMeta.pageSize);
+  }, [totalApplied, statusApplied, overdueApplied, searchFormInput.isFlight]);
 
+  const _getBookingListData = (page: number, pageSize: number) => {
     // fetch data with current paginationMeta and searchParams
-    getPendingBookingList(
-      paginationMeta.page,
-      paginationMeta.pageSize,
-      {
-        from: searchFormInput.from,
-        to: searchFormInput.to,
-        passengerName: searchFormInput.passengerName,
-        isFlight: searchFormInput.isFlight,
+    getPendingBookingList(page, pageSize, {
+      from: searchFormInput.from,
+      to: searchFormInput.to,
+      passengerName: searchFormInput.passengerName,
+      isFlight: searchFormInput.isFlight,
+      total: totalApplied,
+      status: statusApplied,
+      overdue: overdueApplied,
+    }).then((res) => {
+      if (res.status === 200) {
+        res.json().then((data) => {
+          setPendingBookings(data.pendingBookings);
+          setPendingBookingsCount(data.totalNum);
+          setIsLoading(false);
+        });
       }
-    )
-      .then((res) => {
-        if (res.status === 200) {
-          res.json().then((data) => {
-            setPendingBookings(data.pendingBookings);
-            setPendingBookingsCount(data.totalNum);
-            setIsLoading(false);
-          })
-        }
-      })
-  }
+    });
+  };
 
   const handleViewOpen = (booking: BookingWithTrip) => {
     setSelectedBooking(booking);
@@ -173,8 +211,8 @@ export default function DepDashboard() {
                 booking_status: "Approved",
                 trip: { ...b.trip, PO: poNumber },
               }
-              : b
-          )
+              : b,
+          ),
         );
         fetch("api/update_booking", {
           method: "POST",
@@ -200,8 +238,8 @@ export default function DepDashboard() {
   const handleReject = (bookingId: number) => {
     setPendingBookings((prev) =>
       prev.map((b) =>
-        b.booking_id === bookingId ? { ...b, booking_status: "Rejected" } : b
-      )
+        b.booking_id === bookingId ? { ...b, booking_status: "Rejected" } : b,
+      ),
     );
     fetch("api/update_booking", {
       method: "POST",
@@ -210,10 +248,210 @@ export default function DepDashboard() {
   };
 
   return (
-    <div className="flex min-h-screen justify-center pt-24 p-4">
-      <div className="bg-white shadow-lg rounded-lg p-6 md:p-8 w-full max-w-6xl mb-8 h-fit">
+    <div className="flex flex-col min-h-screen items-center pt-15 p-4">
+      <div className="flex gap-20 mb-5">
+        <div className="flex flex-col gap-3 items-center">
+          <motion.div
+            className="flex bg-white rounded-lg overflow-hidden drop-shadow-blue-600 drop-shadow-lg/30 cursor-pointer border-r-4 border-r-blue-500"
+            initial={{ opacity: 0, y: 10, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 1, ease: "easeOut", delay: 0 }}
+            whileHover={{
+              y: -4,
+              transition: { duration: 0.12, ease: "easeOut" },
+            }}
+            onMouseEnter={() => setHovered({ ...hovered, total: true })}
+            onMouseLeave={() => setHovered({ ...hovered, total: false })}
+            onClick={() => {
+              setTotalApplied((prev) => !prev);
+              setStatusApplied(false);
+              setOverdueApplied(false);
+            }}
+          >
+            <div className="bg-gradient-to-br from-blue-300 via-blue-500 to-blue-700 rounded-lg p-2">
+              <HailIcon sx={{ color: "white", fontSize: 80 }} />
+            </div>
+            <motion.div
+              className="flex flex-col items-end px-5 py-3 justify-center"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, ease: "easeOut", delay: 0.08 }}
+            >
+              {cardLoading ? (
+                <CircularProgress color="inherit" size={30} />
+              ) : (
+                <>
+                  <h1 className="text-3xl font-bold text-blue-600">
+                    {bookingData?.total && bookingData.total}
+                  </h1>
+                  <p className="text-gray-600">Total Bookings</p>
+                </>
+              )}
+            </motion.div>
+          </motion.div>
+          <p
+            className={`text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded mt-2 border border-blue-200 transition-opacity ease-in-out duration-200 ${hovered.total || totalApplied ? "opacity-100" : "opacity-0"}`}
+          >
+            {totalApplied ? (
+              <Button
+                sx={{
+                  fontSize: 12,
+                  fontWeight: "bold",
+                  maxHeight: 20,
+                  textTransform: "none",
+                }}
+                onClick={() => setTotalApplied(false)}
+              >
+                <CancelIcon sx={{ fontSize: 17, mr: 1 }} /> Clear filter
+              </Button>
+            ) : (
+              "🔍 Click to filter"
+            )}
+          </p>
+        </div>
+        <div className="flex flex-col gap-3 items-center">
+          <motion.div
+            className="flex bg-white rounded-lg overflow-hidden drop-shadow-yellow-600 drop-shadow-lg/30 cursor-pointer border-r-4 border-r-yellow-500"
+            initial={{ opacity: 0, y: 10, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 1, ease: "easeOut", delay: 0.24 }}
+            whileHover={{
+              y: -4,
+              transition: { duration: 0.12, ease: "easeOut" },
+            }}
+            onMouseEnter={() => setHovered({ ...hovered, status: true })}
+            onMouseLeave={() => setHovered({ ...hovered, status: false })}
+            onClick={() => {
+              setStatusApplied((prev) => !prev);
+              setTotalApplied(false);
+              setOverdueApplied(false);
+            }}
+          >
+            <div className="bg-gradient-to-br from-yellow-400 via-yellow-600 to-yellow-700 rounded-lg p-2 py-[13px] flex justify-center items-center">
+              <InfoIcon sx={{ color: "white", fontSize: 70 }} />
+            </div>
+            <motion.div
+              className="flex flex-col items-end pl-8 pr-5 py-1 justify-center text-gray-600 text-[15px]"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, ease: "easeOut", delay: 0.32 }}
+            >
+              {cardLoading ? (
+                <CircularProgress color="inherit" size={30} />
+              ) : (
+                <>
+                  <div>
+                    Pending:{" "}
+                    <span className="text-yellow-500 font-bold">
+                      {bookingData?.pending && bookingData.pending}
+                    </span>
+                  </div>
+                  <div>
+                    Approved:{" "}
+                    <span className="text-green-500 font-bold">
+                      {bookingData?.approved && bookingData.approved}
+                    </span>
+                  </div>
+                  <div>
+                    Rejected:{" "}
+                    <span className="text-red-500 font-bold">
+                      {bookingData?.rejected && bookingData.rejected}
+                    </span>
+                  </div>
+                </>
+              )}
+            </motion.div>
+          </motion.div>
+          <p
+            className={`text-xs font-semibold text-yellow-700 bg-yellow-50 px-2 py-1 rounded mt-2 border border-yellow-300 transition-opacity ease-in-out duration-200 ${hovered.status || statusApplied ? "opacity-100" : "opacity-0"}`}
+          >
+            {statusApplied ? (
+              <Button
+                sx={{
+                  fontSize: 12,
+                  fontWeight: "bold",
+                  maxHeight: 20,
+                  textTransform: "none",
+                  color: "#b7410e",
+                }}
+                onClick={() => setStatusApplied(false)}
+              >
+                <CancelIcon sx={{ fontSize: 17, mr: 1 }} /> Clear filter
+              </Button>
+            ) : (
+              "🔍 Click to filter"
+            )}
+          </p>
+        </div>
+        <div className="flex flex-col gap-3 items-center">
+          <motion.div
+            className="flex bg-white rounded-lg overflow-hidden drop-shadow-red-600 drop-shadow-lg/30 cursor-pointer border-r-4 border-r-red-500"
+            initial={{ opacity: 0, y: 10, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 1, ease: "easeOut", delay: 0.48 }}
+            whileHover={{
+              y: -4,
+              transition: { duration: 0.12, ease: "easeOut" },
+            }}
+            onMouseEnter={() => setHovered({ ...hovered, overdue: true })}
+            onMouseLeave={() => setHovered({ ...hovered, overdue: false })}
+            onClick={() => {
+              setOverdueApplied((prev) => !prev);
+              setTotalApplied(false);
+              setStatusApplied(false);
+            }}
+          >
+            <div className="bg-gradient-to-br from-red-300 via-red-500 to-red-700 rounded-lg p-2 py-[13px] flex justify-center items-center">
+              <AccessTimeIcon sx={{ color: "white", fontSize: 70 }} />
+            </div>
+            <motion.div
+              className="flex flex-col items-end px-5 py-3 justify-center"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, ease: "easeOut", delay: 0.56 }}
+            >
+              {cardLoading ? (
+                <CircularProgress color="inherit" size={30} />
+              ) : (
+                <>
+                  <h1 className="text-3xl font-bold text-red-600">
+                    {bookingData?.overdue && bookingData.overdue}
+                  </h1>
+                  <p className="text-gray-600 text-[15px]">Overdue Bookings</p>
+                </>
+              )}
+            </motion.div>
+          </motion.div>
+          <p
+            className={`text-xs font-semibold text-red-600 bg-red-50 px-2 py-1 rounded mt-2 border border-red-200 transition-opacity ease-in-out duration-200 ${hovered.overdue || overdueApplied ? "opacity-100" : "opacity-0"}`}
+          >
+            {overdueApplied ? (
+              <Button
+                sx={{
+                  fontSize: 12,
+                  fontWeight: "bold",
+                  maxHeight: 20,
+                  textTransform: "none",
+                  color: "red",
+                }}
+                onClick={() => setOverdueApplied(false)}
+              >
+                <CancelIcon sx={{ fontSize: 17, mr: 1 }} /> Clear filter
+              </Button>
+            ) : (
+              "🔍 Click to filter"
+            )}
+          </p>
+        </div>
+      </div>
+      <motion.div
+        className="bg-white shadow-lg rounded-lg p-6 md:p-8 w-full max-w-6xl mb-8 h-fit"
+        initial={{ opacity: 0, y: 10, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 1, ease: "easeOut", delay: 0.24 }}
+      >
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-aleo md:text-3xl font-semibold text-shadow-lg/20">
+          <h1 className="text-xl font-aleo md:text-3xl font-semibold text-shadow-lg/20">
             Department Bookings
           </h1>
           <Box
@@ -226,7 +464,10 @@ export default function DepDashboard() {
           >
             <CustomSwitch
               onClick={() => {
-                setSearchFormInput({ ...searchFormInput, isFlight: !searchFormInput.isFlight });
+                setSearchFormInput({
+                  ...searchFormInput,
+                  isFlight: !searchFormInput.isFlight,
+                });
               }}
             ></CustomSwitch>
             <TextField
@@ -234,7 +475,12 @@ export default function DepDashboard() {
               label="Passenger Name"
               id="passengerNameInput"
               value={searchFormInput.passengerName}
-              onChange={(e) => { setSearchFormInput({ ...searchFormInput, passengerName: e.target.value }); }}
+              onChange={(e) => {
+                setSearchFormInput({
+                  ...searchFormInput,
+                  passengerName: e.target.value,
+                });
+              }}
               size="small"
               sx={{ minWidth: 150 }}
             />
@@ -243,7 +489,12 @@ export default function DepDashboard() {
               label="From"
               id="fromInput"
               value={searchFormInput.from}
-              onChange={(e) => { setSearchFormInput({ ...searchFormInput, from: e.target.value }); }}
+              onChange={(e) => {
+                setSearchFormInput({
+                  ...searchFormInput,
+                  from: e.target.value,
+                });
+              }}
               size="small"
               sx={{ minWidth: 150 }}
             />
@@ -252,23 +503,48 @@ export default function DepDashboard() {
               label="To"
               id="toInput"
               value={searchFormInput.to}
-              onChange={(e) => { setSearchFormInput({ ...searchFormInput, to: e.target.value }); }}
+              onChange={(e) => {
+                setSearchFormInput({ ...searchFormInput, to: e.target.value });
+              }}
               size="small"
               sx={{ minWidth: 150 }}
             />
-            <CustomizedButton
-              title="Search"
-              type="primary"
-              click={() => { }}
-            />
+            <CustomizedButton title="Search" type="warning" click={() => { }} />
           </Box>
         </div>
+        <p
+          className={`text-lg font-semibold mt-3 ${
+            totalApplied
+              ? "text-blue-600"
+              : statusApplied
+                ? "text-green-600"
+                : overdueApplied
+                  ? "text-red-600"
+                  : searchFormInput.isFlight
+                    ? "text-cyan-700"
+                    : "text-yellow-600"
+          }`}
+        >
+          {totalApplied
+            ? "All Bookings"
+            : statusApplied
+              ? "All Bookings with Statuses"
+              : overdueApplied
+                ? "Overdue Bookings"
+                : searchFormInput.isFlight
+                  ? "Flight Bookings ✈"
+                  : "Pending Bookings"}
+        </p>
         {isLoading ? (
-          <Typography sx={{ color: "gray", fontSize: 16, textAlign: "center" }}>
+          <Typography
+            sx={{ color: "gray", fontSize: 16, textAlign: "center", my: 10 }}
+          >
             Getting your bookings...
           </Typography>
         ) : pendingBookings && pendingBookings.length === 0 ? (
-          <Typography sx={{ color: "gray", fontSize: 16, textAlign: "center" }}>
+          <Typography
+            sx={{ color: "gray", fontSize: 16, textAlign: "center", my: 10 }}
+          >
             No bookings to show.
           </Typography>
         ) : (
@@ -301,9 +577,28 @@ export default function DepDashboard() {
                         }}
                       >
                         <StyledTableCell>
-                          {row.trip.pickup_time
-                            ? new Date(row.trip.pickup_time).toLocaleString()
-                            : "N/A"}
+                          <div
+                            className={`flex items-center gap-3 ${statusApplied ? "justify-start" : "justify-center"}`}
+                          >
+                            {statusApplied && (
+                              <div
+                                className={`h-4 w-4 rounded-full border-2 ${
+                                  row.booking_status === "Pending"
+                                    ? "bg-yellow-300 border-yellow-500"
+                                    : row.booking_status === "Approved"
+                                      ? "bg-green-400 border-green-700"
+                                      : "bg-red-400 border-red-800"
+                                }`}
+                              ></div>
+                            )}
+                            <span>
+                              {row.trip.pickup_time
+                                ? new Date(
+                                    row.trip.pickup_time,
+                                  ).toLocaleString()
+                                : "N/A"}
+                            </span>
+                          </div>
                         </StyledTableCell>
                         <StyledTableCell>
                           {row.trip.airport === "" || row.trip.airport === null
@@ -315,17 +610,17 @@ export default function DepDashboard() {
                         </StyledTableCell>
                         <StyledTableCell>
                           <span>
-                            {row.first_name + " " + row.surname}
+                            {row.passenger_name}
                           </span>
                         </StyledTableCell>
                         <StyledTableCell>
                           <div className="flex gap-2 justify-center">
                             <CustomizedButton
                               click={() => handleViewOpen(row)}
-                              type="primary"
+                              type="warning"
                               title="View"
                             />
-                            {row.booking_status === "Pending" && (
+                            {(row.booking_status === "Pending" && (
                               <>
                                 <CustomizedButton
                                   click={() => handleApprove(row.booking_id)}
@@ -333,10 +628,42 @@ export default function DepDashboard() {
                                   title="Approve"
                                 />
                                 <CustomizedButton
-                                  click={() => handleReject(row.booking_id)}
+                                  click={() => {
+                                    setRejectId(row.booking_id);
+                                    setRejectOpen(true);
+                                  }}
                                   type="error"
-                                  title="Cancel"
+                                  title="Reject"
                                 />
+                              </>
+                            )) || (
+                              <>
+                                <Chip
+                                  label={row.booking_status}
+                                  sx={{
+                                    bgcolor:
+                                      row.booking_status === "Approved"
+                                        ? "#86efac"
+                                        : "#fca5a5",
+                                    border: 2,
+                                    borderColor:
+                                      row.booking_status === "Approved"
+                                        ? "#16a34a"
+                                        : "#dc2626",
+                                    px: 1,
+                                  }}
+                                />
+                                {row.booking_status === "Approved" && (
+                                  <Chip
+                                    label={row.trip.PO}
+                                    deleteIcon={<ReceiptIcon />}
+                                    sx={{
+                                      px: 1,
+                                      border: 2,
+                                      borderColor: "gray",
+                                    }}
+                                  ></Chip>
+                                )}
                               </>
                             )}
                           </div>
@@ -495,7 +822,87 @@ export default function DepDashboard() {
             PO number has been successfully attached!
           </Alert>
         </Snackbar>
-      </div>
+        <Dialog
+          open={rejectOpen}
+          onClose={() => {
+            setRejectOpen(false);
+          }}
+        >
+          <DialogTitle
+            sx={{
+              color: "white",
+              textAlign: "center",
+              fontSize: 24,
+              fontWeight: "bold",
+              bgcolor: "#dc2626",
+              fontFamily: "aleo",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 1,
+            }}
+          >
+            <WarningIcon sx={{ fontSize: 28 }} />
+            Confirm Rejection
+          </DialogTitle>
+          <DialogContent sx={{ mt: 3, mb: 2 }}>
+            <DialogContentText
+              sx={{
+                fontFamily: "inter",
+                fontWeight: 500,
+                maxWidth: 350,
+                textAlign: "center",
+                fontSize: 16,
+                color: "#374151",
+              }}
+            >
+              Are you sure you want to reject this booking? This action cannot
+              be undone.
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions
+            sx={{ pb: 2, px: 3, justifyContent: "center", gap: 1 }}
+          >
+            <Button
+              variant="outlined"
+              sx={{
+                color: "#6b7280",
+                borderColor: "#d1d5db",
+                transition: "all ease 300ms",
+                ":hover": {
+                  bgcolor: "#f3f4f6",
+                  borderColor: "#9ca3af",
+                },
+                textTransform: "none",
+                px: 3,
+              }}
+              onClick={() => {
+                setRejectOpen(false);
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="contained"
+              sx={{
+                bgcolor: "#dc2626",
+                transition: "all 300ms",
+                ":hover": {
+                  bgcolor: "#b91c1c",
+                },
+                textTransform: "none",
+                px: 3,
+              }}
+              onClick={() => {
+                handleReject(rejectId);
+                setRejectOpen(false);
+              }}
+            >
+              Yes, reject
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </motion.div>
     </div>
   );
 }
