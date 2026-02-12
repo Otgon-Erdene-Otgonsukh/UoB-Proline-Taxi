@@ -31,6 +31,7 @@ import { redirect } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { getDepartments } from "@/app/requests/departments";
 import { department } from "@/generated/prisma/client";
+import { motion } from "framer-motion";
 
 export default function Register() {
   const session = useSession();
@@ -212,7 +213,7 @@ export default function Register() {
 
   return (
     <div className="min-h-screen flex justify-center items-center">
-      <div className="bg-white shadow-lg/20 max-w-3xl rounded-md border-4 border-[#2c2c2c] mt-20 mb-20">
+      <motion.div className="bg-white shadow-lg/40 max-w-3xl rounded-md border-4 border-[#2c2c2c] mt-20 mb-20" initial={{opacity: 0, y: 6, scale: 0.98}} animate={{opacity: 1, y: 0, scale: 1}} transition={{duration: 0.5, ease: "easeInOut"}}>
         <div className="flex">
           <div
             id="left"
@@ -288,7 +289,7 @@ export default function Register() {
                 </div>
                 <div className="flex gap-3">
                   <select
-                    className="border-2 rounded-md max-h-14 px-2"
+                    className="border-2 border-[#2c2c2c] rounded-md min-h-14 px-2"
                     defaultValue="+44"
                     onChange={(e) => {
                       setPhoneCode(e.target.value);
@@ -677,7 +678,7 @@ export default function Register() {
             </ThemeProvider>
           </div>
         </div>
-      </div>
+      </motion.div>
       <Snackbar
         open={snackState.open}
         onClose={() => {

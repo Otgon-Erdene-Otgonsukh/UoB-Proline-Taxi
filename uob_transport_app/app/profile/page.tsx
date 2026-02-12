@@ -129,12 +129,6 @@ export default function Profile() {
         fail = true;
       }
     }
-    // if (departmentEditOn) {
-    //   if (!departments.includes(editData.department)) {
-    //     newErrors.department = true;
-    //     fail = true;
-    //   }
-    // }
 
     // Set all errors for feedback
     setChangeError(newErrors);
@@ -204,7 +198,7 @@ export default function Profile() {
         </h1>
       </motion.div>
 
-      <div className="bg-white flex flex-col w-full max-w-2xl shadow-xl rounded-2xl p-8 space-y-6 mb-10">
+      <div className="bg-white flex flex-col md:w-1/2 w-full shadow-xl rounded-2xl p-8 space-y-6 mb-10">
         <motion.div
           className="border-b border-gray-200 pb-4"
           initial={{ opacity: 0, y: 10, scale: 0.98 }}
@@ -245,7 +239,7 @@ export default function Profile() {
                   <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
                     Full Name
                   </p>
-                  <p className="text-gray-800 font-medium">
+                  <p className="text-gray-800">
                     {session?.user.name}
                   </p>
                 </div>
@@ -308,7 +302,7 @@ export default function Profile() {
                   <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
                     Email
                   </p>
-                  <p className="text-gray-800 font-medium truncate">
+                  <p className="text-gray-800 truncate">
                     {session?.user.email}
                   </p>
                 </div>
@@ -366,7 +360,7 @@ export default function Profile() {
                   <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
                     Phone Number
                   </p>
-                  <p className="font-medium">{session?.user.phone_number}</p>
+                  <p>{session?.user.phone_number}</p>
                 </div>
                 {phoneEdit && (
                   <Button
@@ -467,7 +461,7 @@ export default function Profile() {
                     <p className="text-xs text-blue-600 uppercase tracking-wide mb-1">
                       Department
                     </p>
-                    <p className="text-gray-800 font-medium">
+                    <p className="text-gray-800">
                       {session.user.dep_name}
                     </p>
                   </div>
@@ -499,7 +493,7 @@ export default function Profile() {
                   <p className="text-xs text-green-600 uppercase tracking-wide mb-1">
                     Account Type
                   </p>
-                  <p className="text-gray-800 font-medium">
+                  <p className="text-gray-800">
                     {role[session.user.account_type] ||
                       session.user.account_type}
                   </p>

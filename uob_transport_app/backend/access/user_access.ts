@@ -1,7 +1,6 @@
-import { department, PrismaClient, User } from '@/generated/prisma/client'
+import prisma from '@/utils/client';
+import { department, User } from '@/generated/prisma/client'
 type noPasswordUser = Omit<User, "password">
-
-const prisma = new PrismaClient();
 
 export const searchUserAccess = async (
   email: string

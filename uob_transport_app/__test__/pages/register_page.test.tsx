@@ -44,7 +44,7 @@ describe("Register page rendering test", () => {
     const cards = screen.getAllByTestId("card");
     expect(cards.length).toBe(3);
     cards.forEach((card) => {
-      expect(card).toBeVisible();
+      expect(card).toBeInTheDocument();
     });
   });
 

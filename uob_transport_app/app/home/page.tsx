@@ -221,7 +221,7 @@ const Page = () => {
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 1, ease: "easeOut" }}
       >
-        Welcome, {data?.user.name}!
+        Welcome, {data?.user.name.split(" ")[0]}!
         <p className="text-gray-600 text-lg font-normal">To Your Booking Space</p>
       </motion.div>
       <div className="flex mt-7 gap-10 max-w-6xl">
