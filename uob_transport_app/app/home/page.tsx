@@ -222,10 +222,8 @@ const Page = () => {
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 1, ease: "easeOut" }}
       >
-        Welcome, {data?.user.username}!
-        <p className="text-gray-600 text-lg font-normal">
-          {data?.user.account_type === "finance_staff" ? "Ready to Manage Some Bookings ?" : data?.user.account_type === "proline_staff" || data?.user.account_type === "super_admin" ? "Ready to Manage Users and Bookings ?" : "To Your Booking Space"}
-        </p>
+        Welcome, {data?.user.name.split(" ")[0]}!
+        <p className="text-gray-600 text-lg font-normal">To Your Booking Space</p>
       </motion.div>
       {data?.user.account_type === "finance_staff" ? (
         <div className="flex mt-7 gap-10 text-sm max-w-6xl">

@@ -1,6 +1,5 @@
-import { PrismaClient, booking } from '@/generated/prisma/client'
-
-const prisma = new PrismaClient()
+import { booking } from '@/generated/prisma/client'
+import prisma from '@/utils/client'
 
 export const getUserBookingsAccess = async (userId: number, page: number, pageSize: number, searchParams: { from?: string, to?: string, bookingStatus?: string, pickUpTimeFrom?: string, pickUpTimeTo?: string }): Promise<booking[]> => {
   const query: { [key: string]: string | number | object } = {}
