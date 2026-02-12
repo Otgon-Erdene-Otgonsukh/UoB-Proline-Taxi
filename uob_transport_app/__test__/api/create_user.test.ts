@@ -45,14 +45,12 @@ describe("Registration tests with ensuring behaviour", () => {
     });
     prismaMock.user.create.mockResolvedValue({
       user_id: 1,
-      username: "testuser",
     });
     (bcrypt.hash as jest.Mock).mockResolvedValue("hashedpassword");
 
     const data = {
       mail: "test@gmail.com",
       password: "something",
-      username: "testuser",
       department: "Arts",
       firstName: "John",
       lastName: "Doe",
@@ -73,9 +71,7 @@ describe("Registration tests with ensuring behaviour", () => {
     expect(prismaMock.user.create).toHaveBeenCalledWith({
       data: {
         dep_id: 1,
-        username: data.username,
-        name: data.firstName,
-        surname: data.lastName,
+        full_name: "John Doe",
         phone_number: data.phoneNumber,
         role: data.role,
         user_status: 1,
@@ -95,7 +91,6 @@ describe("Registration tests with ensuring behaviour", () => {
     const data = {
       mail: "test@gmail.com",
       password: "something",
-      username: "testuser",
       department: "Chemistry",
       firstName: "John",
       lastName: "Doe",
@@ -119,9 +114,7 @@ describe("Registration tests with ensuring behaviour", () => {
     expect(prismaMock.user.create).toHaveBeenCalledWith({
       data: {
         dep_id: 3,
-        username: data.username,
-        name: data.firstName,
-        surname: data.lastName,
+        full_name: "John Doe",
         phone_number: data.phoneNumber,
         role: data.role,
         user_status: 1,
@@ -140,7 +133,6 @@ describe("Registration tests with ensuring behaviour", () => {
     const data = {
       mail: "test@prolinetaxi.com",
       password: "something",
-      username: "testuser",
       firstName: "John",
       department: "",
       lastName: "Doe",

@@ -29,12 +29,9 @@ export async function getPendingBookings(page: number, pageSize: number, searchP
     }
   }
   if (searchParams.passengerName !== undefined) {
-    // Here we assume passengerName refers to the name of the user, ignore the last name for simplicity
     query['passenger_name'] = {
-      name: {
         contains: searchParams.passengerName,
         mode: "insensitive"
-      }
     }
   }
   if (searchParams.isFlight) {
@@ -57,10 +54,8 @@ export async function getPendingBookings(page: number, pageSize: number, searchP
       },
       include: {
         trip: true,
+        department: true,
         User: {
-          include: {
-            department: true,
-          },
           omit: {
             password: true,
           }
@@ -82,10 +77,8 @@ export async function getPendingBookings(page: number, pageSize: number, searchP
       },
       include: {
         trip: true,
+        department: true,
         User: {
-          include: {
-            department: true,
-          },
           omit: {
             password: true,
           }
@@ -112,10 +105,8 @@ export async function getPendingBookings(page: number, pageSize: number, searchP
       include: {
         // fetching the connected trip and User and department tables to fill out the dep-dashboard table and view
         trip: true,
+        department: true,
         User: {
-          include: {
-            department: true,
-          },
           omit: {
             password: true,
           },
@@ -145,13 +136,18 @@ export async function getPendingBookingsCount(searchParams: { from?: string, to?
       },
     };
   }
+  if (searchParams.overdue) {
+    query['trip'] = {
+      ...query.trip as object,
+      pickup_time: {
+        lt: new Date()
+      }
+    }
+  }
   if (searchParams.passengerName !== undefined) {
-    // Here we assume passengerName refers to the name of the user, ignore the last name for simplicity
     query['passenger_name'] = {
-      name: {
         contains: searchParams.passengerName,
         mode: "insensitive",
-      }
     }
   }
   if (searchParams.isFlight) {

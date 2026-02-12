@@ -18,6 +18,7 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { Snackbar, Alert } from "@mui/material";
 import { signIn } from "next-auth/react"
+import { motion } from "framer-motion";
 
 export default function Log_forgot() {
   const router = useRouter();
@@ -95,14 +96,14 @@ export default function Log_forgot() {
           {snackbarState.status === 'success' ? 'Login success!' : 'Login failed! Try again'}
         </Alert>
       </Snackbar>
+      <motion.div initial={{opacity: 0, y: 6}} animate={{opacity: 1, y: 0}} transition={{duration: 0.7, ease: "easeInOut"}} className="md:w-1/3 w-4/5">
       <Paper
         elevation={3}
         sx={{
-          maxWidth: 430,
           width: "100%",
           borderRadius: 5,
           mt: 10,
-          mb: 20,
+          mb: 15,
           overflow: "hidden",
           border: 3
         }}
@@ -118,7 +119,7 @@ export default function Log_forgot() {
           <Typography
             variant="h4"
             sx={{
-              fontSize: { xs: "1.5rem", sm: "2rem" },
+              fontSize: { xs: "1.7rem", sm: "2rem" },
               fontWeight: 600,
               fontFamily: "aleo",
             }}
@@ -281,6 +282,7 @@ export default function Log_forgot() {
           <Typography sx={{ textAlign: "center", mb: -2 }}>Don&apos;t have an account? <Link href="/register" className="text-blue-600">Sign up</Link></Typography>
         </Box>
       </Paper>
+      </motion.div>
     </div>
   );
 }
