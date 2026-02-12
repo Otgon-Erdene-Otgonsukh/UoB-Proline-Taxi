@@ -32,10 +32,8 @@ describe("The tests for the 2 functions for fetching bookings/count for dep-dash
       },
       include: {
         trip: true,
+        department: true,
         User: {
-          include: {
-            department: true,
-          },
           omit: {
             password: true,
           },
@@ -83,7 +81,7 @@ describe("The tests for the 2 functions for fetching bookings/count for dep-dash
             notIn: [""],
           },
         },
-        first_name: {
+        passenger_name: {
           contains: "Geo",
           mode: "insensitive",
         },
@@ -93,10 +91,8 @@ describe("The tests for the 2 functions for fetching bookings/count for dep-dash
       },
       include: {
         trip: true,
+        department: true,
         User: {
-          include: {
-            department: true,
-          },
           omit: {
             password: true,
           },
@@ -120,7 +116,7 @@ describe("The tests for the 2 functions for fetching bookings/count for dep-dash
             notIn: [""],
           },
         },
-        first_name: {
+        passenger_name: {
           contains: "Geo",
           mode: "insensitive",
         },
@@ -167,17 +163,15 @@ describe("The tests for the 2 functions for fetching bookings/count for dep-dash
             lt: expect.any(Date), // the actual function calls new Date() which the test have a delay so we can expect any date value
           },
         },
-        first_name: {
+        passenger_name: {
           contains: "Geo",
           mode: "insensitive",
         },
       },
       include: {
         trip: true,
+        department: true,
         User: {
-          include: {
-            department: true,
-          },
           omit: {
             password: true,
           },
@@ -208,7 +202,7 @@ describe("The tests for the 2 functions for fetching bookings/count for dep-dash
             lt: expect.any(Date), // the actual function calls new Date() which the test have a delay so we can expect any date value
           },
         },
-        first_name: {
+        passenger_name: {
           contains: "Geo",
           mode: "insensitive",
         },

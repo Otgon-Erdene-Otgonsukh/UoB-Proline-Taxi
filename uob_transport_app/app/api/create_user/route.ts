@@ -20,7 +20,6 @@ export async function POST(req: Request) {
     (departmentName.length === 0 &&
       (role === "normal_user" || role === "finance_staff")) ||
     (role == "proline_staff" && departmentName.length !== 0)
-    (role == "proline_staff" && departmentName.length !== 0)
   ) {
     return NextResponse.json({
       status: 500,
