@@ -57,10 +57,10 @@ export const UserTable = ({ data, count, page, pageSize, onPageChange, onPageSiz
                                     }}
                                 >
                                     <StyledTableCell>{new Date(row.time_created).toDateString()}</StyledTableCell>
-                                    <StyledTableCell>{row.name + ' ' + row.surname}</StyledTableCell>
+                                    <StyledTableCell>{row.full_name}</StyledTableCell>
                                     <StyledTableCell>{row.email}</StyledTableCell>
                                     <StyledTableCell>{row.phone_number}</StyledTableCell>
-                                    <StyledTableCell>{row.department.dep_name}</StyledTableCell>
+                                    <StyledTableCell>{row.role !== "proline_staff" ? row.department.dep_name : "N/A"}</StyledTableCell>
                                     <StyledTableCell>{roleReadableStrMap[row.role]}</StyledTableCell>
                                     <StyledTableCell>
                                         <span
