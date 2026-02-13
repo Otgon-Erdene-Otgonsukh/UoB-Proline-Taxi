@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
   const newPassword = requestJson['password']
 
   // Server side validaion length check.
-  if (newPassword.length < 1) {
+  if (newPassword.length < 5) {
     return new Response(JSON.stringify({
       message: 'Password too short.'
     }), {
