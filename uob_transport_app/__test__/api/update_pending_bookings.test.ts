@@ -4,59 +4,118 @@
 
 import { POST } from "@/app/api/update_booking/route";
 import updateStatus from "@/backend/update_booking_status/update_status";
+import { getBookingDetails } from "@/backend/access/booking_access";
+import { isAdmin } from "@/backend/access/user_access";
+import { auth } from "@/auth";
 
-// Mock the database, isAdmin, and getBookingDetails functions
 jest.mock("../../backend/update_booking_status/update_status.ts");
 jest.mock("../../backend/access/booking_access.ts");
 jest.mock("../../backend/access/user_access.ts");
-
 jest.mock("../../auth", () => ({
-  auth: jest.fn().mockResolvedValue({
-    user: { user_id: 3 }
-  })
+  auth: jest.fn(),
 }));
 
-test("approve and reject work", async () => {
-  // Setup mock to resolve successfully
-  (updateStatus as jest.Mock).mockResolvedValue(undefined);
-
-  const body = { bookingId: 11, newStatus: "Rejected", po: "PO-111"};
-  const req = new Request("http://localhost:3000/api/update_booking", {
-    method: "POST",
-    body: JSON.stringify(body),
-    headers: {
-      "Content-Type": "application/json",
-    },
+describe("Update booking API endpoint branch tests", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
   });
 
-  const res = await POST(req);
+  test("Unauthenticated user request is rejected", async () => {
+    (auth as jest.Mock).mockResolvedValue(null);
 
-  expect(res.status).toBe(200);
+    const body = { bookingId: 11, newStatus: "Approved", po: "PO-111" };
+    const req = new Request("http://localhost:3000/api/update_booking", {
+      method: "POST",
+      body: JSON.stringify(body),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
-  // Verify the function was called with correct arguments
-  expect(updateStatus).toHaveBeenCalledWith(11, "Rejected", "PO-111");
-  expect(updateStatus).toHaveBeenCalledTimes(1);
-});
+    const res = await POST(req);
+    const data = await res.json();
 
-test("handles errors correctly", async () => {
-  // Setup mock to reject
-  (updateStatus as jest.Mock).mockRejectedValue(new Error("Database error"));
-
-  const body = { bookingId: -1, newStatus: "Approved" };
-  const req = new Request("http://localhost:3000/api/update_booking", {
-    method: "POST",
-    body: JSON.stringify(body),
-    headers: {
-      "Content-Type": "application/json",
-    },
+    expect(res.status).toBe(401);
+    expect(updateStatus).not.toHaveBeenCalled();
   });
 
-  const res = await POST(req);
+  test("Admin user can update any booking", async () => {
+    (auth as jest.Mock).mockResolvedValue({
+      user: { user_id: 1 },
+    });
+    (isAdmin as jest.Mock).mockResolvedValue(true);
+    (getBookingDetails as jest.Mock).mockResolvedValue({
+      booking_id: 11,
+      status: "Pending",
+    });
+    (updateStatus as jest.Mock).mockResolvedValue(undefined);
 
-  expect(res.status).toBe(400); // Change to 400, it is the requester's fault if there is an error here.
+    const body = { bookingId: 11, newStatus: "Approved", po: "PO-111" };
+    const req = new Request("http://localhost:3000/api/update_booking", {
+      method: "POST",
+      body: JSON.stringify(body),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
-  const data = await res.json();
-  expect(data.success).toBe(false);
+    const res = await POST(req);
+    const data = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(data.success).toBe(true);
+    expect(getBookingDetails).toHaveBeenCalledWith(-1, 11);
+    expect(updateStatus).toHaveBeenCalledWith(11, "Approved", "PO-111");
+  });
+
+  test("Returns 404 when booking not found", async () => {
+    (auth as jest.Mock).mockResolvedValue({
+      user: { user_id: 5 },
+    });
+    (isAdmin as jest.Mock).mockResolvedValue(false);
+    (getBookingDetails as jest.Mock).mockResolvedValue(null);
+
+    const body = { bookingId: 999, newStatus: "Approved", po: "PO-333" };
+    const req = new Request("http://localhost:3000/api/update_booking", {
+      method: "POST",
+      body: JSON.stringify(body),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const res = await POST(req);
+    const data = await res.json();
+
+    expect(res.status).toBe(404);
+    expect(data.success).toBe(false);
+    expect(updateStatus).not.toHaveBeenCalled();
+  });
+
+  test("Handles errors correctly", async () => {
+    (auth as jest.Mock).mockResolvedValue({
+      user: { user_id: 1 },
+    });
+    (isAdmin as jest.Mock).mockResolvedValue(true);
+    (getBookingDetails as jest.Mock).mockResolvedValue({
+      booking_id: 11,
+      status: "Pending",
+    });
+    (updateStatus as jest.Mock).mockRejectedValue(new Error("Database error"));
+
+    const body = { bookingId: 11, newStatus: "Approved", po: "PO-444" };
+    const req = new Request("http://localhost:3000/api/update_booking", {
+      method: "POST",
+      body: JSON.stringify(body),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const res = await POST(req);
+    const data = await res.json();
+
+    expect(res.status).toBe(400);
+    expect(data.success).toBe(false);
+  });
 });
-
-jest.clearAllMocks();
