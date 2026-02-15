@@ -29,7 +29,6 @@ jest.mock("@/app/dep-dashboard/requests", () => ({
           booking_status: "Pending",
           time_created: "2025-12-02T15:34:26.951Z",
           first_name: "John",
-          surname: "Doe",
           tel_number: "07700 123 456",
           email: "yes@example.com",
           additional_info: "",

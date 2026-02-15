@@ -7,7 +7,6 @@ import createBooking from "@/backend/create_booking/create_booking";
 import { auth } from "@/auth";
 import { render } from "@react-email/components";
 import { sesClient } from "@/utils/ses_client";
-import { PrismaClient } from "@/generated/prisma/client";
 
 jest.mock("../../backend/create_booking/create_booking.ts");
 jest.mock("../../auth", () => ({
@@ -67,16 +66,15 @@ describe("create booking api route tests", () => {
       pickup_location: "Test",
       dropoff_location: "test",
       pickup_time: "2024-12-01T10:00:00Z",
-      first_name: "John",
-      surname: "Doe",
+      passenger_name: "John",
       email: "test@example.com",
       tel_number: "1234567890",
       additional_info: "Some info",
       via: "Via location",
       passengers: 1,
-      department: "Engineering",
       airport: "LHR",
       flight_num: "BA123",
+      dep_id: 2,
     };
 
     const req = new Request("http://localhost:3000/api/create_booking", {
@@ -97,17 +95,16 @@ describe("create booking api route tests", () => {
       null,
       expect.any(Date),
       undefined, // no return_time
-      jsonBody.first_name,
-      jsonBody.surname,
+      jsonBody.passenger_name,
       jsonBody.email,
       jsonBody.tel_number,
       jsonBody.additional_info,
       jsonBody.via,
       undefined, // no returnTo
       jsonBody.passengers,
-      jsonBody.department,
       jsonBody.airport,
       jsonBody.flight_num,
+      2
     );
   });
 
@@ -121,14 +118,12 @@ describe("create booking api route tests", () => {
       pickup_time: "",
       returnDT: "",
       first_name: "",
-      surname: "",
       email: "",
       tel_number: "",
       additional_info: "",
       via: "",
       returnTo: "",
       passengers: 1,
-      department: "",
       airport: "",
       flight_num: "",
     };

@@ -62,11 +62,10 @@ const mockSession: Session = {
   user: {
     name: "Admin",
     email: "admin@test.com",
-    surname: "User",
-    username: "adminuser",
     user_id: 6,
     phone_number: "0123456789",
-    department: null,
+    dep_id: null,
+    dep_name: null,
     account_type: "super_admin",
   },
   expires: "2099-01-01",
@@ -76,8 +75,7 @@ const mockUsers = [
   {
     user_id: 1,
     time_created: new Date().toISOString(),
-    name: "John",
-    surname: "Doe",
+    name: "John Doe",
     email: "john@test.com",
     phone_number: "12345678",
     department: { dep_name: "IT" },

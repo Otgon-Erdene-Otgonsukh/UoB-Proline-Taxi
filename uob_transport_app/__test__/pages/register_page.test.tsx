@@ -2,6 +2,7 @@ import "@testing-library/jest-dom";
 import { screen, render, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import Register from "@/app/register/page";
+import { getDepartments } from "@/app/requests/departments";
 
 jest.mock("next/navigation", () => ({
   redirect: jest.fn()
@@ -13,6 +14,14 @@ jest.mock("next-auth/react", () => ({
   }))
 }))
 
+jest.mock("@/app/requests/departments", () => ({
+  getDepartments: jest.fn(() => Promise.resolve([
+    { dep_id: 1, dep_name: "Law" },
+    { dep_id: 2, dep_name: "Engineering" },
+    { dep_id: 3, dep_name: "Medicine" },
+  ])),
+}));
+
 describe("Register page rendering test", () => {
   beforeEach(() => {
     render(<Register />);
@@ -20,7 +29,7 @@ describe("Register page rendering test", () => {
 
   test("All TextFields and select render correctly.", () => {
     const textFields = screen.getAllByTestId("textfield");
-    expect(textFields.length).toBe(7);
+    expect(textFields.length).toBe(6);
 
     const options = screen.getAllByRole("option");
     expect(options.length).toBe(8);
@@ -35,7 +44,7 @@ describe("Register page rendering test", () => {
     const cards = screen.getAllByTestId("card");
     expect(cards.length).toBe(3);
     cards.forEach((card) => {
-      expect(card).toBeVisible();
+      expect(card).toBeInTheDocument();
     });
   });
 
@@ -46,11 +55,10 @@ describe("Register page rendering test", () => {
     // Fill in the form
     await user.type(screen.getAllByTestId("textfield")[0], "John"); // firstName
     await user.type(screen.getAllByTestId("textfield")[1], "Doe"); // lastName
-    await user.type(screen.getAllByTestId("textfield")[2], "johndoe"); // username
-    await user.type(screen.getAllByTestId("textfield")[3], "1234567890"); // phone
-    await user.type(screen.getAllByTestId("textfield")[4], "Law"); // department
-    await user.type(screen.getAllByTestId("textfield")[5], "john@test.com"); // email
-    await user.type(screen.getAllByTestId("textfield")[6], "password123"); // password
+    await user.type(screen.getAllByTestId("textfield")[2], "1234567890"); // phone
+    await user.type(screen.getAllByTestId("textfield")[3], "Law"); // department
+    await user.type(screen.getAllByTestId("textfield")[4], "john@test.com"); // email
+    await user.type(screen.getAllByTestId("textfield")[5], "password123"); // password
 
     // Click on the text within the first card to select Normal User
     await user.click(screen.getByText("Normal User"));

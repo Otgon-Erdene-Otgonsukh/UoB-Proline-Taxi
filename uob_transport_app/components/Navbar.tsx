@@ -68,16 +68,16 @@ export const Navbar = () => {
     signOut({ callbackUrl: '/' })
   }
 
-const [navAnchorEl, setNavAnchorEl] = useState<null | HTMLElement>(null);
-const navOpen = Boolean(navAnchorEl);
+  const [navAnchorEl, setNavAnchorEl] = useState<null | HTMLElement>(null);
+  const navOpen = Boolean(navAnchorEl);
 
-const handleOpenNav = (event: React.MouseEvent<HTMLButtonElement>) => {
-  setNavAnchorEl(event.currentTarget);
-};
+  const handleOpenNav = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setNavAnchorEl(event.currentTarget);
+  };
 
-const handleCloseNav = () => {
-  setNavAnchorEl(null);
-};
+  const handleCloseNav = () => {
+    setNavAnchorEl(null);
+  };
 
   return (
     <nav className="bg-[#2C2C2C] text-white w-full p-3 md:p-5">
@@ -135,8 +135,8 @@ const handleCloseNav = () => {
         <div className="pr-6 flex items-center gap-3">
           {/* Hamburger :) */}
           <div className="lg:hidden">
-            <Button 
-              onClick={handleOpenNav} 
+            <Button
+              onClick={handleOpenNav}
               sx={{ color: "white", minWidth: '40px' }}
             >
               <MenuIcon fontSize="medium" />
@@ -165,13 +165,13 @@ const handleCloseNav = () => {
               anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
             >
               {pages.map((page, index) => (
-                <MenuItem 
+                <MenuItem
                   key={index}
                   onClick={() => { router.push(page.path); handleCloseNav(); }}
-                  sx={{ 
+                  sx={{
                     fontWeight: isActive(page.path) ? 700 : 400,
                     color: '#2C2C2C'
-                   }}
+                  }}
                 >
                   {page.icon}
                   <div className="p-2">{page.name}</div>
@@ -202,8 +202,8 @@ const handleCloseNav = () => {
             </Menu>
           </div>
           {session ? (
-            <div className="hidden lg:block">
-              <Button className="text-lg" sx={{color: "white", fontFamily: "inter"}} onClick={handleClick}>Hi, {session.user?.username}! <ArrowDropDownIcon sx={{mb: 0.4, transform: open ? "rotate(180deg)" : "none"}}/></Button>
+            <div>
+              <Button className="text-lg" sx={{ color: "white", fontFamily: "inter" }} onClick={handleClick}>Hi, {session.user?.name.split(" ")[0]}! <ArrowDropDownIcon sx={{ mb: 0.4, transform: open ? "rotate(180deg)" : "none" }} /></Button>
               <Menu
                 id="basic-menu"
                 anchorEl={anchorEl}
@@ -221,9 +221,9 @@ const handleCloseNav = () => {
                       bgcolor: '#ffffff',
                       border: '2px solid black',
                       '& .MuiList-root': {
-                      paddingTop: 1,
-                      paddingBottom: 1,
-                    },
+                        paddingTop: 1,
+                        paddingBottom: 1,
+                      },
                       '& .MuiAvatar-root': {
                         width: 36,
                         height: 36,
@@ -271,8 +271,8 @@ const handleCloseNav = () => {
                 transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
               >
-                <MenuItem 
-                  onClick={handleCloseMenu}
+                <MenuItem
+                  onClick={() => {handleCloseMenu(); router.push("/profile")}}
                   sx={{
                     fontWeight: 500,
                     color: '#2C2C2C',
@@ -282,7 +282,7 @@ const handleCloseNav = () => {
                   Profile
                 </MenuItem>
                 <Divider />
-                <MenuItem 
+                <MenuItem
                   onClick={handleOpenSiagnoutDialog}
                   sx={{
                     color: '#d32f2f',
@@ -292,7 +292,7 @@ const handleCloseNav = () => {
                   }}
                 >
                   <ListItemIcon>
-                    <Logout fontSize="small" sx={{ color: '#d32f2f', ml: 0.5}} />
+                    <Logout fontSize="small" sx={{ color: '#d32f2f', ml: 0.5 }} />
                   </ListItemIcon>
                   <p className="ml-1">Logout</p>
                 </MenuItem>
@@ -316,7 +316,7 @@ const handleCloseNav = () => {
                   <Button onClick={handleSignout} autoFocus>Yes</Button>
                 </DialogActions>
               </Dialog>
-            
+
             </div>
           ) : (
             <Button variant="contained" onClick={handleLoginClick}

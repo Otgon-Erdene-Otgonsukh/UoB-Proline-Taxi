@@ -1,12 +1,8 @@
-import { PrismaClient } from "@/generated/prisma/client";
-
-const prisma = new PrismaClient();
+import prisma from '@/utils/client';
 
 export default async function updateUserInfo(
   user_id: number,
   newName: string | undefined,
-  newLastName: string | undefined,
-  newUserName: string | undefined,
   newEmail: string | undefined,
   newPhoneNumber: string | undefined,
   newDepartment: string | undefined
@@ -25,9 +21,7 @@ export default async function updateUserInfo(
           user_id: user_id,
         },
         data: {
-          ...(newName !== undefined && { name: newName }),
-          ...(newLastName !== undefined && { surname: newLastName }),
-          ...(newUserName !== undefined && { username: newUserName }),
+          ...(newName !== undefined && { full_name: newName }),
           ...(newEmail !== undefined && { email: newEmail }),
           ...(newPhoneNumber !== undefined && { phone_number: newPhoneNumber }),
           dep_id: department.dep_id
@@ -45,9 +39,7 @@ export default async function updateUserInfo(
           user_id: user_id,
         },
         data: {
-          ...(newName !== undefined && { name: newName }),
-          ...(newLastName !== undefined && { surname: newLastName }),
-          ...(newUserName !== undefined && { username: newUserName }),
+          ...(newName !== undefined && { full_name: newName }),
           ...(newEmail !== undefined && { email: newEmail }),
           ...(newPhoneNumber !== undefined && { phone_number: newPhoneNumber }),
           dep_id: createdDepartment.dep_id
@@ -60,9 +52,7 @@ export default async function updateUserInfo(
         user_id: user_id,
       },
       data: {
-        ...(newName !== undefined && { name: newName }),
-        ...(newLastName !== undefined && { surname: newLastName }),
-        ...(newUserName !== undefined && { username: newUserName }),
+        ...(newName !== undefined && { full_name: newName }),
         ...(newEmail !== undefined && { email: newEmail }),
         ...(newPhoneNumber !== undefined && { phone_number: newPhoneNumber }),
       },

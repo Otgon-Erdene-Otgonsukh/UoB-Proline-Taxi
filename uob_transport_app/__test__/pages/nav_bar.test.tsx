@@ -71,7 +71,7 @@ describe("Navbar", () => {
     (useSession as jest.Mock).mockReturnValue({
       data: {
         user: {
-          username: "Alice",
+          name: "Alice",
         },
       },
     });
@@ -85,7 +85,7 @@ describe("Navbar", () => {
     (useSession as jest.Mock).mockReturnValue({
       data: {
         user: {
-          username: "Alice",
+          name: "Alice",
         },
       },
     });
@@ -104,7 +104,7 @@ describe("Navbar", () => {
     (useSession as jest.Mock).mockReturnValue({
       data: {
         user: {
-          username: "Alice",
+          name: "Alice",
         },
       },
     });
@@ -129,7 +129,7 @@ describe("Navbar", () => {
     (useSession as jest.Mock).mockReturnValue({
       data: {
         user: {
-          username: "Alice",
+          name: "Alice",
         },
       },
     });

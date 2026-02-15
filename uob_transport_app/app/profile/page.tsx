@@ -14,8 +14,9 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import EditIcon from "@mui/icons-material/Edit";
 import { useState, useEffect } from "react";
-import { departments } from "@/model/models";
 import { motion } from "framer-motion";
+import { getDepartments } from "@/app/requests/departments";
+import { department } from "@/generated/prisma/client";
 
 const role: Record<string, string> = {
   normal_user: "Normal User",
@@ -34,14 +35,10 @@ export default function Profile() {
   const [loading, setLoading] = useState(false);
 
   const [nameEdit, setNameEdit] = useState(false);
-  const [surnameEdit, setSurnameEdit] = useState(false);
-  const [usernameEdit, setUsernameEdit] = useState(false);
   const [emailEdit, setEmailEdit] = useState(false);
   const [phoneEdit, setPhoneEdit] = useState(false);
   const [departmentEdit, setDepartmentEdit] = useState(false);
   const [nameEditOn, setNameEditOn] = useState(false);
-  const [surnameEditOn, setSurnameEditOn] = useState(false);
-  const [usernameEditOn, setUsernameEditOn] = useState(false);
   const [emailEditOn, setEmailEditOn] = useState(false);
   const [phoneEditOn, setPhoneEditOn] = useState(false);
   const [departmentEditOn, setDepartmentEditOn] = useState(false);
@@ -51,18 +48,14 @@ export default function Profile() {
   });
   const [changeError, setChangeError] = useState({
     name: false,
-    surname: false,
-    username: false,
     email: false,
     department: false,
     phone_number: false,
   });
   const [editData, setEditData] = useState({
     name: "",
-    surname: "",
-    username: "",
     email: "",
-    department: "",
+    dep_id: 0,
     phone_number: "",
   });
 
@@ -71,6 +64,17 @@ export default function Profile() {
       router.push("/");
     }
   }, [status, router]);
+
+  const [departments, setDepartmentList] = useState<department[]>([]);
+  useEffect(() => {
+    getDepartments().then((res) => {
+      if (res.status === 200) {
+        res.json().then(data => {
+          setDepartmentList(data);
+        })
+      }
+    });
+  }, [])
 
   if (status === "loading") {
     // display a loading bar for feedback
@@ -85,10 +89,6 @@ export default function Profile() {
     setEditMode(false);
     setNameEditOn(false);
     setNameEdit(false);
-    setSurnameEdit(false);
-    setSurnameEditOn(false);
-    setUsernameEdit(false);
-    setUsernameEditOn(false);
     setEmailEditOn(false);
     setEmailEdit(false);
     setPhoneEdit(false);
@@ -97,8 +97,6 @@ export default function Profile() {
     setDepartmentEditOn(false);
     setChangeError({
       name: false,
-      surname: false,
-      username: false,
       email: false,
       department: false,
       phone_number: false,
@@ -113,18 +111,6 @@ export default function Profile() {
     if (nameEditOn) {
       if (editData.name.length === 0 || editData.name.length > 15) {
         newErrors.name = true;
-        fail = true;
-      }
-    }
-    if (surnameEditOn) {
-      if (editData.surname.length === 0 || editData.surname.length > 15) {
-        newErrors.surname = true;
-        fail = true;
-      }
-    }
-    if (usernameEditOn) {
-      if (editData.username.length === 0 || editData.username.length > 15) {
-        newErrors.username = true;
         fail = true;
       }
     }
@@ -143,12 +129,6 @@ export default function Profile() {
         fail = true;
       }
     }
-    if (departmentEditOn) {
-      if (!departments.includes(editData.department)) {
-        newErrors.department = true;
-        fail = true;
-      }
-    }
 
     // Set all errors for feedback
     setChangeError(newErrors);
@@ -159,11 +139,9 @@ export default function Profile() {
       const data = {
         user_id: session?.user.user_id,
         ...(nameEditOn && { name: editData.name }),
-        ...(surnameEditOn && { surname: editData.surname }),
-        ...(usernameEditOn && { username: editData.username }),
         ...(emailEditOn && { email: editData.email }),
         ...(phoneEditOn && { phone_number: editData.phone_number }),
-        ...(departmentEditOn && { department: editData.department }),
+        ...(departmentEditOn && { dep_id: editData.dep_id }),
       };
       fetch("/api/update-user-info", {
         body: JSON.stringify(data),
@@ -179,11 +157,9 @@ export default function Profile() {
             user: {
               ...session?.user,
               ...(nameEditOn && { name: editData.name }),
-              ...(surnameEditOn && { surname: editData.surname }),
-              ...(usernameEditOn && { username: editData.username }),
               ...(emailEditOn && { email: editData.email }),
               ...(phoneEditOn && { phone_number: editData.phone_number }),
-              ...(departmentEditOn && { department: editData.department }),
+              ...(departmentEditOn && { dep_id: editData.dep_id }),
             },
           });
         } else {
@@ -218,11 +194,11 @@ export default function Profile() {
           {session?.user.name.charAt(0).toUpperCase()}
         </Avatar>
         <h1 className="font-mono font-bold text-3xl text-gray-800 mb-1 text-shadow-lg/10">
-          {session?.user.name} {session?.user.surname}
+          {session?.user.name}
         </h1>
       </motion.div>
 
-      <div className="bg-white flex flex-col w-full max-w-2xl shadow-xl rounded-2xl p-8 space-y-6 mb-10">
+      <div className="bg-white flex flex-col md:w-1/2 w-full shadow-xl rounded-2xl p-8 space-y-6 mb-10">
         <motion.div
           className="border-b border-gray-200 pb-4"
           initial={{ opacity: 0, y: 10, scale: 0.98 }}
@@ -232,10 +208,10 @@ export default function Profile() {
           <h2 className="text-lg font-semibold text-gray-700 mb-4">
             Personal Information
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
             {nameEditOn ? (
               <TextField
-                label="First Name"
+                label="Name"
                 color="secondary"
                 sx={{
                   "& .MuiInputBase-root": {
@@ -248,7 +224,7 @@ export default function Profile() {
                   setEditData({ ...editData, name: e.target.value });
                   setChangeError({ ...changeError, name: false });
                 }}
-                helperText={changeError.name && "Enter a valid first name"}
+                helperText={changeError.name && "Enter a valid name"}
                 error={changeError.name}
               ></TextField>
             ) : (
@@ -261,9 +237,9 @@ export default function Profile() {
               >
                 <div>
                   <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
-                    First Name
+                    Full Name
                   </p>
-                  <p className="text-gray-800 font-medium">
+                  <p className="text-gray-800">
                     {session?.user.name}
                   </p>
                 </div>
@@ -285,57 +261,6 @@ export default function Profile() {
                 )}
               </div>
             )}
-
-            {surnameEditOn ? (
-              <TextField
-                label="Last Name"
-                color="secondary"
-                sx={{
-                  "& .MuiInputBase-root": {
-                    height: "100%",
-                  },
-                }}
-                focused
-                value={editData.surname}
-                onChange={(e) => {
-                  setEditData({ ...editData, surname: e.target.value });
-                  setChangeError({ ...changeError, surname: false });
-                }}
-                helperText={changeError.surname && "Enter a valid last name"}
-                error={changeError.surname}
-              ></TextField>
-            ) : (
-              <div
-                className="bg-gray-50 p-4 rounded-lg flex justify-between items-center hover:drop-shadow-md/20 hover:-translate-y-1 transition-all ease-in-out duration-200"
-                onMouseEnter={() => setSurnameEdit(true)}
-                onMouseLeave={() => setSurnameEdit(false)}
-              >
-                <div>
-                  <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
-                    Last Name
-                  </p>
-                  <p className="text-gray-800 font-medium">
-                    {session?.user.surname}
-                  </p>
-                </div>
-
-                {surnameEdit && (
-                  <Button
-                    sx={{ minWidth: "auto", padding: "4px", color: "gray" }}
-                    onClick={() => {
-                      setEditData({
-                        ...editData,
-                        surname: session?.user.surname ?? "",
-                      });
-                      setSurnameEditOn(true);
-                      setEditMode(true);
-                    }}
-                  >
-                    <EditIcon fontSize="small" />
-                  </Button>
-                )}
-              </div>
-            )}
           </div>
         </motion.div>
 
@@ -348,57 +273,7 @@ export default function Profile() {
           <h2 className="text-lg font-semibold text-gray-700 mb-4">
             Contact Information
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {usernameEditOn ? (
-              <TextField
-                label="Username"
-                color="secondary"
-                sx={{
-                  "& .MuiInputBase-root": {
-                    height: "100%",
-                  },
-                }}
-                focused
-                value={editData.username}
-                onChange={(e) => {
-                  setEditData({ ...editData, username: e.target.value });
-                  setChangeError({ ...changeError, username: false });
-                }}
-                helperText={changeError.username && "Enter a valid username"}
-                error={changeError.username}
-              ></TextField>
-            ) : (
-              <div
-                className="bg-gray-50 p-4 rounded-lg flex justify-between items-center hover:drop-shadow-md/20 hover:-translate-y-1 transition-all ease-in-out duration-200"
-                onMouseEnter={() => setUsernameEdit(true)}
-                onMouseLeave={() => setUsernameEdit(false)}
-              >
-                <div>
-                  <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
-                    Username
-                  </p>
-                  <p className="text-gray-800 font-medium">
-                    {session?.user.username}
-                  </p>
-                </div>
-
-                {usernameEdit && (
-                  <Button
-                    sx={{ minWidth: "auto", padding: "4px", color: "gray" }}
-                    onClick={() => {
-                      setEditData({
-                        ...editData,
-                        username: session?.user.username ?? "",
-                      });
-                      setUsernameEditOn(true);
-                      setEditMode(true);
-                    }}
-                  >
-                    <EditIcon fontSize="small" />
-                  </Button>
-                )}
-              </div>
-            )}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {emailEditOn ? (
               <TextField
                 label="Email"
@@ -427,7 +302,7 @@ export default function Profile() {
                   <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
                     Email
                   </p>
-                  <p className="text-gray-800 font-medium truncate">
+                  <p className="text-gray-800 truncate">
                     {session?.user.email}
                   </p>
                 </div>
@@ -485,7 +360,7 @@ export default function Profile() {
                   <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
                     Phone Number
                   </p>
-                  <p className="font-medium">{session?.user.phone_number}</p>
+                  <p>{session?.user.phone_number}</p>
                 </div>
                 {phoneEdit && (
                   <Button
@@ -516,9 +391,9 @@ export default function Profile() {
             Account Details
           </h2>
           <div
-            className={`grid grid-cols-1 md:${session?.user.department ? "grid-cols-2" : "grid-cols-1"} gap-4`}
+            className={`grid grid-cols-1 md:${session?.user.dep_id ? "grid-cols-2" : "grid-cols-1"} gap-4`}
           >
-            {session?.user.department &&
+            {session?.user.dep_id &&
               (departmentEditOn ? (
                 <Autocomplete
                   sx={{
@@ -556,12 +431,13 @@ export default function Profile() {
                     },
                   }}
                   autoFocus
-                  value={editData.department}
-                  onInputChange={(_, dep) => {
-                    setEditData({ ...editData, department: dep });
+                  onChange={(_, dep) => {
+                    setEditData({ ...editData, dep_id: dep!.dep_id });
                     setChangeError({ ...changeError, department: false });
                   }}
                   options={departments}
+                  getOptionKey={(department) => department.dep_id}
+                  getOptionLabel={(department) => department.dep_name}
                   renderInput={(params) => (
                     <TextField
                       {...params}
@@ -585,8 +461,8 @@ export default function Profile() {
                     <p className="text-xs text-blue-600 uppercase tracking-wide mb-1">
                       Department
                     </p>
-                    <p className="text-gray-800 font-medium">
-                      {session.user.department}
+                    <p className="text-gray-800">
+                      {session.user.dep_name}
                     </p>
                   </div>
 
@@ -600,7 +476,7 @@ export default function Profile() {
                       onClick={() => {
                         setEditData({
                           ...editData,
-                          department: session?.user.department ?? "",
+                          dep_id: session?.user.dep_id ?? 0,
                         });
                         setDepartmentEditOn(true);
                         setEditMode(true);
@@ -617,7 +493,7 @@ export default function Profile() {
                   <p className="text-xs text-green-600 uppercase tracking-wide mb-1">
                     Account Type
                   </p>
-                  <p className="text-gray-800 font-medium">
+                  <p className="text-gray-800">
                     {role[session.user.account_type] ||
                       session.user.account_type}
                   </p>

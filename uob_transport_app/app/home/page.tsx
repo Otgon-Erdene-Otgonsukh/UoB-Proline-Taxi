@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { Button, TableHead } from "@mui/material";
 import Box from "@mui/material/Box";
@@ -35,6 +35,8 @@ import { bookingStatus } from "./constants";
 import { TablePaginationActions } from "@/components/paginationActions";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import { DateTimePicker } from "@/components/datetimePicker/DateTimePicker";
+import { enLocale } from "@/components/datetimePicker/locale";
 
 const Page = () => {
   // Get NextAuth Session.
@@ -165,23 +167,37 @@ const Page = () => {
 
   // Search form state
   type SearchFormProps = {
-    pickUpTimeFrom?: string;
-    pickUpTimeTo?: string;
+    pickUpTimeFrom?: Date;
+    pickUpTimeTo?: Date;
     from?: string;
     to?: string;
     bookingStatus?: string;
   };
   const [searchFormInput, setSearchFormInput] = useState<SearchFormProps>({
-    pickUpTimeFrom: "",
-    pickUpTimeTo: "",
+    pickUpTimeFrom: undefined,
+    pickUpTimeTo: undefined,
     from: "",
     to: "",
     bookingStatus: "All",
   });
 
+  const dateTimePickerFromAnchorRef = useRef<HTMLDivElement>(null);
+  const dateTimePickerToAnchorRef = useRef<HTMLDivElement>(null);
+  const [dateTimePickerFromOpen, setDateTimePickerFromOpen] = useState(false);
+  const [dateTimePickerToOpen, setDateTimePickerToOpen] = useState(false);
+
   const handleSubmitSearchForm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(searchFormInput);
+
+    if (searchFormInput.pickUpTimeTo && searchFormInput.pickUpTimeFrom && searchFormInput.pickUpTimeFrom > searchFormInput.pickUpTimeTo) {
+      setSnackbarState({
+        open: true,
+        status: "error",
+        message: "'PickUp Time To' must be later than 'PickUp Time From'!",
+      });
+      return;
+    }
+
     setIsLoading(true);
     setPaginationMeta({
       page: 0,
@@ -193,6 +209,12 @@ const Page = () => {
   const _getBookingListData = (page: number, pageSize: number) => {
     getUserBookingList(page, pageSize, {
       ...searchFormInput,
+      pickUpTimeFrom: searchFormInput.pickUpTimeFrom
+        ? searchFormInput.pickUpTimeFrom.toUTCString()
+        : "",
+      pickUpTimeTo: searchFormInput.pickUpTimeTo
+        ? searchFormInput.pickUpTimeTo.toUTCString()
+        : "",
       bookingStatus:
         searchFormInput?.bookingStatus === "All"
           ? ""
@@ -221,7 +243,7 @@ const Page = () => {
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 1, ease: "easeOut" }}
       >
-        Welcome, {data?.user.username}!
+        Welcome, {data?.user.name.split(" ")[0]}!
         <p className="text-gray-600 text-lg font-normal">To Your Booking Space</p>
       </motion.div>
       <div className="flex mt-7 gap-10 max-w-6xl">
@@ -316,6 +338,7 @@ const Page = () => {
           onSubmit={handleSubmitSearchForm}
           sx={{
             display: "flex",
+            flexDirection: { xs: "column", sm: "row" },
             gap: 2.5,
             marginBottom: 3,
           }}
@@ -371,6 +394,46 @@ const Page = () => {
               })}
             </Select>
           </FormControl>
+          <TextField
+            fullWidth
+            onClick={() => setDateTimePickerFromOpen(true)}
+            label="PickUp Time From"
+            size="small"
+            sx={{ minWidth: 150 }}
+            ref={dateTimePickerFromAnchorRef}
+            defaultValue={searchFormInput.pickUpTimeFrom?.toLocaleString()}
+            slotProps={{ inputLabel: { shrink: searchFormInput.pickUpTimeFrom !== undefined } }}
+          />
+          <TextField
+            fullWidth
+            onClick={() => setDateTimePickerToOpen(true)}
+            label="PickUp Time To"
+            size="small"
+            sx={{ minWidth: 150 }}
+            ref={dateTimePickerToAnchorRef}
+            defaultValue={searchFormInput.pickUpTimeTo?.toLocaleString()}
+            slotProps={{ inputLabel: { shrink: searchFormInput.pickUpTimeTo !== undefined } }}
+          />
+          <DateTimePicker
+            open={dateTimePickerFromOpen}
+            onClose={() => setDateTimePickerFromOpen(false)}
+            anchorEl={dateTimePickerFromAnchorRef}
+            selectedDate={searchFormInput.pickUpTimeFrom || null}
+            onDateChange={(date) => {
+              setSearchFormInput({ ...searchFormInput, pickUpTimeFrom: date });
+            }}
+            locale={enLocale}
+          />
+          <DateTimePicker
+            open={dateTimePickerToOpen}
+            onClose={() => setDateTimePickerToOpen(false)}
+            anchorEl={dateTimePickerToAnchorRef}
+            selectedDate={searchFormInput.pickUpTimeTo || null}
+            onDateChange={(date) => {
+              setSearchFormInput({ ...searchFormInput, pickUpTimeTo: date });
+            }}
+            locale={enLocale}
+          />
           <CustomizedButton title="Search" type="warning" click={() => { }} />
         </Box>
 
@@ -430,12 +493,12 @@ const Page = () => {
                       <StyledTableCell>
                         <span
                           className={`inline-block px-5 py-1 rounded-full text-xs font-medium ${row.booking_status === "Approved"
-                            ? "bg-green-100 text-green-800 border border-green-800"
-                            : row.booking_status === "Rejected"
-                              ? "bg-red-100 text-red-800 border border-red-800"
-                              : row.booking_status === "Cancelled"
-                                ? "bg-gray-300 text-gray-900 border border-gray-900"
-                                : "bg-yellow-100 text-yellow-800 border border-yellow-800"
+                              ? "bg-green-100 text-green-800 border border-green-800"
+                              : row.booking_status === "Rejected"
+                                ? "bg-red-100 text-red-800 border border-red-800"
+                                : row.booking_status === "Cancelled"
+                                  ? "bg-gray-300 text-gray-900 border border-gray-900"
+                                  : "bg-yellow-100 text-yellow-800 border border-yellow-800"
                             }`}
                         >
                           {row.booking_status}
