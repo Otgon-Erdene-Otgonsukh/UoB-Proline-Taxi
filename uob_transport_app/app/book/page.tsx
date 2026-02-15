@@ -520,6 +520,11 @@ export default function BookingPage() {
                       defaultValue=""
                       onChange={(e) => {
                         setFormData({ ...formData, CommonLoc: e.target.value });
+                        if (formData.CommonLoc == "") {
+                          addFormFeedback("CommonLoc", "Please pick one.");
+                        } else {
+                          addFormFeedback("CommonLoc", "");
+                        }
 
                         // Update route
                         // Ensure that e.target value is a key of commonLocations
@@ -644,6 +649,9 @@ export default function BookingPage() {
                       }`}
                     onChange={(e) => {
                       setFormData({ ...formData, CustomLoc: e.target.value });
+                      if (e.target.value !== "") {
+                        addFormFeedback("CustomLoc", "");
+                      }
                     }}
                     onBlur={async (e) => {
                       const latlon = await getLatLon(e.target.value)
@@ -692,6 +700,9 @@ export default function BookingPage() {
                         }`}
                       onChange={(e) => {
                         setFormData({ ...formData, FlightNum: e.target.value });
+                        if (e.target.value !== "") {
+                          addFormFeedback("FlightNum", "");
+                        }
                       }}
                     />
                     <FormHelperText
@@ -713,6 +724,9 @@ export default function BookingPage() {
                         }`}
                       onChange={(e) => {
                         setFormData({ ...formData, Airport: e.target.value });
+                        if (e.target.value !== "") {
+                          addFormFeedback("Airport", "");
+                        }
                       }}
                     />
                     <FormHelperText
@@ -751,6 +765,9 @@ export default function BookingPage() {
                   placeholder="Temple Quarter Enterprise Campus, Bristol"
                   onChange={(e) => {
                     setFormData({ ...formData, DropoffLoc: e.target.value });
+                    if (e.target.value !== "") {
+                      addFormFeedback("DropoffLoc", "");
+                    }
                   }}
                   onBlur={async (e) => {
                     const latlon = await getLatLon(e.target.value)
@@ -780,6 +797,9 @@ export default function BookingPage() {
                       }`}
                     onChange={(e) => {
                       setFormData({ ...formData, PickupDate: e.target.value });
+                      if (e.target.value !== "") {
+                        addFormFeedback("PickupDate", "");
+                      }
                     }}
                   />
                   <input
@@ -789,6 +809,9 @@ export default function BookingPage() {
                       }`}
                     onChange={(e) => {
                       setFormData({ ...formData, PickupTime: e.target.value });
+                      if (e.target.value !== "") {
+                        addFormFeedback("PickupTime", "");
+                      }
                     }}
                   />
                 </div>
@@ -864,6 +887,7 @@ export default function BookingPage() {
                             ...formData,
                             ReturnDate: e.target.value,
                           });
+                          addFormFeedback("ReturnDate", "");
                         }}
                       />
                       <input
@@ -876,6 +900,7 @@ export default function BookingPage() {
                             ...formData,
                             ReturnTime: e.target.value,
                           });
+                          addFormFeedback("ReturnTime", "");
                         }}
                       />
                     </div>
@@ -918,26 +943,6 @@ export default function BookingPage() {
                 </FormHelperText>
               </div>
               <div className="flex flex-col">
-                <label htmlFor="surname" className="mb-1 text-sm">
-                  Last name
-                </label>
-                <input
-                  id="surname"
-                  type="text"
-                  className={`border-2 rounded px-3 py-2 ${formFeedback.passengerName == "" ? "" : "border-red-700"
-                    }`}
-                  onChange={(e) => {
-                    setFormData({ ...formData, PassengerName: e.target.value });
-                  }}
-                />
-                <FormHelperText
-                  sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
-                  className={`${formFeedback.passengerName != "" ? "" : "hidden"}`}
-                >
-                  {formFeedback.passengerName}
-                </FormHelperText>
-              </div>
-              <div className="flex flex-col">
                 <label htmlFor="number" className="mb-1 text-sm">
                   Phone number
                 </label>
@@ -965,6 +970,7 @@ export default function BookingPage() {
                       }`}
                     onChange={(e) => {
                       setFormData({ ...formData, Number: e.target.value });
+                      addFormFeedback("Number", "");
                     }}
                   />
                 </div>
@@ -1025,6 +1031,7 @@ export default function BookingPage() {
                       }`}
                     onChange={(e) => {
                       setFormData({ ...formData, Email: e.target.value });
+                      addFormFeedback("Email", "");
                     }}
                   />
                   <FormHelperText
@@ -1065,6 +1072,7 @@ export default function BookingPage() {
                       ...formData,
                       AdditionalInfo: e.target.value,
                     });
+                    addFormFeedback("AdditionalInfo", "");
                   }}
                   maxLength={500}
                   placeholder="Enter any additional information..."
