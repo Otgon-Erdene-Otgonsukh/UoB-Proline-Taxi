@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, redirect } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { Button, TableHead } from "@mui/material";
@@ -345,7 +345,7 @@ const Page = () => {
               height={120}
               alt="person booking a taxi"
             ></Image>
-            <p className="px-2 py-7 text-sm leading-snug max-w-[220px]">
+            <p className="px-2 py-7 text-sm leading-snug max-w-55">
               <strong>Book</strong> a luxurious chauffeur service from any
               destination in <strong>Bristol</strong>.
             </p>
@@ -363,7 +363,7 @@ const Page = () => {
               alt="check status"
               className="drop-shadow-lg/20"
             ></Image>
-            <p className="px-4 py-6 text-sm leading-snug max-w-[220px]">
+            <p className="px-4 py-6 text-sm leading-snug max-w-55">
               <strong>Track</strong> the status of your bookings and{" "}
               <strong>receive email</strong> updates.
             </p>
@@ -380,7 +380,7 @@ const Page = () => {
               height={120}
               alt="view booking details"
             ></Image>
-            <p className="px-2 pl-3 py-6 text-sm leading-snug max-w-[220px]">
+            <p className="px-2 pl-3 py-6 text-sm leading-snug max-w-55">
               <strong>View</strong> full booking details, and{" "}
               <strong>cancel</strong> or <strong>edit</strong> them anytime as
               needed.
