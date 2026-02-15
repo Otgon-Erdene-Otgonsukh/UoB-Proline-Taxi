@@ -14,7 +14,7 @@ export const getUserBookingsAccess = async (userId: number, page: number, pageSi
   }
   if (searchParams.to !== undefined) {
     query['trip'] = {
-      ...query['trip'] as Object,
+      ...query['trip'] as object,
       dropoff_location: {
         // case insensitive
         contains: searchParams.to.toLowerCase().trim(),
@@ -30,7 +30,7 @@ export const getUserBookingsAccess = async (userId: number, page: number, pageSi
     toDate.setUTCHours(23, 59, 59, 999);
     
     query['trip'] = {
-      ...query['trip'] as Object,
+      ...query['trip'] as object,
       pickup_time: {
         gte: new Date(searchParams.pickUpTimeFrom),
         lte: toDate,
@@ -38,7 +38,7 @@ export const getUserBookingsAccess = async (userId: number, page: number, pageSi
     }
   } else if (searchParams.pickUpTimeFrom !== undefined) {
     query['trip'] = {
-      ...query['trip'] as Object,
+      ...query['trip'] as object,
       pickup_time: {
         gte: new Date(searchParams.pickUpTimeFrom),
       }
@@ -48,7 +48,7 @@ export const getUserBookingsAccess = async (userId: number, page: number, pageSi
     toDate.setUTCHours(23, 59, 59, 999);
     
     query['trip'] = {
-      ...query['trip'] as Object,
+      ...query['trip'] as object,
       pickup_time: {
         lte: toDate,
       }
@@ -114,7 +114,7 @@ export const getUserBookingsCountAccess = async (userId: number, searchParams: {
   }
   if (searchParams.to !== undefined) {
     query['trip'] = {
-      ...query['trip'] as Object,
+      ...query['trip'] as object,
       dropoff_location: {
         // case insensitive
         contains: searchParams.to.toLowerCase().trim(),
@@ -130,7 +130,7 @@ export const getUserBookingsCountAccess = async (userId: number, searchParams: {
     toDate.setUTCHours(23, 59, 59, 999);
     
     query['trip'] = {
-      ...query['trip'] as Object,
+      ...query['trip'] as object,
       pickup_time: {
         gte: new Date(searchParams.pickUpTimeFrom),
         lte: toDate,
@@ -138,7 +138,7 @@ export const getUserBookingsCountAccess = async (userId: number, searchParams: {
     }
   } else if (searchParams.pickUpTimeFrom !== undefined) {
     query['trip'] = {
-      ...query['trip'] as Object,
+      ...query['trip'] as object,
       pickup_time: {
         gte: new Date(searchParams.pickUpTimeFrom),
       }
@@ -148,7 +148,7 @@ export const getUserBookingsCountAccess = async (userId: number, searchParams: {
     toDate.setUTCHours(23, 59, 59, 999);
     
     query['trip'] = {
-      ...query['trip'] as Object,
+      ...query['trip'] as object,
       pickup_time: {
         lte: toDate,
       }
