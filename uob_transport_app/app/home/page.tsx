@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { Button, TableHead } from "@mui/material";
+import CancelIcon from "@mui/icons-material/Cancel";
 import Box from "@mui/material/Box";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -186,14 +187,18 @@ const Page = () => {
   const [dateTimePickerFromOpen, setDateTimePickerFromOpen] = useState(false);
   const [dateTimePickerToOpen, setDateTimePickerToOpen] = useState(false);
 
-  const handleSubmitSearchForm = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmitSearchForm = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (searchFormInput.pickUpTimeTo && searchFormInput.pickUpTimeFrom && searchFormInput.pickUpTimeFrom > searchFormInput.pickUpTimeTo) {
+    if (
+      searchFormInput.pickUpTimeTo &&
+      searchFormInput.pickUpTimeFrom &&
+      searchFormInput.pickUpTimeFrom > searchFormInput.pickUpTimeTo
+    ) {
       setSnackbarState({
         open: true,
         status: "error",
-        message: "'PickUp Time To' must be later than 'PickUp Time From'!",
+        message: "From Date cannot be later than the To Date!",
       });
       return;
     }
@@ -202,7 +207,7 @@ const Page = () => {
     setPaginationMeta({
       page: 0,
       pageSize: paginationMeta.pageSize,
-    })
+    });
     _getBookingListData(0, paginationMeta.pageSize);
   };
 
@@ -210,10 +215,10 @@ const Page = () => {
     getUserBookingList(page, pageSize, {
       ...searchFormInput,
       pickUpTimeFrom: searchFormInput.pickUpTimeFrom
-        ? searchFormInput.pickUpTimeFrom.toUTCString()
+        ? searchFormInput.pickUpTimeFrom.toISOString()
         : "",
       pickUpTimeTo: searchFormInput.pickUpTimeTo
-        ? searchFormInput.pickUpTimeTo.toUTCString()
+        ? searchFormInput.pickUpTimeTo.toISOString()
         : "",
       bookingStatus:
         searchFormInput?.bookingStatus === "All"
@@ -244,7 +249,9 @@ const Page = () => {
         transition={{ duration: 1, ease: "easeOut" }}
       >
         Welcome, {data?.user.name.split(" ")[0]}!
-        <p className="text-gray-600 text-lg font-normal">To Your Booking Space</p>
+        <p className="text-gray-600 text-lg font-normal">
+          To Your Booking Space
+        </p>
       </motion.div>
       <div className="flex mt-7 gap-10 max-w-6xl">
         <motion.div
@@ -397,23 +404,41 @@ const Page = () => {
           <TextField
             fullWidth
             onClick={() => setDateTimePickerFromOpen(true)}
-            label="PickUp Time From"
+            label="Date From"
             size="small"
             sx={{ minWidth: 150 }}
             ref={dateTimePickerFromAnchorRef}
-            defaultValue={searchFormInput.pickUpTimeFrom?.toLocaleString()}
-            slotProps={{ inputLabel: { shrink: searchFormInput.pickUpTimeFrom !== undefined } }}
+            defaultValue={searchFormInput.pickUpTimeFrom?.toDateString()}
+            slotProps={{
+              inputLabel: {
+                shrink: searchFormInput.pickUpTimeFrom !== undefined,
+              },
+            }}
           />
+          {searchFormInput.pickUpTimeFrom && (
+            <IconButton size="small" sx={{px: 1.3, mx: -2}} onClick={() => setSearchFormInput({...searchFormInput, pickUpTimeFrom: undefined})}>
+              <CancelIcon fontSize="small" sx={{color: "red"}}/>
+            </IconButton>
+          )}
           <TextField
             fullWidth
             onClick={() => setDateTimePickerToOpen(true)}
-            label="PickUp Time To"
+            label="Date To"
             size="small"
             sx={{ minWidth: 150 }}
             ref={dateTimePickerToAnchorRef}
-            defaultValue={searchFormInput.pickUpTimeTo?.toLocaleString()}
-            slotProps={{ inputLabel: { shrink: searchFormInput.pickUpTimeTo !== undefined } }}
+            defaultValue={searchFormInput.pickUpTimeTo?.toDateString()}
+            slotProps={{
+              inputLabel: {
+                shrink: searchFormInput.pickUpTimeTo !== undefined,
+              },
+            }}
           />
+          {searchFormInput.pickUpTimeTo && (
+            <IconButton size="small" sx={{px: 1.3, mx: -2}} onClick={() => setSearchFormInput({...searchFormInput, pickUpTimeTo: undefined})}>
+              <CancelIcon fontSize="small" sx={{color: "red"}}/>
+            </IconButton>
+          )}
           <DateTimePicker
             open={dateTimePickerFromOpen}
             onClose={() => setDateTimePickerFromOpen(false)}
@@ -434,7 +459,7 @@ const Page = () => {
             }}
             locale={enLocale}
           />
-          <CustomizedButton title="Search" type="warning" click={() => { }} />
+          <CustomizedButton title="Search" type="warning" click={() => {}} />
         </Box>
 
         {isLoading ? (
@@ -492,14 +517,15 @@ const Page = () => {
                       </StyledTableCell>
                       <StyledTableCell>
                         <span
-                          className={`inline-block px-5 py-1 rounded-full text-xs font-medium ${row.booking_status === "Approved"
+                          className={`inline-block px-5 py-1 rounded-full text-xs font-medium ${
+                            row.booking_status === "Approved"
                               ? "bg-green-100 text-green-800 border border-green-800"
                               : row.booking_status === "Rejected"
                                 ? "bg-red-100 text-red-800 border border-red-800"
                                 : row.booking_status === "Cancelled"
                                   ? "bg-gray-300 text-gray-900 border border-gray-900"
                                   : "bg-yellow-100 text-yellow-800 border border-yellow-800"
-                            }`}
+                          }`}
                         >
                           {row.booking_status}
                         </span>
