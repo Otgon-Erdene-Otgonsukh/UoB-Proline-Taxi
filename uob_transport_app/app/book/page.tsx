@@ -87,11 +87,32 @@ export default function BookingPage() {
     setFormFeedback((existing) => ({ ...existing, [field]: text }));
   };
 
+  type FormData = {
+    CommonLoc: string;
+    CustomLoc: string;
+    Via: string[];
+    ReturnTo: string;
+    FlightNum: string;
+    Airport: string;
+    DropoffLoc: string;
+    PickupDate: string;
+    PickupTime: string;
+    ReturnDate: string;
+    ReturnTime: string;
+    PassengerName: string;
+    Number: string;
+    Email: string;
+    dep_id: number;
+    Passengers: number;
+    AdditionalInfo: string;
+  };
+
+
   // Variables for storing the state of the values entered into the fields.
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     CommonLoc: "",
     CustomLoc: "",
-    Via: "",
+    Via: [],
     ReturnTo: "",
     FlightNum: "",
     Airport: "",
@@ -625,7 +646,7 @@ export default function BookingPage() {
                     checked={isViaChecked}
                     onChange={(e) => {
                       setIsViaChecked(e.target.checked);
-                      setFormData({ ...formData, Via: "" });
+                      setFormData({ ...formData, Via: [] });
                     }}
                     className="sr-only peer"
                   />
@@ -642,7 +663,7 @@ export default function BookingPage() {
                     placeholder="Via..."
                     className="border-2 rounded px-3 py-2"
                     onChange={(e) => {
-                      setFormData({ ...formData, Via: e.target.value });
+                      setFormData({ ...formData, Via: [e.target.value] });
                     }}
                     onBlur={async (e) => {
                       if (e.target.value == "") {
