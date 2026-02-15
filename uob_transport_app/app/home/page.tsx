@@ -1,7 +1,7 @@
 "use client";
 
-import { redirect, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { Button, TableHead } from "@mui/material";
 import SummarizeIcon from '@mui/icons-material/Summarize';
@@ -36,6 +36,8 @@ import { bookingStatus } from "./constants";
 import { TablePaginationActions } from "@/components/paginationActions";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import { DateTimePicker } from "@/components/datetimePicker/DateTimePicker";
+import { enLocale } from "@/components/datetimePicker/locale";
 
 const Page = () => {
   // Get NextAuth Session.
@@ -166,23 +168,37 @@ const Page = () => {
 
   // Search form state
   type SearchFormProps = {
-    pickUpTimeFrom?: string;
-    pickUpTimeTo?: string;
+    pickUpTimeFrom?: Date;
+    pickUpTimeTo?: Date;
     from?: string;
     to?: string;
     bookingStatus?: string;
   };
   const [searchFormInput, setSearchFormInput] = useState<SearchFormProps>({
-    pickUpTimeFrom: "",
-    pickUpTimeTo: "",
+    pickUpTimeFrom: undefined,
+    pickUpTimeTo: undefined,
     from: "",
     to: "",
     bookingStatus: "All",
   });
 
+  const dateTimePickerFromAnchorRef = useRef<HTMLDivElement>(null);
+  const dateTimePickerToAnchorRef = useRef<HTMLDivElement>(null);
+  const [dateTimePickerFromOpen, setDateTimePickerFromOpen] = useState(false);
+  const [dateTimePickerToOpen, setDateTimePickerToOpen] = useState(false);
+
   const handleSubmitSearchForm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(searchFormInput);
+
+    if (searchFormInput.pickUpTimeTo && searchFormInput.pickUpTimeFrom && searchFormInput.pickUpTimeFrom > searchFormInput.pickUpTimeTo) {
+      setSnackbarState({
+        open: true,
+        status: "error",
+        message: "'PickUp Time To' must be later than 'PickUp Time From'!",
+      });
+      return;
+    }
+
     setIsLoading(true);
     setPaginationMeta({
       page: 0,
@@ -194,6 +210,12 @@ const Page = () => {
   const _getBookingListData = (page: number, pageSize: number) => {
     getUserBookingList(page, pageSize, {
       ...searchFormInput,
+      pickUpTimeFrom: searchFormInput.pickUpTimeFrom
+        ? searchFormInput.pickUpTimeFrom.toUTCString()
+        : "",
+      pickUpTimeTo: searchFormInput.pickUpTimeTo
+        ? searchFormInput.pickUpTimeTo.toUTCString()
+        : "",
       bookingStatus:
         searchFormInput?.bookingStatus === "All"
           ? ""
@@ -414,7 +436,8 @@ const Page = () => {
             onSubmit={handleSubmitSearchForm}
             sx={{
               display: "flex",
-              gap: 2.5,
+              flexDirection: { xs: "column", sm: "row" },
+            gap: 2.5,
               marginBottom: 3,
             }}
           >
@@ -472,7 +495,47 @@ const Page = () => {
                 })}
               </Select>
             </FormControl>
-            <CustomizedButton title="Search" type="warning" click={() => {}} />
+            <TextField
+            fullWidth
+            onClick={() => setDateTimePickerFromOpen(true)}
+            label="PickUp Time From"
+            size="small"
+            sx={{ minWidth: 150 }}
+            ref={dateTimePickerFromAnchorRef}
+            defaultValue={searchFormInput.pickUpTimeFrom?.toLocaleString()}
+            slotProps={{ inputLabel: { shrink: searchFormInput.pickUpTimeFrom !== undefined } }}
+          />
+          <TextField
+            fullWidth
+            onClick={() => setDateTimePickerToOpen(true)}
+            label="PickUp Time To"
+            size="small"
+            sx={{ minWidth: 150 }}
+            ref={dateTimePickerToAnchorRef}
+            defaultValue={searchFormInput.pickUpTimeTo?.toLocaleString()}
+            slotProps={{ inputLabel: { shrink: searchFormInput.pickUpTimeTo !== undefined } }}
+          />
+          <DateTimePicker
+            open={dateTimePickerFromOpen}
+            onClose={() => setDateTimePickerFromOpen(false)}
+            anchorEl={dateTimePickerFromAnchorRef}
+            selectedDate={searchFormInput.pickUpTimeFrom || null}
+            onDateChange={(date) => {
+              setSearchFormInput({ ...searchFormInput, pickUpTimeFrom: date });
+            }}
+            locale={enLocale}
+          />
+          <DateTimePicker
+            open={dateTimePickerToOpen}
+            onClose={() => setDateTimePickerToOpen(false)}
+            anchorEl={dateTimePickerToAnchorRef}
+            selectedDate={searchFormInput.pickUpTimeTo || null}
+            onDateChange={(date) => {
+              setSearchFormInput({ ...searchFormInput, pickUpTimeTo: date });
+            }}
+            locale={enLocale}
+          />
+          <CustomizedButton title="Search" type="warning" click={() => {}} />
           </Box>
 
           {isLoading ? (
