@@ -13,7 +13,7 @@ describe('booking_access', () => {
   })
 
   test('getUserBookingsAccess calls prisma.booking.findMany correctly', async () => {
-    const mockResult = [{ booking_id: 1 }] as any;
+    const mockResult = [{ booking_id: 1 }];
     (prisma.booking.findMany as jest.Mock).mockResolvedValue(mockResult);
 
     const result = await getUserBookingsAccess(10, 1, 5, {
