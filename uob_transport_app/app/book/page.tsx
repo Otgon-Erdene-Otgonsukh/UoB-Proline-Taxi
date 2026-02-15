@@ -738,7 +738,7 @@ export default function BookingPage() {
                     placeholder="Via..."
                     className="border-2 rounded px-3 py-2"
                     onChange={(e) => {
-                      setFormData({ ...formData, Via: e.target.value });
+                      setFormData({ ...formData, Via: [e.target.value] });
                     }}
                   />
                 </div>
@@ -797,17 +797,29 @@ export default function BookingPage() {
                   </div>
                   {isViaChecked && (
                     <div className="flex flex-col">
-                      <label htmlFor="via" className="mb-1 text-sm">
+                      <label htmlFor="via1" className="mb-1 text-sm">
                         Via
                       </label>
                       <input
-                        id="via"
+                        id="via1"
                         placeholder="Via..."
                         className="border-2 rounded px-3 py-2"
                         onChange={(e) => {
-                          setFormData({ ...formData, Via: e.target.value });
+                          setFormData({ ...formData, Via: [e.target.value, ...formData.Via.slice(1)] });
                         }}
                       />
+                      { /* Second via to show only if length > 0 and nonempty. */ }
+                      {formData.Via[0] && (
+                      <input
+                        id="via2"
+                        placeholder="2nd Via..."
+                        className="border-2 rounded px-3 py-2"
+                        onChange={(e) => {
+                          setFormData({ ...formData, Via: [...formData.Via.slice(0,1), e.target.value, ...formData.Via.slice(2)] });
+                        }}
+                      />
+                      )
+                      }
                     </div>
                   )}
                 </div>
