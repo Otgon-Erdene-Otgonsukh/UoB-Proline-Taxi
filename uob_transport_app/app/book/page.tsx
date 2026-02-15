@@ -1193,7 +1193,7 @@ export default function BookingPage() {
             )}
 
             { routes && routes.length > 0 && (
-              <div className="absolute top-3 left-3 bg-white opacity-80 rounded-md gap-2 p-2">
+              <div className="absolute top-3 left-3 bg-black text-white opacity-80 rounded-md gap-2 p-2">
                   <div className="flex items-center gap-1.5">
                     <Clock className="size-3.5" />
                     <span className="text-md">
