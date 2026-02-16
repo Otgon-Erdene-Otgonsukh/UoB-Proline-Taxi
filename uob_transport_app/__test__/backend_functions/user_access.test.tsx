@@ -1,4 +1,4 @@
-import prisma from '@/utils/client';
+import { prismaMock } from "@/utils/singleton";
 import {
   searchUserAccess,
   updateUserPassowrdAccess,
@@ -29,11 +29,11 @@ describe('user_access', () => {
 
   test('searchUserAccess calls findUnique with include', async () => {
     const mockUser = { user_id: 1, email: 'a@test.com' };
-    (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
+    (prismaMock.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
 
     const result = await searchUserAccess('a@test.com');
 
-    expect(prisma.user.findUnique).toHaveBeenCalledWith({
+    expect(prismaMock.user.findUnique).toHaveBeenCalledWith({
       where: { email: 'a@test.com' },
       include: { department: true },
     });
@@ -43,11 +43,11 @@ describe('user_access', () => {
 
   test('updateUserPassowrdAccess updates password', async () => {
     const mockUser = { user_id: 2, password: 'newpass' };
-    (prisma.user.update as jest.Mock).mockResolvedValue(mockUser);
+    (prismaMock.user.update as jest.Mock).mockResolvedValue(mockUser);
 
     const result = await updateUserPassowrdAccess('b@test.com', 'newpass');
 
-    expect(prisma.user.update).toHaveBeenCalledWith({
+    expect(prismaMock.user.update).toHaveBeenCalledWith({
       where: { email: 'b@test.com' },
       data: { password: 'newpass' },
     });
@@ -57,11 +57,11 @@ describe('user_access', () => {
 
   test('getUserByEmailAccess calls findUnique', async () => {
     const mockUser = { user_id: 3, email: 'c@test.com' };
-    (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
+    (prismaMock.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
 
     const result = await getUserByEmailAccess('c@test.com');
 
-    expect(prisma.user.findUnique).toHaveBeenCalledWith({
+    expect(prismaMock.user.findUnique).toHaveBeenCalledWith({
       where: { email: 'c@test.com' },
     });
 
@@ -70,11 +70,11 @@ describe('user_access', () => {
 
   test('getUserListAccess builds query correctly', async () => {
     const mockUsers = [{ user_id: 1, name: 'Alice' }];
-    (prisma.user.findMany as jest.Mock).mockResolvedValue(mockUsers);
+    (prismaMock.user.findMany as jest.Mock).mockResolvedValue(mockUsers);
 
     const result = await getUserListAccess(1, 10, 'Ali', 'admin', 1);
 
-    expect(prisma.user.findMany).toHaveBeenCalledWith({
+    expect(prismaMock.user.findMany).toHaveBeenCalledWith({
       where: {
         name: { contains: 'Ali', mode: 'insensitive' },
         role: 'admin',
@@ -91,11 +91,11 @@ describe('user_access', () => {
   });
 
   test('getUserCountAccess calls count', async () => {
-    (prisma.user.count as jest.Mock).mockResolvedValue(5);
+    (prismaMock.user.count as jest.Mock).mockResolvedValue(5);
 
     const result = await getUserCountAccess('Bob', 'staff', 0);
 
-    expect(prisma.user.count).toHaveBeenCalledWith({
+    expect(prismaMock.user.count).toHaveBeenCalledWith({
       where: {
         name: { contains: 'Bob', mode: 'insensitive' },
         role: 'staff',
@@ -108,14 +108,14 @@ describe('user_access', () => {
 
   test('updateUserAccess connects department when provided', async () => {
     const mockUser = { user_id: 9 };
-    (prisma.user.update as jest.Mock).mockResolvedValue(mockUser);
+    (prismaMock.user.update as jest.Mock).mockResolvedValue(mockUser);
 
     const result = await updateUserAccess(9, {
       name: 'NewName',
       department: { dep_id: 7 },
     });
 
-    expect(prisma.user.update).toHaveBeenCalledWith({
+    expect(prismaMock.user.update).toHaveBeenCalledWith({
       where: { user_id: 9 },
       data: {
         name: 'NewName',
@@ -129,7 +129,7 @@ describe('user_access', () => {
   });
 
   test('isAdmin returns true for admin roles', async () => {
-    (prisma.user.findUnique as jest.Mock).mockResolvedValue({
+    (prismaMock.user.findUnique as jest.Mock).mockResolvedValue({
       user_id: 1,
       role: 'super_admin',
     });
@@ -140,7 +140,7 @@ describe('user_access', () => {
   });
 
   test('isAdmin returns false for non-admin', async () => {
-    (prisma.user.findUnique as jest.Mock).mockResolvedValue({
+    (prismaMock.user.findUnique as jest.Mock).mockResolvedValue({
       user_id: 2,
       role: 'student',
     });
