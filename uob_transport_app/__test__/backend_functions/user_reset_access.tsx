@@ -1,4 +1,4 @@
-import prisma from '@/utils/client';
+import { prismaMock } from "@/utils/singleton";
 import {
   createUserResetAccess,
   getUserResetAccess,
@@ -25,13 +25,13 @@ describe('user_reset_access', () => {
 
   test('createUserResetAccess creates reset record', async () => {
     const mockResult = { id: 1, email: 'a@test.com', uuid: 'u1' };
-    (prisma.user_reset.create as jest.Mock).mockResolvedValue(mockResult);
+    (prismaMock.user_reset.create as jest.Mock).mockResolvedValue(mockResult);
 
     const result = await createUserResetAccess('a@test.com', 'u1');
 
-    expect(prisma.user_reset.create).toHaveBeenCalledTimes(1);
+    expect(prismaMock.user_reset.create).toHaveBeenCalledTimes(1);
 
-    const callArgs = (prisma.user_reset.create as jest.Mock).mock.calls[0][0];
+    const callArgs = (prismaMock.user_reset.create as jest.Mock).mock.calls[0][0];
 
     expect(callArgs.data.email).toBe('a@test.com');
     expect(callArgs.data.uuid).toBe('u1');
@@ -42,11 +42,11 @@ describe('user_reset_access', () => {
 
   test('getUserResetAccess queries by email', async () => {
     const mockResult = { id: 2, email: 'b@test.com', uuid: 'u2' };
-    (prisma.user_reset.findUnique as jest.Mock).mockResolvedValue(mockResult);
+    (prismaMock.user_reset.findUnique as jest.Mock).mockResolvedValue(mockResult);
 
     const result = await getUserResetAccess('b@test.com');
 
-    expect(prisma.user_reset.findUnique).toHaveBeenCalledWith({
+    expect(prismaMock.user_reset.findUnique).toHaveBeenCalledWith({
       where: { email: 'b@test.com' },
     });
 
@@ -55,11 +55,11 @@ describe('user_reset_access', () => {
 
   test('getUserResetByUuidAccess queries by uuid', async () => {
     const mockResult = { id: 3, email: 'c@test.com', uuid: 'uuid-123' };
-    (prisma.user_reset.findUnique as jest.Mock).mockResolvedValue(mockResult);
+    (prismaMock.user_reset.findUnique as jest.Mock).mockResolvedValue(mockResult);
 
     const result = await getUserResetByUuidAccess('uuid-123');
 
-    expect(prisma.user_reset.findUnique).toHaveBeenCalledWith({
+    expect(prismaMock.user_reset.findUnique).toHaveBeenCalledWith({
       where: { uuid: 'uuid-123' },
     });
 
@@ -68,11 +68,11 @@ describe('user_reset_access', () => {
 
   test('deleteUserResetAccess deletes by id', async () => {
     const mockResult = { id: 4, email: 'd@test.com', uuid: 'u4' };
-    (prisma.user_reset.delete as jest.Mock).mockResolvedValue(mockResult);
+    (prismaMock.user_reset.delete as jest.Mock).mockResolvedValue(mockResult);
 
     const result = await deleteUserResetAccess(4);
 
-    expect(prisma.user_reset.delete).toHaveBeenCalledWith({
+    expect(prismaMock.user_reset.delete).toHaveBeenCalledWith({
       where: { id: 4 },
     });
 

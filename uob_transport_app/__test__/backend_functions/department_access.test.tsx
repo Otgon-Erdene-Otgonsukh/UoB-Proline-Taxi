@@ -1,4 +1,4 @@
-import prisma from '@/utils/client';
+import { prismaMock } from "@/utils/singleton";
 import { getDepartmentsListAccess } from '@/backend/access/departments_access';
 
 jest.mock('@/utils/client', () => ({
@@ -22,11 +22,11 @@ describe('getDepartmentsListAccess', () => {
       { dep_id: 2, dep_name: 'Computing' },
     ];
 
-    (prisma.department.findMany as jest.Mock).mockResolvedValue(mockResult);
+    (prismaMock.department.findMany as jest.Mock).mockResolvedValue(mockResult);
 
     const result = await getDepartmentsListAccess('Comp');
 
-    expect(prisma.department.findMany).toHaveBeenCalledWith({
+    expect(prismaMock.department.findMany).toHaveBeenCalledWith({
       select: {
         dep_id: true,
         dep_name: true,
@@ -44,11 +44,11 @@ describe('getDepartmentsListAccess', () => {
   test('handles undefined depName', async () => {
     const mockResult: { dep_id: number; dep_name: string }[] = [];
 
-    (prisma.department.findMany as jest.Mock).mockResolvedValue(mockResult);
+    (prismaMock.department.findMany as jest.Mock).mockResolvedValue(mockResult);
 
     const result = await getDepartmentsListAccess(undefined);
 
-    expect(prisma.department.findMany).toHaveBeenCalledWith({
+    expect(prismaMock.department.findMany).toHaveBeenCalledWith({
       select: {
         dep_id: true,
         dep_name: true,
