@@ -42,9 +42,9 @@ export default function AboutPage() {
 
           <div className="shadow-lg/20 rounded-md w-full h-full p-15 ml-4 mb-3 -mt-2">
             <div className="flex flex-col items-center">
-              <RateReview sx={{ fontSize: 60 }} />
+              <RateReview sx={{ fontSize: 60, color: '#2563eb' }} />
               <br />
-              <h1 className="text-3xl font-bold font-aleo text-shadow-lg/10">
+              <h1 className="text-3xl font-bold font-aleo text-shadow-lg/10 text-yellow-600 ">
                 Check out proline taxi Reviews
               </h1>
             </div>
@@ -52,21 +52,21 @@ export default function AboutPage() {
               <div className="rounded-md border p-5 shadow-lg/10 hover:scale-103 transition-all duration-300 hover:bg-gradient-to-br hover:from-cyan-50 hover:to-blue-50">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-lg font-semibold">John Doe</h3>
-                  <StarsIcon />
+                  <StarsIcon sx={{ color: '#16a34a' }}/>
                 </div>
                 <p className="text-gray-600">Great experience.</p>
               </div>
               <div className="rounded-md border p-5 shadow-lg/10 hover:scale-103 transition-all duration-300 hover:bg-gradient-to-br hover:from-cyan-50 hover:to-blue-50">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-lg font-semibold">Allen Key</h3>
-                  <StarsIcon />
+                  <StarsIcon sx={{ color: '#eab308'}}/>
                 </div>
                 <p className="text-gray-600">Very smooth travel.</p>
               </div>
               <div className="rounded-md border p-5 shadow-lg/10 hover:scale-103 transition-all duration-300 hover:bg-gradient-to-br hover:from-cyan-50 hover:to-blue-50">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-lg font-semibold">Jane Doe</h3>
-                  <StarsIcon />
+                  <StarsIcon sx={{ color: '#9333ea' }}/>
                 </div>
                 <p className="text-gray-600">Love it!</p>
               </div>
