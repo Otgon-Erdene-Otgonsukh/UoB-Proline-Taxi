@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@/generated/prisma/client";
 import sendReq from "@/backend/register/send_req";
 import bcrypt from "bcryptjs";
-
-const prisma = new PrismaClient();
+import prisma from "@/utils/client";
 
 export async function POST(req: Request) {
   const request = await req.json();
@@ -26,7 +24,7 @@ export async function POST(req: Request) {
     return NextResponse.json({
       status: 500,
       message: "There was an error creating an user",
-    });
+    }, { status: 500 });
   }
 
   // hashing
