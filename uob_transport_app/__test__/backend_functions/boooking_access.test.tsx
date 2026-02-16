@@ -1,4 +1,4 @@
-import prisma from '@/utils/client'
+import { prismaMock } from "@/utils/singleton";
 import {
   getUserBookingsAccess,
   getBookingDetails,
@@ -14,13 +14,13 @@ describe('booking_access', () => {
 
   test('getUserBookingsAccess calls prisma.booking.findMany correctly', async () => {
     const mockResult = [{ booking_id: 1 }];
-    (prisma.booking.findMany as jest.Mock).mockResolvedValue(mockResult);
+    (prismaMock.booking.findMany as jest.Mock).mockResolvedValue(mockResult);
 
     const result = await getUserBookingsAccess(10, 1, 5, {
       bookingStatus: 'Confirmed',
     });
 
-    expect(prisma.booking.findMany).toHaveBeenCalledWith({
+    expect(prismaMock.booking.findMany).toHaveBeenCalledWith({
       where: {
         booking_status: 'Confirmed',
         user_id: 10,
@@ -36,11 +36,11 @@ describe('booking_access', () => {
 
   test('getBookingDetails uses findUnique when userId = -1', async () => {
     const mockBooking = { booking_id: 99 };
-    (prisma.booking.findUnique as jest.Mock).mockResolvedValue(mockBooking);
+    (prismaMock.booking.findUnique as jest.Mock).mockResolvedValue(mockBooking);
 
     const result = await getBookingDetails(-1, 99);
 
-    expect(prisma.booking.findUnique).toHaveBeenCalledWith({
+    expect(prismaMock.booking.findUnique).toHaveBeenCalledWith({
       where: { booking_id: 99 },
     });
 
@@ -49,11 +49,11 @@ describe('booking_access', () => {
 
   test('getBookingDetails uses findFirst when userId != -1', async () => {
     const mockBooking = { booking_id: 50 };
-    (prisma.booking.findFirst as jest.Mock).mockResolvedValue(mockBooking);
+    (prismaMock.booking.findFirst as jest.Mock).mockResolvedValue(mockBooking);
 
     const result = await getBookingDetails(7, 50);
 
-    expect(prisma.booking.findFirst).toHaveBeenCalledWith({
+    expect(prismaMock.booking.findFirst).toHaveBeenCalledWith({
       where: {
         booking_id: 50,
         user_id: 7,
@@ -65,11 +65,11 @@ describe('booking_access', () => {
 
   test('cancelBookingsAccess updates booking status', async () => {
     const mockUpdated = { booking_status: 'Cancelled' };
-    (prisma.booking.update as jest.Mock).mockResolvedValue(mockUpdated);
+    (prismaMock.booking.update as jest.Mock).mockResolvedValue(mockUpdated);
 
     const result = await cancelBookingsAccess(123);
 
-    expect(prisma.booking.update).toHaveBeenCalledWith({
+    expect(prismaMock.booking.update).toHaveBeenCalledWith({
       where: { booking_id: 123 },
       data: { booking_status: 'Cancelled' },
     });
@@ -78,13 +78,13 @@ describe('booking_access', () => {
   })
 
   test('getUserBookingsCountAccess calls prisma.booking.count', async () => {
-    (prisma.booking.count as jest.Mock).mockResolvedValue(42);
+    (prismaMock.booking.count as jest.Mock).mockResolvedValue(42);
 
     const result = await getUserBookingsCountAccess(3, {
       bookingStatus: 'Pending',
     });
 
-    expect(prisma.booking.count).toHaveBeenCalledWith({
+    expect(prismaMock.booking.count).toHaveBeenCalledWith({
       where: {
         booking_status: 'Pending',
         user_id: 3,
