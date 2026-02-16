@@ -7,8 +7,6 @@ import {
   Text,
   Section,
   Hr,
-  Row,
-  Column,
 } from "@react-email/components";
 
 export default function BookingInfo({
@@ -20,10 +18,8 @@ export default function BookingInfo({
   pickUpTime,
   returnTime,
   returnTo,
-  firstName,
-  surName,
+  passengerName,
   phoneNumber,
-  department,
 }: {
   from: string;
   via: string;
@@ -33,10 +29,8 @@ export default function BookingInfo({
   pickUpTime: Date;
   returnTime?: Date;
   returnTo?: string;
-  firstName: string;
-  surName: string;
+  passengerName: string;
   phoneNumber: string;
-  department: string;
 }) {
   return (
     <Html>
@@ -45,9 +39,9 @@ export default function BookingInfo({
         <Container className="mx-auto p-1 bg-gray-50">
           <Section className="bg-white rounded-lg p-6 max-w-2xl mx-auto">
             {/* Header */}
-            <Section className="text-center mb-6 bg-green-50 p-6 rounded-lg">
-              <Text className="text-2xl font-bold text-green-600 mb-2">
-                Booking Submitted Successfully! ✓
+            <Section className="text-center mb-6 bg-yellow-100 p-6 rounded-lg">
+              <Text className="text-2xl font-bold text-yellow-600 mb-2">
+                Booking Submitted Successfully! ➤
               </Text>
               <Text className="text-lg text-gray-600">
                 Your booking is awaiting approval
@@ -56,16 +50,24 @@ export default function BookingInfo({
 
             <Hr className="border-gray-300 my-3" />
 
+            <Text>
+              Your booking with the following details has been forwarded to
+              admin and university staff, who will assign a purchase order (PO)
+              number and pricing.
+            </Text>
+
+            <Hr className="border-gray-300 my-3" />
+            <Text className="text-2xl font-semibold text-gray-800">
+              Booking Details:
+            </Text>
+
             {/* Passenger Information */}
             <Section className="mb-6">
               <Text className="text-xl font-semibold text-gray-800 mb-2">
                 Passenger Information
               </Text>
               <Text className="text-gray-700 mb-2">
-                <strong>Name:</strong> {firstName} {surName}
-              </Text>
-              <Text className="text-gray-700 mb-2">
-                <strong>Department:</strong> {department}
+                <strong>Name:</strong> {passengerName}
               </Text>
               <Text className="text-gray-700 mb-2">
                 <strong>Phone:</strong> {phoneNumber}
@@ -194,7 +196,7 @@ export default function BookingInfo({
             <Section className="mt-8">
               <Text className="text-sm text-gray-500 text-center">
                 You will receive a confirmation email once your booking has been
-                approved by the department.
+                resonded by the department and admin.
               </Text>
               <Text className="text-sm text-gray-500 text-center mt-2">
                 Thank you for using UoB Taxi & Chauffeur!

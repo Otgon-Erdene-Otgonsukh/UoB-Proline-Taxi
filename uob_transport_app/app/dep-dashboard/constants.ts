@@ -8,5 +8,14 @@ import type {
 export type BookingWithTrip = booking & {
   // creating a custom type to access the data
   trip: trip;
-  User: User & { department: department };
+  User: User;
+  department: department;
 };
+
+export type BookingData = {
+  total: number,
+  pending: number,
+  approved: number,
+  rejected: number,
+  overdue: number
+}

@@ -24,6 +24,9 @@ export async function GET(request: NextRequest,) {
   const pickUpTimeFrom = (searchParams.get('pickUpTimeFrom') !== null && searchParams.get('pickUpTimeFrom') !== "") ? searchParams.get('pickUpTimeFrom')! : undefined;
   const pickUpTimeTo = (searchParams.get('pickUpTimeTo') !== null && searchParams.get('pickUpTimeTo') !== "") ? searchParams.get('pickUpTimeTo')! : undefined;
   const isFlight = (searchParams.get('isFlight') === 'true');
+  const total = searchParams.get('total') === 'true';
+  const status = searchParams.get('status') === 'true';
+  const overdue = searchParams.get('overdue') === 'true';
 
   if (!page || !pageSize) {
     return new Response(JSON.stringify({ message: 'page params needed' }), {
@@ -43,7 +46,10 @@ export async function GET(request: NextRequest,) {
       passengerName,
       pickUpTimeFrom,
       pickUpTimeTo,
-      isFlight
+      isFlight,
+      total,
+      status,
+      overdue
     });
 
     const totalNum = await getPendingBookingsCount({
@@ -52,7 +58,10 @@ export async function GET(request: NextRequest,) {
       passengerName,
       pickUpTimeFrom,
       pickUpTimeTo,
-      isFlight
+      isFlight,
+      total,
+      status,
+      overdue
     });
     return NextResponse.json({ pendingBookings, totalNum }, { status: 200 });
   } catch (error) {

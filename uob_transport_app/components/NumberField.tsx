@@ -13,7 +13,7 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
  */
 function SSRInitialFilled(a: BaseNumberField.Root.Props) {
   console.log(a);
-  console.clear();
+  // console.clear(); // This line is in the way of debugging in the browser.
   return null;
 }
 SSRInitialFilled.muiName = "Input";

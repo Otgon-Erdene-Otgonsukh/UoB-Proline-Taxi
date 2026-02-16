@@ -1,4 +1,5 @@
 import { department, PrismaClient, User } from '@/generated/prisma/client'
+type noPasswordUser = Omit<User, "password">
 
 const prisma = new PrismaClient();
 
@@ -39,11 +40,12 @@ export const getUserByEmailAccess = async (
   })
 }
 
-export const getUserListAccess = async (page: number, pageSize: number, name?: string, role?: string, userStatus?: number): Promise<User[] | null> => {
+export const getUserListAccess = async (page: number, pageSize: number, name?: string, role?: string, userStatus?: number): Promise<noPasswordUser[] | null> => {
   const query: { [key: string]: string | number | object } = {}
   if (name !== undefined) {
     query['name'] = {
-      contains: name
+      contains: name,
+      mode: "insensitive"
     }
   }
   if (role !== undefined) {
@@ -60,6 +62,9 @@ export const getUserListAccess = async (page: number, pageSize: number, name?: s
     orderBy: {
       time_created: 'desc'
     },
+    omit: {
+      password: true
+    },
     skip: page * pageSize,
     take: pageSize
   })
@@ -69,13 +74,14 @@ export const getUserCountAccess = async (name?: string, role?: string, userStatu
   const query: { [key: string]: string | number | object } = {}
   if (name) {
     query['name'] = {
-      contains: name
+      contains: name,
+      mode: "insensitive"
     }
   }
   if (role) {
     query['role'] = role
   }
-  if (userStatus) {
+  if (userStatus !== undefined) {
     query['user_status'] = userStatus
   }
   return prisma.user.count({
