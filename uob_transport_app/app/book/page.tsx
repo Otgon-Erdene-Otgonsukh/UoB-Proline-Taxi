@@ -618,6 +618,12 @@ export default function BookingPage() {
                       id="manual"
                       type="checkbox"
                       checked={isManualChecked}
+                      onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        e.currentTarget.blur();
+                      }
+                    }}
                       onChange={(e) => {
                         setIsManualChecked(e.target.checked);
                         setFormData({ ...formData, CustomLoc: "" });
@@ -638,6 +644,12 @@ export default function BookingPage() {
                     id="flight"
                     type="checkbox"
                     checked={isFlightChecked}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        e.currentTarget.blur();
+                      }
+                    }}
                     onChange={(e) => {
                       setIsFlightChecked(e.target.checked);
                       setIsManualChecked(false);
@@ -656,6 +668,12 @@ export default function BookingPage() {
                     id="via"
                     type="checkbox"
                     checked={isViaChecked}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        e.currentTarget.blur();
+                      }
+                    }}
                     onChange={(e) => {
                       setIsViaChecked(e.target.checked);
                       setFormData({ ...formData, Via: [] });
@@ -681,6 +699,12 @@ export default function BookingPage() {
                       setFormData({ ...formData, CustomLoc: e.target.value });
                       if (e.target.value !== "") {
                         addFormFeedback("CustomLoc", "");
+                      }
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        e.currentTarget.blur();
                       }
                     }}
                     onBlur={async (e) => {
@@ -838,6 +862,12 @@ export default function BookingPage() {
                       placeholder="AB1234"
                       className={`border-2 rounded px-3 py-2 ${formFeedback.FlightNum == "" ? "" : "border-red-700"
                         }`}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          e.currentTarget.blur();
+                        }
+                      }}
                       onChange={(e) => {
                         setFormData({ ...formData, FlightNum: e.target.value });
                         if (e.target.value !== "") {
@@ -877,33 +907,6 @@ export default function BookingPage() {
                       {formFeedback.Airport}
                     </FormHelperText>
                   </div>
-                  {isViaChecked && (
-                    <div className="flex flex-col">
-                      <label htmlFor="via1" className="mb-1 text-sm">
-                        Via
-                      </label>
-                      <input
-                        id="via1"
-                        placeholder="Via..."
-                        className="border-2 rounded px-3 py-2"
-                        onChange={(e) => {
-                          setFormData({ ...formData, Via: [e.target.value, ...formData.Via.slice(1)] });
-                        }}
-                      />
-                      { /* Second via to show only if length > 0 and nonempty. */ }
-                      {formData.Via[0] && (
-                      <input
-                        id="via2"
-                        placeholder="2nd Via..."
-                        className="border-2 rounded px-3 py-2"
-                        onChange={(e) => {
-                          setFormData({ ...formData, Via: [...formData.Via.slice(0,1), e.target.value, ...formData.Via.slice(2)] });
-                        }}
-                      />
-                      )
-                      }
-                    </div>
-                  )}
                 </div>
               )}
 
@@ -915,6 +918,12 @@ export default function BookingPage() {
                   type="dropLoc"
                   id="dropLoc"
                   placeholder="Temple Quarter Enterprise Campus, Bristol"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      e.currentTarget.blur();
+                    }
+                  }}
                   onChange={(e) => {
                     setFormData({ ...formData, DropoffLoc: e.target.value });
                     if (e.target.value !== "") {
@@ -1030,6 +1039,12 @@ export default function BookingPage() {
                       id="returnDropOff"
                       placeholder="Enter"
                       className="border-2 rounded px-3 py-2"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          e.currentTarget.blur();
+                        }
+                      }}
                       onChange={(e) => {
                         setFormData({ ...formData, ReturnTo: e.target.value });
                       }}
