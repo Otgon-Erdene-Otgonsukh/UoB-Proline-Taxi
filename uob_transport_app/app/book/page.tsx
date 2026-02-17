@@ -461,6 +461,8 @@ export default function BookingPage() {
   const [routes, setRoutes] = useState<RouteData[]>([]);
   const mapRef = useRef<MapRef>(null);
 
+   type Loc = { name: string; lat: number; lng: number }
+
   // Only call updateRoute when both start and end are set.
   async function updateRoute() {
     if (start != null && end != null) {
@@ -473,7 +475,7 @@ export default function BookingPage() {
       route.push({ name: end.name, lat: end.lat, lng: end.lng });
       fetchRoutes(route);
 
-      function getRouteProperties(route: any[]) {
+      function getRouteProperties(route: Loc[]) {
         return {
           name: route[0].name,
           lat: route[0].lat,
@@ -497,9 +499,7 @@ export default function BookingPage() {
     }
   }
 
-  type LocList = { name: string; lat: number; lng: number }[];
-
-  async function fetchRoutes(locations : LocList) {
+  async function fetchRoutes(locations : Loc[]) {
     const osrmRoutes = []; // Clear previous routes
     try {
       // Construct via list like this lon,lat;lon,lat;lon,lat for OSRM
