@@ -42,7 +42,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             // We do not want the entire user object as it would be quite large and pointless.
             return {
               user_id: userDetail.user_id,
-              name: userDetail.name,
+              name: userDetail.full_name,
               email: userDetail.email,
               phone_number: userDetail.phone_number,
               dep_id: userDetail.department?.dep_id || null,
