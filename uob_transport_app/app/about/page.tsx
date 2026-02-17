@@ -17,19 +17,19 @@ export default function AboutPage() {
         {/* Left hand side of page on md screen. */}
         <div className="md:w-3/5 flex flex-col items-center justify-center">
           <div className="shadow-lg/20 rounded-md w-full h-full p-15 ml-4 mt-3 mb-5">
-            <div className="flex flex-col md:flex-row items-center justify-between">
+            <div className="flex flex-col md:flex-row items-center justify-center gap-6">
               <Image
                   src="/aboutlogo.png"
                   width="300"
                   height="30"
-                  className="md:-ml-10 mr-4 mix-blend-darken ml-2"
+                  className="mix-blend-darken flex-shrink-0"
                   alt="Collab photo of UoB university logo and the Proline taxi logo"
               ></Image>
-              <div className="flex flex-col gap-2">
-                <h1 className="text-2xl font-bold text-gray-800 font-aleo text-center md:text-start text-shadow-lg/10">
+              <div className="flex flex-col gap-2 text-center md:text-start">
+                <h1 className="text-2xl font-bold text-gray-800 font-aleo text-shadow-lg/10">
                   Proline Taxi | University of Bristol
                 </h1>
-                <p className="text-md text-gray-600 -mr-2">
+                <p className="text-md text-gray-600">
                   This service, in partnership with Proline Taxi, aims to
                   streamline the taxi booking process by automating the processes
                   from requesting, approving, and even merging taxi services
@@ -58,10 +58,10 @@ export default function AboutPage() {
               </div>
               <div className="rounded-md border p-5 shadow-lg/10 hover:scale-103 transition-all duration-300 hover:bg-gradient-to-br hover:from-cyan-50 hover:to-blue-50">
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-lg font-semibold">Shona Towens</h3>
+                  <h3 className="text-lg font-semibold">Thomas Lanzoni</h3>
                   <StarsIcon sx={{ color: '#eab308'}}/>
                 </div>
-                <p className="text-gray-600">5 stars again, from booking to getting to your destination on time , seamless service ! Well done .</p>
+                <p className="text-gray-600">Very professional, sympathic and flexible ! I recommend it at 100%</p>
               </div>
               <div className="rounded-md border p-5 shadow-lg/10 hover:scale-103 transition-all duration-300 hover:bg-gradient-to-br hover:from-cyan-50 hover:to-blue-50">
                 <div className="flex items-center justify-between mb-3">
@@ -76,8 +76,8 @@ export default function AboutPage() {
 
         {/* Right hand side of page on md screen - Booking Made Easy */}
         <div className="md:w-2/5 w-full flex items-center justify-center shadow-lg ml-[8px] md:ml-5 md:mr-3 my-3 rounded-md">
-          <div className="text-center w-full flex flex-col md:gap-5 gap-10 font-inter px-4">
-            <div className="items-center">
+          <div className="w-full flex flex-col items-center md:gap-5 gap-10 font-inter px-4">
+            <div className="flex flex-col items-center text-center">
               <h1 className="text-3xl font-aleo text-shadow-lg/10 font-bold md:mb-15 md:-mt-2 mt-10">
                 BOOKING MADE EASY
               </h1>
@@ -85,14 +85,14 @@ export default function AboutPage() {
             </div>
 
             {/* Steps with improved design */}
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2 items-center w-full">
               {/* Step 1 */}
-              <div className="items-start mb-10">
-                <div className="flex items-start gap-4 text-left">
-                  <div className="flex-shrink-0 bg-blue-100 p-3 rounded-full">
-                    <Assignment sx={{ fontSize: 40, color: '#2563eb' }} />
+              <div className="mb-10 w-80">
+                <div className="flex items-center gap-4 text-left">
+                  <div className="flex-shrink-0 bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center">
+                    <Assignment sx={{ fontSize: 36, color: '#2563eb' }} />
                   </div>
-                  <div className="flex-1 pt-1">
+                  <div>
                     <p className="text-lg font-bold">1. Fill in the booking form</p>
                     <p className="text-sm text-gray-600 mt-1">Quick and easy form with all necessary details</p>
                   </div>
@@ -100,12 +100,12 @@ export default function AboutPage() {
               </div>
 
               {/* Step 2 */}
-              <div className="items-start mb-10">
-                <div className="flex items-start gap-4 text-left">
-                  <div className="flex-shrink-0 bg-green-100 p-3 rounded-full">
-                    <CheckCircle sx={{ fontSize: 40, color: '#16a34a' }} />
+              <div className="mb-10 w-80">
+                <div className="flex items-center gap-4 text-left">
+                  <div className="flex-shrink-0 bg-green-100 w-16 h-16 rounded-full flex items-center justify-center">
+                    <CheckCircle sx={{ fontSize: 36, color: '#16a34a' }} />
                   </div>
-                  <div className="flex-1 pt-1">
+                  <div>
                     <p className="text-lg font-bold">2. Get approval</p>
                     <p className="text-sm text-gray-600 mt-1">Fast automated approval from your department</p>
                   </div>
@@ -113,12 +113,12 @@ export default function AboutPage() {
               </div>
 
               {/* Step 3 */}
-              <div className="items-start mb-10">
-                <div className="flex items-start gap-4 text-left">
-                  <div className="flex-shrink-0 bg-purple-100 p-3 rounded-full">
-                    <Sms sx={{ fontSize: 40, color: '#9333ea' }} />
+              <div className="mb-10 w-80">
+                <div className="flex items-center gap-4 text-left">
+                  <div className="flex-shrink-0 bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center">
+                    <Sms sx={{ fontSize: 36, color: '#9333ea' }} />
                   </div>
-                  <div className="flex-1 pt-1">
+                  <div>
                     <p className="text-lg font-bold">3. Receive confirmation</p>
                     <p className="text-sm text-gray-600 mt-1">Get all details and driver info via SMS</p>
                   </div>
@@ -126,12 +126,12 @@ export default function AboutPage() {
               </div>
 
               {/* Step 4 */}
-              <div className="items-start mb-10">
-                <div className="flex items-start gap-4 text-left">
-                  <div className="flex-shrink-0 bg-orange-100 p-3 rounded-full">
-                    <DirectionsCar sx={{ fontSize: 40, color: '#ea580c' }} />
+              <div className="mb-10 w-80">
+                <div className="flex items-center gap-4 text-left">
+                  <div className="flex-shrink-0 bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center">
+                    <DirectionsCar sx={{ fontSize: 36, color: '#ea580c' }} />
                   </div>
-                  <div className="flex-1 pt-1">
+                  <div>
                     <p className="text-lg font-bold">4. Off you go!</p>
                     <p className="text-sm text-gray-600 mt-1">Enjoy your comfortable, reliable ride</p>
                   </div>
