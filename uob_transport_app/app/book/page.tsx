@@ -70,6 +70,9 @@ export default function BookingPage() {
     passengerName: "",
     Number: "",
     Email: "",
+    Via1: "",
+    Via2: "",
+    Via3: "",
     AdditionalInfo: "",
     ReturnTime: "",
     ReturnDate: "",
@@ -565,11 +568,6 @@ export default function BookingPage() {
                       defaultValue=""
                       onChange={(e) => {
                         setFormData({ ...formData, CommonLoc: e.target.value });
-                        if (formData.CommonLoc == "") {
-                          addFormFeedback("CommonLoc", "Please pick one.");
-                        } else {
-                          addFormFeedback("CommonLoc", "");
-                        }
 
                         // Update route
                         // Ensure that e.target value is a key of commonLocations
@@ -763,16 +761,23 @@ export default function BookingPage() {
                       }
                       const latlon = await getLatLon(e.target.value)
                       if (latlon != null) {
-                        setVias([{ name: latlon.name, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) }]);
-                        addFormFeedback("Via", ""); // Reset any validation errors
+                        setVias([{ name: latlon.name, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) }, ...vias.slice(1)]);
+                        addFormFeedback("Via1", ""); // Reset any validation errors
                         e.target.value = latlon.full_address;
                       } else {
                         // Reset start and routes if no result is found.
-                        addFormFeedback("Via", "No results found for this search term.");
+                        addFormFeedback("Via1", "No results found for this search term.");
                         setVias([]);
                       }
                     }}
                   ></input>
+                  <FormHelperText
+                    sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
+                    className={`${formFeedback.Via1 != "" ? "" : "hidden"
+                      }`}
+                  >
+                    {formFeedback.Via1}
+                  </FormHelperText>
                 </div>
               )}
 
@@ -796,22 +801,29 @@ export default function BookingPage() {
                       }
                     }}
                     onBlur={async (e) => {
-                      setFormData({ ...formData, Via: [...formData.Via, e.target.value, ...formData.Via.slice(2)] });
+                      setFormData({ ...formData, Via: [...formData.Via.slice(0,1), e.target.value, ...formData.Via.slice(2)] });
                       if (e.target.value == "") {
                         return; // Do not try to update route if field is empty
                       }
                       const latlon = await getLatLon(e.target.value)
                       if (latlon != null) {
-                        setVias([...vias, { name: latlon.name, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) }]);
-                        addFormFeedback("Via", ""); // Reset any validation errors
+                        setVias([...vias.slice(0, 1), { name: latlon.name, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) }, ...vias.slice(2)]);
+                        addFormFeedback("Via2", ""); // Reset any validation errors
                         e.target.value = latlon.full_address;
                       } else {
                         // Reset start and routes if no result is found.
-                        addFormFeedback("Via", "No results found for this search term.");
-                        setVias([]);
+                        addFormFeedback("Via2", "No results found for this search term.");
+                        setVias(vias.slice(0, 1));
                       }
                     }}
                   ></input>
+                  <FormHelperText
+                    sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
+                    className={`${formFeedback.Via2 != "" ? "" : "hidden"
+                      }`}
+                  >
+                    {formFeedback.Via2}
+                  </FormHelperText>
                 </div>
               )}
 
@@ -831,22 +843,29 @@ export default function BookingPage() {
                       }
                     }}
                     onBlur={async (e) => {
-                      setFormData({ ...formData, Via: [...formData.Via, e.target.value] });
+                      setFormData({ ...formData, Via: [...formData.Via.slice(0,2), e.target.value] });
                       if (e.target.value == "") {
                         return; // Do not try to update route if field is empty
                       }
                       const latlon = await getLatLon(e.target.value)
                       if (latlon != null) {
-                        setVias([...vias, { name: latlon.name, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) }]);
-                        addFormFeedback("Via", ""); // Reset any validation errors
+                        setVias([...vias.slice(0, 2), { name: latlon.name, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) }]);
+                        addFormFeedback("Via3", ""); // Reset any validation errors
                         e.target.value = latlon.full_address;
                       } else {
                         // Reset start and routes if no result is found.
-                        addFormFeedback("Via", "No results found for this search term.");
-                        setVias([]);
+                        addFormFeedback("Via3", "No results found for this search term.");
+                        setVias(vias.slice(0, 2));
                       }
                     }}
                   ></input>
+                  <FormHelperText
+                    sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
+                    className={`${formFeedback.Via3 != "" ? "" : "hidden"
+                      }`}
+                  >
+                    {formFeedback.Via3}
+                  </FormHelperText>
                 </div>
               )}
 
