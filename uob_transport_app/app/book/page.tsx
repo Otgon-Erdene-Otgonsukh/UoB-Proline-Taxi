@@ -473,11 +473,23 @@ export default function BookingPage() {
       route.push({ name: end.name, lat: end.lat, lng: end.lng });
       fetchRoutes(route);
 
-      // Find each corner of the square bounding box from the two points on the map.
-      const swLng = Math.min(start.lng, end.lng);
-      const swLat = Math.min(start.lat, end.lat);
-      const neLng = Math.max(start.lng, end.lng);
-      const neLat = Math.max(start.lat, end.lat);
+      function getRouteProperties(route: any[]) {
+        return {
+          name: route[0].name,
+          lat: route[0].lat,
+          lng: route[0].lng
+        };
+      }
+
+      for (let i = 0; i < vias.length; i++) {
+        getRouteProperties([vias[i]]);
+      }
+
+      // Find each corner of the square bounding box from the two start/end points and vias on the map.
+      const swLng = Math.min(start.lng, end.lng, ...vias.map(via => via.lng));
+      const swLat = Math.min(start.lat, end.lat, ...vias.map(via => via.lat));
+      const neLng = Math.max(start.lng, end.lng, ...vias.map(via => via.lng));
+      const neLat = Math.max(start.lat, end.lat, ...vias.map(via => via.lat));
 
       // Check bounds are LngLatLike type for fitBounds function.
       const bounds: [LngLatLike, LngLatLike] = [[swLng, swLat], [neLng, neLat]];
@@ -709,10 +721,19 @@ export default function BookingPage() {
                     id="via"
                     placeholder="Via..."
                     className="border-2 rounded px-3 py-2"
-                    onChange={(e) => {
-                      setFormData({ ...formData, Via: [e.target.value, ...formData.Via.slice(1)] });
+                    // Prevent Enter from submitting the booking form.
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        e.currentTarget.blur();
+                        // Go to next via box on Enter.
+                        setTimeout (() => {
+                          document.getElementById("via2")?.focus();
+                        }, 10);
+                      }
                     }}
                     onBlur={async (e) => {
+                      setFormData({ ...formData, Via: [e.target.value, ...formData.Via.slice(1)] });
                       if (e.target.value == "") {
                         return; // Do not try to update route if field is empty
                       }
@@ -740,10 +761,18 @@ export default function BookingPage() {
                     id="via2"
                     placeholder="Via..."
                     className="border-2 rounded px-3 py-2"
-                    onChange={(e) => {
-                      setFormData({ ...formData, Via: [...formData.Via, e.target.value, ...formData.Via.slice(2)] });
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        e.currentTarget.blur();
+                        // Go to next via box on Enter.
+                        setTimeout (() => {
+                          document.getElementById("via3")?.focus();
+                        }, 10);
+                      }
                     }}
                     onBlur={async (e) => {
+                      setFormData({ ...formData, Via: [...formData.Via, e.target.value, ...formData.Via.slice(2)] });
                       if (e.target.value == "") {
                         return; // Do not try to update route if field is empty
                       }
@@ -771,10 +800,14 @@ export default function BookingPage() {
                     id="via3"
                     placeholder="Via..."
                     className="border-2 rounded px-3 py-2"
-                    onChange={(e) => {
-                      setFormData({ ...formData, Via: [...formData.Via, e.target.value] });
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        e.currentTarget.blur();
+                      }
                     }}
                     onBlur={async (e) => {
+                      setFormData({ ...formData, Via: [...formData.Via, e.target.value] });
                       if (e.target.value == "") {
                         return; // Do not try to update route if field is empty
                       }
