@@ -44,31 +44,31 @@ export default function AboutPage() {
             <div className="flex flex-col items-center">
               <RateReview sx={{ fontSize: 60, color: '#2563eb' }} />
               <br />
-              <h1 className="text-3xl font-bold font-aleo text-shadow-lg/10 text-yellow-600 ">
+              <h1 className="text-3xl font-bold font-aleo text-shadow-lg/10 text-black-600 ">
                 Check out proline taxi Reviews
               </h1>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
               <div className="rounded-md border p-5 shadow-lg/10 hover:scale-103 transition-all duration-300 hover:bg-gradient-to-br hover:from-cyan-50 hover:to-blue-50">
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-lg font-semibold">John Doe</h3>
+                  <h3 className="text-lg font-semibold">Vanessa Rolland</h3>
                   <StarsIcon sx={{ color: '#16a34a' }}/>
                 </div>
-                <p className="text-gray-600">Great experience.</p>
+                <p className="text-gray-600">Always helpful and on time, as well as very comfortable cars!</p>
               </div>
               <div className="rounded-md border p-5 shadow-lg/10 hover:scale-103 transition-all duration-300 hover:bg-gradient-to-br hover:from-cyan-50 hover:to-blue-50">
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-lg font-semibold">Allen Key</h3>
+                  <h3 className="text-lg font-semibold">Shona Towens</h3>
                   <StarsIcon sx={{ color: '#eab308'}}/>
                 </div>
-                <p className="text-gray-600">Very smooth travel.</p>
+                <p className="text-gray-600">5 stars again, from booking to getting to your destination on time , seamless service ! Well done .</p>
               </div>
               <div className="rounded-md border p-5 shadow-lg/10 hover:scale-103 transition-all duration-300 hover:bg-gradient-to-br hover:from-cyan-50 hover:to-blue-50">
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-lg font-semibold">Jane Doe</h3>
+                  <h3 className="text-lg font-semibold">Helen Elliott</h3>
                   <StarsIcon sx={{ color: '#9333ea' }}/>
                 </div>
-                <p className="text-gray-600">Love it!</p>
+                <p className="text-gray-600">Always an excellent service and great at keeping in touch with taxi en route etc</p>
               </div>
             </div>
           </div>
