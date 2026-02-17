@@ -653,37 +653,6 @@ export default function BookingPage() {
                   <div className="relative w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-gray-300 peer-checked:bg-[#4a4a4a] peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
                 </label>
               </div>
-              
-              {true && (
-                <div className="flex flex-col">
-                  <label htmlFor="via" className="mb-1 text-sm">
-                    Via
-                  </label>
-                  <input
-                    id="via"
-                    placeholder="Via..."
-                    className="border-2 rounded px-3 py-2"
-                    onChange={(e) => {
-                      setFormData({ ...formData, Via: [e.target.value] });
-                    }}
-                    onBlur={async (e) => {
-                      if (e.target.value == "") {
-                        return; // Do not try to update route if field is empty
-                      }
-                      const latlon = await getLatLon(e.target.value)
-                      if (latlon != null) {
-                        setVias([{ name: latlon.name, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) }]);
-                        addFormFeedback("Via", ""); // Reset any validation errors
-                        e.target.value = latlon.full_address;
-                      } else {
-                        // Reset start and routes if no result is found.
-                        addFormFeedback("Via", "No results found for this search term.");
-                        setVias([]);
-                      }
-                    }}
-                  ></input>
-                </div>
-              )}
 
               {/* Show manual input field only when manual checkbox is checked */}
               {isManualChecked && (
@@ -729,7 +698,9 @@ export default function BookingPage() {
                 </div>
               )}
 
-              {isManualChecked && isViaChecked && (
+              {/* Via Box 1 */}
+
+              {isViaChecked && (
                 <div className="flex flex-col">
                   <label htmlFor="via" className="mb-1 text-sm">
                     Via
@@ -739,9 +710,86 @@ export default function BookingPage() {
                     placeholder="Via..."
                     className="border-2 rounded px-3 py-2"
                     onChange={(e) => {
-                      setFormData({ ...formData, Via: [e.target.value] });
+                      setFormData({ ...formData, Via: [e.target.value, ...formData.Via.slice(1)] });
                     }}
-                  />
+                    onBlur={async (e) => {
+                      if (e.target.value == "") {
+                        return; // Do not try to update route if field is empty
+                      }
+                      const latlon = await getLatLon(e.target.value)
+                      if (latlon != null) {
+                        setVias([{ name: latlon.name, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) }]);
+                        addFormFeedback("Via", ""); // Reset any validation errors
+                        e.target.value = latlon.full_address;
+                      } else {
+                        // Reset start and routes if no result is found.
+                        addFormFeedback("Via", "No results found for this search term.");
+                        setVias([]);
+                      }
+                    }}
+                  ></input>
+                </div>
+              )}
+
+              {/* Via Box 2 if Via Box 1 is populated, cleared when modified */}
+
+              {isViaChecked && 
+              formData.Via.length > 0 && formData.Via[0] != "" && (
+                <div className="flex flex-col">
+                  <input
+                    id="via2"
+                    placeholder="Via..."
+                    className="border-2 rounded px-3 py-2"
+                    onChange={(e) => {
+                      setFormData({ ...formData, Via: [...formData.Via, e.target.value, ...formData.Via.slice(2)] });
+                    }}
+                    onBlur={async (e) => {
+                      if (e.target.value == "") {
+                        return; // Do not try to update route if field is empty
+                      }
+                      const latlon = await getLatLon(e.target.value)
+                      if (latlon != null) {
+                        setVias([...vias, { name: latlon.name, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) }]);
+                        addFormFeedback("Via", ""); // Reset any validation errors
+                        e.target.value = latlon.full_address;
+                      } else {
+                        // Reset start and routes if no result is found.
+                        addFormFeedback("Via", "No results found for this search term.");
+                        setVias([]);
+                      }
+                    }}
+                  ></input>
+                </div>
+              )}
+
+              {/* Via Box 3 if Via Box 1&2 are populated, cleared when modified */}
+
+              {isViaChecked && 
+              formData.Via.length > 1 && formData.Via[0] != "" && formData.Via[1] != "" && (
+                <div className="flex flex-col">
+                  <input
+                    id="via3"
+                    placeholder="Via..."
+                    className="border-2 rounded px-3 py-2"
+                    onChange={(e) => {
+                      setFormData({ ...formData, Via: [...formData.Via, e.target.value] });
+                    }}
+                    onBlur={async (e) => {
+                      if (e.target.value == "") {
+                        return; // Do not try to update route if field is empty
+                      }
+                      const latlon = await getLatLon(e.target.value)
+                      if (latlon != null) {
+                        setVias([...vias, { name: latlon.name, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) }]);
+                        addFormFeedback("Via", ""); // Reset any validation errors
+                        e.target.value = latlon.full_address;
+                      } else {
+                        // Reset start and routes if no result is found.
+                        addFormFeedback("Via", "No results found for this search term.");
+                        setVias([]);
+                      }
+                    }}
+                  ></input>
                 </div>
               )}
 
