@@ -24,6 +24,8 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import IconButton from '@mui/material/IconButton';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 
 export const Navbar = () => {
   const router = useRouter();
@@ -79,8 +81,10 @@ export const Navbar = () => {
     setNavAnchorEl(null);
   };
 
+  const [showLogo, setShowLogo] = useState(false);
+
   return (
-    <nav className="bg-[#2C2C2C] text-white w-full p-3 md:p-5">
+    <nav className="sticky top-0 z-50 bg-[#2C2C2C] text-white w-full p-3 md:p-5">
       <div className="flex justify-between items-center">
         {/* logos */}
         <div className="h-10 flex items-center space-x-2">
@@ -93,9 +97,22 @@ export const Navbar = () => {
             />
           </Link>
 
-          <div className="hidden xl:flex h-12 w-[0.5px] bg-gradient-to-b via-gray-300"></div>
+          <div className="hidden xl:flex items-center">
+            <IconButton
+              onClick={() => setShowLogo(!showLogo)}
+              size="small"
+              sx={{
+                color: 'gray',
+                transform: showLogo ? 'rotateY(180deg)' : 'rotateY(0deg)',
+                transition: 'transform 0.25s ease-in-out',
+              }}
+            >
+              <ChevronRightIcon />
+            </IconButton>
+          </div>
 
-          <Link href={"https://www.bristol.ac.uk/"} className="hidden xl:flex">
+          <div className={`hidden xl:flex items-center h-full overflow-hidden transition-all duration-500 ease-in-out ${showLogo ? 'max-w-[500px] opacity-100' : 'max-w-0 opacity-0'}`}>
+              <Link href={"https://www.bristol.ac.uk/"} className="hidden xl:flex">
             <Image
               className="mix-blend-lighten"
               width={110}
@@ -116,6 +133,10 @@ export const Navbar = () => {
               alt="Company Logo"
             />
           </Link>
+
+          </div>
+
+          
         </div>
         {/* Links */}
         <ul className="hidden lg:flex lg:items-center gap-12">
@@ -272,7 +293,7 @@ export const Navbar = () => {
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
               >
                 <MenuItem
-                  onClick={() => {handleCloseMenu(); router.push("/profile")}}
+                  onClick={() => { handleCloseMenu(); router.push("/profile") }}
                   sx={{
                     fontWeight: 500,
                     color: '#2C2C2C',
