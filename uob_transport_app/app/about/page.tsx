@@ -54,21 +54,21 @@ export default function AboutPage() {
                   <h3 className="text-md font-semibold">Vanessa Rolland</h3>
                   <StarsIcon sx={{ color: '#16a34a' }}/>
                 </div>
-                <p className="text-gray-600 italic">"Always helpful and on time, as well as very comfortable cars!"</p>
+                <p className="text-gray-600 italic">Always helpful and on time, as well as very comfortable cars!</p>
               </div>
               <div className="rounded-md border p-5 shadow-lg/10 hover:scale-103 transition-all duration-300 hover:bg-linear-to-br hover:from-cyan-50 hover:to-blue-50" data-testid="review-card">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-md font-semibold">Thomas Lanzoni</h3>
                   <StarsIcon sx={{ color: '#eab308'}}/>
                 </div>
-                <p className="text-gray-600 italic">"Very professional, sympathic and flexible ! I recommend it at 100%"</p>
+                <p className="text-gray-600 italic">Very professional, sympathic and flexible ! I recommend it!</p>
               </div>
               <div className="rounded-md border p-5 shadow-lg/10 hover:scale-103 transition-all duration-300 hover:bg-linear-to-br hover:from-cyan-50 hover:to-blue-50" data-testid="review-card">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-md font-semibold">Helen Elliott</h3>
                   <StarsIcon sx={{ color: '#9333ea' }}/>
                 </div>
-                <p className="text-gray-600 italic">"Always an excellent service and great at keeping in touch with taxi en route etc"</p>
+                <p className="text-gray-600 italic">Always an excellent service and great at keeping in touch with taxi en route.</p>
               </div>
             </div>
           </div>
