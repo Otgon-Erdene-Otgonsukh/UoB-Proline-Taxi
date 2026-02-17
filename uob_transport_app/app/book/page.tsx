@@ -666,15 +666,10 @@ export default function BookingPage() {
                     id="via"
                     type="checkbox"
                     checked={isViaChecked}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        e.currentTarget.blur();
-                      }
-                    }}
                     onChange={(e) => {
                       setIsViaChecked(e.target.checked);
                       setFormData({ ...formData, Via: [] });
+                      setVias([]);
                     }}
                     className="sr-only peer"
                   />
@@ -757,6 +752,7 @@ export default function BookingPage() {
                     onBlur={async (e) => {
                       setFormData({ ...formData, Via: [e.target.value, ...formData.Via.slice(1)] });
                       if (e.target.value == "") {
+                        setVias([]);
                         return; // Do not try to update route if field is empty
                       }
                       const latlon = await getLatLon(e.target.value)
@@ -803,6 +799,7 @@ export default function BookingPage() {
                     onBlur={async (e) => {
                       setFormData({ ...formData, Via: [...formData.Via.slice(0,1), e.target.value, ...formData.Via.slice(2)] });
                       if (e.target.value == "") {
+                        setVias([...vias.slice(0, 1), ...vias.slice(2)]); // Remove via if field is cleared.
                         return; // Do not try to update route if field is empty
                       }
                       const latlon = await getLatLon(e.target.value)
@@ -845,6 +842,7 @@ export default function BookingPage() {
                     onBlur={async (e) => {
                       setFormData({ ...formData, Via: [...formData.Via.slice(0,2), e.target.value] });
                       if (e.target.value == "") {
+                        setVias([...vias.slice(0, 2), ...vias.slice(3)]); // Remove via if field is cleared.
                         return; // Do not try to update route if field is empty
                       }
                       const latlon = await getLatLon(e.target.value)
