@@ -14,7 +14,7 @@ const config: Config = {
   testMatch: [
     "**/__test__/api/**/*.test.ts", // find the organized tests correctly
     "**/__test__/pages/**/*.test.tsx",
-    "**/__test__/backend/**/*.test.tsx",
+    "**/__test__/backend_functions/*.test.ts"
   ],
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/$1",
