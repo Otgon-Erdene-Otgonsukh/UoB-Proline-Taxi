@@ -181,6 +181,7 @@ const Page = () => {
     to: "",
     bookingStatus: "All",
   });
+  const [isSearchSubmitted, setIsSearchSubmitted] = useState(false);
 
   const dateTimePickerFromAnchorRef = useRef<HTMLDivElement>(null);
   const dateTimePickerToAnchorRef = useRef<HTMLDivElement>(null);
@@ -203,6 +204,7 @@ const Page = () => {
       return;
     }
 
+    setIsSearchSubmitted(true);
     setIsLoading(true);
     setPaginationMeta({
       page: 0,
@@ -271,7 +273,7 @@ const Page = () => {
             height={120}
             alt="person booking a taxi"
           ></Image>
-          <p className="px-2 py-7 text-sm leading-snug max-w-[220px]">
+          <p className="px-2 py-7 text-sm leading-snug max-w-55">
             <strong>Book</strong> a luxurious chauffeur service from any
             destination in <strong>Bristol</strong>.
           </p>
@@ -294,7 +296,7 @@ const Page = () => {
             alt="check status"
             className="drop-shadow-lg/20"
           ></Image>
-          <p className="px-4 py-6 text-sm leading-snug max-w-[220px]">
+          <p className="px-4 py-6 text-sm leading-snug max-w-55">
             <strong>Track</strong> the status of your bookings and{" "}
             <strong>receive email</strong> updates.
           </p>
@@ -316,7 +318,7 @@ const Page = () => {
             height={120}
             alt="view booking details"
           ></Image>
-          <p className="px-2 pl-3 py-6 text-sm leading-snug max-w-[220px]">
+          <p className="px-2 pl-3 py-6 text-sm leading-snug max-w-55">
             <strong>View</strong> full booking details, and{" "}
             <strong>cancel</strong> or <strong>edit</strong> them anytime as
             needed.
@@ -404,7 +406,7 @@ const Page = () => {
           <TextField
             fullWidth
             onClick={() => setDateTimePickerFromOpen(true)}
-            label="Date From"
+            label="Pick Up Date From"
             size="small"
             sx={{ minWidth: 150 }}
             ref={dateTimePickerFromAnchorRef}
@@ -416,14 +418,24 @@ const Page = () => {
             }}
           />
           {searchFormInput.pickUpTimeFrom && (
-            <IconButton size="small" sx={{px: 1.3, mx: -2}} onClick={() => setSearchFormInput({...searchFormInput, pickUpTimeFrom: undefined})}>
-              <CancelIcon fontSize="small" sx={{color: "red"}}/>
+            <IconButton
+              size="small"
+              sx={{ px: 1.3, mx: -2 }}
+              onClick={() => {
+                setSearchFormInput({
+                  ...searchFormInput,
+                  pickUpTimeFrom: undefined,
+                });
+                setIsSearchSubmitted(false);
+              }}
+            >
+              <CancelIcon fontSize="small" sx={{ color: "red" }} />
             </IconButton>
           )}
           <TextField
             fullWidth
             onClick={() => setDateTimePickerToOpen(true)}
-            label="Date To"
+            label="Pick Up Date To"
             size="small"
             sx={{ minWidth: 150 }}
             ref={dateTimePickerToAnchorRef}
@@ -435,8 +447,18 @@ const Page = () => {
             }}
           />
           {searchFormInput.pickUpTimeTo && (
-            <IconButton size="small" sx={{px: 1.3, mx: -2}} onClick={() => setSearchFormInput({...searchFormInput, pickUpTimeTo: undefined})}>
-              <CancelIcon fontSize="small" sx={{color: "red"}}/>
+            <IconButton
+              size="small"
+              sx={{ px: 1.3, mx: -2 }}
+              onClick={() => {
+                setSearchFormInput({
+                  ...searchFormInput,
+                  pickUpTimeTo: undefined,
+                });
+                setIsSearchSubmitted(false);
+              }}
+            >
+              <CancelIcon fontSize="small" sx={{ color: "red" }} />
             </IconButton>
           )}
           <DateTimePicker
@@ -446,6 +468,7 @@ const Page = () => {
             selectedDate={searchFormInput.pickUpTimeFrom || null}
             onDateChange={(date) => {
               setSearchFormInput({ ...searchFormInput, pickUpTimeFrom: date });
+              setIsSearchSubmitted(false);
             }}
             locale={enLocale}
           />
@@ -456,11 +479,40 @@ const Page = () => {
             selectedDate={searchFormInput.pickUpTimeTo || null}
             onDateChange={(date) => {
               setSearchFormInput({ ...searchFormInput, pickUpTimeTo: date });
+              setIsSearchSubmitted(false);
             }}
             locale={enLocale}
           />
           <CustomizedButton title="Search" type="warning" click={() => {}} />
         </Box>
+        {isSearchSubmitted &&
+          (searchFormInput.pickUpTimeFrom && searchFormInput.pickUpTimeTo ? (
+            <p className="font-aleo text-gray-700 mb-4 text-sm bg-blue-50 border-l-4 border-blue-400 py-2 px-4 rounded w-fit">
+              Showing Bookings from{" "}
+              <strong>
+                {searchFormInput.pickUpTimeFrom.toISOString().split("T")[0]}
+              </strong>{" "}
+              to{" "}
+              <strong>
+                {searchFormInput.pickUpTimeTo.toISOString().split("T")[0]}
+              </strong>
+            </p>
+          ) : searchFormInput.pickUpTimeFrom ? (
+            <p className="font-aleo text-gray-700 mb-4 text-sm bg-blue-50 border-l-4 border-blue-400 py-2 px-4 rounded w-fit">
+              Showing Bookings from{" "}
+              <strong>
+                {searchFormInput.pickUpTimeFrom.toISOString().split("T")[0]}
+              </strong>{" "}
+              to <strong>{new Date().toISOString().split("T")[0]}</strong>
+            </p>
+          ) : searchFormInput.pickUpTimeTo ? (
+            <p className="font-aleo text-gray-700 mb-4 text-sm bg-blue-50 border-l-4 border-blue-400 py-2 px-4 rounded w-fit">
+              Showing Bookings up to{" "}
+              <strong>
+                {searchFormInput.pickUpTimeTo.toISOString().split("T")[0]}
+              </strong>
+            </p>
+          ) : null)}
 
         {isLoading ? (
           <Typography
