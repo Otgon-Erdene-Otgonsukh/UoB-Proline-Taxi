@@ -13,7 +13,7 @@ import Image from "next/image";
 
 export default function AboutPage() {
   return (
-      <main className="flex flex-col ml-1 mx-5 md:mx-2 md:flex-row min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+      <main className="flex flex-col ml-1 mx-5 md:mx-2 md:flex-row min-h-screen bg-white">
         {/* Left hand side of page on md screen. */}
         <div className="md:w-3/5 flex flex-col items-center justify-center">
           <div className="shadow-lg/20 rounded-md w-full h-full p-15 ml-4 mt-3 mb-5">
@@ -22,7 +22,7 @@ export default function AboutPage() {
                   src="/aboutlogo.png"
                   width="300"
                   height="30"
-                  className="mix-blend-darken flex-shrink-0"
+                  className="mix-blend-darken shrink-0"
                   alt="Collab photo of UoB university logo and the Proline taxi logo"
               ></Image>
               <div className="flex flex-col gap-2 text-center md:text-start">
@@ -44,52 +44,52 @@ export default function AboutPage() {
             <div className="flex flex-col items-center">
               <RateReview sx={{ fontSize: 60, color: '#2563eb' }} />
               <br />
-              <h1 className="text-3xl font-bold font-aleo text-shadow-lg/10 text-black-600 ">
+              <h1 className="text-3xl font-bold font-aleo text-shadow-lg/10 text-black-600 md:text-start text-center">
                 Check out proline taxi Reviews
               </h1>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-              <div className="rounded-md border p-5 shadow-lg/10 hover:scale-103 transition-all duration-300 hover:bg-gradient-to-br hover:from-cyan-50 hover:to-blue-50">
+              <div className="rounded-md border p-5 shadow-lg/10 hover:scale-103 transition-all duration-300 hover:bg-linear-to-br hover:from-cyan-50 hover:to-blue-50" data-testid="review-card">
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-lg font-semibold">Vanessa Rolland</h3>
+                  <h3 className="text-md font-semibold">Vanessa Rolland</h3>
                   <StarsIcon sx={{ color: '#16a34a' }}/>
                 </div>
-                <p className="text-gray-600">Always helpful and on time, as well as very comfortable cars!</p>
+                <p className="text-gray-600 italic">"Always helpful and on time, as well as very comfortable cars!"</p>
               </div>
-              <div className="rounded-md border p-5 shadow-lg/10 hover:scale-103 transition-all duration-300 hover:bg-gradient-to-br hover:from-cyan-50 hover:to-blue-50">
+              <div className="rounded-md border p-5 shadow-lg/10 hover:scale-103 transition-all duration-300 hover:bg-linear-to-br hover:from-cyan-50 hover:to-blue-50" data-testid="review-card">
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-lg font-semibold">Thomas Lanzoni</h3>
+                  <h3 className="text-md font-semibold">Thomas Lanzoni</h3>
                   <StarsIcon sx={{ color: '#eab308'}}/>
                 </div>
-                <p className="text-gray-600">Very professional, sympathic and flexible ! I recommend it at 100%</p>
+                <p className="text-gray-600 italic">"Very professional, sympathic and flexible ! I recommend it at 100%"</p>
               </div>
-              <div className="rounded-md border p-5 shadow-lg/10 hover:scale-103 transition-all duration-300 hover:bg-gradient-to-br hover:from-cyan-50 hover:to-blue-50">
+              <div className="rounded-md border p-5 shadow-lg/10 hover:scale-103 transition-all duration-300 hover:bg-linear-to-br hover:from-cyan-50 hover:to-blue-50" data-testid="review-card">
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-lg font-semibold">Helen Elliott</h3>
+                  <h3 className="text-md font-semibold">Helen Elliott</h3>
                   <StarsIcon sx={{ color: '#9333ea' }}/>
                 </div>
-                <p className="text-gray-600">Always an excellent service and great at keeping in touch with taxi en route etc</p>
+                <p className="text-gray-600 italic">"Always an excellent service and great at keeping in touch with taxi en route etc"</p>
               </div>
             </div>
           </div>
         </div>
 
         {/* Right hand side of page on md screen - Booking Made Easy */}
-        <div className="md:w-2/5 w-full flex items-center justify-center shadow-lg ml-[8px] md:ml-5 md:mr-3 my-3 rounded-md">
+        <div className="md:w-2/5 w-full flex items-center justify-center shadow-lg ml-2 md:ml-5 md:mr-3 my-3 rounded-md">
           <div className="w-full flex flex-col items-center md:gap-5 gap-10 font-inter px-4">
             <div className="flex flex-col items-center text-center">
-              <h1 className="text-3xl font-aleo text-shadow-lg/10 font-bold md:mb-15 md:-mt-2 mt-10">
+              <h1 className="text-3xl font-aleo text-shadow-lg/10 font-bold md:mb-10 md:-mt-2 mt-10">
                 BOOKING MADE EASY
               </h1>
-              <p className="text-gray-600 mt-2">Simple steps to your ride</p>
+              <p className="text-gray-600 md:-mt-8 mt-4">Simple steps to your ride</p>
             </div>
 
             {/* Steps with improved design */}
-            <div className="flex flex-col gap-2 items-center w-full">
+            <div className="flex flex-col gap-2 items-center w-full mt-10">
               {/* Step 1 */}
               <div className="mb-10 w-80">
-                <div className="flex items-center gap-4 text-left">
-                  <div className="flex-shrink-0 bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center">
+                <div className="flex items-center gap-6 text-left">
+                  <div className="shrink-0 bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center">
                     <Assignment sx={{ fontSize: 36, color: '#2563eb' }} />
                   </div>
                   <div>
@@ -101,8 +101,8 @@ export default function AboutPage() {
 
               {/* Step 2 */}
               <div className="mb-10 w-80">
-                <div className="flex items-center gap-4 text-left">
-                  <div className="flex-shrink-0 bg-green-100 w-16 h-16 rounded-full flex items-center justify-center">
+                <div className="flex items-center gap-6 text-left">
+                  <div className="shrink-0 bg-green-100 w-16 h-16 rounded-full flex items-center justify-center">
                     <CheckCircle sx={{ fontSize: 36, color: '#16a34a' }} />
                   </div>
                   <div>
@@ -114,8 +114,8 @@ export default function AboutPage() {
 
               {/* Step 3 */}
               <div className="mb-10 w-80">
-                <div className="flex items-center gap-4 text-left">
-                  <div className="flex-shrink-0 bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center">
+                <div className="flex items-center gap-6 text-left">
+                  <div className="shrink-0 bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center">
                     <Sms sx={{ fontSize: 36, color: '#9333ea' }} />
                   </div>
                   <div>
@@ -127,8 +127,8 @@ export default function AboutPage() {
 
               {/* Step 4 */}
               <div className="mb-10 w-80">
-                <div className="flex items-center gap-4 text-left">
-                  <div className="flex-shrink-0 bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center">
+                <div className="flex items-center gap-6 text-left">
+                  <div className="shrink-0 bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center">
                     <DirectionsCar sx={{ fontSize: 36, color: '#ea580c' }} />
                   </div>
                   <div>
@@ -140,7 +140,7 @@ export default function AboutPage() {
             </div>
 
             {/* Contact Information */}
-            <div className="border-t-2 border-gray-200 pt-4 pb-6">
+            <div className="border-t-2 border-gray-200 pt-4 pb-6 text-center">
               <h3 className="font-semibold text-gray-800 mb-3">Need Help?</h3>
               <div className="flex flex-col gap-2 text-sm">
                 <a href="tel:+441179289000" className="flex items-center justify-center gap-2 text-blue-600 hover:text-blue-700 transition-colors">
