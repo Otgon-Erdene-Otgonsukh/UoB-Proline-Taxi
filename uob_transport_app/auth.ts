@@ -42,7 +42,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             // We do not want the entire user object as it would be quite large and pointless.
             return {
               user_id: userDetail.user_id,
-              name: userDetail.full_name,
+              name: userDetail.name,
               email: userDetail.email,
               phone_number: userDetail.phone_number,
               dep_id: userDetail.department?.dep_id || null,
@@ -61,23 +61,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     // Adding username + other data to the session.
     async jwt({ token, user, trigger, session }) {
       // On sign in, populate token from user
-      if (user) {
+      if (user || (trigger === "update" && session?.user)) {
         token.name = user.name;
         token.user_id = user.user_id;
         token.phone_number = user.phone_number;
         token.account_type = user.account_type;
         token.dep_id = user.dep_id;
         token.dep_name = user.dep_name;
-      }
-
-      // On update, use the session data passed from client to update both token and active session data
-      if (trigger === "update" && session?.user) {
-        token.name = session.user.name;
-        token.email = session.user.email;
-        token.phone_number = session.user.phone_number;
-        token.dep_id = session.user.dep_id;
-        token.dep_name = session.user.dep_name;
-        token.account_type = session.user.account_type;
       }
 
       return token;
