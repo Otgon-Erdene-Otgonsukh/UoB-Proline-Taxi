@@ -4,6 +4,7 @@ import { useRouter, redirect } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { Button, TableHead } from "@mui/material";
+import CancelIcon from "@mui/icons-material/Cancel";
 import SummarizeIcon from '@mui/icons-material/Summarize';
 import Box from "@mui/material/Box";
 import Table from "@mui/material/Table";
@@ -181,29 +182,35 @@ const Page = () => {
     to: "",
     bookingStatus: "All",
   });
+  const [isSearchSubmitted, setIsSearchSubmitted] = useState(false);
 
   const dateTimePickerFromAnchorRef = useRef<HTMLDivElement>(null);
   const dateTimePickerToAnchorRef = useRef<HTMLDivElement>(null);
   const [dateTimePickerFromOpen, setDateTimePickerFromOpen] = useState(false);
   const [dateTimePickerToOpen, setDateTimePickerToOpen] = useState(false);
 
-  const handleSubmitSearchForm = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmitSearchForm = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (searchFormInput.pickUpTimeTo && searchFormInput.pickUpTimeFrom && searchFormInput.pickUpTimeFrom > searchFormInput.pickUpTimeTo) {
+    if (
+      searchFormInput.pickUpTimeTo &&
+      searchFormInput.pickUpTimeFrom &&
+      searchFormInput.pickUpTimeFrom > searchFormInput.pickUpTimeTo
+    ) {
       setSnackbarState({
         open: true,
         status: "error",
-        message: "'PickUp Time To' must be later than 'PickUp Time From'!",
+        message: "From Date cannot be later than the To Date!",
       });
       return;
     }
 
+    setIsSearchSubmitted(true);
     setIsLoading(true);
     setPaginationMeta({
       page: 0,
       pageSize: paginationMeta.pageSize,
-    })
+    });
     _getBookingListData(0, paginationMeta.pageSize);
   };
 
@@ -211,10 +218,10 @@ const Page = () => {
     getUserBookingList(page, pageSize, {
       ...searchFormInput,
       pickUpTimeFrom: searchFormInput.pickUpTimeFrom
-        ? searchFormInput.pickUpTimeFrom.toUTCString()
+        ? searchFormInput.pickUpTimeFrom.toISOString()
         : "",
       pickUpTimeTo: searchFormInput.pickUpTimeTo
-        ? searchFormInput.pickUpTimeTo.toUTCString()
+        ? searchFormInput.pickUpTimeTo.toISOString()
         : "",
       bookingStatus:
         searchFormInput?.bookingStatus === "All"
@@ -245,7 +252,9 @@ const Page = () => {
         transition={{ duration: 1, ease: "easeOut" }}
       >
         Welcome, {data?.user.name.split(" ")[0]}!
-        <p className="text-gray-600 text-lg font-normal">To Your Booking Space</p>
+        <p className="text-gray-600 text-lg font-normal">
+          To Your Booking Space
+        </p>
       </motion.div>
       {data?.user.account_type === "finance_staff" ? (
         <div className="flex mt-7 gap-10 text-sm max-w-6xl">
@@ -498,23 +507,61 @@ const Page = () => {
             <TextField
             fullWidth
             onClick={() => setDateTimePickerFromOpen(true)}
-            label="PickUp Time From"
+            label="Pick Up Date From"
             size="small"
             sx={{ minWidth: 150 }}
             ref={dateTimePickerFromAnchorRef}
-            defaultValue={searchFormInput.pickUpTimeFrom?.toLocaleString()}
-            slotProps={{ inputLabel: { shrink: searchFormInput.pickUpTimeFrom !== undefined } }}
+            defaultValue={searchFormInput.pickUpTimeFrom?.toDateString()}
+            slotProps={{
+              inputLabel: {
+                shrink: searchFormInput.pickUpTimeFrom !== undefined,
+              },
+            }}
           />
+          {searchFormInput.pickUpTimeFrom && (
+            <IconButton
+              size="small"
+              sx={{ px: 1.3, mx: -2 }}
+              onClick={() => {
+                setSearchFormInput({
+                  ...searchFormInput,
+                  pickUpTimeFrom: undefined,
+                });
+                setIsSearchSubmitted(false);
+              }}
+            >
+              <CancelIcon fontSize="small" sx={{ color: "red" }} />
+            </IconButton>
+          )}
           <TextField
             fullWidth
             onClick={() => setDateTimePickerToOpen(true)}
-            label="PickUp Time To"
+            label="Pick Up Date To"
             size="small"
             sx={{ minWidth: 150 }}
             ref={dateTimePickerToAnchorRef}
-            defaultValue={searchFormInput.pickUpTimeTo?.toLocaleString()}
-            slotProps={{ inputLabel: { shrink: searchFormInput.pickUpTimeTo !== undefined } }}
+            defaultValue={searchFormInput.pickUpTimeTo?.toDateString()}
+            slotProps={{
+              inputLabel: {
+                shrink: searchFormInput.pickUpTimeTo !== undefined,
+              },
+            }}
           />
+          {searchFormInput.pickUpTimeTo && (
+            <IconButton
+              size="small"
+              sx={{ px: 1.3, mx: -2 }}
+              onClick={() => {
+                setSearchFormInput({
+                  ...searchFormInput,
+                  pickUpTimeTo: undefined,
+                });
+                setIsSearchSubmitted(false);
+              }}
+            >
+              <CancelIcon fontSize="small" sx={{ color: "red" }} />
+            </IconButton>
+          )}
           <DateTimePicker
             open={dateTimePickerFromOpen}
             onClose={() => setDateTimePickerFromOpen(false)}
@@ -522,6 +569,7 @@ const Page = () => {
             selectedDate={searchFormInput.pickUpTimeFrom || null}
             onDateChange={(date) => {
               setSearchFormInput({ ...searchFormInput, pickUpTimeFrom: date });
+              setIsSearchSubmitted(false);
             }}
             locale={enLocale}
           />
@@ -532,11 +580,40 @@ const Page = () => {
             selectedDate={searchFormInput.pickUpTimeTo || null}
             onDateChange={(date) => {
               setSearchFormInput({ ...searchFormInput, pickUpTimeTo: date });
+              setIsSearchSubmitted(false);
             }}
             locale={enLocale}
           />
           <CustomizedButton title="Search" type="warning" click={() => {}} />
-          </Box>
+        </Box>
+        {isSearchSubmitted &&
+          (searchFormInput.pickUpTimeFrom && searchFormInput.pickUpTimeTo ? (
+            <p className="font-aleo text-gray-700 mb-4 text-sm bg-blue-50 border-l-4 border-blue-400 py-2 px-4 rounded w-fit">
+              Showing Bookings from{" "}
+              <strong>
+                {searchFormInput.pickUpTimeFrom.toISOString().split("T")[0]}
+              </strong>{" "}
+              to{" "}
+              <strong>
+                {searchFormInput.pickUpTimeTo.toISOString().split("T")[0]}
+              </strong>
+            </p>
+          ) : searchFormInput.pickUpTimeFrom ? (
+            <p className="font-aleo text-gray-700 mb-4 text-sm bg-blue-50 border-l-4 border-blue-400 py-2 px-4 rounded w-fit">
+              Showing Bookings from{" "}
+              <strong>
+                {searchFormInput.pickUpTimeFrom.toISOString().split("T")[0]}
+              </strong>{" "}
+              to <strong>{new Date().toISOString().split("T")[0]}</strong>
+            </p>
+          ) : searchFormInput.pickUpTimeTo ? (
+            <p className="font-aleo text-gray-700 mb-4 text-sm bg-blue-50 border-l-4 border-blue-400 py-2 px-4 rounded w-fit">
+              Showing Bookings up to{" "}
+              <strong>
+                {searchFormInput.pickUpTimeTo.toISOString().split("T")[0]}
+              </strong>
+            </p>
+          ) : null)}
 
           {isLoading ? (
             <Typography

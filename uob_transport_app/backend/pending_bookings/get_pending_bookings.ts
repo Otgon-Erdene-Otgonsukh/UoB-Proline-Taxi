@@ -6,7 +6,7 @@ export async function getPendingBookings(page: number, pageSize: number, searchP
     query["trip"] = {
       ...query.trip as object,
       pickup_location: {
-        contains: searchParams.from,
+        contains: searchParams.from.trim(),
         mode: "insensitive"
       },
     };
@@ -15,7 +15,7 @@ export async function getPendingBookings(page: number, pageSize: number, searchP
     query["trip"] = {
       ...query.trip as object,
       dropoff_location: {
-        contains: searchParams.to,
+        contains: searchParams.to.trim(),
         mode: "insensitive"
       }
     }
@@ -30,7 +30,7 @@ export async function getPendingBookings(page: number, pageSize: number, searchP
   }
   if (searchParams.passengerName !== undefined) {
     query['passenger_name'] = {
-        contains: searchParams.passengerName,
+        contains: searchParams.passengerName.trim(),
         mode: "insensitive"
     }
   }
@@ -93,7 +93,7 @@ export async function getPendingBookings(page: number, pageSize: number, searchP
         booking_status: "Pending",
         ...(searchParams.passengerName && {
           passenger_name: {
-            contains: searchParams.passengerName,
+            contains: searchParams.passengerName.trim(),
             mode: "insensitive",
           },
         }),
@@ -122,7 +122,7 @@ export async function getPendingBookingsCount(searchParams: { from?: string, to?
   if (searchParams.from !== undefined) {
     query["trip"] = {
       pickup_location: {
-        contains: searchParams.from,
+        contains: searchParams.from.trim(),
         mode: "insensitive"
       },
     };
@@ -131,7 +131,7 @@ export async function getPendingBookingsCount(searchParams: { from?: string, to?
     query["trip"] = {
       ...query.trip as object,
       dropoff_location: {
-        contains: searchParams.to,
+        contains: searchParams.to.trim(),
         mode: "insensitive"
       },
     };
@@ -146,7 +146,7 @@ export async function getPendingBookingsCount(searchParams: { from?: string, to?
   }
   if (searchParams.passengerName !== undefined) {
     query['passenger_name'] = {
-        contains: searchParams.passengerName,
+        contains: searchParams.passengerName.trim(),
         mode: "insensitive",
     }
   }
@@ -182,7 +182,7 @@ export async function getPendingBookingsCount(searchParams: { from?: string, to?
         booking_status: "Pending",
         ...(searchParams.passengerName && {
           passenger_name: {
-            contains: searchParams.passengerName,
+            contains: searchParams.passengerName.trim(),
             mode: "insensitive",
           },
         }),
