@@ -149,13 +149,11 @@ export interface DateTimePickerProps
     onDateChange?: (date: Date) => void;
     onMonthChange?: (year: number, month: number) => void;
     onYearChange?: (year: number) => void;
-    onTimeChange?: (hour: string, minute: string, second?: string) => void;
     onWeekChange?: (
         weekOfMonth: number,
         startDate: Date,
         endDate: Date
     ) => void;
-    timeValue?: TimeValue;
     minDate?: Date;
     maxDate?: Date;
     holidays?: Date[];
@@ -163,12 +161,6 @@ export interface DateTimePickerProps
     showToday?: boolean;
     showFooter?: boolean;
     autoApply?: boolean;
-    timeFormat?: TimeFormat;
-    minTime?: string;
-    maxTime?: string;
-    minuteStep?: number;
-    secondStep?: number;
-    hideDisabledTime?: boolean;
     locale?: LocaleProp;
     texts?: CalendarTexts;
 }

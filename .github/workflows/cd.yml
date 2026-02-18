@@ -9,7 +9,7 @@ env:
   ECR_REPOSITORY: uob_transport_app
   ECS_SERVICE: uob_transport_app_service
   ECS_CLUSTER: uob_transport_cluster
-  ECS_TASK_DEFINITION: .github/.aws/task-definition.json
+  ECS_TASK_DEFINITION: .aws/task-definition.json
   CONTAINER_NAME: uob_transport_app
 
 permissions:

@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { getDepartmentsListAccess } from "@/backend/access/departments";
+import { getDepartmentsListAccess } from "@/backend/access/departments_access";
 
 export async function GET(request: NextRequest) {
   // TODO Check super admin
