@@ -52,7 +52,7 @@ export type UserRecord = {
   user_id: number;
   department: department;
   email: string;
-  name: string;
+  full_name: string;
   phone_number: string;
   role: string;
   user_status: number;

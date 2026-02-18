@@ -81,7 +81,7 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: UserRecor
             Name:
           </Typography>
           <Typography gutterBottom>
-            {viewData.name}
+            {viewData.full_name}
           </Typography>
         </Stack>
         <Stack>

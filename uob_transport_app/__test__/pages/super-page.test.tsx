@@ -75,7 +75,7 @@ const mockUsers = [
   {
     user_id: 1,
     time_created: new Date().toISOString(),
-    name: "John Doe",
+    full_name: "John Doe",
     email: "john@test.com",
     phone_number: "12345678",
     department: { dep_name: "IT" },
@@ -289,7 +289,7 @@ describe("User Management Page", () => {
     fireEvent.click(acceptButton);
 
     expect(
-      screen.getByText("Accept User Registeration")
+      screen.getByText("Accept User Registration")
     ).toBeInTheDocument();
   });
 
@@ -318,7 +318,7 @@ describe("User Management Page", () => {
     fireEvent.click(acceptButton);
 
     expect(
-      screen.getByText("Reject User Registeration")
+      screen.getByText("Reject User Registration")
     ).toBeInTheDocument();
   });
 
