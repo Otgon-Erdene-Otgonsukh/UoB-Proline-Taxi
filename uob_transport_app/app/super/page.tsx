@@ -3,44 +3,46 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { StyledTableCell } from "@/components/StyledTableCell";
 import { UserRecord } from "@/model/models";
-import CustomizedButton from "@/components/CustomizedButton";
 import { useTheme } from "@mui/material/styles";
+import { motion } from "framer-motion";
 import {
   Box,
   Button,
   TextField,
   Typography,
-  Paper,
   IconButton,
-  TablePagination,
-  Table,
-  TableHead,
-  TableBody,
-  TableContainer,
-  TableRow,
   Select,
   MenuItem,
   InputLabel,
   FormControl,
-  Alert,
-  Snackbar,
+  Drawer,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+  ListItemIcon,
+  Divider,
 } from "@mui/material";
+import PeopleIcon from '@mui/icons-material/People';
+import MenuIcon from '@mui/icons-material/Menu';
+import LocalTaxiIcon from '@mui/icons-material/LocalTaxi';
+import SettingsIcon from '@mui/icons-material/Settings';
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import GroupsIcon from '@mui/icons-material/Groups';
 import {
   KeyboardArrowLeft,
   KeyboardArrowRight,
   LastPage,
   FirstPage
 } from "@mui/icons-material"
-import sendRes from "@/backend/register/send_res";
 import { getUsersAsAdmin, updateUserAsAdmin } from "./request";
 import ViewDialog from "./userManageComponents/viewDialog";
 import EditDialog from "./userManageComponents/eidtDialog";
 import { userStatusToIntMap, userStatusToStrMap, roleStrMap, roles, roleReadableStrMap } from "./constants";
 import { getDepartmentsList } from "./requests";
 import ConfirmDialog from "@/components/confirmDIalog";
-import page from "../page";
+import { UserTable } from "@/components/SuperUsersTable";
 
 interface TablePaginationActionsProps {
   count: number;
@@ -123,15 +125,13 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
 
 const Page = () => {
   // Get NextAuth Session.
-  const { status, data } = useSession();
+  const { status } = useSession();
 
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
 
   const [pendingUsersData, setPendingUsersData] = useState<UserRecord[]>([]);
-  const [pendingUserCount, setPendingUserCount] = useState(0);
-  const [snackOpen, setSnackOpen] = useState(false);
-  const [severity, setSeverity] = useState<"success" | "error">("success")
+  const [pendingUserCount, setPendingUserCount] = useState(0)
   const [paginationMeta, setPaginationMeta] = useState({
     page: 0,
     pageSize: 10,
@@ -142,12 +142,6 @@ const Page = () => {
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/login");
-      return;
-    }
-
-    // Protect this route from logged in not admin users
-    if (status === "authenticated" && data.user.account_type !== "super_admin" && data.user.account_type !== "proline_staff") {
-      router.push("/home");
       return;
     }
 
@@ -167,7 +161,7 @@ const Page = () => {
       page: newPage
     })
     setIsLoading(true);
-    _getData(newPage, paginationMeta.pageSize)
+    _rerenderTable()
   };
 
   const handleChangePageSize = (
@@ -178,7 +172,7 @@ const Page = () => {
       pageSize: parseInt(event.target.value, 10),
     });
     setIsLoading(true)
-    _getData(0, parseInt(event.target.value, 10))
+    _rerenderTable()
   };
 
   // search form
@@ -194,12 +188,9 @@ const Page = () => {
   })
   const handleSubmitSearchForm = (e: React.FormEvent) => {
     e.preventDefault()
+    console.log('submit');
     setIsLoading(true)
-    setPaginationMeta({
-      page: 0,
-      pageSize: paginationMeta.pageSize,
-    })
-    _getData(0, paginationMeta.pageSize)
+    _rerenderTable()
   }
 
   const [userDetail, setUserDetail] = useState<UserRecord>()
@@ -236,11 +227,6 @@ const Page = () => {
       if (res.status === 200) {
         setIsLoading(true)
         _rerenderTable()
-        setSnackOpen(true)
-        setSeverity("success")         
-      } else {
-        setSnackOpen(true)
-        setSeverity("error")
       }
     })
   };
@@ -254,21 +240,16 @@ const Page = () => {
       if (res.status === 200) {
         setIsLoading(true)
         _rerenderTable()
-        setSnackOpen(true)
-        setSeverity("success")        
-      } else {
-        setSnackOpen(true)
-        setSeverity("error")
       }
     })
   };
 
-  const _getData = (page: number, pageSize: number) => {
+  const _rerenderTable = () => {
     getUsersAsAdmin({
       name: undefined,
       ...searchFormInput,
-      page,
-      pageSize
+      page: paginationMeta.page,
+      pageSize: paginationMeta.pageSize
     }).then(res => {
       if (res.status === 200) {
         res.json().then(data => {
@@ -280,234 +261,249 @@ const Page = () => {
     })
   }
 
-  const _rerenderTable = () => {
-    if (pendingUsersData.length === 1 && paginationMeta.page > 0) {
-      // if the last item on the current page is rejected, go back one page
-      setPaginationMeta({
-        page: paginationMeta.page - 1,
-        pageSize: paginationMeta.pageSize,
-      })
-      _getData(paginationMeta.page - 1, paginationMeta.pageSize)
-      return
-    } else {
-      _getData(paginationMeta.page, paginationMeta.pageSize)
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
+    if (event.type === 'keydown' && ((event as React.KeyboardEvent).key === 'Tab' || (event as React.KeyboardEvent).key === 'Shift')) {
+      return;
     }
+    setIsDrawerOpen(open);
+
+
+  };
+
+  const [tabValue, setTabValue] = useState(0);
+
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setTabValue(newValue);
+  };
+
+  function a11yProps(index: number) {
+    return {
+      id: `simple-tab-${index}`,
+      'aria-controls': `simple-tabpanel-${index}`,
+    };
   }
 
-  return (
-    <div className="flex justify-center font-inter p-4">
-      <div className="bg-white shadow-lg/20 rounded-lg p-6 md:p-8 w-full max-w-6xl my-15 mt-20">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="font-aleo text-2xl sm:text-3xl font-semibold text-shadow-lg/20">
-            User Management
-          </h1>
-          <Box
-            component="form"
-            onSubmit={handleSubmitSearchForm}
-            sx={{
-              display: "flex",
-              gap: 2.5,
-            }}
-          >
-            <TextField
-              fullWidth
-              label="Name"
-              id="searchNameInput"
-              value={searchFormInput.name}
-              onChange={(e) => { setSearchFormInput({ ...searchFormInput, name: e.target.value }); }}
-              size="small"
-              sx={{ minWidth: 150 }}
-            />
-            <FormControl sx={{ minWidth: 150 }}>
-              <InputLabel id="searchUserStatusInput">Role</InputLabel>
-              <Select
-                label="UserStatus"
-                id="searchUserStatusInput"
-                value={searchFormInput.role}
-                onChange={(e) => { setSearchFormInput({ ...searchFormInput, role: e.target.value }); }}
-                size="small"
-              >
-                {roles.map(e => {
-                  return <MenuItem value={e} key={e}>{roleReadableStrMap[e]}</MenuItem>
-                })}
-              </Select>
-            </FormControl>
-            <FormControl sx={{ minWidth: 150 }}>
-              <InputLabel id="searchUserStatusInput">User Status</InputLabel>
-              <Select
-                label="UserStatus"
-                id="searchUserStatusInput"
-                value={searchFormInput.user_status}
-                onChange={(e) => { setSearchFormInput({ ...searchFormInput, user_status: e.target.value }); }}
-                size="small"
-              >
-                <MenuItem value={userStatusToIntMap.pending}>{userStatusToStrMap[userStatusToIntMap.pending]}</MenuItem>
-                <MenuItem value={userStatusToIntMap.approved}>{userStatusToStrMap[userStatusToIntMap.approved]}</MenuItem>
-                <MenuItem value={userStatusToIntMap.rejected}>{userStatusToStrMap[userStatusToIntMap.rejected]}</MenuItem>
-              </Select>
-            </FormControl>
-            <Button
-              fullWidth
-              type="submit"
-              variant="contained"
-              sx={{
-                bgcolor: "#2c2c2c",
-                color: "white",
-                borderRadius: "0.375rem",
-                fontSize: "0.875rem",
-                fontWeight: 300,
-                "&:hover": {
-                  bgcolor: "#414040",
-                  transform: "scale(1.01)",
-                },
-                transition: "all 0.2s",
-              }}
-              size="small"
-            >
-              Search
-            </Button>
-          </Box>
-        </div>
 
-        {isLoading ? (
-          <Typography sx={{ color: "gray", fontSize: 16, textAlign: "center", my: 10 }}>
-            Getting user data...
+
+  return (
+    <div className="flex flex-col min-h-screen items-center pt-15 p-4">
+      <Drawer
+        anchor="left"
+        open={isDrawerOpen}
+        onClose={toggleDrawer(false)}
+      >
+        <Box
+          sx={{ width: 250 }}
+          role="presentation"
+          onClick={toggleDrawer(false)}
+          onKeyDown={toggleDrawer(false)}
+        >
+          <Typography variant="h6" sx={{ p: 2, fontWeight: 'bold', fontFamily: "aleo", fontSize: 25 }}>
+            Admin Menu
           </Typography>
-        ) : pendingUsersData.length === 0 ? (
-          <Typography sx={{ color: "gray", fontSize: 16, textAlign: "center", my: 10 }}>
-            No users to show.
-          </Typography>
-        ) : (
-          <TableContainer
-            component={Paper}
-            sx={{ boxShadow: "none", border: "none" }}
-          >
-            <Table
-              sx={{ minWidth: 500, borderCollapse: "collapse" }}
-              aria-label="custom pagination table"
-            >
-              <TableHead>
-                <TableRow>
-                  <StyledTableCell>Time Created</StyledTableCell>
-                  <StyledTableCell>Name</StyledTableCell>
-                  <StyledTableCell>email</StyledTableCell>
-                  <StyledTableCell>Phone Number</StyledTableCell>
-                  <StyledTableCell>Department</StyledTableCell>
-                  <StyledTableCell>Role</StyledTableCell>
-                  <StyledTableCell>User Status</StyledTableCell>
-                  <StyledTableCell>Operation</StyledTableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {pendingUsersData &&
-                  pendingUsersData.map((row, index) => (
-                    <TableRow
-                      key={index}
-                      sx={{
-                        "&:hover": { bgcolor: "#f9fafb" },
-                        transition: "background-color 0.2s",
-                      }}
-                    >
-                      <StyledTableCell>{new Date(row.time_created).toDateString()}</StyledTableCell>
-                      <StyledTableCell>{row.name}</StyledTableCell>
-                      <StyledTableCell>{row.email}</StyledTableCell>
-                      <StyledTableCell>{row.phone_number}</StyledTableCell>
-                      {searchFormInput.role !== roleStrMap.normalUser && searchFormInput.role !== roleStrMap.financeStaff ? (
-                        <StyledTableCell>N/A</StyledTableCell>
-                      ) : (
-                        <StyledTableCell>{row.department?.dep_name}</StyledTableCell>
-                      )}
-                      <StyledTableCell>{roleReadableStrMap[row.role]}</StyledTableCell>
-                      <StyledTableCell>
-                        <span
-                          className={`inline-block px-5 py-1 rounded-full text-xs font-medium ${row.user_status === userStatusToIntMap.approved
-                            ? "bg-green-100 text-green-800 border border-green-800"
-                            : row.user_status === userStatusToIntMap.rejected
-                              ? "bg-red-100 text-red-800 border border-red-800"
-                              : row.user_status === userStatusToIntMap.pending
-                                ? "bg-yellow-100 text-yellow-800 border border-yellow-800"
-                                : "bg-yellow-100 text-yellow-800 border border-yellow-800"
-                            }`}
-                        >
-                          {userStatusToStrMap[row.user_status]}
-                        </span>
-                      </StyledTableCell>
-                      <StyledTableCell>
-                        <div className="flex gap-2 justify-center">
-                          <CustomizedButton
-                            click={() => handleViewDialogOpen(row)}
-                            type="warning"
-                            title="View"
-                          />
-                          {/* super admin can edit user under any circumstances */}
-                          <CustomizedButton
-                            click={() => handleEditDialogOpen(row)}
-                            type="warning"
-                            title="Edit"
-                          />
-                          {/* Accept and Reject button occurs only when user is pending */}
-                          {row.user_status === userStatusToIntMap.pending && (
-                            <CustomizedButton
-                              click={() => { setConfirmAcceptDialogOpen(true); setUserDetail(row); }}
-                              type="primary"
-                              title="Accept"
-                            />
-                          )}
-                          {row.user_status === userStatusToIntMap.pending && (
-                            <CustomizedButton
-                              click={() => { setConfirmRejectDialogOpen(true); setUserDetail(row); }}
-                              type="error"
-                              title="Reject"
-                            />
-                          )}
-                        </div>
-                      </StyledTableCell>
-                    </TableRow>
-                  ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+          <Divider />
+          <List>
+            {[
+              { text: 'Users', icon: <PeopleIcon />, index: 0 },
+              { text: 'Departments', icon: <GroupsIcon />, index: 1 },
+              { text: 'Bookings', icon: <LocalTaxiIcon />, index: 2 },
+              { text: 'Export Bookings', icon: <FileDownloadIcon />, index: 3 },
+              { text: 'Admin Settings', icon: <SettingsIcon />, index: 4 },
+            ].map((item) => (
+              <ListItem key={item.text} disablePadding>
+                <ListItemButton onClick={() => setTabValue(item.index)}>
+                  <ListItemIcon>
+                    {item.icon}
+                  </ListItemIcon>
+                  <ListItemText primary={item.text} />
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
+        </Box>
+      </Drawer>
+      
+      <motion.div
+        className="bg-white shadow-lg rounded-lg p-6 md:p-8 w-full max-w-6xl mb-8 h-fit"
+        initial={{ opacity: 0, y: 7, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 1, ease: "easeOut", delay: 0.24 }}
+      >
+        {tabValue === 0 && (
+          <>
+            <div className="flex justify-between items-center mb-4">
+              <div className="flex items-center gap-2 -ml-2">
+                <IconButton
+                  onClick={toggleDrawer(true)}
+                  sx={{
+                    color: '#2c2c2c',
+                    '&:hover': {
+                      bgcolor: '#f3f4f6',
+                    },
+                  }}
+                >
+                  <MenuIcon />
+                </IconButton>
+                <h1 className="text-xl font-aleo md:text-3xl font-semibold text-shadow-lg/20">
+                  User Management
+                </h1>
+              </div>
+              <Box
+                component="form"
+                onSubmit={handleSubmitSearchForm}
+                sx={{
+                  display: "flex",
+                  gap: 2.5,
+                }}
+              >
+                <TextField
+                  fullWidth
+                  label="Name"
+                  id="searchNameInput"
+                  value={searchFormInput.name}
+                  onChange={(e) => { setSearchFormInput({ ...searchFormInput, name: e.target.value }); }}
+                  size="small"
+                  sx={{ minWidth: 150 }}
+                />
+                <FormControl sx={{ minWidth: 150 }}>
+                  <InputLabel id="searchUserStatusInput">Account Type</InputLabel>
+                  <Select
+                    label="Account Type"
+                    id="searchUserStatusInput"
+                    value={searchFormInput.role}
+                    onChange={(e) => { setSearchFormInput({ ...searchFormInput, role: e.target.value }); }}
+                    size="small"
+                  >
+                    {roles.map(e => {
+                      return <MenuItem value={e} key={e}>{roleReadableStrMap[e]}</MenuItem>
+                    })}
+                  </Select>
+                </FormControl>
+                <FormControl sx={{ minWidth: 150 }}>
+                  <InputLabel id="searchUserStatusInput">User Status</InputLabel>
+                  <Select
+                    label="UserStatus"
+                    id="searchUserStatusInput"
+                    value={searchFormInput.user_status}
+                    onChange={(e) => { setSearchFormInput({ ...searchFormInput, user_status: e.target.value }); }}
+                    size="small"
+                  >
+                    <MenuItem value={userStatusToIntMap.pending}>{userStatusToStrMap[userStatusToIntMap.pending]}</MenuItem>
+                    <MenuItem value={userStatusToIntMap.approved}>{userStatusToStrMap[userStatusToIntMap.approved]}</MenuItem>
+                    <MenuItem value={userStatusToIntMap.rejected}>{userStatusToStrMap[userStatusToIntMap.rejected]}</MenuItem>
+                  </Select>
+                </FormControl>
+                <Button
+                  fullWidth
+                  type="submit"
+                  variant="contained"
+                  sx={{
+                    bgcolor: "#2c2c2c",
+                    color: "white",
+                    borderRadius: "0.375rem",
+                    fontSize: "0.875rem",
+                    fontWeight: 300,
+                    "&:hover": {
+                      bgcolor: "#414040",
+                      transform: "scale(1.01)",
+                    },
+                    transition: "all 0.2s",
+                  }}
+                  size="small"
+                >
+                  Search
+                </Button>
+              </Box>
+            </div>
+
+            {isLoading ? (
+              <Typography sx={{ color: "gray", fontSize: 16, textAlign: "center", my: 10 }}>
+                Getting user data...
+              </Typography>
+            ) : pendingUsersData.length === 0 ? (
+              <Typography sx={{ color: "gray", fontSize: 16, textAlign: "center", my: 10 }}>
+                No users to show.
+              </Typography>
+            ) : (
+              <div className="mt-7">
+                <UserTable
+                  data={pendingUsersData}
+                  count={pendingUserCount}
+                  page={paginationMeta.page}
+                  pageSize={paginationMeta.pageSize}
+                  onPageChange={handleChangePage}
+                  onPageSizeChange={handleChangePageSize}
+                  onViewDetails={handleViewDialogOpen}
+                  onEditUser={handleEditDialogOpen}
+                  onAcceptUser={(u) => { setUserDetail(u); setConfirmAcceptDialogOpen(true); }}
+                  onRejectUser={(u) => { setUserDetail(u); setConfirmRejectDialogOpen(true); }}
+                  ActionsComponent={TablePaginationActions}
+                />
+              </div>
+            )}
+          </>
         )}
-        <div className="flex justify-center mt-4">
-          <TablePagination
-            component="div"
-            rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
-            count={pendingUserCount}
-            rowsPerPage={paginationMeta.pageSize}
-            page={paginationMeta.page}
-            slotProps={{
-              select: {
-                inputProps: {
-                  "aria-label": "rows per page",
-                },
-                native: true,
-              },
-            }}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangePageSize}
-            ActionsComponent={TablePaginationActions}
-          />
-        </div>
-      </div>
-      {userDetail && <ViewDialog viewData={userDetail} dialogOpen={viewDialogOpen} handleDialogClose={() => { setViewDialogOpen(false); }} />}
-      {userDetail && <EditDialog key={userDetail.user_id} editData={userDetail} dialogOpen={editDialogOpen} handleDialogClose={handleEditDialogClose} departmentList={departments} />}
+
+        {tabValue === 1 && (
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <IconButton
+                onClick={toggleDrawer(true)}
+                sx={{
+                  color: '#2c2c2c',
+                  '&:hover': {
+                    bgcolor: '#f3f4f6',
+                  },
+                }}
+              >
+                <MenuIcon />
+              </IconButton>
+              <h1 className="text-xl font-aleo md:text-3xl font-semibold text-shadow-lg/20">
+                Departments
+              </h1>
+            </div>
+            <Typography sx={{ color: "gray", fontSize: 16, textAlign: "center", my: 10 }}>
+              Departments Table View (to be implemented)
+            </Typography>
+          </div>
+        )}
+      </motion.div>
+      
+      {userDetail && (
+        <ViewDialog 
+          viewData={userDetail} 
+          dialogOpen={viewDialogOpen} 
+          handleDialogClose={() => setViewDialogOpen(false)} 
+        />
+      )}
+      
+      {userDetail && (
+        <EditDialog 
+          key={userDetail.user_id} 
+          editData={userDetail} 
+          dialogOpen={editDialogOpen} 
+          handleDialogClose={handleEditDialogClose} 
+          departmentList={departments} 
+        />
+      )}
+
       <ConfirmDialog
         open={confirmAcceptDialogOpen}
-        dialogTitle="Accept User Registeration"
-        confirmMessage={'Are you sure you want to accept this user registeration?'}
+        dialogTitle="Accept User Registration"
+        confirmMessage="Are you sure you want to accept this user registration?"
         confirmCallBack={() => { handleAcceptUserRegister(userDetail!); setConfirmAcceptDialogOpen(false); }}
-        cancelCallBack={() => { setConfirmAcceptDialogOpen(false); }}
+        cancelCallBack={() => setConfirmAcceptDialogOpen(false)}
       />
+
       <ConfirmDialog
         open={confirmRejectDialogOpen}
-        dialogTitle="Reject User Registeration"
-        confirmMessage={'Are you sure you want to reject this user registeration?'}
+        dialogTitle="Reject User Registration"
+        confirmMessage="Are you sure you want to reject this user registration?"
         confirmCallBack={() => { handleRejectUserRegister(userDetail!); setConfirmRejectDialogOpen(false); }}
-        cancelCallBack={() => { setConfirmRejectDialogOpen(false); }}
+        cancelCallBack={() => setConfirmRejectDialogOpen(false)}
       />
-      <Snackbar open={snackOpen} autoHideDuration={4000} onClose={() => {setSnackOpen(false)}} anchorOrigin={{vertical: "top", horizontal: "center"}}>
-        <Alert onClose={() => {setSnackOpen(false)}} severity={severity} variant="filled">{severity === "success" ? "Account registration response email sent!" : "There was an error sending response mail"}</Alert>
-      </Snackbar>
     </div>
   );
 };

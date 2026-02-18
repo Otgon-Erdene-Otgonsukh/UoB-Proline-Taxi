@@ -59,7 +59,7 @@ type UserFormInputType = {
 const Page = ({ editData, dialogOpen, handleDialogClose, departmentList }: { editData: UserRecord, dialogOpen: boolean, handleDialogClose: (isEdited: boolean) => void, departmentList: department[] }) => {
 
   const [formInput, setFormInput] = useState<UserFormInputType>({
-    name: editData.name,
+    name: editData.full_name,
     email: editData.email,
     countryCode: editData.phone_number.split(" ")[0] || "",
     phoneNumber: editData.phone_number.split(" ")[1] || "",
@@ -78,7 +78,7 @@ const Page = ({ editData, dialogOpen, handleDialogClose, departmentList }: { edi
     const toUpdateData: UserRecord = {
       user_id: editData.user_id,
       time_created: editData.time_created,
-      name: formInput.name,
+      full_name: formInput.name,
       email: formInput.email,
       phone_number: formInput.countryCode + " " + formInput.phoneNumber,
       role: formInput.role,
