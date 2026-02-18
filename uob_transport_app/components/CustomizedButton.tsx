@@ -11,3 +11,4 @@ export default function CustomizedButton({ title, type, click, }: { title: strin
     </button>
   );
 }
+
