@@ -180,6 +180,7 @@ export default function Profile() {
         transition={{ duration: 1, ease: "easeOut", delay: 0 }}
       >
         <Avatar
+          data-testid="avatar"
           className="drop-shadow-lg/40"
           sx={{
             bgcolor: "#2c2c2c",
@@ -211,6 +212,7 @@ export default function Profile() {
           <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
             {nameEditOn ? (
               <TextField
+                data-testid="nameTextField"
                 label="Name"
                 color="secondary"
                 sx={{
@@ -234,6 +236,7 @@ export default function Profile() {
                   setNameEdit(true);
                 }}
                 onMouseLeave={() => setNameEdit(false)}
+                data-testid="nameDiv"
               >
                 <div>
                   <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
@@ -246,6 +249,7 @@ export default function Profile() {
 
                 {nameEdit && (
                   <Button
+                  data-testid="name-edit-button"
                     sx={{ minWidth: "auto", padding: "4px", color: "gray" }}
                     onClick={() => {
                       setEditData({
