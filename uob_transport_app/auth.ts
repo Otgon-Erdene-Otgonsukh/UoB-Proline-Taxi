@@ -1,7 +1,7 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 // Re-use existing function implemented by Yidi
-import { searchUserAccess } from "@/backend/access/user_access";
+import { getUserFromID, searchUserAccess } from "@/backend/access/user_access";
 import { User, department } from "@/generated/prisma/browser";
 
 import bcrypt from "bcryptjs";
@@ -61,13 +61,25 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     // Adding username + other data to the session.
     async jwt({ token, user, trigger, session }) {
       // On sign in, populate token from user
-      if (user || (trigger === "update" && session?.user)) {
+      if (user) {
         token.name = user.name;
         token.user_id = user.user_id;
         token.phone_number = user.phone_number;
         token.account_type = user.account_type;
         token.dep_id = user.dep_id;
         token.dep_name = user.dep_name;
+      }
+
+      // On update, update the token & the session data from the database
+      if (trigger === "update" && session?.user) {
+        const userDetail: (User & { department: department | null }) | null = await getUserFromID(token.user_id as number);
+        if (userDetail) {
+          token.name = userDetail.full_name;
+          token.email = userDetail.email;
+          token.phone_number = userDetail.phone_number;
+          token.dep_id = userDetail.department?.dep_id || null;
+          token.dep_name = userDetail.department?.dep_name || null;
+        }
       }
 
       return token;
