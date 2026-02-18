@@ -15,6 +15,19 @@ export const searchUserAccess = async (
   });
 };
 
+export const getUserFromID = (
+  user_id: number
+) => {
+  return prisma.user.findUnique({
+    where: {
+      user_id,
+    },
+    include: {
+      department: true,
+    },
+  });
+};
+
 export const updateUserPassowrdAccess = async (
   email: string,
   password: string

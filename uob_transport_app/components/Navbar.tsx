@@ -93,7 +93,7 @@ export const Navbar = () => {
             />
           </Link>
 
-          <div className="hidden xl:flex h-12 w-[0.5px] bg-gradient-to-b via-gray-300"></div>
+          <div className="hidden xl:flex h-12 w-[0.5px] bg-gradient-to-b gray-300"></div>
 
           <Link href={"https://www.bristol.ac.uk/"} className="hidden xl:flex">
             <Image
