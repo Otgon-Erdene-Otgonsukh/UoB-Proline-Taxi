@@ -9,18 +9,6 @@ import {
   isAdmin,
 } from '@/backend/access/user_access';
 
-jest.mock('@/utils/client', () => ({
-  __esModule: true,
-  default: {
-    user: {
-      findUnique: jest.fn(),
-      update: jest.fn(),
-      findMany: jest.fn(),
-      count: jest.fn(),
-    },
-  },
-}));
-
 describe('user_access', () => {
 
   afterEach(() => {
