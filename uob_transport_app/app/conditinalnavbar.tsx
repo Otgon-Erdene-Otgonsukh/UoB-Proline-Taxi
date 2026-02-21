@@ -8,8 +8,6 @@ export default function LayoutWrapper({
 }: {
   children: React.ReactNode;
 }) {
-  const pathname = usePathname();
-
   // Set the paths where you want to hide the navbar
   const noNavbar = false;
 

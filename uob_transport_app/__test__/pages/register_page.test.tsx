@@ -2,7 +2,6 @@ import "@testing-library/jest-dom";
 import { screen, render, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import Register from "@/app/register/page";
-import { getDepartments } from "@/app/requests/departments";
 
 jest.mock("next/navigation", () => ({
   redirect: jest.fn()

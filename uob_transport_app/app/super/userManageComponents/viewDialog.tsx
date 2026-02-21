@@ -12,7 +12,6 @@ import {
 } from "@mui/material";
 import {
   Close as CloseIcon,
-  FindInPage as FindInPageIcon
 } from "@mui/icons-material"
 import { UserRecord } from "@/model/models";
 import { roleReadableStrMap, userStatusToIntMap, userStatusToStrMap } from "../../super/constants";

@@ -1,1 +1,1 @@
-export const bookingStatus = ["Pending", "Approved", "Rejected"];
+export const bookingStatus = ["Pending", "Approved", "Rejected", "Cancelled"];
