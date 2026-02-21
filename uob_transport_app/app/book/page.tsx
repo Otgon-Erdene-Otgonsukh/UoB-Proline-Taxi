@@ -1305,7 +1305,7 @@ export default function BookingPage() {
 
         {/* Map Section */}
         { /* https://mapcn.vercel.app/docs/routes */}
-        <div className="container hidden lg:block lg:w-1/2 w-full object-contain min-w-[600px] border-l-3 border-gray-700 rounded-[0px_5px_5px_0px] overflow-hidden">
+        <div className="container hidden lg:block lg:w-1/2 w-full object-contain min-w-150 border-l-3 border-gray-700 rounded-[0px_5px_5px_0px] overflow-hidden">
           { /* Lat and long are inverted by MAPCN here */}
           <Map ref={mapRef} center={[-2.602, 51.458]} zoom={14}>
             { start && routes && routes.length > 0 && (
