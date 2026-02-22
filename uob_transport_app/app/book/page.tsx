@@ -1041,7 +1041,7 @@ export default function BookingPage() {
                     </label>
                     <input
                       id="returnPickUp"
-                      className="border-2 rounded px-3 py-2"
+                      className="border-2 rounded px-3 py-2 border-gray-800"
                       value={formData.DropoffLoc}
                       disabled
                     />
@@ -1053,7 +1053,7 @@ export default function BookingPage() {
                     <input
                       id="returnDropOff"
                       placeholder="Enter"
-                      className="border-2 rounded px-3 py-2"
+                      className="border-2 rounded px-3 py-2 border-gray-800"
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
                           e.preventDefault();
