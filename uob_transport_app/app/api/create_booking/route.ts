@@ -43,6 +43,13 @@ export async function POST(request: Request) {
     const returnDT: Date | undefined = request_json["return_time"] ? new Date(request_json["return_time"]) : undefined;
     const dep_id: number = request_json["dep_id"];
 
+    if (passenger_num > 5) {
+      return NextResponse.json(
+        { error: "Passenger number cannot be more than 5." },
+        { status: 201 },
+      );
+    }
+
     // Lat/lon fields are null as we introduce lat/lon automatically later on / vice versa.
     await createBooking(
       user_id,
