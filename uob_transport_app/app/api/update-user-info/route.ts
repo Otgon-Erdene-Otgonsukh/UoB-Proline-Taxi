@@ -34,9 +34,9 @@ export async function POST(req: Request) {
   try {
     await update_user(
       user_id,
-      newName,
-      newEmail,
-      newPhoneNumber,
+      newName?.trim(),
+      newEmail?.trim(),
+      newPhoneNumber?.trim(),
       newDepartment,
     );
     return NextResponse.json({ message: "success" }, { status: 200 });

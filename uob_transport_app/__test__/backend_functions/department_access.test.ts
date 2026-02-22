@@ -1,15 +1,6 @@
 import { prismaMock } from "@/utils/singleton";
 import { getDepartmentsListAccess } from '@/backend/access/departments_access';
 
-jest.mock('@/utils/client', () => ({
-  __esModule: true,
-  default: {
-    department: {
-      findMany: jest.fn(),
-    },
-  },
-}));
-
 describe('getDepartmentsListAccess', () => {
 
   afterEach(() => {
