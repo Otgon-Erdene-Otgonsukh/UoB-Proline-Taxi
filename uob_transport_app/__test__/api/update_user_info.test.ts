@@ -50,8 +50,6 @@ describe("Update user info api route correctly calls the backend function relate
         const data = {
             user_id: 2,
             name: "Test",
-            surname: "test",
-            username: "no",
             email: "sdasdasd",
             phone_number: "12341312",
             department: "Damn"

@@ -17,6 +17,8 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { getDepartments } from "@/app/requests/departments";
 import { department } from "@/generated/prisma/client";
+import { UserRecord } from "@/model/models";
+import { easyGetRequest } from "@/utils/easyRequest";
 
 const role: Record<string, string> = {
   normal_user: "Normal User",
@@ -33,6 +35,7 @@ export default function Profile() {
 
   const [editMode, setEditMode] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [userData, setUserData] = useState<UserRecord>();
 
   const [nameEdit, setNameEdit] = useState(false);
   const [emailEdit, setEmailEdit] = useState(false);
@@ -55,7 +58,7 @@ export default function Profile() {
   const [editData, setEditData] = useState({
     name: "",
     email: "",
-    dep_id: 0,
+    department: "",
     phone_number: "",
   });
 
@@ -67,14 +70,24 @@ export default function Profile() {
 
   const [departments, setDepartmentList] = useState<department[]>([]);
   useEffect(() => {
-    getDepartments().then((res) => {
-      if (res.status === 200) {
-        res.json().then(data => {
-          setDepartmentList(data);
-        })
+    const fetchAll = async () => {
+      const [depRes, userRes] = await Promise.all([
+        getDepartments(),
+        easyGetRequest("user-data", {}),
+      ]);
+
+      if (depRes.status === 200) {
+        const data = await depRes.json();
+        setDepartmentList(data);
       }
-    });
-  }, [])
+
+      if (userRes.status === 200) {
+        const data = await userRes.json();
+        setUserData(data.body)
+      }
+    };
+    fetchAll();
+  }, []);
 
   if (status === "loading") {
     // display a loading bar for feedback
@@ -105,6 +118,7 @@ export default function Profile() {
 
   const handleSave = () => {
     let fail = false;
+    // Setting all the errors at once to avoid overwritting the other erros with set function 
     const newErrors = { ...changeError };
 
     // Client side validation
@@ -141,7 +155,7 @@ export default function Profile() {
         ...(nameEditOn && { name: editData.name }),
         ...(emailEditOn && { email: editData.email }),
         ...(phoneEditOn && { phone_number: editData.phone_number }),
-        ...(departmentEditOn && { dep_id: editData.dep_id }),
+        ...(departmentEditOn && { department: editData.department }),
       };
       fetch("/api/update-user-info", {
         body: JSON.stringify(data),
@@ -152,16 +166,7 @@ export default function Profile() {
           handleCancel();
           setSnackState({ open: true, severity: "success" });
           // Trigger session refresh from server
-          update({
-            ...session,
-            user: {
-              ...session?.user,
-              ...(nameEditOn && { name: editData.name }),
-              ...(emailEditOn && { email: editData.email }),
-              ...(phoneEditOn && { phone_number: editData.phone_number }),
-              ...(departmentEditOn && { dep_id: editData.dep_id }),
-            },
-          });
+          update();
         } else {
           setLoading(false);
           handleCancel();
@@ -239,9 +244,7 @@ export default function Profile() {
                   <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
                     Full Name
                   </p>
-                  <p className="text-gray-800">
-                    {session?.user.name}
-                  </p>
+                  <p className="text-gray-800">{session?.user.name}</p>
                 </div>
 
                 {nameEdit && (
@@ -302,9 +305,7 @@ export default function Profile() {
                   <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
                     Email
                   </p>
-                  <p className="text-gray-800 truncate">
-                    {session?.user.email}
-                  </p>
+                  <p className="text-gray-800 truncate">{userData?.email}</p>
                 </div>
 
                 {emailEdit && (
@@ -319,7 +320,7 @@ export default function Profile() {
                     onClick={() => {
                       setEditData({
                         ...editData,
-                        email: session?.user.email ?? "",
+                        email: userData?.email ?? "",
                       });
                       setEmailEditOn(true);
                       setEditMode(true);
@@ -360,7 +361,7 @@ export default function Profile() {
                   <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
                     Phone Number
                   </p>
-                  <p>{session?.user.phone_number}</p>
+                  <p>{userData?.phone_number}</p>
                 </div>
                 {phoneEdit && (
                   <Button
@@ -368,7 +369,7 @@ export default function Profile() {
                     onClick={() => {
                       setEditData({
                         ...editData,
-                        phone_number: session?.user.phone_number ?? "",
+                        phone_number: userData?.phone_number ?? "",
                       });
                       setPhoneEditOn(true);
                       setEditMode(true);
@@ -391,9 +392,9 @@ export default function Profile() {
             Account Details
           </h2>
           <div
-            className={`grid grid-cols-1 md:${session?.user.dep_id ? "grid-cols-2" : "grid-cols-1"} gap-4`}
+            className={`grid grid-cols-1 md:${userData?.department ? "grid-cols-2" : "grid-cols-1"} gap-4`}
           >
-            {session?.user.dep_id &&
+            {userData?.department &&
               (departmentEditOn ? (
                 <Autocomplete
                   sx={{
@@ -432,7 +433,7 @@ export default function Profile() {
                   }}
                   autoFocus
                   onChange={(_, dep) => {
-                    setEditData({ ...editData, dep_id: dep!.dep_id });
+                    setEditData({ ...editData, department: dep?.dep_name! });
                     setChangeError({ ...changeError, department: false });
                   }}
                   options={departments}
@@ -462,7 +463,7 @@ export default function Profile() {
                       Department
                     </p>
                     <p className="text-gray-800">
-                      {session.user.dep_name}
+                      {userData.department.dep_name}
                     </p>
                   </div>
 
@@ -476,7 +477,7 @@ export default function Profile() {
                       onClick={() => {
                         setEditData({
                           ...editData,
-                          dep_id: session?.user.dep_id ?? 0,
+                          department: userData.department.dep_name,
                         });
                         setDepartmentEditOn(true);
                         setEditMode(true);
