@@ -97,46 +97,52 @@ export const Navbar = () => {
             />
           </Link>
 
-          <div className="hidden xl:flex items-center">
+          <div className={`hidden xl:flex items-center h-full overflow-hidden transition-all duration-500 ease-in-out ${showLogo ? 'max-w-[500px] opacity-100' : 'max-w-0 opacity-0'}`}>
+
+            <div className="flex items-center space-x-4 px-2">
+
+              <div className="h-12 w-[0.5px] bg-linear-to-b from-transparent via-gray-300 to-transparent"></div>
+
+              <Link href={"https://www.bristol.ac.uk/"} className="hidden xl:flex">
+                <Image
+                  className="mix-blend-lighten"
+                  width={110}
+                  height={26}
+                  src={"/whiteuni.svg"}
+                  alt="Company Logo"
+                  unoptimized
+                />
+              </Link>
+
+              <div className="h-12 w-[0.5px] bg-linear-to-b from-transparent via-gray-300 to-transparent"></div>
+
+              <Link href={"https://prolinetaxi.com/"} className="hidden xl:flex">
+                <Image
+                  width={100}
+                  height={26}
+                  src={"/Union.png"}
+                  alt="Company Logo"
+                />
+              </Link>
+            </div>
+          </div>
+          <div className={`hidden xl:flex items-center m-0 p-0 w-auto`}>
             <IconButton
               onClick={() => setShowLogo(!showLogo)}
               size="small"
               sx={{
-                color: 'gray',
+                color: 'white',
                 transform: showLogo ? 'rotateY(180deg)' : 'rotateY(0deg)',
                 transition: 'transform 0.25s ease-in-out',
+                '&:hover': {
+                  color: '#D1D5DB'
+                }
+
               }}
             >
               <ChevronRightIcon />
             </IconButton>
           </div>
-
-          <div className={`hidden xl:flex items-center h-full overflow-hidden transition-all duration-500 ease-in-out ${showLogo ? 'max-w-[500px] opacity-100' : 'max-w-0 opacity-0'}`}>
-              <Link href={"https://www.bristol.ac.uk/"} className="hidden xl:flex">
-            <Image
-              className="mix-blend-lighten"
-              width={110}
-              height={26}
-              src={"/whiteuni.svg"}
-              alt="Company Logo"
-              unoptimized
-            />
-          </Link>
-
-          <div className="hidden xl:flex h-12 w-px bg-gradient-to-b via-gray-300"></div>
-
-          <Link href={"https://prolinetaxi.com/"} className="hidden xl:flex">
-            <Image
-              width={100}
-              height={26}
-              src={"/Union.png"}
-              alt="Company Logo"
-            />
-          </Link>
-
-          </div>
-
-          
         </div>
         {/* Links */}
         <ul className="hidden lg:flex lg:items-center gap-12">
