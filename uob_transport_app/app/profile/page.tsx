@@ -13,7 +13,10 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  IconButton,
+  InputAdornment,
 } from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import EditIcon from "@mui/icons-material/Edit";
@@ -40,6 +43,7 @@ export default function Profile() {
   const [editMode, setEditMode] = useState(false);
   const [loading, setLoading] = useState(false);
   const [userData, setUserData] = useState<UserRecord>();
+  const [show, setShow] = useState(false);
 
   const [nameEdit, setNameEdit] = useState(false);
   const [emailEdit, setEmailEdit] = useState(false);
@@ -68,7 +72,9 @@ export default function Profile() {
 
   const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
   const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState("Changes were not saved, try again later.");
+  const [errorMessage, setErrorMessage] = useState(
+    "Changes were not saved, try again later.",
+  );
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -91,7 +97,7 @@ export default function Profile() {
 
       if (userRes.status === 200) {
         const data = await userRes.json();
-        setUserData(data.body)
+        setUserData(data.body);
       }
     };
     fetchAll();
@@ -126,7 +132,7 @@ export default function Profile() {
 
   const handleSave = () => {
     let fail = false;
-    // Setting all the errors at once to avoid overwritting the other erros with set function 
+    // Setting all the errors at once to avoid overwritting the other erros with set function
     const newErrors = { ...changeError };
 
     // Client side validation
@@ -173,6 +179,7 @@ export default function Profile() {
         if (res.status === 200) {
           setLoading(false);
           handleCancel();
+          setPasswordDialogOpen(false);
           setSnackState({ open: true, severity: "success" });
           // Trigger session refresh from server
           update();
@@ -265,7 +272,7 @@ export default function Profile() {
 
                 {nameEdit && (
                   <Button
-                  data-testid="name-edit-button"
+                    data-testid="name-edit-button"
                     sx={{ minWidth: "auto", padding: "4px", color: "gray" }}
                     onClick={() => {
                       setEditData({
@@ -456,7 +463,11 @@ export default function Profile() {
                   options={departments}
                   getOptionKey={(department) => department.dep_id}
                   getOptionLabel={(department) => department.dep_name}
-                  value={departments.find(dep => dep.dep_id === editData.dep_id)}
+                  value={
+                    departments.find(
+                      (dep) => dep.dep_name === editData.department,
+                    ) ?? null
+                  }
                   renderInput={(params) => (
                     <TextField
                       {...params}
@@ -592,22 +603,76 @@ export default function Profile() {
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
         >
-          <DialogTitle id="alert-dialog-title">
+          <DialogTitle
+            id="alert-dialog-title"
+            sx={{ fontWeight: "bold", fontSize: 19 }}
+          >
             Enter Password to Save Changes
           </DialogTitle>
           <DialogContent>
             <TextField
               fullWidth
               label="Password"
-              type="password"
+              type={show ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               style={{ marginTop: "5px" }}
+              slotProps={{
+                input: {
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={() => setShow(!show)}
+                        edge="end"
+                        sx={{ color: "#2c2c2c" }}
+                      >
+                        {show ? (
+                          <VisibilityOff sx={{ fontSize: 21 }} />
+                        ) : (
+                          <Visibility sx={{ fontSize: 21 }} />
+                        )}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                },
+              }}
             />
           </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setPasswordDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleSave} autoFocus>
+          <DialogActions sx={{ px: 3, pb: 2, gap: 1 }}>
+            <Button
+              onClick={() => setPasswordDialogOpen(false)}
+              variant="outlined"
+              sx={{
+                borderColor: "#9ca3af",
+                color: "#6b7280",
+                textTransform: "none",
+                px: 3,
+                py: 1,
+                borderRadius: 2,
+                "&:hover": {
+                  borderColor: "#6b7280",
+                  bgcolor: "#f9fafb",
+                },
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSave}
+              autoFocus
+              variant="contained"
+              sx={{
+                bgcolor: "#2c2c2c",
+                color: "white",
+                textTransform: "none",
+                px: 3,
+                py: 1,
+                borderRadius: 2,
+                "&:hover": {
+                  bgcolor: "#1a1a1a",
+                },
+              }}
+            >
               Save
             </Button>
           </DialogActions>
