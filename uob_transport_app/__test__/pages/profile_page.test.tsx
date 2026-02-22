@@ -15,7 +15,27 @@ jest.mock("next/navigation", () => ({
 }));
 
 jest.mock("@/app/requests/departments", () => ({
-  getDepartments: jest.fn().mockResolvedValue({}),
+  getDepartments: jest.fn().mockResolvedValue({
+    status: 200,
+    json: jest.fn().mockResolvedValue([]),
+  }),
+}));
+
+jest.mock("@/utils/easyRequest", () => ({
+  easyGetRequest: jest.fn().mockResolvedValue({
+    status: 200,
+    json: jest.fn().mockResolvedValue({
+      body: {
+        email: "bob.myers@example.com",
+        phone_number: "+1234567890",
+        full_name: "Bob Myers",
+        department: {
+          dep_id: 1,
+          dep_name: "Computer Science",
+        },
+      },
+    }),
+  }),
 }));
 
 global.fetch = jest.fn();
@@ -61,7 +81,7 @@ describe("Profile page render test with event testing logic", () => {
     expect(screen.getByText("Account Details")).toBeInTheDocument();
   });
 
-  test("All text content is rendered in the document", () => {
+  test("All text content is rendered in the document", async () => {
     (useSession as jest.Mock).mockReturnValue({
       data: {
         user: {
@@ -87,12 +107,18 @@ describe("Profile page render test with event testing logic", () => {
 
     // Check Contact Information section content
     expect(screen.getByText("Email")).toBeInTheDocument();
-    expect(screen.getByText("bob.myers@example.com")).toBeInTheDocument();
+
+    // Wait for user data fetching call finishes
+    await waitFor(() => {
+      expect(screen.getByText("bob.myers@example.com")).toBeInTheDocument();
+    });
+
     expect(screen.getByText("Phone Number")).toBeInTheDocument();
     expect(screen.getByText("+1234567890")).toBeInTheDocument();
 
     // Check Account Details section content
     expect(screen.getByText("Department")).toBeInTheDocument();
+
     expect(screen.getByText("Computer Science")).toBeInTheDocument();
     expect(screen.getByText("Account Type")).toBeInTheDocument();
     expect(screen.getByText("Normal User")).toBeInTheDocument();
@@ -147,7 +173,7 @@ describe("Profile page render test with event testing logic", () => {
     // Clicking Cancel should derender the buttons and edit textfield
     await user.click(buttons[1]);
     await waitFor(() => {
-        expect(screen.queryAllByRole("button").length).toBe(0);
+      expect(screen.queryAllByRole("button").length).toBe(0);
     });
     expect(screen.queryByTestId("nameTextField")).toBe(null);
   });
