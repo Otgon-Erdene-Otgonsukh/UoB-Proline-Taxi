@@ -9,6 +9,10 @@ import {
   Snackbar,
   Alert,
   AlertColor,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -58,6 +62,10 @@ export default function Profile() {
     dep_id: 0,
     phone_number: "",
   });
+
+  const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
+  const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("Changes were not saved, try again later.");
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -138,6 +146,7 @@ export default function Profile() {
       setLoading(true);
       const data = {
         user_id: session?.user.user_id,
+        password: password,
         ...(nameEditOn && { name: editData.name }),
         ...(emailEditOn && { email: editData.email }),
         ...(phoneEditOn && { phone_number: editData.phone_number }),
@@ -164,7 +173,11 @@ export default function Profile() {
           });
         } else {
           setLoading(false);
-          handleCancel();
+          if (res.status === 401) {
+            setErrorMessage("Invalid password");
+          } else {
+            setErrorMessage("Changes were not saved, try again later.");
+          }
           setSnackState({ open: true, severity: "error" });
         }
       });
@@ -432,12 +445,15 @@ export default function Profile() {
                   }}
                   autoFocus
                   onChange={(_, dep) => {
-                    setEditData({ ...editData, dep_id: dep!.dep_id });
-                    setChangeError({ ...changeError, department: false });
+                    if (dep) {
+                      setEditData({ ...editData, dep_id: dep.dep_id });
+                      setChangeError({ ...changeError, department: false });
+                    }
                   }}
                   options={departments}
                   getOptionKey={(department) => department.dep_id}
                   getOptionLabel={(department) => department.dep_name}
+                  value={departments.find(dep => dep.dep_id === editData.dep_id)}
                   renderInput={(params) => (
                     <TextField
                       {...params}
@@ -518,7 +534,7 @@ export default function Profile() {
                   transform: "scale(1.03)",
                 },
               }}
-              onClick={handleSave}
+              onClick={() => setPasswordDialogOpen(true)}
             >
               {loading ? (
                 <CircularProgress color="inherit" size="20px" />
@@ -564,9 +580,35 @@ export default function Profile() {
           >
             {snackState.severity === "success"
               ? "Changes saved successfully."
-              : "Changes were not saved, try again later."}
+              : errorMessage}
           </Alert>
         </Snackbar>
+        <Dialog
+          open={passwordDialogOpen}
+          onClose={() => setPasswordDialogOpen(false)}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">
+            Enter Password to Save Changes
+          </DialogTitle>
+          <DialogContent>
+            <TextField
+              fullWidth
+              label="Password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              style={{ marginTop: "5px" }}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setPasswordDialogOpen(false)}>Cancel</Button>
+            <Button onClick={handleSave} autoFocus>
+              Save
+            </Button>
+          </DialogActions>
+        </Dialog>
       </div>
     </div>
   );
