@@ -4,6 +4,7 @@ import "./globals.css";
 import { Navbar } from "@/components/Navbar";
 import { SessionProvider } from "next-auth/react";
 import { Suspense } from 'react';
+import LayoutWrapper from "./conditinalnavbar";
 
 const aleo = Aleo({ subsets: ["latin"], variable: "--font-aleo" });
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -23,8 +24,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${aleo.variable} ${inter.variable}`}>
         <SessionProvider>
-          <Navbar />
-          <main><Suspense fallback={<div>Loading...</div>}>{children}</Suspense></main>
+          <LayoutWrapper>
+            <main><Suspense fallback={<div>Loading...</div>}>{children}</Suspense></main>
+          </LayoutWrapper>
         </SessionProvider>
       </body>
     </html>

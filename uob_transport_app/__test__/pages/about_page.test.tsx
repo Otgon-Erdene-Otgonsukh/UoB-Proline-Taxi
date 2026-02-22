@@ -10,7 +10,7 @@ describe("Check whether the about page has the required elements", () => {
   test("all the icons are rendered", () => {
     const { container } = render(<About />);
     const icons = container.querySelectorAll("svg");
-    expect(icons.length).toBe(8);
+    expect(icons.length).toBe(10);
   });
 
   test("displays main heading with company name", () => {
@@ -24,7 +24,7 @@ describe("Check whether the about page has the required elements", () => {
     ).toBeInTheDocument();
     expect(screen.getByText(/2. Get approval/i)).toBeInTheDocument();
     expect(
-      screen.getByText(/3. Receive confirmation and details via SMS/i)
+      screen.getByText(/3. Receive confirmation/i)
     ).toBeInTheDocument();
     expect(screen.getByText(/4. Off you go!/i)).toBeInTheDocument();
   });
@@ -34,4 +34,13 @@ describe("Check whether the about page has the required elements", () => {
     expect(image.length).toBe(1);
     expect(image[0]).toBeVisible();
   });
+
+  test("Reveiw cards are all displayed", () => {
+    const cards = screen.getAllByTestId("review-card");
+    cards.forEach(card => {
+      expect(card).toBeInTheDocument();
+      expect(card).toBeVisible();
+    })
+    expect(cards.length).toBe(3);
+  })
 });

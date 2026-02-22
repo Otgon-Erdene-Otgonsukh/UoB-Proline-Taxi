@@ -14,6 +14,7 @@ export const getUserBookingsAccess = async (userId: number, page: number, pageSi
   }
   if (searchParams.to !== undefined) {
     query['trip'] = {
+      ...query['trip'] as object,
       dropoff_location: {
         // case insensitive
         contains: searchParams.to.toLowerCase().trim(),
@@ -25,17 +26,32 @@ export const getUserBookingsAccess = async (userId: number, page: number, pageSi
     query['booking_status'] = searchParams.bookingStatus
   }
   if (searchParams.pickUpTimeFrom !== undefined && searchParams.pickUpTimeTo !== undefined) {
-    query['pick_up_time'] = {
-      gte: new Date(searchParams.pickUpTimeFrom),
-      lte: new Date(searchParams.pickUpTimeTo),
+    const toDate = new Date(searchParams.pickUpTimeTo);
+    toDate.setUTCHours(23, 59, 59, 999);
+    
+    query['trip'] = {
+      ...query['trip'] as object,
+      pickup_time: {
+        gte: new Date(searchParams.pickUpTimeFrom),
+        lte: toDate,
+      }
     }
   } else if (searchParams.pickUpTimeFrom !== undefined) {
-    query['pick_up_time'] = {
-      gte: new Date(searchParams.pickUpTimeFrom),
+    query['trip'] = {
+      ...query['trip'] as object,
+      pickup_time: {
+        gte: new Date(searchParams.pickUpTimeFrom),
+      }
     }
   } else if (searchParams.pickUpTimeTo !== undefined) {
-    query['pick_up_time'] = {
-      lte: new Date(searchParams.pickUpTimeTo),
+    const toDate = new Date(searchParams.pickUpTimeTo);
+    toDate.setUTCHours(23, 59, 59, 999);
+    
+    query['trip'] = {
+      ...query['trip'] as object,
+      pickup_time: {
+        lte: toDate,
+      }
     }
   }
   return prisma.booking.findMany({
@@ -98,6 +114,7 @@ export const getUserBookingsCountAccess = async (userId: number, searchParams: {
   }
   if (searchParams.to !== undefined) {
     query['trip'] = {
+      ...query['trip'] as object,
       dropoff_location: {
         // case insensitive
         contains: searchParams.to.toLowerCase().trim(),
@@ -109,17 +126,32 @@ export const getUserBookingsCountAccess = async (userId: number, searchParams: {
     query['booking_status'] = searchParams.bookingStatus
   }
   if (searchParams.pickUpTimeFrom !== undefined && searchParams.pickUpTimeTo !== undefined) {
-    query['pick_up_time'] = {
-      gte: new Date(searchParams.pickUpTimeFrom),
-      lte: new Date(searchParams.pickUpTimeTo),
+    const toDate = new Date(searchParams.pickUpTimeTo);
+    toDate.setUTCHours(23, 59, 59, 999);
+    
+    query['trip'] = {
+      ...query['trip'] as object,
+      pickup_time: {
+        gte: new Date(searchParams.pickUpTimeFrom),
+        lte: toDate,
+      }
     }
   } else if (searchParams.pickUpTimeFrom !== undefined) {
-    query['pick_up_time'] = {
-      gte: new Date(searchParams.pickUpTimeFrom),
+    query['trip'] = {
+      ...query['trip'] as object,
+      pickup_time: {
+        gte: new Date(searchParams.pickUpTimeFrom),
+      }
     }
   } else if (searchParams.pickUpTimeTo !== undefined) {
-    query['pick_up_time'] = {
-      lte: new Date(searchParams.pickUpTimeTo),
+    const toDate = new Date(searchParams.pickUpTimeTo);
+    toDate.setUTCHours(23, 59, 59, 999);
+    
+    query['trip'] = {
+      ...query['trip'] as object,
+      pickup_time: {
+        lte: toDate,
+      }
     }
   }
 
