@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Aleo, Inter } from "next/font/google";
 import "./globals.css";
-import { Navbar } from "@/components/Navbar";
 import { SessionProvider } from "next-auth/react";
 import { Suspense } from 'react';
 import LayoutWrapper from "./conditinalnavbar";
