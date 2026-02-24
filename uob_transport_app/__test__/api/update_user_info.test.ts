@@ -10,6 +10,16 @@ jest.mock("../../auth", () => ({
     auth: jest.fn()
 }));
 
+jest.mock("bcryptjs", () => ({
+    compareSync: jest.fn().mockResolvedValue(true)
+}))
+
+jest.mock("../../backend/access/user_access", () => ({
+    getUserFromID: jest.fn().mockResolvedValue({
+        user_id: 2
+    })
+}))
+
 jest.mock("../../backend/update_user_info/update_user");
 
 describe("Update user info api route correctly calls the backend function related to it", () => {
@@ -50,8 +60,6 @@ describe("Update user info api route correctly calls the backend function relate
         const data = {
             user_id: 2,
             name: "Test",
-            surname: "test",
-            username: "no",
             email: "sdasdasd",
             phone_number: "12341312",
             department: "Damn"
@@ -79,6 +87,7 @@ describe("Update user info api route correctly calls the backend function relate
             user_id: 2,
             name: "Test",
             email: "sdasdasd",
+            password: "something",
             phone_number: "12341312",
             department: "Damn"
         }

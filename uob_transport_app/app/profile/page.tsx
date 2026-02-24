@@ -9,7 +9,14 @@ import {
   Snackbar,
   Alert,
   AlertColor,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  IconButton,
+  InputAdornment,
 } from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import EditIcon from "@mui/icons-material/Edit";
@@ -17,6 +24,8 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { getDepartments } from "@/app/requests/departments";
 import { department } from "@/generated/prisma/client";
+import { UserRecord } from "@/model/models";
+import { easyGetRequest } from "@/utils/easyRequest";
 
 const role: Record<string, string> = {
   normal_user: "Normal User",
@@ -33,6 +42,8 @@ export default function Profile() {
 
   const [editMode, setEditMode] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [userData, setUserData] = useState<UserRecord>();
+  const [show, setShow] = useState(false);
 
   const [nameEdit, setNameEdit] = useState(false);
   const [emailEdit, setEmailEdit] = useState(false);
@@ -55,9 +66,15 @@ export default function Profile() {
   const [editData, setEditData] = useState({
     name: "",
     email: "",
-    dep_id: 0,
+    department: "",
     phone_number: "",
   });
+
+  const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
+  const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState(
+    "Changes were not saved, try again later.",
+  );
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -67,14 +84,24 @@ export default function Profile() {
 
   const [departments, setDepartmentList] = useState<department[]>([]);
   useEffect(() => {
-    getDepartments().then((res) => {
-      if (res.status === 200) {
-        res.json().then(data => {
-          setDepartmentList(data);
-        })
+    const fetchAll = async () => {
+      const [depRes, userRes] = await Promise.all([
+        getDepartments(),
+        easyGetRequest("user-data", {}),
+      ]);
+
+      if (depRes.status === 200) {
+        const data = await depRes.json();
+        setDepartmentList(data);
       }
-    });
-  }, [])
+
+      if (userRes.status === 200) {
+        const data = await userRes.json();
+        setUserData(data.body);
+      }
+    };
+    fetchAll();
+  }, []);
 
   if (status === "loading") {
     // display a loading bar for feedback
@@ -105,6 +132,7 @@ export default function Profile() {
 
   const handleSave = () => {
     let fail = false;
+    // Setting all the errors at once to avoid overwritting the other erros with set function
     const newErrors = { ...changeError };
 
     // Client side validation
@@ -138,10 +166,11 @@ export default function Profile() {
       setLoading(true);
       const data = {
         user_id: session?.user.user_id,
+        password: password,
         ...(nameEditOn && { name: editData.name }),
         ...(emailEditOn && { email: editData.email }),
         ...(phoneEditOn && { phone_number: editData.phone_number }),
-        ...(departmentEditOn && { dep_id: editData.dep_id }),
+        ...(departmentEditOn && { department: editData.department }),
       };
       fetch("/api/update-user-info", {
         body: JSON.stringify(data),
@@ -150,21 +179,17 @@ export default function Profile() {
         if (res.status === 200) {
           setLoading(false);
           handleCancel();
+          setPasswordDialogOpen(false);
           setSnackState({ open: true, severity: "success" });
           // Trigger session refresh from server
-          update({
-            ...session,
-            user: {
-              ...session?.user,
-              ...(nameEditOn && { name: editData.name }),
-              ...(emailEditOn && { email: editData.email }),
-              ...(phoneEditOn && { phone_number: editData.phone_number }),
-              ...(departmentEditOn && { dep_id: editData.dep_id }),
-            },
-          });
+          update();
         } else {
           setLoading(false);
-          handleCancel();
+          if (res.status === 401) {
+            setErrorMessage("Invalid password");
+          } else {
+            setErrorMessage("Changes were not saved, try again later.");
+          }
           setSnackState({ open: true, severity: "error" });
         }
       });
@@ -180,6 +205,7 @@ export default function Profile() {
         transition={{ duration: 1, ease: "easeOut", delay: 0 }}
       >
         <Avatar
+          data-testid="avatar"
           className="drop-shadow-lg/40"
           sx={{
             bgcolor: "#2c2c2c",
@@ -211,6 +237,7 @@ export default function Profile() {
           <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
             {nameEditOn ? (
               <TextField
+                data-testid="nameTextField"
                 label="Name"
                 color="secondary"
                 sx={{
@@ -234,18 +261,18 @@ export default function Profile() {
                   setNameEdit(true);
                 }}
                 onMouseLeave={() => setNameEdit(false)}
+                data-testid="nameDiv"
               >
                 <div>
                   <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
                     Full Name
                   </p>
-                  <p className="text-gray-800">
-                    {session?.user.name}
-                  </p>
+                  <p className="text-gray-800">{session?.user.name}</p>
                 </div>
 
                 {nameEdit && (
                   <Button
+                    data-testid="name-edit-button"
                     sx={{ minWidth: "auto", padding: "4px", color: "gray" }}
                     onClick={() => {
                       setEditData({
@@ -302,9 +329,7 @@ export default function Profile() {
                   <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
                     Email
                   </p>
-                  <p className="text-gray-800 truncate">
-                    {session?.user.email}
-                  </p>
+                  <p className="text-gray-800 truncate">{userData?.email}</p>
                 </div>
 
                 {emailEdit && (
@@ -319,7 +344,7 @@ export default function Profile() {
                     onClick={() => {
                       setEditData({
                         ...editData,
-                        email: session?.user.email ?? "",
+                        email: userData?.email ?? "",
                       });
                       setEmailEditOn(true);
                       setEditMode(true);
@@ -360,7 +385,7 @@ export default function Profile() {
                   <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
                     Phone Number
                   </p>
-                  <p>{session?.user.phone_number}</p>
+                  <p>{userData?.phone_number}</p>
                 </div>
                 {phoneEdit && (
                   <Button
@@ -368,7 +393,7 @@ export default function Profile() {
                     onClick={() => {
                       setEditData({
                         ...editData,
-                        phone_number: session?.user.phone_number ?? "",
+                        phone_number: userData?.phone_number ?? "",
                       });
                       setPhoneEditOn(true);
                       setEditMode(true);
@@ -391,9 +416,9 @@ export default function Profile() {
             Account Details
           </h2>
           <div
-            className={`grid grid-cols-1 md:${session?.user.dep_id ? "grid-cols-2" : "grid-cols-1"} gap-4`}
+            className={`grid grid-cols-1 md:${userData?.department ? "grid-cols-2" : "grid-cols-1"} gap-4`}
           >
-            {session?.user.dep_id &&
+            {userData?.department &&
               (departmentEditOn ? (
                 <Autocomplete
                   sx={{
@@ -432,12 +457,17 @@ export default function Profile() {
                   }}
                   autoFocus
                   onChange={(_, dep) => {
-                    setEditData({ ...editData, dep_id: dep!.dep_id });
+                    setEditData({ ...editData, department: dep?.dep_name! });
                     setChangeError({ ...changeError, department: false });
                   }}
                   options={departments}
                   getOptionKey={(department) => department.dep_id}
                   getOptionLabel={(department) => department.dep_name}
+                  value={
+                    departments.find(
+                      (dep) => dep.dep_name === editData.department,
+                    ) ?? null
+                  }
                   renderInput={(params) => (
                     <TextField
                       {...params}
@@ -462,7 +492,7 @@ export default function Profile() {
                       Department
                     </p>
                     <p className="text-gray-800">
-                      {session.user.dep_name}
+                      {userData.department.dep_name}
                     </p>
                   </div>
 
@@ -476,7 +506,7 @@ export default function Profile() {
                       onClick={() => {
                         setEditData({
                           ...editData,
-                          dep_id: session?.user.dep_id ?? 0,
+                          department: userData.department.dep_name,
                         });
                         setDepartmentEditOn(true);
                         setEditMode(true);
@@ -518,7 +548,7 @@ export default function Profile() {
                   transform: "scale(1.03)",
                 },
               }}
-              onClick={handleSave}
+              onClick={() => setPasswordDialogOpen(true)}
             >
               {loading ? (
                 <CircularProgress color="inherit" size="20px" />
@@ -564,9 +594,89 @@ export default function Profile() {
           >
             {snackState.severity === "success"
               ? "Changes saved successfully."
-              : "Changes were not saved, try again later."}
+              : errorMessage}
           </Alert>
         </Snackbar>
+        <Dialog
+          open={passwordDialogOpen}
+          onClose={() => setPasswordDialogOpen(false)}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle
+            id="alert-dialog-title"
+            sx={{ fontWeight: "bold", fontSize: 19 }}
+          >
+            Enter Password to Save Changes
+          </DialogTitle>
+          <DialogContent>
+            <TextField
+              fullWidth
+              label="Password"
+              type={show ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              style={{ marginTop: "5px" }}
+              slotProps={{
+                input: {
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={() => setShow(!show)}
+                        edge="end"
+                        sx={{ color: "#2c2c2c" }}
+                      >
+                        {show ? (
+                          <VisibilityOff sx={{ fontSize: 21 }} />
+                        ) : (
+                          <Visibility sx={{ fontSize: 21 }} />
+                        )}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                },
+              }}
+            />
+          </DialogContent>
+          <DialogActions sx={{ px: 3, pb: 2, gap: 1 }}>
+            <Button
+              onClick={() => setPasswordDialogOpen(false)}
+              variant="outlined"
+              sx={{
+                borderColor: "#9ca3af",
+                color: "#6b7280",
+                textTransform: "none",
+                px: 3,
+                py: 1,
+                borderRadius: 2,
+                "&:hover": {
+                  borderColor: "#6b7280",
+                  bgcolor: "#f9fafb",
+                },
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSave}
+              autoFocus
+              variant="contained"
+              sx={{
+                bgcolor: "#2c2c2c",
+                color: "white",
+                textTransform: "none",
+                px: 3,
+                py: 1,
+                borderRadius: 2,
+                "&:hover": {
+                  bgcolor: "#1a1a1a",
+                },
+              }}
+            >
+              Save
+            </Button>
+          </DialogActions>
+        </Dialog>
       </div>
     </div>
   );

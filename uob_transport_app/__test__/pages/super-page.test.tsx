@@ -61,11 +61,7 @@ jest.mock("@/components/confirmDIalog", () => {
 const mockSession: Session = {
   user: {
     name: "Admin",
-    email: "admin@test.com",
     user_id: 6,
-    phone_number: "0123456789",
-    dep_id: null,
-    dep_name: null,
     account_type: "super_admin",
   },
   expires: "2099-01-01",

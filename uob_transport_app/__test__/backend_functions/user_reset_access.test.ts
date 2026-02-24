@@ -6,17 +6,6 @@ import {
   deleteUserResetAccess,
 } from '@/backend/access/user_reset_access';
 
-jest.mock('@/utils/client', () => ({
-  __esModule: true,
-  default: {
-    user_reset: {
-      create: jest.fn(),
-      findUnique: jest.fn(),
-      delete: jest.fn(),
-    },
-  },
-}));
-
 describe('user_reset_access', () => {
 
   afterEach(() => {

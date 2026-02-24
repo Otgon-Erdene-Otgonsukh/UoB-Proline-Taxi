@@ -7,32 +7,20 @@ declare module "next-auth" {
     interface User {
         user_id: number;
         name: string;
-        email: string;
-        phone_number: string;
-        dep_id: number | null;
-        dep_name: string | null;
         account_type: string;
     }
 
     interface Session {
         user: {
             name: string;
-            email: string;
             user_id: number;
-            phone_number: string;
-            dep_id: number | null;
-            dep_name: string | null;
             account_type: string;
         };
     }
 
     interface JWT {
         name: string;
-        email: string;
         user_id: number;
-        phone_number: string;
-        dep_id: number | null;
-        dep_name: string | null;
         account_type: string;
     }
 }

@@ -1039,7 +1039,7 @@ export default function BookingPage() {
                     </label>
                     <input
                       id="returnPickUp"
-                      className="border-2 rounded px-3 py-2"
+                      className="border-2 rounded px-3 py-2 border-gray-800"
                       value={formData.DropoffLoc}
                       disabled
                     />
@@ -1051,7 +1051,7 @@ export default function BookingPage() {
                     <input
                       id="returnDropOff"
                       placeholder="Enter"
-                      className="border-2 rounded px-3 py-2"
+                      className="border-2 rounded px-3 py-2 border-gray-800"
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
                           e.preventDefault();
@@ -1303,7 +1303,7 @@ export default function BookingPage() {
 
         {/* Map Section */}
         { /* https://mapcn.vercel.app/docs/routes */}
-        <div className="container hidden lg:block lg:w-1/2 w-full object-contain min-w-[600px] border-l-3 border-gray-700 rounded-[0px_5px_5px_0px] overflow-hidden">
+        <div className="container hidden lg:block lg:w-1/2 w-full object-contain min-w-150 border-l-3 border-gray-700 rounded-[0px_5px_5px_0px] overflow-hidden">
           { /* Lat and long are inverted by MAPCN here */}
           <Map ref={mapRef} center={[-2.602, 51.458]} zoom={14}>
             {start && routes && routes.length > 0 && (

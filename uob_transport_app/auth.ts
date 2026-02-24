@@ -43,10 +43,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             return {
               user_id: userDetail.user_id,
               name: userDetail.full_name,
-              email: userDetail.email,
-              phone_number: userDetail.phone_number,
-              dep_id: userDetail.department?.dep_id || null,
-              dep_name: userDetail.department?.dep_name || null,
               account_type: userDetail.role,
             };
           }
@@ -64,10 +60,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (user) {
         token.name = user.name;
         token.user_id = user.user_id;
-        token.phone_number = user.phone_number;
         token.account_type = user.account_type;
-        token.dep_id = user.dep_id;
-        token.dep_name = user.dep_name;
       }
 
       // On update, update the token & the session data from the database
@@ -75,10 +68,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const userDetail: (User & { department: department | null }) | null = await getUserFromID(token.user_id as number);
         if (userDetail) {
           token.name = userDetail.full_name;
-          token.email = userDetail.email;
-          token.phone_number = userDetail.phone_number;
-          token.dep_id = userDetail.department?.dep_id || null;
-          token.dep_name = userDetail.department?.dep_name || null;
         }
       }
 
@@ -91,13 +80,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       }
       if (token?.user_id) {
         session.user.user_id = token.user_id as number;
-      }
-      if (token?.phone_number) {
-        session.user.phone_number = token.phone_number as string;
-      }
-      if (token?.dep_id) {
-        session.user.dep_id = token.dep_id as number | null;
-        session.user.dep_name = token.dep_name as string | null;
       }
       if (token?.account_type) {
         session.user.account_type = token.account_type as string;
