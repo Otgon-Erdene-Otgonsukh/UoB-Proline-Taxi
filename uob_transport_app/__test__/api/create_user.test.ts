@@ -5,6 +5,7 @@ import { POST } from "@/app/api/create_user/route";
 import { prismaMock } from "@/utils/singleton";
 import bcrypt from "bcryptjs";
 import sendReq from "@/backend/register/send_req";
+import { NextRequest } from "next/server";
 
 jest.mock("bcryptjs", () => ({
   hash: jest.fn(),
@@ -29,7 +30,7 @@ describe("Registration tests with ensuring behaviour", () => {
       phoneNumber: "+44 2134123131",
     };
     const body = JSON.stringify(data);
-    const req = new Request("http://localhost:3000/api/create_user", {
+    const req = new NextRequest("http://localhost:3000/api/create_user", {
       method: "POST",
       body: body,
     });
@@ -59,7 +60,7 @@ describe("Registration tests with ensuring behaviour", () => {
     };
 
     const body = JSON.stringify(data);
-    const req = new Request("http://localhost:3000/api/create_user", {
+    const req = new NextRequest("http://localhost:3000/api/create_user", {
       method: "POST",
       body: body,
     });
@@ -99,7 +100,7 @@ describe("Registration tests with ensuring behaviour", () => {
     };
 
     const body = JSON.stringify(data);
-    const req = new Request("http://localhost:3000/api/create_user", {
+    const req = new NextRequest("http://localhost:3000/api/create_user", {
       method: "POST",
       body: body,
     });
@@ -141,7 +142,7 @@ describe("Registration tests with ensuring behaviour", () => {
     };
 
     const body = JSON.stringify(data);
-    const req = new Request("http://localhost:3000/api/create_user", {
+    const req = new NextRequest("http://localhost:3000/api/create_user", {
       method: "POST",
       body: body,
     });
