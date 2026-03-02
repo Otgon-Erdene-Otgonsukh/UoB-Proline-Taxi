@@ -146,9 +146,6 @@ export default function BookingPage() {
 
     let loc = "";
 
-    console.log(formData);
-
-
     // Custom Location
     if (isManualChecked) {
       if (formData.CustomLoc == "") {
@@ -425,7 +422,7 @@ export default function BookingPage() {
       if (data && data.length > 0) {
         const display_name = data[0].display_name
         // Check if last item in the array made by splititng with , is United Kingdom to ensure location is not abroad.
-        if (display_name.split(",")[display_name.split(",").length-1].trim() === "United Kingdom") {
+        if (display_name.split(",")[display_name.split(",").length - 1].trim() === "United Kingdom") {
           return { lat: data[0].lat, lon: data[0].lon, name: data[0].name, full_address: display_name };
         } else {
           if (!address.includes("United Kingdom")) {
@@ -464,7 +461,7 @@ export default function BookingPage() {
   const [routes, setRoutes] = useState<RouteData[]>([]);
   const mapRef = useRef<MapRef>(null);
 
-   type Loc = { name: string; lat: number; lng: number }
+  type Loc = { name: string; lat: number; lng: number }
 
   // Only call updateRoute when both start and end are set.
   async function updateRoute() {
@@ -502,7 +499,7 @@ export default function BookingPage() {
     }
   }
 
-  async function fetchRoutes(locations : Loc[]) {
+  async function fetchRoutes(locations: Loc[]) {
     const osrmRoutes = []; // Clear previous routes
     try {
       // Construct via list like this lon,lat;lon,lat;lon,lat for OSRM
@@ -516,12 +513,13 @@ export default function BookingPage() {
       const data = await response.json();
       if (data.routes?.length > 0) {
         osrmRoutes.push({
-            coordinates: data.routes[0].geometry.coordinates,
-            duration: data.routes[0].duration,
-            distance: data.routes[0].distance}
-          );
+          coordinates: data.routes[0].geometry.coordinates,
+          duration: data.routes[0].duration,
+          distance: data.routes[0].distance
         }
-        setRoutes(osrmRoutes);
+        );
+      }
+      setRoutes(osrmRoutes);
     } catch (error) {
       console.error("Failed to fetch routes:", error);
     }
@@ -617,11 +615,11 @@ export default function BookingPage() {
                       type="checkbox"
                       checked={isManualChecked}
                       onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        e.currentTarget.blur();
-                      }
-                    }}
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          e.currentTarget.blur();
+                        }
+                      }}
                       onChange={(e) => {
                         setIsManualChecked(e.target.checked);
                         setFormData({ ...formData, CustomLoc: "" });
@@ -744,7 +742,7 @@ export default function BookingPage() {
                         e.preventDefault();
                         e.currentTarget.blur();
                         // Go to next via box on Enter.
-                        setTimeout (() => {
+                        setTimeout(() => {
                           document.getElementById("via2")?.focus();
                         }, 10);
                       }
@@ -779,93 +777,93 @@ export default function BookingPage() {
 
               {/* Via Box 2 if Via Box 1 is populated, cleared when modified */}
 
-              {isViaChecked && 
-              formData.Via.length > 0 && formData.Via[0] != "" && (
-                <div className="flex flex-col">
-                  <input
-                    id="via2"
-                    placeholder="Via..."
-                    className={`border-2 rounded px-3 py-2 ${formFeedback.Via2 == "" ? "border-gray-800" : "border-red-700"}`}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        e.currentTarget.blur();
-                        // Go to next via box on Enter.
-                        setTimeout (() => {
-                          document.getElementById("via3")?.focus();
-                        }, 10);
-                      }
-                    }}
-                    onBlur={async (e) => {
-                      setFormData({ ...formData, Via: [...formData.Via.slice(0,1), e.target.value, ...formData.Via.slice(2)] });
-                      if (e.target.value == "") {
-                        setVias([...vias.slice(0, 1), ...vias.slice(2)]); // Remove via if field is cleared.
-                        return; // Do not try to update route if field is empty
-                      }
-                      const latlon = await getLatLon(e.target.value)
-                      if (latlon != null) {
-                        setVias([...vias.slice(0, 1), { name: latlon.name, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) }, ...vias.slice(2)]);
-                        addFormFeedback("Via2", ""); // Reset any validation errors
-                        e.target.value = latlon.full_address;
-                      } else {
-                        // Reset start and routes if no result is found.
-                        addFormFeedback("Via2", "No results found for this search term.");
-                        setVias(vias.slice(0, 1));
-                      }
-                    }}
-                  ></input>
-                  <FormHelperText
-                    sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
-                    className={`${formFeedback.Via2 != "" ? "" : "hidden"
-                      }`}
-                  >
-                    {formFeedback.Via2}
-                  </FormHelperText>
-                </div>
-              )}
+              {isViaChecked &&
+                formData.Via.length > 0 && formData.Via[0] != "" && (
+                  <div className="flex flex-col">
+                    <input
+                      id="via2"
+                      placeholder="Via..."
+                      className={`border-2 rounded px-3 py-2 ${formFeedback.Via2 == "" ? "border-gray-800" : "border-red-700"}`}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          e.currentTarget.blur();
+                          // Go to next via box on Enter.
+                          setTimeout(() => {
+                            document.getElementById("via3")?.focus();
+                          }, 10);
+                        }
+                      }}
+                      onBlur={async (e) => {
+                        setFormData({ ...formData, Via: [...formData.Via.slice(0, 1), e.target.value, ...formData.Via.slice(2)] });
+                        if (e.target.value == "") {
+                          setVias([...vias.slice(0, 1), ...vias.slice(2)]); // Remove via if field is cleared.
+                          return; // Do not try to update route if field is empty
+                        }
+                        const latlon = await getLatLon(e.target.value)
+                        if (latlon != null) {
+                          setVias([...vias.slice(0, 1), { name: latlon.name, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) }, ...vias.slice(2)]);
+                          addFormFeedback("Via2", ""); // Reset any validation errors
+                          e.target.value = latlon.full_address;
+                        } else {
+                          // Reset start and routes if no result is found.
+                          addFormFeedback("Via2", "No results found for this search term.");
+                          setVias(vias.slice(0, 1));
+                        }
+                      }}
+                    ></input>
+                    <FormHelperText
+                      sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
+                      className={`${formFeedback.Via2 != "" ? "" : "hidden"
+                        }`}
+                    >
+                      {formFeedback.Via2}
+                    </FormHelperText>
+                  </div>
+                )}
 
               {/* Via Box 3 if Via Box 1&2 are populated, cleared when modified */}
 
-              {isViaChecked && 
-              formData.Via.length > 1 && formData.Via[0] != "" && formData.Via[1] != "" && (
-                <div className="flex flex-col">
-                  <input
-                    id="via3"
-                    placeholder="Via..."
-                    className={`border-2 rounded px-3 py-2 ${formFeedback.Via3 == "" ? "border-gray-800" : "border-red-700"}`}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        e.currentTarget.blur();
-                      }
-                    }}
-                    onBlur={async (e) => {
-                      setFormData({ ...formData, Via: [...formData.Via.slice(0,2), e.target.value] });
-                      if (e.target.value == "") {
-                        setVias([...vias.slice(0, 2), ...vias.slice(3)]); // Remove via if field is cleared.
-                        return; // Do not try to update route if field is empty
-                      }
-                      const latlon = await getLatLon(e.target.value)
-                      if (latlon != null) {
-                        setVias([...vias.slice(0, 2), { name: latlon.name, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) }]);
-                        addFormFeedback("Via3", ""); // Reset any validation errors
-                        e.target.value = latlon.full_address;
-                      } else {
-                        // Reset start and routes if no result is found.
-                        addFormFeedback("Via3", "No results found for this search term.");
-                        setVias(vias.slice(0, 2));
-                      }
-                    }}
-                  ></input>
-                  <FormHelperText
-                    sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
-                    className={`${formFeedback.Via3 != "" ? "" : "hidden"
-                      }`}
-                  >
-                    {formFeedback.Via3}
-                  </FormHelperText>
-                </div>
-              )}
+              {isViaChecked &&
+                formData.Via.length > 1 && formData.Via[0] != "" && formData.Via[1] != "" && (
+                  <div className="flex flex-col">
+                    <input
+                      id="via3"
+                      placeholder="Via..."
+                      className={`border-2 rounded px-3 py-2 ${formFeedback.Via3 == "" ? "border-gray-800" : "border-red-700"}`}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          e.currentTarget.blur();
+                        }
+                      }}
+                      onBlur={async (e) => {
+                        setFormData({ ...formData, Via: [...formData.Via.slice(0, 2), e.target.value] });
+                        if (e.target.value == "") {
+                          setVias([...vias.slice(0, 2), ...vias.slice(3)]); // Remove via if field is cleared.
+                          return; // Do not try to update route if field is empty
+                        }
+                        const latlon = await getLatLon(e.target.value)
+                        if (latlon != null) {
+                          setVias([...vias.slice(0, 2), { name: latlon.name, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) }]);
+                          addFormFeedback("Via3", ""); // Reset any validation errors
+                          e.target.value = latlon.full_address;
+                        } else {
+                          // Reset start and routes if no result is found.
+                          addFormFeedback("Via3", "No results found for this search term.");
+                          setVias(vias.slice(0, 2));
+                        }
+                      }}
+                    ></input>
+                    <FormHelperText
+                      sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
+                      className={`${formFeedback.Via3 != "" ? "" : "hidden"
+                        }`}
+                    >
+                      {formFeedback.Via3}
+                    </FormHelperText>
+                  </div>
+                )}
 
               {/* Show flight input field only when flight checkbox is checked */}
               {isFlightChecked && (
@@ -1240,7 +1238,7 @@ export default function BookingPage() {
                   </label>
                   <NumberField
                     min={1}
-                    max={20}
+                    max={5}
                     defaultValue={1}
                     size="small"
                     onValueChange={(value) => {
@@ -1308,7 +1306,7 @@ export default function BookingPage() {
         <div className="container hidden lg:block lg:w-1/2 w-full object-contain min-w-150 border-l-3 border-gray-700 rounded-[0px_5px_5px_0px] overflow-hidden">
           { /* Lat and long are inverted by MAPCN here */}
           <Map ref={mapRef} center={[-2.602, 51.458]} zoom={14}>
-            { start && routes && routes.length > 0 && (
+            {start && routes && routes.length > 0 && (
               <MapRoute
                 coordinates={routes[0].coordinates}
                 color={"#6366f1"}
@@ -1318,15 +1316,15 @@ export default function BookingPage() {
             )};
 
             {start && start.lat && start.lng && ( // Only render marker when not null
-            <MapMarker longitude={start.lng} latitude={start.lat}>
-              <MarkerContent>
-                <div className="size-5 rounded-full bg-green-500 border-2 border-white shadow-lg" />
-                <MarkerLabel position="top" className="bg-white p-1 rounded opacity-80">{start.name}</MarkerLabel>
-              </MarkerContent>
-            </MapMarker>
+              <MapMarker longitude={start.lng} latitude={start.lat}>
+                <MarkerContent>
+                  <div className="size-5 rounded-full bg-green-500 border-2 border-white shadow-lg" />
+                  <MarkerLabel position="top" className="bg-white p-1 rounded opacity-80">{start.name}</MarkerLabel>
+                </MarkerContent>
+              </MapMarker>
             )}
 
-            { vias && vias.length > 0 && vias.map((via, index) => (
+            {vias && vias.length > 0 && vias.map((via, index) => (
               via.lat && via.lng && (
                 <MapMarker key={index} longitude={via.lng} latitude={via.lat}>
                   <MarkerContent>
@@ -1338,32 +1336,32 @@ export default function BookingPage() {
             ))}
 
             {end && end.lat && end.lng && (
-            <MapMarker longitude={end.lng} latitude={end.lat}>
-              <MarkerContent>
-                <div className="size-5 rounded-full bg-red-500 border-2 border-white shadow-lg" />
-                <MarkerLabel position="top" className="bg-white p-1 rounded opacity-80">{end.name}</MarkerLabel>
-              </MarkerContent>
-            </MapMarker>
+              <MapMarker longitude={end.lng} latitude={end.lat}>
+                <MarkerContent>
+                  <div className="size-5 rounded-full bg-red-500 border-2 border-white shadow-lg" />
+                  <MarkerLabel position="top" className="bg-white p-1 rounded opacity-80">{end.name}</MarkerLabel>
+                </MarkerContent>
+              </MapMarker>
             )}
 
-            { routes && routes.length > 0 && (
+            {routes && routes.length > 0 && (
               <div className="absolute top-3 left-3 bg-black text-white opacity-80 rounded-md gap-2 p-2">
-                  <div className="flex items-center gap-1.5">
-                    <Clock className="size-3.5" />
-                    <span className="text-md">
-                      {formatDuration(routes[0].duration)}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1.5 text-xs opacity-80">
-                    <Route className="size-3" />
-                    {formatDistance(routes[0].distance)}
-                  </div>
-                  <p className="text-xs opacity-80">Subject to traffic and weather conditions</p>
+                <div className="flex items-center gap-1.5">
+                  <Clock className="size-3.5" />
+                  <span className="text-md">
+                    {formatDuration(routes[0].duration)}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1.5 text-xs opacity-80">
+                  <Route className="size-3" />
+                  {formatDistance(routes[0].distance)}
+                </div>
+                <p className="text-xs opacity-80">Subject to traffic and weather conditions</p>
               </div>
             )}
-        </Map>
-      </div>
+          </Map>
         </div>
       </div>
+    </div>
   );
 }

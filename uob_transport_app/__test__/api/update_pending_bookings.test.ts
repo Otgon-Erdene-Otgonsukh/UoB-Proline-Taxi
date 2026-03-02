@@ -33,7 +33,6 @@ describe("Update booking API endpoint branch tests", () => {
     });
 
     const res = await POST(req);
-    const data = await res.json();
 
     expect(res.status).toBe(401);
     expect(updateStatus).not.toHaveBeenCalled();

@@ -1,9 +1,10 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import sendReq from "@/backend/register/send_req";
 import bcrypt from "bcryptjs";
 import prisma from "@/utils/client";
+import { withRateLimit } from "@/lib/rateLimit";
 
-export async function POST(req: Request) {
+async function createUserHandler(req: Request) {
   const request = await req.json();
   const mail: string = request.mail;
   const password: string = request.password;
@@ -92,4 +93,12 @@ export async function POST(req: Request) {
     console.error("There was a problem when creating an user.", error);
     return NextResponse.json({ status: 500, message: "User was not created." }, { status: 500 });
   }
+}
+
+export async function POST(request: NextRequest) {
+  return withRateLimit({
+    limit: 100, // 100 requests per 10 minutes
+    windowMs: 1000 * 60 * 10, // 10 minutes
+    getIdentifier: (req) => req.headers.get('x-real-ip') ?? req.headers.get('x-forwarded-for') ?? 'global', // get the IP address of the request
+  })(createUserHandler)(request);
 }

@@ -274,19 +274,6 @@ const Page = () => {
 
   const [tabValue, setTabValue] = useState(0);
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-    setTabValue(newValue);
-  };
-
-  function a11yProps(index: number) {
-    return {
-      id: `simple-tab-${index}`,
-      'aria-controls': `simple-tabpanel-${index}`,
-    };
-  }
-
-
-
   return (
     <div className="flex flex-col min-h-screen items-center pt-15 p-4">
       <Drawer
