@@ -34,13 +34,14 @@ import { department } from "@/generated/prisma/client";
 
 export default function BookingPage() {
   // Attach common locations as keys to hashmapped Lat/Lon for routing.
-  const commonLocations = {
-    "Queens Building": { "lat": "51.456890", "lng": "-2.601892" },
-    "Merchant Venturers Building": { "lat": "51.456111", "lng": "-2.602830" },
-    "Richmond Building": { "lat": "51.456996", "lng": "-2.613267" },
-    "Victoria Rooms": { "lat": "51.458173", "lng": "-2.609358" },
-    "Wills Memorial Building": { "lat": "51.455927", "lng": "-2.604696" },
-    "Physics Building": { "lat": "51.458986", "lng": "-2.602204" },
+  type commonLoc = { [key: string]: { lat: string; lng: string; address: string } };
+  const commonLocations: commonLoc = {
+    "Queens Building": { "lat": "51.456890", "lng": "-2.601892", address: "Queens Building, University of Bristol" },
+    "Merchant Venturers Building": { "lat": "51.456111", "lng": "-2.602830", address: "Merchant Venturers Building, University of Bristol" },
+    "Richmond Building": { "lat": "51.456996", "lng": "-2.613267", address: "Richmond Building, University of Bristol" },
+    "Victoria Rooms": { "lat": "51.458173", "lng": "-2.609358", address: "Victoria Rooms, University of Bristol" },
+    "Wills Memorial Building": { "lat": "51.455927", "lng": "-2.604696", address: "Wills Memorial Building, University of Bristol" },
+    "Physics Building": { "lat": "51.458986", "lng": "-2.602204", address: "Physics Building, University of Bristol" },
   };
 
   const session = useSession();
@@ -111,7 +112,7 @@ export default function BookingPage() {
     AdditionalInfo: string;
   };
   
-  type formLocation = { search_name: string; address: string; lat: number; lng: number } | null;
+  type formLocation = { short_name: string; address: string; lat: number; lng: number } | null;
 
   // Variables for storing the state of the values entered into the fields.
   const [formData, setFormData] = useState<FormData>({
@@ -147,7 +148,7 @@ export default function BookingPage() {
     // Reset all messages to default:
     clearFeedback();
 
-    let loc = "";
+    let loc = null;
 
     // Custom Location
     if (isManualChecked) {
@@ -162,14 +163,16 @@ export default function BookingPage() {
         fail = true;
       }
 
-      loc = formData.CustomLoc;
+      loc = formData.PickupLoc
     } else if (!isFlightChecked && !isManualChecked) {
       // Common Pickup Location / Dropdown
       if (formData.CommonLoc == "") {
         addFormFeedback("CommonLoc", "Please pick one.");
         fail = true;
       }
-      loc = formData.CommonLoc;
+      loc = { short_name: formData.CommonLoc, address: formData.CommonLoc,
+        lat: parseFloat(commonLocations[formData.CommonLoc].lat),
+        lng: parseFloat(commonLocations[formData.CommonLoc].lng)};
     } else loc = formData.Airport;
 
     // Department check
@@ -761,8 +764,8 @@ export default function BookingPage() {
                         setFormData({
                           ...formData,
                           Via: [{ 
-                            search_name: e.target.value,
-                            address: latlon.name, 
+                            short_name: latlon.name,
+                            address: latlon.full_address, 
                             lat: parseFloat(latlon.lat), 
                             lng: parseFloat(latlon.lon) 
                           },
@@ -824,8 +827,8 @@ export default function BookingPage() {
                             Via: [
                               ...formData.Via.slice(0, 1),
                               { 
-                                search_name: e.target.value,
-                                address: latlon.name, 
+                                short_name: latlon.name,
+                                address: latlon.full_address, 
                                 lat: parseFloat(latlon.lat), 
                                 lng: parseFloat(latlon.lon) 
                               },
@@ -883,8 +886,8 @@ export default function BookingPage() {
                             ...formData,
                             Via: [...formData.Via.slice(0, 2),
                               { 
-                                search_name: e.target.value,
-                                address: latlon.name, 
+                                short_name: latlon.name,
+                                address: latlon.full_address, 
                                 lat: parseFloat(latlon.lat), 
                                 lng: parseFloat(latlon.lon) 
                               },
@@ -1002,7 +1005,7 @@ export default function BookingPage() {
                     if (latlon != null) {
                       setEnd({ name: latlon.name, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) });
                       addFormFeedback("DropoffLoc", ""); // Reset any validation errors
-                      setFormData({ ...formData, DropoffLoc: { search_name: e.target.value, address: latlon.name, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) } });
+                      setFormData({ ...formData, DropoffLoc: { short_name: latlon.name, address: latlon.full_address, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) } });
                       e.target.value = latlon.full_address;
                     } else {
                       // Reset destination and show error if there are no results.
