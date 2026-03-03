@@ -93,11 +93,12 @@ export default function BookingPage() {
   type FormData = {
     CommonLoc: string;
     CustomLoc: string;
-    Via: string[];
+    PickupLoc: formLocation
+    Via: formLocation[];
     ReturnTo: string;
     FlightNum: string;
     Airport: string;
-    DropoffLoc: string;
+    DropoffLoc: formLocation;
     PickupDate: string;
     PickupTime: string;
     ReturnDate: string;
@@ -109,7 +110,8 @@ export default function BookingPage() {
     Passengers: number;
     AdditionalInfo: string;
   };
-
+  
+  type formLocation = { search_name: string; address: string; lat: number; lng: number } | null;
 
   // Variables for storing the state of the values entered into the fields.
   const [formData, setFormData] = useState<FormData>({
@@ -119,7 +121,8 @@ export default function BookingPage() {
     ReturnTo: "",
     FlightNum: "",
     Airport: "",
-    DropoffLoc: "",
+    DropoffLoc: null,
+    PickupLoc: null,
     PickupDate: "",
     PickupTime: "",
     ReturnDate: "",
@@ -177,13 +180,13 @@ export default function BookingPage() {
 
     // Drop-Off Location
     // Not too long, not too short.
-    if (formData.DropoffLoc == "") {
+    if (formData.DropoffLoc == null) {
       addFormFeedback("DropoffLoc", "Please enter a drop-off location.");
       fail = true;
-    } else if (formData.DropoffLoc.length < 5) {
+    } else if (formData.DropoffLoc.address.length < 5) {
       addFormFeedback("DropoffLoc", "Drop-off location not detailed enough.");
       fail = true;
-    } else if (formData.DropoffLoc.length > 100) {
+    } else if (formData.DropoffLoc.address.length > 200) {
       addFormFeedback("DropoffLoc", "Drop-off location too long.");
       fail = true;
     } else if (!routes || routes.length == 0) {
@@ -748,7 +751,6 @@ export default function BookingPage() {
                       }
                     }}
                     onBlur={async (e) => {
-                      setFormData({ ...formData, Via: [e.target.value, ...formData.Via.slice(1)] });
                       if (e.target.value == "") {
                         setVias([]);
                         return; // Do not try to update route if field is empty
@@ -756,11 +758,26 @@ export default function BookingPage() {
                       const latlon = await getLatLon(e.target.value)
                       if (latlon != null) {
                         setVias([{ name: latlon.name, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) }, ...vias.slice(1)]);
+                        setFormData({
+                          ...formData,
+                          Via: [{ 
+                            search_name: e.target.value,
+                            address: latlon.name, 
+                            lat: parseFloat(latlon.lat), 
+                            lng: parseFloat(latlon.lon) 
+                          },
+                            ...formData.Via.slice(1)] 
+                          });
                         addFormFeedback("Via1", ""); // Reset any validation errors
                         e.target.value = latlon.full_address;
                       } else {
                         // Reset start and routes if no result is found.
                         addFormFeedback("Via1", "No results found for this search term.");
+                        // Remove this via (and the next ones) if it is removed or changed to an invalid location.
+                        setFormData({
+                          ...formData,
+                          Via: [...formData.Via.slice(1)] 
+                        });
                         setVias([]);
                       }
                     }}
@@ -778,7 +795,7 @@ export default function BookingPage() {
               {/* Via Box 2 if Via Box 1 is populated, cleared when modified */}
 
               {isViaChecked &&
-                formData.Via.length > 0 && formData.Via[0] != "" && (
+                formData.Via.length > 0 && formData.Via[0] != null && (
                   <div className="flex flex-col">
                     <input
                       id="via2"
@@ -795,7 +812,6 @@ export default function BookingPage() {
                         }
                       }}
                       onBlur={async (e) => {
-                        setFormData({ ...formData, Via: [...formData.Via.slice(0, 1), e.target.value, ...formData.Via.slice(2)] });
                         if (e.target.value == "") {
                           setVias([...vias.slice(0, 1), ...vias.slice(2)]); // Remove via if field is cleared.
                           return; // Do not try to update route if field is empty
@@ -803,11 +819,29 @@ export default function BookingPage() {
                         const latlon = await getLatLon(e.target.value)
                         if (latlon != null) {
                           setVias([...vias.slice(0, 1), { name: latlon.name, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) }, ...vias.slice(2)]);
+                          setFormData({
+                            ...formData,
+                            Via: [
+                              ...formData.Via.slice(0, 1),
+                              { 
+                                search_name: e.target.value,
+                                address: latlon.name, 
+                                lat: parseFloat(latlon.lat), 
+                                lng: parseFloat(latlon.lon) 
+                              },
+                              ...formData.Via.slice(2)] 
+                          });
                           addFormFeedback("Via2", ""); // Reset any validation errors
                           e.target.value = latlon.full_address;
                         } else {
                           // Reset start and routes if no result is found.
                           addFormFeedback("Via2", "No results found for this search term.");
+                          // Remove this via (and the next ones) if it is removed or changed to an invalid location.
+                          setFormData({
+                            ...formData,
+                            Via: [...formData.Via.slice(0, 1)] 
+                          });
+                          // Remove it from the map too.
                           setVias(vias.slice(0, 1));
                         }
                       }}
@@ -825,7 +859,7 @@ export default function BookingPage() {
               {/* Via Box 3 if Via Box 1&2 are populated, cleared when modified */}
 
               {isViaChecked &&
-                formData.Via.length > 1 && formData.Via[0] != "" && formData.Via[1] != "" && (
+                formData.Via.length > 1 && formData.Via[0] != null && formData.Via[1] != null && (
                   <div className="flex flex-col">
                     <input
                       id="via3"
@@ -838,7 +872,6 @@ export default function BookingPage() {
                         }
                       }}
                       onBlur={async (e) => {
-                        setFormData({ ...formData, Via: [...formData.Via.slice(0, 2), e.target.value] });
                         if (e.target.value == "") {
                           setVias([...vias.slice(0, 2), ...vias.slice(3)]); // Remove via if field is cleared.
                           return; // Do not try to update route if field is empty
@@ -846,11 +879,28 @@ export default function BookingPage() {
                         const latlon = await getLatLon(e.target.value)
                         if (latlon != null) {
                           setVias([...vias.slice(0, 2), { name: latlon.name, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) }]);
+                          setFormData({
+                            ...formData,
+                            Via: [...formData.Via.slice(0, 2),
+                              { 
+                                search_name: e.target.value,
+                                address: latlon.name, 
+                                lat: parseFloat(latlon.lat), 
+                                lng: parseFloat(latlon.lon) 
+                              },
+                            ] 
+                          });
                           addFormFeedback("Via3", ""); // Reset any validation errors
                           e.target.value = latlon.full_address;
                         } else {
                           // Reset start and routes if no result is found.
                           addFormFeedback("Via3", "No results found for this search term.");
+                          // Remove this via if it is removed or changed to an invalid location.
+                          setFormData({
+                            ...formData,
+                            Via: [...formData.Via.slice(0, 2)] 
+                          });
+                          // Remove the vias from the map.
                           setVias(vias.slice(0, 2));
                         }
                       }}
@@ -940,7 +990,6 @@ export default function BookingPage() {
                     }
                   }}
                   onChange={(e) => {
-                    setFormData({ ...formData, DropoffLoc: e.target.value });
                     if (e.target.value !== "") {
                       addFormFeedback("DropoffLoc", "");
                     }
@@ -953,10 +1002,12 @@ export default function BookingPage() {
                     if (latlon != null) {
                       setEnd({ name: latlon.name, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) });
                       addFormFeedback("DropoffLoc", ""); // Reset any validation errors
+                      setFormData({ ...formData, DropoffLoc: { search_name: e.target.value, address: latlon.name, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) } });
                       e.target.value = latlon.full_address;
                     } else {
                       // Reset destination and show error if there are no results.
                       addFormFeedback("DropoffLoc", "No results found for this search term.");
+                      setFormData({ ...formData, DropoffLoc: null });
                       setEnd(null);
                       setRoutes([]);
                     }
@@ -1040,7 +1091,7 @@ export default function BookingPage() {
                     <input
                       id="returnPickUp"
                       className="border-2 rounded px-3 py-2 border-gray-800"
-                      value={formData.DropoffLoc}
+                      value={formData.DropoffLoc?.address || ""}
                       disabled
                     />
                   </div>
