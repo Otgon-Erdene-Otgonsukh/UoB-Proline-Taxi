@@ -46,48 +46,51 @@ export default function FAQPage() {
 
       <div className="lg:w-1/2 flex items-center justify-center lg:border-l border-black py-6 px-20">
         <div className="flex flex-col items-center justify-center text-center">
-          <h1 className="text-3xl font-bold mb-4 text-center text-shadow-lg text-gray-900 font-aleo">
+          <h1 className="text-3xl font-bold mb-25 text-center text-shadow-lg text-gray-900 font-aleo">
             Contact Proline Taxi
           </h1>
-          <div className="mt-4 mb-6 flex flex-row gap-8 items-center w-full">
-            <div className="flex-shrink-0 flex justify-center" style={{ width: 80 }}>
-              <LocationOnIcon
-                data-testid="logos"
-                sx={{ fontSize: 55, color: '#E53E3E' }}
-              />
-            </div>
-            <h2 className="text-xl font-medium text-left">
-              17 Kings Head Ln, Bishopsworth, <br /> Bristol BS13 7DB
-            </h2>
-          </div>
 
-          <div className="mb-6 flex flex-row gap-8 items-center w-full">
-            <div className="flex-shrink-0 flex justify-center" style={{ width: 80 }}>
-              <PhoneIcon
-                data-testid="logos"
-                sx={{ fontSize: 55, color: '#2AB0A8' }}
-              />
-            </div>
-            <div className="text-left">
-              <h2 className="text-xl font-bold">
-                <a href="tel:+447904459504">+44 7904 459 504</a>
+          <div className="-mt-8 w-full">
+            <div className="mt-4 mb-12 flex flex-row gap-8 items-center w-full">
+              <div className="flex-shrink-0 flex justify-center" style={{ width: 80 }}>
+                <LocationOnIcon
+                  data-testid="logos"
+                  sx={{ fontSize: 55, color: '#E53E3E' }}
+                />
+              </div>
+              <h2 className="text-xl font-medium text-left">
+                17 Kings Head Ln, Bishopsworth, <br /> Bristol BS13 7DB
               </h2>
-              <p className="text-xl">Mon - Sat: 09:00 - 20:00</p>
+            </div>
+
+            <div className="mb-12 flex flex-row gap-8 items-center w-full">
+              <div className="flex-shrink-0 flex justify-center" style={{ width: 80 }}>
+                <PhoneIcon
+                  data-testid="logos"
+                  sx={{ fontSize: 55, color: '#2AB0A8' }}
+                />
+              </div>
+              <div className="text-left">
+                <h2 className="text-xl font-bold">
+                  <a href="tel:+447904459504">+44 7904 459 504</a>
+                </h2>
+                <p className="text-xl">Mon - Sat: 09:00 - 20:00</p>
+              </div>
+            </div>
+
+            <div className="flex flex-row gap-8 items-center w-full">
+              <div className="flex-shrink-0 flex justify-center" style={{ width: 80 }}>
+                <EmailIcon
+                  data-testid="logos"
+                  sx={{ fontSize: 55, color: '#7C3AED' }}
+                />
+              </div>
+              <h2 className="text-xl font-medium text-left">
+                <a href="mailto:sales@prolinetaxi.com">sales@prolinetaxi.com</a>
+              </h2>
             </div>
           </div>
 
-          <div className="flex flex-row gap-8 items-center w-full">
-            <div className="flex-shrink-0 flex justify-center" style={{ width: 80 }}>
-              {/* Replaced custom MailIcon SVG with MUI EmailIcon */}
-              <EmailIcon
-                data-testid="logos"
-                sx={{ fontSize: 55, color: '#7C3AED' }}
-              />
-            </div>
-            <h2 className="text-xl font-medium text-left">
-              <a href="mailto:sales@prolinetaxi.com">sales@prolinetaxi.com</a>
-            </h2>
-          </div>
         </div>
       </div>
     </main>
