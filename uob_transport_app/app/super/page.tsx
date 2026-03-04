@@ -62,6 +62,7 @@ import DialogActions from "@mui/material/DialogActions";
 import CloseIcon from "@mui/icons-material/Close";
 import { StyledTableCell } from "@/components/StyledTableCell";
 import BookingPage from "../book/page";
+import { getBookingsList } from "./requests";
 
 
 interface TablePaginationActionsProps {
@@ -229,12 +230,6 @@ const Page = () => {
     user_status: userStatusToIntMap.pending,
     role: roleStrMap.normalUser
   })
-  const handleSubmitSearchForm = (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log('submit');
-    setIsLoading(true)
-    _rerenderTable()
-  }
 
   const [userDetail, setUserDetail] = useState<UserRecord>()
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
@@ -304,18 +299,45 @@ const Page = () => {
     })
   }
 
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-
-  const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
-    if (event.type === 'keydown' && ((event as React.KeyboardEvent).key === 'Tab' || (event as React.KeyboardEvent).key === 'Shift')) {
-      return;
-    }
-    setIsDrawerOpen(open);
-
-
+    const _getBookingListData = (page: number, pageSize: number) => {
+      getBookingsList(page, pageSize, {
+        ...searchFormInput,
+        pickUpTimeFrom: searchBookingFormInput.pickUpTimeFrom
+          ? searchBookingFormInput.pickUpTimeFrom.toISOString()
+          : "",
+        pickUpTimeTo: searchBookingFormInput.pickUpTimeTo
+          ? searchBookingFormInput.pickUpTimeTo.toISOString()
+          : "",
+        bookingStatus:
+          searchBookingFormInput?.bookingStatus === "All"
+            ? ""
+            : searchBookingFormInput?.bookingStatus,
+      }).then((res) => {
+        if (res.status === 200) {
+          res.json().then((data) => {
+            setBookingListData(data.bookings);
+            setBookingListCount(data.totalNum);
+            setIsLoading(false);
+          });
+        }
+      });
+    };
+type BookingSearchFormProps = {
+    pickUpTimeFrom?: Date;
+    pickUpTimeTo?: Date;
+    from?: string;
+    to?: string;
+    bookingStatus?: string;
   };
+  const [searchBookingFormInput, setSearchBookingFormInput] = useState<BookingSearchFormProps>({
+    pickUpTimeFrom: undefined,
+    pickUpTimeTo: undefined,
+    from: "",
+    to: "",
+    bookingStatus: "All",
+  });
 
-  const [snackbarState, setSnackbarState] = useState({
+    const [snackbarState, setSnackbarState] = useState({
     open: false,
     status: "success",
     message: "",
@@ -327,6 +349,84 @@ const Page = () => {
       open: false,
     });
   };
+
+  // Cancel booking
+  const [cancelBookDialogOpen, setCancelBookDialogOpen] = useState(false);
+  const [toCancelBookingId, setToCancelBookingId] = useState<number>();
+
+  const handleBookingsCancelBooking = (row: BookingRecord) => {
+    setToCancelBookingId(row.booking_id);
+    setCancelBookDialogOpen(true);
+  };
+
+  const handleCancelDialogClose = () => {
+    setCancelBookDialogOpen(false);
+    setToCancelBookingId(undefined);
+  };
+
+const handleConfirmCancel = () => {
+    cancelBooking(toCancelBookingId!).then((res) => {
+      setCancelBookDialogOpen(false);
+      if (res.status === 200) {
+        setSnackbarState({
+          open: true,
+          status: "success",
+          message: "Successfully Cancelled!",
+        });
+        setBookingListData(
+          bookingListData.map((ele) => {
+            if (ele.booking_id === toCancelBookingId) {
+              ele.booking_status = "Cancelled";
+            }
+            return ele;
+          }),
+        );
+      } else {
+        setSnackbarState({
+          open: true,
+          status: "error",
+          message: "Cancel failed, please try again later!",
+        });
+      }
+    });
+
+  const handleSubmitSearchForm = (e: React.SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (
+      searchBookingFormInput.pickUpTimeTo &&
+      searchBookingFormInput.pickUpTimeFrom &&
+      searchBookingFormInput.pickUpTimeFrom > searchBookingFormInput.pickUpTimeTo
+    ) {
+      setSnackbarState({
+        open: true,
+        status: "error",
+        message: "From Date cannot be later than the To Date!",
+      });
+      return;
+    }
+
+    setIsSearchSubmitted(true);
+    setIsLoading(true);
+    setPaginationMeta({
+      page: 0,
+      pageSize: paginationMeta.pageSize,
+    });
+    _getBookingListData(0, paginationMeta.pageSize);
+  };
+
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
+    if (event.type === 'keydown' && ((event as React.KeyboardEvent).key === 'Tab' || (event as React.KeyboardEvent).key === 'Shift')) {
+      return;
+    }
+    setIsDrawerOpen(open);
+
+
+  };
+
+
 
   const [tabValue, setTabValue] = useState(0);
 
@@ -353,54 +453,6 @@ const Page = () => {
   const handleBookingsEditDialogClose = () => {
     setEditBookDialogOpen(false);
   };
-
-  // Cancel booking
-  const [cancelBookDialogOpen, setCancelBookDialogOpen] = useState(false);
-  const [toCancelBookingId, setToCancelBookingId] = useState<number>();
-
-  const handleBookingsCancelBooking = (row: BookingRecord) => {
-    setToCancelBookingId(row.booking_id);
-    setCancelBookDialogOpen(true);
-  };
-
-  const handleCancelDialogClose = () => {
-    setCancelBookDialogOpen(false);
-    setToCancelBookingId(undefined);
-  };
-
-  const handleConfirmCancel = () => {
-    cancelBooking(toCancelBookingId!).then((res) => {
-      setCancelBookDialogOpen(false);
-      if (res.status === 200) {
-        setSnackbarState({
-          open: true,
-          status: "success",
-          message: "Successfully Cancelled!",
-        });
-        setBookingListData(
-          bookingListData.map((ele) => {
-            if (ele.booking_id === toCancelBookingId) {
-              ele.booking_status = "Cancelled";
-            }
-            return ele;
-          }),
-        );
-      } else {
-        setSnackbarState({
-          open: true,
-          status: "error",
-          message: "Cancel failed, please try again later!",
-        });
-      }
-    });
-  };
-
-  type BookingSearchFormProps = {
-    pickUpTimeFrom?: Date;
-    pickUpTimeTo?: Date;
-    from?: string;
-    to?: string;
-    bookingStatus?: string;
   };
 
   const [isSearchSubmitted, setIsSearchSubmitted] = useState(false);
