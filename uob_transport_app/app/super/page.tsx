@@ -275,7 +275,18 @@ const Page = () => {
   const [tabValue, setTabValue] = useState(0);
 
   return (
-    <div className="flex flex-col min-h-screen items-center pt-15 p-4">
+    <div className="flex-col font-inter">
+      <header className="w-full bg-[#2c2c2c] text-white p-3 shadow-lg items-center flex gap-4 sticky top-0 z-50">
+        <Button
+          onClick={toggleDrawer(true)}
+          sx={{ color: "white", minWidth: '40px' }}
+        >
+          <MenuIcon fontSize="medium" />
+        </Button>
+        <span className="font-aleo text-2xl sm:text-3xl font-semibold">User Management</span>
+      </header>
+
+    <div className="w-full flex justify-center items-start p-4">
       <Drawer
         anchor="left"
         open={isDrawerOpen}
@@ -312,29 +323,13 @@ const Page = () => {
         </Box>
       </Drawer>
       
-      <motion.div
-        className="bg-white shadow-lg rounded-lg p-6 md:p-8 w-full max-w-6xl mb-8 h-fit"
-        initial={{ opacity: 0, y: 7, scale: 0.98 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 1, ease: "easeOut", delay: 0.24 }}
-      >
+      <div className="w-full">
         {tabValue === 0 && (
           <>
-            <div className="flex justify-between items-center mb-4">
-              <div className="flex items-center gap-2 -ml-2">
-                <IconButton
-                  onClick={toggleDrawer(true)}
-                  sx={{
-                    color: '#2c2c2c',
-                    '&:hover': {
-                      bgcolor: '#f3f4f6',
-                    },
-                  }}
-                >
-                  <MenuIcon />
-                </IconButton>
+            <div className="flex justify-between items-center mb-4 px-20">
+              <div className="flex items-center gap-2">
                 <h1 className="text-xl font-aleo md:text-3xl font-semibold text-shadow-lg/20">
-                  User Management
+                  Users Table
                 </h1>
               </div>
               <Box
@@ -404,7 +399,7 @@ const Page = () => {
                 </Button>
               </Box>
             </div>
-
+            <div className="w-full">
             {isLoading ? (
               <Typography sx={{ color: "gray", fontSize: 16, textAlign: "center", my: 10 }}>
                 Getting user data...
@@ -414,7 +409,6 @@ const Page = () => {
                 No users to show.
               </Typography>
             ) : (
-              <div className="mt-7">
                 <UserTable
                   data={pendingUsersData}
                   count={pendingUserCount}
@@ -428,8 +422,8 @@ const Page = () => {
                   onRejectUser={(u) => { setUserDetail(u); setConfirmRejectDialogOpen(true); }}
                   ActionsComponent={TablePaginationActions}
                 />
-              </div>
             )}
+            </div>
           </>
         )}
 
@@ -456,7 +450,7 @@ const Page = () => {
             </Typography>
           </div>
         )}
-      </motion.div>
+      </div>  
       
       {userDetail && (
         <ViewDialog 
@@ -491,6 +485,7 @@ const Page = () => {
         confirmCallBack={() => { handleRejectUserRegister(userDetail!); setConfirmRejectDialogOpen(false); }}
         cancelCallBack={() => setConfirmRejectDialogOpen(false)}
       />
+    </div>
     </div>
   );
 };
