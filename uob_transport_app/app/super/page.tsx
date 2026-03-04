@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import { useSession } from "next-auth/react";
-import { UserRecord } from "@/model/models";
+import { BookingRecord, UserRecord } from "@/model/models";
 import { useTheme } from "@mui/material/styles";
 import { motion } from "framer-motion";
 import {
@@ -23,6 +23,7 @@ import {
   ListItemText,
   ListItemIcon,
   Divider,
+  TablePagination,
 } from "@mui/material";
 import PeopleIcon from '@mui/icons-material/People';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -30,13 +31,16 @@ import LocalTaxiIcon from '@mui/icons-material/LocalTaxi';
 import SettingsIcon from '@mui/icons-material/Settings';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import GroupsIcon from '@mui/icons-material/Groups';
+import CancelIcon from '@mui/icons-material/Cancel';
+import { DateTimePicker } from "@/components/datetimePicker/DateTimePicker";
+import { enLocale } from "@/components/datetimePicker/locale";
 import {
   KeyboardArrowLeft,
   KeyboardArrowRight,
   LastPage,
   FirstPage
 } from "@mui/icons-material"
-import { getUsersAsAdmin, updateUserAsAdmin } from "./request";
+import { getUsersAsAdmin, updateUserAsAdmin, cancelBooking, getBookingList } from "./request";
 import ViewDialog from "./userManageComponents/viewDialog";
 import EditDialog from "./userManageComponents/eidtDialog";
 import { userStatusToIntMap, userStatusToStrMap, roleStrMap, roles, roleReadableStrMap } from "./constants";
@@ -45,6 +49,20 @@ import ConfirmDialog from "@/components/confirmDIalog";
 import { UserTable } from "@/components/SuperUsersTable";
 import CustomizedButton from "@/components/CustomizedButton";
 import { bookingStatus } from "../home/constants";
+import TableContainer from "@mui/material/TableContainer";
+import Paper from "@mui/material/Paper";
+import Table from "@mui/material/Table";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import TableBody from "@mui/material/TableBody";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
+import CloseIcon from "@mui/icons-material/Close";
+import { StyledTableCell } from "@/components/StyledTableCell";
+import BookingPage from "../book/page";
+
 
 interface TablePaginationActionsProps {
   count: number;
@@ -55,6 +73,29 @@ interface TablePaginationActionsProps {
     newPage: number
   ) => void;
 }
+
+interface BookingViewDialogProps {
+  viewData: BookingRecord;
+  dialogOpen: boolean;
+  handleDialogClose: () => void;
+}
+function BookingViewDialog({ viewData, dialogOpen, handleDialogClose }: BookingViewDialogProps) {
+  return (
+    <Dialog open={dialogOpen} onClose={handleDialogClose}>
+      <DialogTitle>Booking Details</DialogTitle>
+      <DialogContent>
+        <p>Booking ID: {viewData.booking_id}</p>
+        <p>Additinal Info: {viewData.additional_info}</p>
+        <p>Time Created: {viewData.time_created}</p>
+        <p>Pickup: {viewData.trip.pickup_location}</p>
+        <p>Dropoff: {viewData.trip.dropoff_location}</p>
+        <p>Pickup Time: {viewData.trip.pickup_time}</p>
+        <p>Booking Status: {viewData.booking_status}</p>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 function TablePaginationActions(props: TablePaginationActionsProps) {
   const theme = useTheme();
   const { count, page, rowsPerPage, onPageChange } = props;
@@ -274,34 +315,111 @@ const Page = () => {
 
   };
 
+  const [snackbarState, setSnackbarState] = useState({
+    open: false,
+    status: "success",
+    message: "",
+  });
+
+  const handleCloseSnackbarState = () => {
+    setSnackbarState({
+      ...snackbarState,
+      open: false,
+    });
+  };
+
   const [tabValue, setTabValue] = useState(0);
+
+  const [bookDetailDialogOpen, setBookDetailDialogOpen] = useState(false);
+  const [bookDetail, setBookDetail] = useState<BookingRecord>();
 
   const handleBookingDialogOpen = () => {
     setEditBookDialogOpen(true);
   };
 
+  const handleBookingsViewDialogOpen = (data: BookingRecord) => {
+    setBookDetail(data);
+    setBookDetailDialogOpen(true);
+  };
+  const handleBookingsViewDialogClose = () => {
+    setBookDetailDialogOpen(false);
+  };
+
+  const [editBookDialogOpen, setEditBookDialogOpen] = useState(false);
+  const handleBookingsEditDialogOpen = (data: BookingRecord) => {
+    setBookDetail(data);
+    setEditBookDialogOpen(true);
+  };
+  const handleBookingsEditDialogClose = () => {
+    setEditBookDialogOpen(false);
+  };
+
+  // Cancel booking
+  const [cancelBookDialogOpen, setCancelBookDialogOpen] = useState(false);
+  const [toCancelBookingId, setToCancelBookingId] = useState<number>();
+
+  const handleBookingsCancelBooking = (row: BookingRecord) => {
+    setToCancelBookingId(row.booking_id);
+    setCancelBookDialogOpen(true);
+  };
+
+  const handleCancelDialogClose = () => {
+    setCancelBookDialogOpen(false);
+    setToCancelBookingId(undefined);
+  };
+
+  const handleConfirmCancel = () => {
+    cancelBooking(toCancelBookingId!).then((res) => {
+      setCancelBookDialogOpen(false);
+      if (res.status === 200) {
+        setSnackbarState({
+          open: true,
+          status: "success",
+          message: "Successfully Cancelled!",
+        });
+        setBookingListData(
+          bookingListData.map((ele) => {
+            if (ele.booking_id === toCancelBookingId) {
+              ele.booking_status = "Cancelled";
+            }
+            return ele;
+          }),
+        );
+      } else {
+        setSnackbarState({
+          open: true,
+          status: "error",
+          message: "Cancel failed, please try again later!",
+        });
+      }
+    });
+  };
+
   type BookingSearchFormProps = {
-      pickUpTimeFrom?: Date;
-      pickUpTimeTo?: Date;
-      from?: string;
-      to?: string;
-      bookingStatus?: string;
-    };
-    
-    const [isSearchSubmitted, setIsSearchSubmitted] = useState(false);
+    pickUpTimeFrom?: Date;
+    pickUpTimeTo?: Date;
+    from?: string;
+    to?: string;
+    bookingStatus?: string;
+  };
 
-    const dateTimePickerFromAnchorRef = useRef<HTMLDivElement>(null);
-    const dateTimePickerToAnchorRef = useRef<HTMLDivElement>(null);
-    const [dateTimePickerFromOpen, setDateTimePickerFromOpen] = useState(false);
-    const [dateTimePickerToOpen, setDateTimePickerToOpen] = useState(false);
+  const [isSearchSubmitted, setIsSearchSubmitted] = useState(false);
 
-    const [bookingSearchFormInput, setBookingSearchFormInput] = useState<BookingSearchFormProps>({
-      pickUpTimeFrom: undefined,
-      pickUpTimeTo: undefined,
-      from: undefined,
-      to: undefined,
-      bookingStatus: undefined
-    })
+  const dateTimePickerFromAnchorRef = useRef<HTMLDivElement>(null);
+  const dateTimePickerToAnchorRef = useRef<HTMLDivElement>(null);
+  const [dateTimePickerFromOpen, setDateTimePickerFromOpen] = useState(false);
+  const [dateTimePickerToOpen, setDateTimePickerToOpen] = useState(false);
+
+  const [bookingSearchFormInput, setBookingSearchFormInput] = useState<BookingSearchFormProps>({
+    pickUpTimeFrom: undefined,
+    pickUpTimeTo: undefined,
+    from: undefined,
+    to: undefined,
+    bookingStatus: undefined
+  })
+  const [bookingListData, setBookingListData] = useState<BookingRecord[]>([]);
+  const [bookingListCount, setBookingListCount] = useState(0);
+
   return (
     <div className="flex-col font-inter">
       <header className="w-full bg-[#2c2c2c] text-white p-3 shadow-lg items-center flex gap-4 sticky top-0 z-50">
@@ -314,148 +432,148 @@ const Page = () => {
         <span className="font-aleo text-2xl sm:text-3xl font-semibold">User Management</span>
       </header>
 
-    <div className="w-full flex justify-center items-start p-4">
-      <Drawer
-        anchor="left"
-        open={isDrawerOpen}
-        onClose={toggleDrawer(false)}
-      >
-        <Box
-          sx={{ width: 250 }}
-          role="presentation"
-          onClick={toggleDrawer(false)}
-          onKeyDown={toggleDrawer(false)}
+      <div className="w-full flex justify-center items-start p-4">
+        <Drawer
+          anchor="left"
+          open={isDrawerOpen}
+          onClose={toggleDrawer(false)}
         >
-          <Typography variant="h6" sx={{ p: 2, fontWeight: 'bold', fontFamily: "aleo", fontSize: 25 }}>
-            Admin Menu
-          </Typography>
-          <Divider />
-          <List>
-            {[
-              { text: 'Users', icon: <PeopleIcon />, index: 0 },
-              { text: 'Departments', icon: <GroupsIcon />, index: 1 },
-              { text: 'Bookings', icon: <LocalTaxiIcon />, index: 2 },
-              { text: 'Export Bookings', icon: <FileDownloadIcon />, index: 3 },
-              { text: 'Admin Settings', icon: <SettingsIcon />, index: 4 },
-            ].map((item) => (
-              <ListItem key={item.text} disablePadding>
-                <ListItemButton onClick={() => setTabValue(item.index)}>
-                  <ListItemIcon>
-                    {item.icon}
-                  </ListItemIcon>
-                  <ListItemText primary={item.text} />
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
-        </Box>
-      </Drawer>
-      
-      <div className="w-full">
-        {tabValue === 0 && (
-          <>
-            <div className="flex justify-between items-center mb-4 px-20">
-              <div className="flex items-center gap-2">
-                <h1 className="text-xl font-aleo md:text-3xl font-semibold text-shadow-lg/20">
-                  Users Table
-                </h1>
-              </div>
-              <Box
-                component="form"
-                onSubmit={handleSubmitSearchForm}
-                sx={{
-                  display: "flex",
-                  gap: 2.5,
-                }}
-              >
-                <TextField
-                  fullWidth
-                  label="Name"
-                  id="searchNameInput"
-                  value={searchFormInput.name}
-                  onChange={(e) => { setSearchFormInput({ ...searchFormInput, name: e.target.value }); }}
-                  size="small"
-                  sx={{ minWidth: 150 }}
-                />
-                <FormControl sx={{ minWidth: 150 }}>
-                  <InputLabel id="searchUserStatusInput">Account Type</InputLabel>
-                  <Select
-                    label="Account Type"
-                    id="searchUserStatusInput"
-                    value={searchFormInput.role}
-                    onChange={(e) => { setSearchFormInput({ ...searchFormInput, role: e.target.value }); }}
-                    size="small"
-                  >
-                    {roles.map(e => {
-                      return <MenuItem value={e} key={e}>{roleReadableStrMap[e]}</MenuItem>
-                    })}
-                  </Select>
-                </FormControl>
-                <FormControl sx={{ minWidth: 150 }}>
-                  <InputLabel id="searchUserStatusInput">User Status</InputLabel>
-                  <Select
-                    label="UserStatus"
-                    id="searchUserStatusInput"
-                    value={searchFormInput.user_status}
-                    onChange={(e) => { setSearchFormInput({ ...searchFormInput, user_status: e.target.value }); }}
-                    size="small"
-                  >
-                    <MenuItem value={userStatusToIntMap.pending}>{userStatusToStrMap[userStatusToIntMap.pending]}</MenuItem>
-                    <MenuItem value={userStatusToIntMap.approved}>{userStatusToStrMap[userStatusToIntMap.approved]}</MenuItem>
-                    <MenuItem value={userStatusToIntMap.rejected}>{userStatusToStrMap[userStatusToIntMap.rejected]}</MenuItem>
-                  </Select>
-                </FormControl>
-                <Button
-                  fullWidth
-                  type="submit"
-                  variant="contained"
-                  sx={{
-                    bgcolor: "#2c2c2c",
-                    color: "white",
-                    borderRadius: "0.375rem",
-                    fontSize: "0.875rem",
-                    fontWeight: 300,
-                    "&:hover": {
-                      bgcolor: "#414040",
-                      transform: "scale(1.01)",
-                    },
-                    transition: "all 0.2s",
-                  }}
-                  size="small"
-                >
-                  Search
-                </Button>
-              </Box>
-            </div>
-            <div className="w-full">
-            {isLoading ? (
-              <Typography sx={{ color: "gray", fontSize: 16, textAlign: "center", my: 10 }}>
-                Getting user data...
-              </Typography>
-            ) : pendingUsersData.length === 0 ? (
-              <Typography sx={{ color: "gray", fontSize: 16, textAlign: "center", my: 10 }}>
-                No users to show.
-              </Typography>
-            ) : (
-                <UserTable
-                  data={pendingUsersData}
-                  count={pendingUserCount}
-                  page={paginationMeta.page}
-                  pageSize={paginationMeta.pageSize}
-                  onPageChange={handleChangePage}
-                  onPageSizeChange={handleChangePageSize}
-                  onViewDetails={handleViewDialogOpen}
-                  onEditUser={handleEditDialogOpen}
-                  onAcceptUser={(u) => { setUserDetail(u); setConfirmAcceptDialogOpen(true); }}
-                  onRejectUser={(u) => { setUserDetail(u); setConfirmRejectDialogOpen(true); }}
-                  ActionsComponent={TablePaginationActions}
-                />
-            )}
-            </div>
-          </>
-        )}
+          <Box
+            sx={{ width: 250 }}
+            role="presentation"
+            onClick={toggleDrawer(false)}
+            onKeyDown={toggleDrawer(false)}
+          >
+            <Typography variant="h6" sx={{ p: 2, fontWeight: 'bold', fontFamily: "aleo", fontSize: 25 }}>
+              Admin Menu
+            </Typography>
+            <Divider />
+            <List>
+              {[
+                { text: 'Users', icon: <PeopleIcon />, index: 0 },
+                { text: 'Departments', icon: <GroupsIcon />, index: 1 },
+                { text: 'Bookings', icon: <LocalTaxiIcon />, index: 2 },
+                { text: 'Export Bookings', icon: <FileDownloadIcon />, index: 3 },
+                { text: 'Admin Settings', icon: <SettingsIcon />, index: 4 },
+              ].map((item) => (
+                <ListItem key={item.text} disablePadding>
+                  <ListItemButton onClick={() => setTabValue(item.index)}>
+                    <ListItemIcon>
+                      {item.icon}
+                    </ListItemIcon>
+                    <ListItemText primary={item.text} />
+                  </ListItemButton>
+                </ListItem>
+              ))}
+            </List>
+          </Box>
+        </Drawer>
 
-        {tabValue === 1 && (
+        <div className="w-full">
+          {tabValue === 0 && (
+            <>
+              <div className="flex justify-between items-center mb-4 px-20">
+                <div className="flex items-center gap-2">
+                  <h1 className="text-xl font-aleo md:text-3xl font-semibold text-shadow-lg/20">
+                    Users Table
+                  </h1>
+                </div>
+                <Box
+                  component="form"
+                  onSubmit={handleSubmitSearchForm}
+                  sx={{
+                    display: "flex",
+                    gap: 2.5,
+                  }}
+                >
+                  <TextField
+                    fullWidth
+                    label="Name"
+                    id="searchNameInput"
+                    value={searchFormInput.name}
+                    onChange={(e) => { setSearchFormInput({ ...searchFormInput, name: e.target.value }); }}
+                    size="small"
+                    sx={{ minWidth: 150 }}
+                  />
+                  <FormControl sx={{ minWidth: 150 }}>
+                    <InputLabel id="searchUserStatusInput">Account Type</InputLabel>
+                    <Select
+                      label="Account Type"
+                      id="searchUserStatusInput"
+                      value={searchFormInput.role}
+                      onChange={(e) => { setSearchFormInput({ ...searchFormInput, role: e.target.value }); }}
+                      size="small"
+                    >
+                      {roles.map(e => {
+                        return <MenuItem value={e} key={e}>{roleReadableStrMap[e]}</MenuItem>
+                      })}
+                    </Select>
+                  </FormControl>
+                  <FormControl sx={{ minWidth: 150 }}>
+                    <InputLabel id="searchUserStatusInput">User Status</InputLabel>
+                    <Select
+                      label="UserStatus"
+                      id="searchUserStatusInput"
+                      value={searchFormInput.user_status}
+                      onChange={(e) => { setSearchFormInput({ ...searchFormInput, user_status: e.target.value }); }}
+                      size="small"
+                    >
+                      <MenuItem value={userStatusToIntMap.pending}>{userStatusToStrMap[userStatusToIntMap.pending]}</MenuItem>
+                      <MenuItem value={userStatusToIntMap.approved}>{userStatusToStrMap[userStatusToIntMap.approved]}</MenuItem>
+                      <MenuItem value={userStatusToIntMap.rejected}>{userStatusToStrMap[userStatusToIntMap.rejected]}</MenuItem>
+                    </Select>
+                  </FormControl>
+                  <Button
+                    fullWidth
+                    type="submit"
+                    variant="contained"
+                    sx={{
+                      bgcolor: "#2c2c2c",
+                      color: "white",
+                      borderRadius: "0.375rem",
+                      fontSize: "0.875rem",
+                      fontWeight: 300,
+                      "&:hover": {
+                        bgcolor: "#414040",
+                        transform: "scale(1.01)",
+                      },
+                      transition: "all 0.2s",
+                    }}
+                    size="small"
+                  >
+                    Search
+                  </Button>
+                </Box>
+              </div>
+              <div className="w-full">
+                {isLoading ? (
+                  <Typography sx={{ color: "gray", fontSize: 16, textAlign: "center", my: 10 }}>
+                    Getting user data...
+                  </Typography>
+                ) : pendingUsersData.length === 0 ? (
+                  <Typography sx={{ color: "gray", fontSize: 16, textAlign: "center", my: 10 }}>
+                    No users to show.
+                  </Typography>
+                ) : (
+                  <UserTable
+                    data={pendingUsersData}
+                    count={pendingUserCount}
+                    page={paginationMeta.page}
+                    pageSize={paginationMeta.pageSize}
+                    onPageChange={handleChangePage}
+                    onPageSizeChange={handleChangePageSize}
+                    onViewDetails={handleViewDialogOpen}
+                    onEditUser={handleEditDialogOpen}
+                    onAcceptUser={(u) => { setUserDetail(u); setConfirmAcceptDialogOpen(true); }}
+                    onRejectUser={(u) => { setUserDetail(u); setConfirmRejectDialogOpen(true); }}
+                    ActionsComponent={TablePaginationActions}
+                  />
+                )}
+              </div>
+            </>
+          )}
+
+          {tabValue === 1 && (
             <div>
               <motion.div
                 className="bg-white shadow-lg/20 rounded-lg p-6 md:p-8 w-full max-w-6xl my-15 mt-13"
@@ -574,20 +692,20 @@ const Page = () => {
                     size="small"
                     sx={{ minWidth: 150 }}
                     ref={dateTimePickerToAnchorRef}
-                    defaultValue={searchFormInput.pickUpTimeTo?.toDateString()}
+                    defaultValue={bookingSearchFormInput.pickUpTimeTo?.toDateString()}
                     slotProps={{
                       inputLabel: {
-                        shrink: searchFormInput.pickUpTimeTo !== undefined,
+                        shrink: bookingSearchFormInput.pickUpTimeTo !== undefined,
                       },
                     }}
                   />
-                  {searchFormInput.pickUpTimeTo && (
+                  {bookingSearchFormInput.pickUpTimeTo && (
                     <IconButton
                       size="small"
                       sx={{ px: 1.3, mx: -2 }}
                       onClick={() => {
-                        setSearchFormInput({
-                          ...searchFormInput,
+                        setBookingSearchFormInput({
+                          ...bookingSearchFormInput,
                           pickUpTimeTo: undefined,
                         });
                         setIsSearchSubmitted(false);
@@ -600,9 +718,9 @@ const Page = () => {
                     open={dateTimePickerFromOpen}
                     onClose={() => setDateTimePickerFromOpen(false)}
                     anchorEl={dateTimePickerFromAnchorRef}
-                    selectedDate={searchFormInput.pickUpTimeFrom || null}
+                    selectedDate={bookingSearchFormInput.pickUpTimeFrom || null}
                     onDateChange={(date) => {
-                      setSearchFormInput({ ...searchFormInput, pickUpTimeFrom: date });
+                      setBookingSearchFormInput({ ...bookingSearchFormInput, pickUpTimeFrom: date });
                       setIsSearchSubmitted(false);
                     }}
                     locale={enLocale}
@@ -611,9 +729,9 @@ const Page = () => {
                     open={dateTimePickerToOpen}
                     onClose={() => setDateTimePickerToOpen(false)}
                     anchorEl={dateTimePickerToAnchorRef}
-                    selectedDate={searchFormInput.pickUpTimeTo || null}
+                    selectedDate={bookingSearchFormInput.pickUpTimeTo || null}
                     onDateChange={(date) => {
-                      setSearchFormInput({ ...searchFormInput, pickUpTimeTo: date });
+                      setBookingSearchFormInput({ ...bookingSearchFormInput, pickUpTimeTo: date });
                       setIsSearchSubmitted(false);
                     }}
                     locale={enLocale}
@@ -621,30 +739,30 @@ const Page = () => {
                   <CustomizedButton title="Search" type="warning" click={() => { }} />
                 </Box>
                 {isSearchSubmitted &&
-                  (searchFormInput.pickUpTimeFrom && searchFormInput.pickUpTimeTo ? (
+                  (bookingSearchFormInput.pickUpTimeFrom && bookingSearchFormInput.pickUpTimeTo ? (
                     <p className="font-aleo text-gray-700 mb-4 text-sm bg-blue-50 border-l-4 border-blue-400 py-2 px-4 rounded w-fit">
                       Showing Bookings from{" "}
                       <strong>
-                        {searchFormInput.pickUpTimeFrom.toISOString().split("T")[0]}
+                        {bookingSearchFormInput.pickUpTimeFrom.toISOString().split("T")[0]}
                       </strong>{" "}
                       to{" "}
                       <strong>
-                        {searchFormInput.pickUpTimeTo.toISOString().split("T")[0]}
+                        {bookingSearchFormInput.pickUpTimeTo.toISOString().split("T")[0]}
                       </strong>
                     </p>
-                  ) : searchFormInput.pickUpTimeFrom ? (
+                  ) : bookingSearchFormInput.pickUpTimeFrom ? (
                     <p className="font-aleo text-gray-700 mb-4 text-sm bg-blue-50 border-l-4 border-blue-400 py-2 px-4 rounded w-fit">
                       Showing Bookings from{" "}
                       <strong>
-                        {searchFormInput.pickUpTimeFrom.toISOString().split("T")[0]}
+                        {bookingSearchFormInput.pickUpTimeFrom.toISOString().split("T")[0]}
                       </strong>{" "}
                       to <strong>{new Date().toISOString().split("T")[0]}</strong>
                     </p>
-                  ) : searchFormInput.pickUpTimeTo ? (
+                  ) : bookingSearchFormInput.pickUpTimeTo ? (
                     <p className="font-aleo text-gray-700 mb-4 text-sm bg-blue-50 border-l-4 border-blue-400 py-2 px-4 rounded w-fit">
                       Showing Bookings up to{" "}
                       <strong>
-                        {searchFormInput.pickUpTimeTo.toISOString().split("T")[0]}
+                        {bookingSearchFormInput.pickUpTimeTo.toISOString().split("T")[0]}
                       </strong>
                     </p>
                   ) : null)}
@@ -719,20 +837,20 @@ const Page = () => {
                               <StyledTableCell>
                                 <div className="flex gap-2 justify-center">
                                   <CustomizedButton
-                                    click={() => handleViewDialogOpen(row)}
+                                    click={() => handleBookingsViewDialogOpen(row)}
                                     type="warning"
                                     title="View"
                                   />
                                   {row.booking_status === "Pending" && (
                                     <CustomizedButton
-                                      click={() => handleEditDialogOpen(row)}
+                                      click={() => handleBookingsEditDialogOpen(row)}
                                       type="warning"
                                       title="Edit"
                                     />
                                   )}
                                   {row.booking_status === "Pending" && (
                                     <CustomizedButton
-                                      click={() => handleCancelBooking(row)}
+                                      click={() => handleBookingsCancelBooking(row)}
                                       type="error"
                                       title="Cancel"
                                     />
@@ -745,13 +863,15 @@ const Page = () => {
                     </Table>
                   </TableContainer>
                 )}
-                <ViewDialog
-                  viewData={bookDetail!}
-                  dialogOpen={bookDetailDialogOpen}
-                  handleDialogClose={handleViewDialogClose}
-                />
+                {bookDetail && (
+                  <BookingViewDialog
+                    viewData={bookDetail}
+                    dialogOpen={bookDetailDialogOpen}
+                    handleDialogClose={handleBookingsViewDialogClose}
+                  />
+                )}
                 <Dialog
-                  onClose={handleEditDialogClose}
+                  onClose={handleBookingsEditDialogClose}
                   aria-labelledby="customized-dialog-title"
                   open={editBookDialogOpen}
                   maxWidth="md"
@@ -773,7 +893,7 @@ const Page = () => {
                   </DialogTitle>
                   <IconButton
                     aria-label="close"
-                    onClick={handleEditDialogClose}
+                    onClick={handleBookingsEditDialogClose}
                     sx={(theme) => ({
                       position: "absolute",
                       right: 8,
@@ -828,44 +948,44 @@ const Page = () => {
                   />
                 </div>
               </motion.div>
-          </div>
+            </div>
+          )}
+        </div>
+
+        {userDetail && (
+          <ViewDialog
+            viewData={userDetail}
+            dialogOpen={viewDialogOpen}
+            handleDialogClose={() => setViewDialogOpen(false)}
+          />
         )}
-      </div>  
-      
-      {userDetail && (
-        <ViewDialog 
-          viewData={userDetail} 
-          dialogOpen={viewDialogOpen} 
-          handleDialogClose={() => setViewDialogOpen(false)} 
-        />
-      )}
-      
-      {userDetail && (
-        <EditDialog 
-          key={userDetail.user_id} 
-          editData={userDetail} 
-          dialogOpen={editDialogOpen} 
-          handleDialogClose={handleEditDialogClose} 
-          departmentList={departments} 
-        />
-      )}
 
-      <ConfirmDialog
-        open={confirmAcceptDialogOpen}
-        dialogTitle="Accept User Registration"
-        confirmMessage="Are you sure you want to accept this user registration?"
-        confirmCallBack={() => { handleAcceptUserRegister(userDetail!); setConfirmAcceptDialogOpen(false); }}
-        cancelCallBack={() => setConfirmAcceptDialogOpen(false)}
-      />
+        {userDetail && (
+          <EditDialog
+            key={userDetail.user_id}
+            editData={userDetail}
+            dialogOpen={editDialogOpen}
+            handleDialogClose={handleEditDialogClose}
+            departmentList={departments}
+          />
+        )}
 
-      <ConfirmDialog
-        open={confirmRejectDialogOpen}
-        dialogTitle="Reject User Registration"
-        confirmMessage="Are you sure you want to reject this user registration?"
-        confirmCallBack={() => { handleRejectUserRegister(userDetail!); setConfirmRejectDialogOpen(false); }}
-        cancelCallBack={() => setConfirmRejectDialogOpen(false)}
-      />
-    </div>
+        <ConfirmDialog
+          open={confirmAcceptDialogOpen}
+          dialogTitle="Accept User Registration"
+          confirmMessage="Are you sure you want to accept this user registration?"
+          confirmCallBack={() => { handleAcceptUserRegister(userDetail!); setConfirmAcceptDialogOpen(false); }}
+          cancelCallBack={() => setConfirmAcceptDialogOpen(false)}
+        />
+
+        <ConfirmDialog
+          open={confirmRejectDialogOpen}
+          dialogTitle="Reject User Registration"
+          confirmMessage="Are you sure you want to reject this user registration?"
+          confirmCallBack={() => { handleRejectUserRegister(userDetail!); setConfirmRejectDialogOpen(false); }}
+          cancelCallBack={() => setConfirmRejectDialogOpen(false)}
+        />
+      </div>
     </div>
   );
 };
