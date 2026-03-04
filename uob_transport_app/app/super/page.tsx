@@ -299,30 +299,30 @@ const Page = () => {
     })
   }
 
-    const _getBookingListData = (page: number, pageSize: number) => {
-      getBookingsList(page, pageSize, {
-        ...searchFormInput,
-        pickUpTimeFrom: searchBookingFormInput.pickUpTimeFrom
-          ? searchBookingFormInput.pickUpTimeFrom.toISOString()
-          : "",
-        pickUpTimeTo: searchBookingFormInput.pickUpTimeTo
-          ? searchBookingFormInput.pickUpTimeTo.toISOString()
-          : "",
-        bookingStatus:
-          searchBookingFormInput?.bookingStatus === "All"
-            ? ""
-            : searchBookingFormInput?.bookingStatus,
-      }).then((res) => {
-        if (res.status === 200) {
-          res.json().then((data) => {
-            setBookingListData(data.bookings);
-            setBookingListCount(data.totalNum);
-            setIsLoading(false);
-          });
-        }
-      });
-    };
-type BookingSearchFormProps = {
+  const _getBookingListData = (page: number, pageSize: number) => {
+    getBookingsList(page, pageSize, {
+      ...searchFormInput,
+      pickUpTimeFrom: searchBookingFormInput.pickUpTimeFrom
+        ? searchBookingFormInput.pickUpTimeFrom.toISOString()
+        : "",
+      pickUpTimeTo: searchBookingFormInput.pickUpTimeTo
+        ? searchBookingFormInput.pickUpTimeTo.toISOString()
+        : "",
+      bookingStatus:
+        searchBookingFormInput?.bookingStatus === "All"
+          ? ""
+          : searchBookingFormInput?.bookingStatus,
+    }).then((res) => {
+      if (res.status === 200) {
+        res.json().then((data) => {
+          setBookingListData(data.bookings);
+          setBookingListCount(data.totalNum);
+          setIsLoading(false);
+        });
+      }
+    });
+  };
+  type BookingSearchFormProps = {
     pickUpTimeFrom?: Date;
     pickUpTimeTo?: Date;
     from?: string;
@@ -337,7 +337,7 @@ type BookingSearchFormProps = {
     bookingStatus: "All",
   });
 
-    const [snackbarState, setSnackbarState] = useState({
+  const [snackbarState, setSnackbarState] = useState({
     open: false,
     status: "success",
     message: "",
@@ -364,7 +364,7 @@ type BookingSearchFormProps = {
     setToCancelBookingId(undefined);
   };
 
-const handleConfirmCancel = () => {
+  const handleConfirmCancel = () => {
     cancelBooking(toCancelBookingId!).then((res) => {
       setCancelBookDialogOpen(false);
       if (res.status === 200) {
@@ -389,9 +389,10 @@ const handleConfirmCancel = () => {
         });
       }
     });
+  };
 
-  const handleSubmitSearchForm = (e: React.SubmitEvent<HTMLFormElement>) => {
-    e.preventDefault();
+    const handleSubmitSearchForm = (e: React.SubmitEvent<HTMLFormElement>) => {
+      e.preventDefault();
 
     if (
       searchBookingFormInput.pickUpTimeTo &&
@@ -422,11 +423,7 @@ const handleConfirmCancel = () => {
       return;
     }
     setIsDrawerOpen(open);
-
-
   };
-
-
 
   const [tabValue, setTabValue] = useState(0);
 
@@ -452,7 +449,6 @@ const handleConfirmCancel = () => {
   };
   const handleBookingsEditDialogClose = () => {
     setEditBookDialogOpen(false);
-  };
   };
 
   const [isSearchSubmitted, setIsSearchSubmitted] = useState(false);
@@ -635,7 +631,7 @@ const handleConfirmCancel = () => {
               >
                 <div className="flex justify-between mb-6">
                   <h1 className="font-aleo text-2xl sm:text-3xl font-semibold text-shadow-lg/20">
-                    MY BOOKINGS
+                    Bookings Table
                   </h1>
                   <CustomizedButton
                     title="+ New Booking"
