@@ -46,14 +46,14 @@ export default function FAQPage() {
 
       <div className="lg:w-1/2 flex items-center justify-center lg:border-l border-black py-6 px-20">
         <div className="flex flex-col items-center justify-center text-center">
-          <h1 className="text-3xl font-bold mb-8 text-center text-shadow-lg text-gray-900 font-aleo">
+          <h1 className="text-3xl font-bold mb-13 text-center text-shadow-lg text-gray-900 font-aleo">
             Contact Proline Taxi
           </h1>
 
-          <div className="mt-4 mb-6 flex flex-row gap-8 items-center w-full">
+          <div className="mt-4 mb-6 flex flex-row gap-15 items-center w-full">
             <div
               className="flex-shrink-0 flex items-center justify-center rounded-full"
-              style={{ width: 80, height: 80, backgroundColor: '#FED7D7' }}
+              style={{ width: 75, height: 75, backgroundColor: '#FED7D7' }}
             >
               <LocationOnIcon data-testid="logos" sx={{ fontSize: 40, color: '#E53E3E' }} />
             </div>
@@ -62,10 +62,10 @@ export default function FAQPage() {
             </h2>
           </div>
 
-          <div className="mb-6 flex flex-row gap-8 items-center w-full">
+          <div className="mb-6 flex flex-row gap-15 items-center w-full">
             <div
               className="flex-shrink-0 flex items-center justify-center rounded-full"
-              style={{ width: 80, height: 80, backgroundColor: '#B2F5EA' }}
+              style={{ width: 75, height: 75, backgroundColor: '#B2F5EA' }}
             >
               <PhoneIcon data-testid="logos" sx={{ fontSize: 40, color: '#2AB0A8' }} />
             </div>
@@ -77,10 +77,10 @@ export default function FAQPage() {
             </div>
           </div>
 
-          <div className="flex flex-row gap-8 items-center w-full">
+          <div className="flex flex-row gap-15 items-center w-full">
             <div
               className="flex-shrink-0 flex items-center justify-center rounded-full"
-              style={{ width: 80, height: 80, backgroundColor: '#EDE9FE' }}
+              style={{ width: 75, height: 75, backgroundColor: '#EDE9FE' }}
             >
               <EmailIcon data-testid="logos" sx={{ fontSize: 40, color: '#7C3AED' }} />
             </div>
