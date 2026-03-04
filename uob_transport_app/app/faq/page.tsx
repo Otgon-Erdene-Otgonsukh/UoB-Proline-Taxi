@@ -1,17 +1,14 @@
-"use client"; // Needed for useState.
+"use client";
 
 import DdInfoBox from "@/components/Dropdown_info_box";
-import Image from "next/image";
-import { useState } from "react"; // For updates to UI when items are changed/clicked.
+import { useState } from "react";
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import PhoneIcon from '@mui/icons-material/Phone';
+import EmailIcon from '@mui/icons-material/Email';
 
 export default function FAQPage() {
-  // State do decide which item / question is open by its index (key), by default null as all closed.
   const [open, setOpen] = useState<number | null>(null);
 
-  // FAQs as list of dictionaries, consisting of:
-  // (q) Question: Shows on list of cards.
-  // (a) Answer: Shows once card dropdown has been clicked.
-  // (open) State: Whether that item is open or not.
   const faqs = [
     {
       q: "What fleet options are there?",
@@ -29,42 +26,50 @@ export default function FAQPage() {
   ];
 
   return (
-    <main className="flex flex-col lg:flex-row min-h-screen">
-      {/* Left hand side of page on lg screen, FAQs. */}
-      <div className="lg:w-1/2 flex flex-col max-w-3xl mb-auto mx-auto lg:mt-35 py-6 px-20">
-        <h1 className="text-3xl font-bold mb-8 text-center text-shadow-lg text-gray-900 font-aleo">
+    <main className="flex flex-col lg:flex-row h-screen overflow-hidden">
+      <div className="lg:w-1/2 flex flex-col justify-center mx-auto w-full px-20 py-6">
+        <h1 className="text-3xl font-bold mb-4 text-center text-shadow-lg text-gray-900 font-aleo">
           Frequently Asked Questions
         </h1>
-        <div className="w-full lg:pt-10 pt-5">
+        <div className="w-full pt-4">
           {faqs.map((faq, i) => (
-            // Creating a list of dropdown/item boxes, onClick (inside DdInfoBox element) is bound to setOpen to update the state of the dropdwons.
             <DdInfoBox
               key={i}
               title={faq.q}
               description={faq.a}
               open={open === i}
               click={() => setOpen(open === i ? null : i)}
-            ></DdInfoBox>
+            />
           ))}
         </div>
       </div>
 
-      {/* Right hand side of page on lg screen, contact info. */}
-      <div className="lg:w-1/2 flex items-center justify-center lg:border-l border-black my-auto lg:py-40 py-20">
+      <div className="lg:w-1/2 flex items-center justify-center lg:border-l border-black py-6 px-20">
         <div className="flex flex-col items-center justify-center text-center">
-          <h1 className="text-3xl font-bold mb-8 text-center text-shadow-lg text-gray-900 font-aleo">
+          <h1 className="text-3xl font-bold mb-13 text-center text-shadow-lg text-gray-900 font-aleo">
             Contact Proline Taxi
           </h1>
-          <div className="mt-5 lg:mt-10 mb-12 flex flex-row gap-8 pl-8">
-            <Image src="/map.png" alt="map logo" width="80" height="80" data-testid="logos"></Image>
-            <h2 className="text-xl font-medium pt-5">
+
+          <div className="mt-4 mb-6 flex flex-row gap-15 items-center w-full">
+            <div
+              className="flex-shrink-0 flex items-center justify-center rounded-full"
+              style={{ width: 75, height: 75, backgroundColor: '#FED7D7' }}
+            >
+              <LocationOnIcon data-testid="logos" sx={{ fontSize: 40, color: '#E53E3E' }} />
+            </div>
+            <h2 className="text-xl font-medium text-left">
               17 Kings Head Ln, Bishopsworth, <br /> Bristol BS13 7DB
             </h2>
           </div>
 
-          <div className="mb-12 flex flex-row gap-15">
-            <Image src="/Group.png" alt="Logo" width="50" height="50" data-testid="logos"></Image>
-            <div>
+          <div className="mb-6 flex flex-row gap-15 items-center w-full">
+            <div
+              className="flex-shrink-0 flex items-center justify-center rounded-full"
+              style={{ width: 75, height: 75, backgroundColor: '#B2F5EA' }}
+            >
+              <PhoneIcon data-testid="logos" sx={{ fontSize: 40, color: '#2AB0A8' }} />
+            </div>
+            <div className="text-left">
               <h2 className="text-xl font-bold">
                 <a href="tel:+447904459504">+44 7904 459 504</a>
               </h2>
@@ -72,9 +77,14 @@ export default function FAQPage() {
             </div>
           </div>
 
-          <div className="flex flex-row gap-15">
-            <Image src="/mail.png" alt="mail envelope logo" width="53" height="53" data-testid="logos"></Image>
-            <h2 className="text-xl font-medium pt-8 pr-2">
+          <div className="flex flex-row gap-15 items-center w-full">
+            <div
+              className="flex-shrink-0 flex items-center justify-center rounded-full"
+              style={{ width: 75, height: 75, backgroundColor: '#EDE9FE' }}
+            >
+              <EmailIcon data-testid="logos" sx={{ fontSize: 40, color: '#7C3AED' }} />
+            </div>
+            <h2 className="text-xl font-medium text-left">
               <a href="mailto:sales@prolinetaxi.com">sales@prolinetaxi.com</a>
             </h2>
           </div>
