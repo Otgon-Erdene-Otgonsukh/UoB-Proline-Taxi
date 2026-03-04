@@ -1,18 +1,18 @@
 import prisma from '@/utils/client';
 
+type formLocation = { short_name: string; address: string; lat: number; lng: number };
+
 export default async function createBooking(
     userID: number,
-    pickupLocation: string,
-    pickupLatitude: number | null,
-    pickupLongitude: number | null,
-    dropoffLocation: string, dropoffLatitude: number | null, dropoffLongitude: number | null,
+    pickupLocation: formLocation,
+    dropoffLocation: formLocation,
     pickupTime: Date,
     returnDT: Date | undefined,
     passengerName: string,
     email: string,
     tel_number: string,
     additional_info: string,
-    via: string,
+    via: formLocation[],
     returnTo: string | undefined,
     passenger_num: number,
     airport: string,
@@ -23,15 +23,11 @@ export default async function createBooking(
     const trip = await prisma.trip.create({
         data: {
             icabbi_booking_id: null, // Dependent on API added later.
-            pickup_location: pickupLocation,
-            pickup_latitude: pickupLatitude,
-            pickup_longitude: pickupLongitude,
-            dropoff_location: dropoffLocation,
-            dropoff_latitude: dropoffLatitude,
-            dropoff_longitude: dropoffLongitude,
+            pickup_location: JSON.stringify(pickupLocation),
+            dropoff_location: JSON.stringify(dropoffLocation),
             pickup_time: pickupTime,
             return_pickup_time: returnDT ? returnDT : null,
-            via: via,
+            via: JSON.stringify(via),
             passenger_num: passenger_num,
             return_drop_loc: returnTo,
             airport: airport,

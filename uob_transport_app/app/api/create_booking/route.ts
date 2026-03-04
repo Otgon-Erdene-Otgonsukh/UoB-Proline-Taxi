@@ -24,18 +24,20 @@ export async function POST(request: Request) {
     );
   }
 
+  type formLocation = { short_name: string; address: string; lat: number; lng: number };
+
   try {
     // Get the JSON body of the POST request.
     const request_json = await request.json();
     const user_id = session.user.user_id; // Use the user ID from the session.
-    const pickup_loc: string = request_json["pickup_location"].toString();
-    const dropoff_loc: string = request_json["dropoff_location"].toString();
+    const pickup_loc: formLocation = request_json["pickup_location"];
+    const dropoff_loc: formLocation = request_json["dropoff_location"];
     const passenger_name: string = request_json["passenger_name"].toString();
     const email: string = request_json["email"].toString();
     const tel_number: string = request_json["tel_number"].toString();
     const pickup_time = new Date(request_json["pickup_time"]);
     const additional_info: string = request_json["additional_info"].toString();
-    const via: string = request_json["via"].toString();
+    const via: formLocation[] = request_json["via"];
     const returnTo: string | undefined = request_json["returnTo"] ? request_json["returnTo"].toString() : undefined;
     const passenger_num: number = request_json["passengers"];
     const flight_num: string = request_json["flight_num"].toString();
@@ -54,11 +56,7 @@ export async function POST(request: Request) {
     await createBooking(
       user_id,
       pickup_loc,
-      null,
-      null,
       dropoff_loc,
-      null,
-      null,
       pickup_time,
       returnDT,
       passenger_name,
@@ -85,9 +83,9 @@ export async function POST(request: Request) {
 
     const emailHtml = await render(
       BookingInfo({
-        from: pickup_loc,
+        from: pickup_loc.address,
         via: via,
-        to: dropoff_loc,
+        to: dropoff_loc.address,
         airport: airport,
         flightNum: flight_num,
         pickUpTime: pickup_time,
