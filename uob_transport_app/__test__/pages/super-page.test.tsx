@@ -25,9 +25,6 @@ jest.mock("next-auth/react", () => ({
 jest.mock("@/app/super/request", () => ({
   getUsersAsAdmin: jest.fn(),
   updateUserAsAdmin: jest.fn(),
-}));
-
-jest.mock("@/app/super/requests", () => ({
   getDepartmentsList: jest.fn(),
 }));
 
