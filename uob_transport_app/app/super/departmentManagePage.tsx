@@ -10,46 +10,49 @@ import React, { useState, useEffect } from "react";
 import { DepartmentRecord } from "@/model/models";
 import CustomizedButton from "@/components/CustomizedButton";
 import { StyledStickyTableCell } from "@/components/StyledTableCell";
+import ViewDepartmentDialog from "./departmentManageComponents/viewDialog";
 
 const DepartmentManagePage = () => {
 
   const [departments, setDepartments] = useState<DepartmentRecord[]>([]);
   const [allDepartments, setAllDepartments] = useState<DepartmentRecord[]>([]);
-
+  
   useEffect(() => {
     // getDepartmentManageList().then(res => {
     //   if (res.status === 200) {
-    //     const data = await res.json();
-    //     setDepartments(data);
-    //   }
-    // });
-    const tmpDepartments = []
-    for (let index = 0; index < 100; index++) {
-      tmpDepartments.push({
-        dep_id: index,
-        dep_name: "Department " + index,
-        manager: {
-          time_created: "2026-01-01",
-          user_id: 1,
-          email: "manager@example.com",
-          full_name: "Manager " + index,
-          phone_number: "1234567890",
-          role: "manager",
-          user_status: 1
-        },
-        member_count: index
-      })  
-    }
+      //     const data = await res.json();
+      //     setDepartments(data);
+      //   }
+      // });
+      const tmpDepartments = []
+      for (let index = 0; index < 100; index++) {
+        tmpDepartments.push({
+          dep_id: index,
+          dep_name: "Department " + index,
+          manager: {
+            time_created: "2026-01-01",
+            user_id: 1,
+            email: "manager@example.com",
+            full_name: "Manager " + index,
+            phone_number: "1234567890",
+            role: "manager",
+            user_status: 1
+          },
+          member_count: index
+        })  
+      }
     setAllDepartments(tmpDepartments);
     setDepartments(tmpDepartments)
   }, []);
   
-  const [searchFormInput, setSearchFormInput] = useState({name: ""})
-
+  
+  const [managerData, setManagerData] = useState<DepartmentRecord["manager"]>();
+  const [managerDialogOpen, setManagerDialogOpen] = useState(false)
   const handleViewManager = (manager: DepartmentRecord["manager"]) => {
-    console.log(manager);
+    setManagerData(manager);
+    setManagerDialogOpen(true);
   };
-
+  
   const handleView = (department: DepartmentRecord) => {
     console.log(department);
   };
@@ -57,11 +60,12 @@ const DepartmentManagePage = () => {
   const handleEdit = (department: DepartmentRecord) => {
     console.log(department);
   };
-
+  
   const handleDelete = (department: DepartmentRecord) => {
     console.log(department)
   };
-
+  
+  const [searchFormInput, setSearchFormInput] = useState({name: ""})
   const handleSubmitSearchForm = (e: React.SubmitEvent) => {
     e.preventDefault()
     console.log(searchFormInput);
@@ -150,6 +154,8 @@ const DepartmentManagePage = () => {
           </Table>
         </TableContainer>
       </Box>
+      
+      {managerData && (<ViewDepartmentDialog viewData={managerData} dialogOpen={managerDialogOpen} handleDialogClose={() => setManagerDialogOpen(false)} />)}
     </>
   );
 };
