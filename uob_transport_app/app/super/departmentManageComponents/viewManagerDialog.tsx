@@ -13,7 +13,7 @@ import {
   Close as CloseIcon,
 } from "@mui/icons-material"
 import { DepartmentRecord } from "@/model/models";
-import { roleReadableStrMap, userStatusToIntMap, userStatusToStrMap } from "../../super/constants";
+import { roleReadableStrMap, userStatusToIntMap, userStatusToStrMap } from "../constants";
 
 const ViewDepartmentDialog = ({ viewData, dialogOpen, handleDialogClose }: { viewData: DepartmentRecord['manager'], dialogOpen: boolean, handleDialogClose: () => void }) => {
 

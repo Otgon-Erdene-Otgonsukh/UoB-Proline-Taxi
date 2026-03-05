@@ -10,7 +10,7 @@ import React, { useState, useEffect } from "react";
 import { DepartmentRecord } from "@/model/models";
 import CustomizedButton from "@/components/CustomizedButton";
 import { StyledStickyTableCell } from "@/components/StyledTableCell";
-import ViewDepartmentDialog from "./departmentManageComponents/viewDialog";
+import ViewDepartmentDialog from "./departmentManageComponents/viewManagerDialog";
 
 const DepartmentManagePage = () => {
 
