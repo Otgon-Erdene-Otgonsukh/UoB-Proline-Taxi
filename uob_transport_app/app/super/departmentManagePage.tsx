@@ -39,6 +39,22 @@ const DepartmentManagePage = () => {
     ]);
   }, []);
 
+  const handleViewManager = (manager: DepartmentRecord["manager"]) => {
+    console.log(manager);
+  };
+
+  const handleView = (department: DepartmentRecord) => {
+    console.log(department);
+  };
+
+  const handleEdit = (department: DepartmentRecord) => {
+    console.log(department);
+  };
+  
+  const handleDelete = (department: DepartmentRecord) => {
+    console.log(department)
+  };
+
   return (
     <Box>
       <TableContainer component={Paper} sx={{ boxShadow: "none", border: "none" }}>
@@ -56,16 +72,16 @@ const DepartmentManagePage = () => {
               <TableRow key={department.dep_id}>
                 <StyledTableCell>{department.dep_name}</StyledTableCell>
                 <StyledTableCell>
-                  <Button onClick={() => {}}>
+                  <Button onClick={() => handleViewManager(department.manager)}>
                     {department.manager.full_name}
                   </Button>
                 </StyledTableCell>
                 <StyledTableCell>{department.member_count}</StyledTableCell>
                 <StyledTableCell>
                   <div className="flex gap-2 justify-center">
-                    <CustomizedButton type="primary" click={() => {}} title="View" />
-                    <CustomizedButton type="warning" click={() => {}} title="Edit" />
-                    <CustomizedButton type="error" click={() => {}} title="Delete" />
+                    <CustomizedButton type="primary" click={() => handleView(department)} title="View" />
+                    <CustomizedButton type="warning" click={() => handleEdit(department)} title="Edit" />
+                    <CustomizedButton type="error" click={() => handleDelete(department)} title="Delete" />
                   </div>
                 </StyledTableCell>
               </TableRow>
