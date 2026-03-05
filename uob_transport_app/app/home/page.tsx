@@ -263,7 +263,7 @@ const Page = () => {
         </p>
       </motion.div>
       {data?.user.account_type === "finance_staff" ? (
-        <div className="flex mt-7 gap-10 text-sm max-w-6xl">
+        <div className="flex md:flex-row flex-col mt-7 gap-10 text-sm max-w-6xl">
           <motion.div
             className="bg-white flex flex-col items-center rounded-lg overflow-hidden px-4 text-gray-800 border-l-6 border-l-orange-500 drop-shadow-md/20 flex-1 cursor-pointer"
             initial={{ opacity: 0, y: 6, scale: 0.9 }}
@@ -347,7 +347,7 @@ const Page = () => {
           </motion.div>
         </div>
       ) : (
-        <div className="flex mt-7 gap-10 max-w-6xl">
+        <div className="flex md:flex-row flex-col mt-7 gap-10 max-w-6xl">
           <motion.div
             className="bg-white flex items-center rounded-lg overflow-hidden px-4 text-gray-800 border-l-6 border-l-yellow-500 drop-shadow-md/20"
             initial={{ opacity: 0, y: 6, scale: 0.9 }}
@@ -356,7 +356,7 @@ const Page = () => {
           >
             <Image
               src="/book.jpg"
-              width={150}
+              width={120}
               height={120}
               alt="person booking a taxi"
             ></Image>
@@ -590,7 +590,8 @@ const Page = () => {
             }}
             locale={enLocale}
           />
-          <CustomizedButton title="Search" type="warning" click={() => {}} />
+        <CustomizedButton title="Search" type="warning" click={() => {}} />
+          
         </Box>
         {isSearchSubmitted &&
           (searchFormInput.pickUpTimeFrom && searchFormInput.pickUpTimeTo ? (
@@ -767,7 +768,7 @@ const Page = () => {
                   mr: 1,
                   ":hover": { bgcolor: "#2c2c2c", color: "white" },
                 }}
-                onClick={handleCancelDialogClose}
+                onClick={handleEditDialogClose}
               >
                 Close
               </Button>
