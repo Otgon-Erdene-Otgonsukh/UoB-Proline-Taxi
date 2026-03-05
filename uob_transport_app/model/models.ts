@@ -57,3 +57,27 @@ export type UserRecord = {
   role: string;
   user_status: number;
 }
+
+export type MonthlyBookingData = {
+  month: string,
+  count: number
+}
+
+export type DepartmentRevenue = {
+  department: string,
+  bookingCount: number,
+  priceTotal: number
+}
+
+export type SuperCardData = {
+  totalUser: number,
+  totalBooking: number,
+  pendingUser: number,
+  priceRequired: number
+}
+
+export type SuperData = {
+  cardData: SuperCardData,
+  lineGraph: MonthlyBookingData[],
+  barGraph: DepartmentRevenue[]
+}
