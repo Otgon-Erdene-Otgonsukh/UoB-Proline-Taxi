@@ -161,6 +161,7 @@ export const Navbar = () => {
         </ul>
         <div className="pr-6 flex items-center gap-3">
           {/* Hamburger :) */}
+          {session && 
           <div className="lg:hidden -mr-5">
             <Button
               onClick={handleOpenNav}
@@ -228,6 +229,7 @@ export const Navbar = () => {
               )}
             </Menu>
           </div>
+          }
           {session ? (
             <div className="hidden md:block">
               <Button className="text-lg" sx={{ color: "white", fontFamily: "inter" }} onClick={handleClick}>Hi, {session.user?.name.split(" ")[0]}! <ArrowDropDownIcon sx={{ mb: 0.4, transform: open ? "rotate(180deg)" : "none" }} /></Button>
@@ -353,6 +355,10 @@ export const Navbar = () => {
                 '&:hover': {
                   backgroundColor: '#d1d5db',
                 },
+                mr: {
+                  md: 0,
+                  xs: -2
+                }
               }}
             >
               Login

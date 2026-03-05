@@ -96,7 +96,7 @@ export default function Log_forgot() {
           {snackbarState.status === 'success' ? 'Login success!' : 'Login failed! Try again'}
         </Alert>
       </Snackbar>
-      <motion.div initial={{opacity: 0, y: 6}} animate={{opacity: 1, y: 0}} transition={{duration: 0.7, ease: "easeInOut"}} className="md:w-1/3 w-4/5">
+      <motion.div initial={{opacity: 0, y: 6}} animate={{opacity: 1, y: 0}} transition={{duration: 0.7, ease: "easeInOut"}} className="md:w-1/3 w-[95%]">
       <Paper
         elevation={3}
         sx={{
