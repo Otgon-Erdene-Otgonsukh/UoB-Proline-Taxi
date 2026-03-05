@@ -10,7 +10,9 @@ import React, { useState, useEffect } from "react";
 import { DepartmentRecord } from "@/model/models";
 import CustomizedButton from "@/components/CustomizedButton";
 import { StyledStickyTableCell } from "@/components/StyledTableCell";
-import ViewDepartmentDialog from "./departmentManageComponents/viewManagerDialog";
+import ViewManagerDialog from "./departmentManageComponents/viewManagerDialog";
+import ViewDepartmentDialog from "./departmentManageComponents/viewDepartmentDialog";
+import EditDepartmentDialog from "./departmentManageComponents/eidtDepartmentDialog";
 
 const DepartmentManagePage = () => {
 
@@ -53,12 +55,17 @@ const DepartmentManagePage = () => {
     setManagerDialogOpen(true);
   };
   
+  const [departmentData, setDepartmentData] = useState<DepartmentRecord>();
+  const [departmentDialogOpen, setDepartmentDialogOpen] = useState(false)
   const handleView = (department: DepartmentRecord) => {
-    console.log(department);
+    setDepartmentData(department)
+    setDepartmentDialogOpen(true)
   };
-
+  
+  const [departmentEditDialogOpen, setDepartmentEditDialogOpen] = useState(false)
   const handleEdit = (department: DepartmentRecord) => {
-    console.log(department);
+    setDepartmentData(department)
+    setDepartmentEditDialogOpen(true)
   };
   
   const handleDelete = (department: DepartmentRecord) => {
@@ -155,7 +162,9 @@ const DepartmentManagePage = () => {
         </TableContainer>
       </Box>
       
-      {managerData && (<ViewDepartmentDialog viewData={managerData} dialogOpen={managerDialogOpen} handleDialogClose={() => setManagerDialogOpen(false)} />)}
+      {managerData && (<ViewManagerDialog viewData={managerData} dialogOpen={managerDialogOpen} handleDialogClose={() => setManagerDialogOpen(false)} />)}
+      {departmentData && (<ViewDepartmentDialog viewData={departmentData} dialogOpen={departmentDialogOpen} handleDialogClose={() => setDepartmentDialogOpen(false)} />)}
+      {departmentData && (<EditDepartmentDialog viewData={departmentData} dialogOpen={departmentEditDialogOpen} handleDialogClose={() => setDepartmentEditDialogOpen(false)} />)}
     </>
   );
 };
