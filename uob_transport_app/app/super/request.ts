@@ -24,3 +24,7 @@ export const updateUserAsAdmin = async (userData: UserRecord): Promise<Response>
 export const getDepartmentsList = async (): Promise<Response> => {
   return easyGetRequest('departments', {})
 }
+
+export const getDepartmentManageList = async (): Promise<Response> => {
+  return easyGetRequest('department-manage', {})
+}
