@@ -4,7 +4,7 @@ import Page from "@/app/super/page";
 import type { Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import { getUsersAsAdmin } from "@/app/super/request";
-import { getDepartmentsList } from "@/app/super/requests";
+import { getDepartmentsList } from "@/app/super/request";
 
 // ========== mocks ==========
 

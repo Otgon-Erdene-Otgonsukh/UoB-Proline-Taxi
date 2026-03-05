@@ -36,11 +36,10 @@ import {
   LastPage,
   FirstPage
 } from "@mui/icons-material"
-import { getUsersAsAdmin, updateUserAsAdmin } from "./request";
+import { getUsersAsAdmin, updateUserAsAdmin, getDepartmentsList } from "./request";
 import ViewDialog from "./userManageComponents/viewDialog";
 import EditDialog from "./userManageComponents/eidtDialog";
 import { userStatusToIntMap, userStatusToStrMap, roleStrMap, roles, roleReadableStrMap } from "./constants";
-import { getDepartmentsList } from "./requests";
 import ConfirmDialog from "@/components/confirmDIalog";
 import { UserTable } from "@/components/SuperUsersTable";
 
