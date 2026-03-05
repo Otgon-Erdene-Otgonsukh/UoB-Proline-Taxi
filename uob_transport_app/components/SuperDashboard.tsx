@@ -1,9 +1,11 @@
 "use client";
 
 import { Person, DriveEta, PendingActions, Sell } from "@mui/icons-material";
+import { CircularProgress } from "@mui/material";
 import { useEffect, useState } from "react";
 import { SuperData } from "@/model/models";
 import { easyGetRequest } from "@/utils/easyRequest";
+import { motion } from "framer-motion";
 import {
   CartesianGrid,
   Line,
@@ -17,14 +19,22 @@ import {
 
 export default function SuperDashboard() {
   const [dashboardData, setDashboardData] = useState<SuperData>();
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
+    setLoading(true);
     easyGetRequest("super-data", {})
       .then((res) => res.json())
-      .then((data) => setDashboardData(data));
+      .then((data) => {
+        setDashboardData(data);
+        setLoading(false);
+      });
   }, []);
   return (
     <div className="min-h-screen">
-      <div
+      <motion.div
+        initial={{ y: 10, opacity: 0, scale: 0.94 }}
+        animate={{ y: 0, opacity: 1, scale: 1 }}
+        transition={{ duration: 2, ease: "easeInOut" }}
         id="cards"
         className="grid grid-cols-2 md:grid-cols-4 md:mt-10 mt-5 mx-4 sm:mx-6 lg:mx-8 gap-4 md:gap-10 text-shadow-md/10"
       >
@@ -35,14 +45,18 @@ export default function SuperDashboard() {
               sx={{ fontSize: { xs: 32, sm: 40 } }}
             />
           </div>
-          <div className="text-right grow">
-            <p className="text-gray-500 text-[10px] sm:text-sm font-medium uppercase tracking-wide">
-              Active Users
-            </p>
-            <p className="text-2xl sm:text-4xl font-bold text-blue-600 mt-1">
-              {dashboardData?.cardData.totalUser}
-            </p>
-          </div>
+          {loading ? (
+            <CircularProgress color="inherit" sx={{ ml: 5 }} />
+          ) : (
+            <div className="text-right grow">
+              <p className="text-gray-500 text-[10px] sm:text-sm font-medium uppercase tracking-wide">
+                Active Users
+              </p>
+              <p className="text-2xl sm:text-4xl font-bold text-blue-600 mt-1">
+                {dashboardData?.cardData.totalUser}
+              </p>
+            </div>
+          )}
         </div>
 
         <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 flex items-center gap-4 border-r-4 border-green-500 hover:shadow-lg transition-shadow ease-in-out duration-200">
@@ -52,14 +66,18 @@ export default function SuperDashboard() {
               sx={{ fontSize: { xs: 32, sm: 40 } }}
             />
           </div>
-          <div className="text-right grow">
-            <p className="text-gray-500 text-[9.5px] sm:text-sm font-medium uppercase tracking-wide">
-              Total Bookings
-            </p>
-            <p className="text-2xl sm:text-4xl font-bold text-green-600 mt-1">
-              {dashboardData?.cardData.totalBooking}
-            </p>
-          </div>
+          {loading ? (
+            <CircularProgress color="inherit" sx={{ ml: 5 }} />
+          ) : (
+            <div className="text-right grow">
+              <p className="text-gray-500 text-[9.5px] sm:text-sm font-medium uppercase tracking-wide">
+                Total Bookings
+              </p>
+              <p className="text-2xl sm:text-4xl font-bold text-green-600 mt-1">
+                {dashboardData?.cardData.totalBooking}
+              </p>
+            </div>
+          )}
         </div>
 
         <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 flex items-center gap-4 border-r-4 border-orange-500 hover:shadow-lg transition-shadow ease-in-out duration-200">
@@ -69,14 +87,18 @@ export default function SuperDashboard() {
               sx={{ fontSize: { xs: 32, sm: 40 } }}
             />
           </div>
-          <div className="text-right grow">
-            <p className="text-gray-500 text-[10px] sm:text-sm font-medium uppercase tracking-wide">
-              Pending Users
-            </p>
-            <p className="text-2xl sm:text-4xl font-bold text-orange-600 mt-1">
-              {dashboardData?.cardData.pendingUser}
-            </p>
-          </div>
+          {loading ? (
+            <CircularProgress color="inherit" sx={{ ml: 5 }} />
+          ) : (
+            <div className="text-right grow">
+              <p className="text-gray-500 text-[10px] sm:text-sm font-medium uppercase tracking-wide">
+                Pending Users
+              </p>
+              <p className="text-2xl sm:text-4xl font-bold text-orange-600 mt-1">
+                {dashboardData?.cardData.pendingUser}
+              </p>
+            </div>
+          )}
         </div>
 
         <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 flex items-center gap-4 border-r-4 border-purple-500 hover:shadow-lg transition-shadow ease-in-out duration-200">
@@ -86,17 +108,24 @@ export default function SuperDashboard() {
               sx={{ fontSize: { xs: 32, sm: 40 } }}
             />
           </div>
-          <div className="text-right grow">
-            <p className="text-gray-500 text-[10px] sm:text-sm font-medium uppercase tracking-wide">
-              Price Required
-            </p>
-            <p className="text-2xl sm:text-4xl font-bold text-purple-600 mt-1">
-              {dashboardData?.cardData.priceRequired}
-            </p>
-          </div>
+          {loading ? (
+            <CircularProgress color="inherit" sx={{ ml: 5 }} />
+          ) : (
+            <div className="text-right grow">
+              <p className="text-gray-500 text-[10px] sm:text-sm font-medium uppercase tracking-wide">
+                Price Required
+              </p>
+              <p className="text-2xl sm:text-4xl font-bold text-purple-600 mt-1">
+                {dashboardData?.cardData.priceRequired}
+              </p>
+            </div>
+          )}
         </div>
-      </div>
-      <div
+      </motion.div>
+      <motion.div
+        initial={{ y: 10, opacity: 0, scale: 0.97 }}
+        animate={{ y: 0, opacity: 1, scale: 1 }}
+        transition={{ duration: 2, ease: "easeInOut" }}
         id="graphs"
         className="grid md:grid-cols-2 grid-cols-1 md:mt-10 mt-5 mx-4 sm:mx-6 lg:mx-8 gap-4 md:gap-10 mb-10"
       >
@@ -181,7 +210,7 @@ export default function SuperDashboard() {
                 width: "100%",
                 maxWidth: "700px",
                 maxHeight: "70vh",
-                aspectRatio: 1.618
+                aspectRatio: 1.618,
               }}
               responsive
               data={dashboardData?.barGraph}
@@ -228,7 +257,7 @@ export default function SuperDashboard() {
             </BarChart>
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }
