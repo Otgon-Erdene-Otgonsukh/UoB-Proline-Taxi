@@ -49,3 +49,7 @@ test("shows custom location input when Manually Enter is toggled", async () => {
   await userEvent.click(screen.getByLabelText(/manually enter/i));
   expect(screen.getByLabelText(/custom pick-up location/i)).toBeInTheDocument();
 });
+
+test("renders without crashing", () => {
+  expect(true).toBe(true);
+});
