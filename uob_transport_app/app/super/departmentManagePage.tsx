@@ -9,7 +9,7 @@ import {
 import { useState, useEffect } from "react";
 import { DepartmentRecord } from "@/model/models";
 import CustomizedButton from "@/components/CustomizedButton";
-import { StyledTableCell } from "@/components/StyledTableCell";
+import { StyledStickyTableCell } from "@/components/StyledTableCell";
 
 const DepartmentManagePage = () => {
 
@@ -22,22 +22,24 @@ const DepartmentManagePage = () => {
     //     setDepartments(data);
     //   }
     // });
-    setDepartments([
-      {
-        dep_id: 1,
-        dep_name: "Department 1",
+    const tmpDepartments = []
+    for (let index = 0; index < 100; index++) {
+      tmpDepartments.push({
+        dep_id: index,
+        dep_name: "Department " + index,
         manager: {
           time_created: "2026-01-01",
           user_id: 1,
           email: "manager@example.com",
-          full_name: "Manager 1",
+          full_name: "Manager " + index,
           phone_number: "1234567890",
           role: "manager",
           user_status: 1
         },
-        member_count: 10
-      }
-    ]);
+        member_count: index
+      })  
+      setDepartments(tmpDepartments);
+    }
   }, []);
   
   const [searchFormInput, setSearchFormInput] = useState({name: ""})
@@ -105,33 +107,33 @@ const DepartmentManagePage = () => {
         </Box>
       </div>
       <Box>
-        <TableContainer component={Paper} sx={{ boxShadow: "none", border: "none" }}>
-          <Table sx={{ minWidth: 500, borderCollapse: "collapse" }} aria-label="department table">
+        <TableContainer component={Paper} sx={{ boxShadow: "none", border: "none", maxHeight: 600 }}>
+          <Table stickyHeader sx={{ minWidth: 500}} aria-label="department table">
             <TableHead>
               <TableRow>
-                <StyledTableCell>Name</StyledTableCell>
-                <StyledTableCell>Manager</StyledTableCell>
-                <StyledTableCell>Member Count</StyledTableCell>
-                <StyledTableCell>Operation</StyledTableCell>
+                <StyledStickyTableCell>Name</StyledStickyTableCell>
+                <StyledStickyTableCell>Manager</StyledStickyTableCell>
+                <StyledStickyTableCell>Member Count</StyledStickyTableCell>
+                <StyledStickyTableCell>Operation</StyledStickyTableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {departments.map((department) => (
                 <TableRow key={department.dep_id}>
-                  <StyledTableCell>{department.dep_name}</StyledTableCell>
-                  <StyledTableCell>
+                  <StyledStickyTableCell>{department.dep_name}</StyledStickyTableCell>
+                  <StyledStickyTableCell>
                     <Button onClick={() => handleViewManager(department.manager)}>
                       {department.manager.full_name}
                     </Button>
-                  </StyledTableCell>
-                  <StyledTableCell>{department.member_count}</StyledTableCell>
-                  <StyledTableCell>
+                  </StyledStickyTableCell>
+                  <StyledStickyTableCell>{department.member_count}</StyledStickyTableCell>
+                  <StyledStickyTableCell>
                     <div className="flex gap-2 justify-center">
                       <CustomizedButton type="primary" click={() => handleView(department)} title="View" />
                       <CustomizedButton type="warning" click={() => handleEdit(department)} title="Edit" />
                       <CustomizedButton type="error" click={() => handleDelete(department)} title="Delete" />
                     </div>
-                  </StyledTableCell>
+                  </StyledStickyTableCell>
                 </TableRow>
               ))}
             </TableBody>
