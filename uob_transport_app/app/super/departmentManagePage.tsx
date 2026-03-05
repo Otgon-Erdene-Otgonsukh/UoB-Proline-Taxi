@@ -12,7 +12,7 @@ import CustomizedButton from "@/components/CustomizedButton";
 import { StyledStickyTableCell } from "@/components/StyledTableCell";
 import ViewManagerDialog from "./departmentManageComponents/viewManagerDialog";
 import ViewDepartmentDialog from "./departmentManageComponents/viewDepartmentDialog";
-import EditDepartmentDialog from "./departmentManageComponents/eidtDepartmentDialog";
+import EditDepartmentDialog from "./departmentManageComponents/editDepartmentDialog";
 
 const DepartmentManagePage = () => {
 
