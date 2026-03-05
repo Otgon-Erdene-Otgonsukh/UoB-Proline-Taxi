@@ -29,25 +29,23 @@ jest.mock("@/components/NumberField", () => ({
   default: () => <input data-testid="number-field" type="number" />,
 }));
 
-describe("BookingPage", () => {
-  it("renders the heading", () => {
-    render(<BookingPage />);
-    expect(screen.getByText("BOOKING DETAILS")).toBeInTheDocument();
-  });
+test("renders the heading", () => {
+  render(<BookingPage />);
+  expect(screen.getByText("BOOKING DETAILS")).toBeInTheDocument();
+});
 
-  it("renders the confirm button", () => {
-    render(<BookingPage />);
-    expect(screen.getByRole("button", { name: /confirm booking/i })).toBeInTheDocument();
-  });
+test("renders the confirm button", () => {
+  render(<BookingPage />);
+  expect(screen.getByRole("button", { name: /confirm booking/i })).toBeInTheDocument();
+});
 
-  it("renders the map", () => {
-    render(<BookingPage />);
-    expect(screen.getByTestId("map")).toBeInTheDocument();
-  });
+test("renders the map", () => {
+  render(<BookingPage />);
+  expect(screen.getByTestId("map")).toBeInTheDocument();
+});
 
-  it("shows custom location input when Manually Enter is toggled", async () => {
-    render(<BookingPage />);
-    await userEvent.click(screen.getByLabelText(/manually enter/i));
-    expect(screen.getByLabelText(/custom pick-up location/i)).toBeInTheDocument();
-  });
+test("shows custom location input when Manually Enter is toggled", async () => {
+  render(<BookingPage />);
+  await userEvent.click(screen.getByLabelText(/manually enter/i));
+  expect(screen.getByLabelText(/custom pick-up location/i)).toBeInTheDocument();
 });
