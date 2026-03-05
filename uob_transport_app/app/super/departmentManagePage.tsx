@@ -13,6 +13,7 @@ import { StyledStickyTableCell } from "@/components/StyledTableCell";
 import ViewManagerDialog from "./departmentManageComponents/viewManagerDialog";
 import ViewDepartmentDialog from "./departmentManageComponents/viewDepartmentDialog";
 import EditDepartmentDialog from "./departmentManageComponents/editDepartmentDialog";
+import ConfirmDialog from "@/components/confirmDIalog";
 
 const DepartmentManagePage = () => {
 
@@ -68,8 +69,13 @@ const DepartmentManagePage = () => {
     setDepartmentEditDialogOpen(true)
   };
   
-  const handleDelete = (department: DepartmentRecord) => {
-    console.log(department)
+  const [confirmDeleteDialogOpen, setConfirmDeleteDialogOpen] = useState(false)
+  const handleOpenConfirmDeleteDialog = (department: DepartmentRecord) => {
+    setDepartmentData(department)
+    setConfirmDeleteDialogOpen(true)
+  };
+  const handleDeleteDepartment = (department: DepartmentRecord) => {
+    console.log(department);
   };
   
   const [searchFormInput, setSearchFormInput] = useState({name: ""})
@@ -152,7 +158,7 @@ const DepartmentManagePage = () => {
                     <div className="flex gap-2 justify-center">
                       <CustomizedButton type="primary" click={() => handleView(department)} title="View" />
                       <CustomizedButton type="warning" click={() => handleEdit(department)} title="Edit" />
-                      <CustomizedButton type="error" click={() => handleDelete(department)} title="Delete" />
+                      <CustomizedButton type="error" click={() => handleOpenConfirmDeleteDialog(department)} title="Delete" />
                     </div>
                   </StyledStickyTableCell>
                 </TableRow>
@@ -165,6 +171,14 @@ const DepartmentManagePage = () => {
       {managerData && (<ViewManagerDialog viewData={managerData} dialogOpen={managerDialogOpen} handleDialogClose={() => setManagerDialogOpen(false)} />)}
       {departmentData && (<ViewDepartmentDialog viewData={departmentData} dialogOpen={departmentDialogOpen} handleDialogClose={() => setDepartmentDialogOpen(false)} />)}
       {departmentData && (<EditDepartmentDialog viewData={departmentData} dialogOpen={departmentEditDialogOpen} handleDialogClose={() => setDepartmentEditDialogOpen(false)} />)}
+
+      <ConfirmDialog
+        open={confirmDeleteDialogOpen}
+        dialogTitle="Confirm delete department"
+        confirmMessage="Are you sure you want to delete this department?"
+        confirmCallBack={() => { handleDeleteDepartment(departmentData!); setConfirmDeleteDialogOpen(false); }}
+        cancelCallBack={() => setConfirmDeleteDialogOpen(false)}
+      />
     </>
   );
 };
