@@ -1,5 +1,6 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import BookingPage from "@/app/book/page";
 
 jest.mock("next-auth/react", () => ({
@@ -42,5 +43,11 @@ describe("BookingPage", () => {
   it("renders the map", () => {
     render(<BookingPage />);
     expect(screen.getByTestId("map")).toBeInTheDocument();
+  });
+
+  it("shows custom location input when Manually Enter is toggled", async () => {
+    render(<BookingPage />);
+    await userEvent.click(screen.getByLabelText(/manually enter/i));
+    expect(screen.getByLabelText(/custom pick-up location/i)).toBeInTheDocument();
   });
 });
