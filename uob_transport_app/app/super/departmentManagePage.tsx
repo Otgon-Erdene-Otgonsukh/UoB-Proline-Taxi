@@ -6,7 +6,7 @@ import {
   Button,
   TextField
 } from "@mui/material";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { DepartmentRecord } from "@/model/models";
 import CustomizedButton from "@/components/CustomizedButton";
 import { StyledStickyTableCell } from "@/components/StyledTableCell";
@@ -14,6 +14,7 @@ import { StyledStickyTableCell } from "@/components/StyledTableCell";
 const DepartmentManagePage = () => {
 
   const [departments, setDepartments] = useState<DepartmentRecord[]>([]);
+  const [allDepartments, setAllDepartments] = useState<DepartmentRecord[]>([]);
 
   useEffect(() => {
     // getDepartmentManageList().then(res => {
@@ -38,8 +39,9 @@ const DepartmentManagePage = () => {
         },
         member_count: index
       })  
-      setDepartments(tmpDepartments);
     }
+    setAllDepartments(tmpDepartments);
+    setDepartments(tmpDepartments)
   }, []);
   
   const [searchFormInput, setSearchFormInput] = useState({name: ""})
@@ -60,8 +62,16 @@ const DepartmentManagePage = () => {
     console.log(department)
   };
 
-  const handleSubmitSearchForm = () => {
+  const handleSubmitSearchForm = (e: React.SubmitEvent) => {
+    e.preventDefault()
     console.log(searchFormInput);
+    if(searchFormInput.name !== '') {
+      setDepartments(allDepartments.filter(e => {
+        return e.dep_name.indexOf(searchFormInput.name) !== -1
+      }))
+    } else {
+      setDepartments(allDepartments)
+    }
   }
 
   return (
