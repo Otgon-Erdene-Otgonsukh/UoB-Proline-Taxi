@@ -10,6 +10,7 @@ import React, { useState, useEffect } from "react";
 import { DepartmentRecord } from "@/model/models";
 import CustomizedButton from "@/components/CustomizedButton";
 import { StyledStickyTableCell } from "@/components/StyledTableCell";
+import AddDepartmentDialog from "./departmentManageComponents/newDepartmentDialog";
 import ViewManagerDialog from "./departmentManageComponents/viewManagerDialog";
 import ViewDepartmentDialog from "./departmentManageComponents/viewDepartmentDialog";
 import EditDepartmentDialog from "./departmentManageComponents/editDepartmentDialog";
@@ -91,6 +92,8 @@ const DepartmentManagePage = () => {
     }
   }
 
+  const [newDepartmentDialogOpen, setNewDepartmentDialogOpen] = useState(false)
+
   return (
     <>
       <div className="flex justify-between items-center mb-4">
@@ -131,6 +134,24 @@ const DepartmentManagePage = () => {
           >
             Search
           </Button>
+          <Button
+            fullWidth
+            onClick={() => setNewDepartmentDialogOpen(true)}
+            variant="contained"
+            sx={{
+              color: "white",
+              borderRadius: "0.375rem",
+              fontSize: "0.625rem",
+              fontWeight: 300,
+              "&:hover": {
+                transform: "scale(1.01)",
+              },
+              transition: "all 0.2s",
+            }}
+            size="small"
+          >
+            New Department
+          </Button>
         </Box>
       </div>
       <Box>
@@ -168,6 +189,7 @@ const DepartmentManagePage = () => {
         </TableContainer>
       </Box>
       
+      <AddDepartmentDialog dialogOpen={newDepartmentDialogOpen} handleDialogClose={() => setNewDepartmentDialogOpen(false)} />
       {managerData && (<ViewManagerDialog viewData={managerData} dialogOpen={managerDialogOpen} handleDialogClose={() => setManagerDialogOpen(false)} />)}
       {departmentData && (<ViewDepartmentDialog viewData={departmentData} dialogOpen={departmentDialogOpen} handleDialogClose={() => setDepartmentDialogOpen(false)} />)}
       {departmentData && (<EditDepartmentDialog viewData={departmentData} dialogOpen={departmentEditDialogOpen} handleDialogClose={() => setDepartmentEditDialogOpen(false)} />)}

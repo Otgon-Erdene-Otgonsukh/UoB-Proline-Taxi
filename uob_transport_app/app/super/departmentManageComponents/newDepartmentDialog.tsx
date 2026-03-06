@@ -13,7 +13,7 @@ import {
 } from "@mui/icons-material"
 import { DepartmentRecord } from "@/model/models";
 
-const EditDepartmentDialog = ({ viewData, dialogOpen, handleDialogClose }: { viewData: DepartmentRecord, dialogOpen: boolean, handleDialogClose: () => void }) => {
+const AddDepartmentDialog = ({ dialogOpen, handleDialogClose }: { dialogOpen: boolean, handleDialogClose: () => void }) => {
 
   // TODO 
 
@@ -44,7 +44,7 @@ const EditDepartmentDialog = ({ viewData, dialogOpen, handleDialogClose }: { vie
         }}
         id="customized-dialog-title"
       >
-        Edit Department
+        Add New Department
       </DialogTitle>
       <IconButton
         aria-label="close"
@@ -78,4 +78,4 @@ const EditDepartmentDialog = ({ viewData, dialogOpen, handleDialogClose }: { vie
   </div>)
 }
 
-export default EditDepartmentDialog;
+export default AddDepartmentDialog;
