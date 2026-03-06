@@ -20,7 +20,10 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRe
         bgcolor: "#2c2c2c",
         color: "white",
         textAlign: "center",
-        fontSize: 28,
+        fontSize: {
+          md: 28,
+          xs: 24
+        },
       }}
       id="customized-dialog-title"
     >
@@ -47,13 +50,16 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRe
         sx={{
           justifyContent: "space-between",
           alignItems: "center",
-          width: "400px",
+          width: {
+            md: "400px",
+            xs: "280px"
+          },
         }}
       >
         <Typography gutterBottom sx={{ fontWeight: "bold" }}>
           Time Created:
         </Typography>
-        <Typography gutterBottom>
+        <Typography gutterBottom textAlign="right">
           {viewData?.time_created
             ? new Date(viewData?.time_created).toLocaleString()
             : ""}
@@ -64,7 +70,10 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRe
         sx={{
           justifyContent: "space-between",
           alignItems: "center",
-          width: "400px",
+          width: {
+            md: "400px",
+            xs: "280px"
+          },
         }}
       >
         <Typography gutterBottom sx={{ fontWeight: "bold" }}>
@@ -83,7 +92,10 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRe
           sx={{
             justifyContent: "space-between",
             alignItems: "center",
-            width: "400px",
+            width: {
+              md: "400px",
+              xs: "280px"
+            },
           }}
         >
           <Typography gutterBottom sx={{ fontWeight: "bold" }}>
@@ -100,7 +112,10 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRe
           sx={{
             justifyContent: "space-between",
             alignItems: "center",
-            width: "400px",
+            width: {
+              md: "400px",
+              xs: "280px"
+            },
           }}
         >
           <Typography gutterBottom sx={{ fontWeight: "bold" }}>
@@ -114,7 +129,10 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRe
         sx={{
           justifyContent: "space-between",
           alignItems: "center",
-          width: "400px",
+          width: {
+            md: "400px",
+            xs: "280px"
+          },
         }}
       >
         <Typography gutterBottom sx={{ fontWeight: "bold" }}>
@@ -129,7 +147,10 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRe
         sx={{
           justifyContent: "space-between",
           alignItems: "center",
-          width: "400px",
+          width: {
+            md: "400px",
+            xs: "280px"
+          },
         }}
       >
         <Typography gutterBottom sx={{ fontWeight: "bold" }}>
@@ -153,7 +174,10 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRe
         sx={{
           justifyContent: "space-between",
           alignItems: "center",
-          width: "400px",
+          width: {
+            md: "400px",
+            xs: "280px"
+          },
         }}
       >
         <Typography gutterBottom sx={{ fontWeight: "bold" }}>
@@ -168,7 +192,10 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRe
         sx={{
           justifyContent: "space-between",
           alignItems: "center",
-          width: "400px",
+          width: {
+            md: "400px",
+            xs: "280px"
+          },
         }}
       >
         <Typography gutterBottom sx={{ fontWeight: "bold" }}>
@@ -187,7 +214,10 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRe
             sx={{
               justifyContent: "space-between",
               alignItems: "center",
-              width: "400px",
+              width: {
+                md: "400px",
+                xs: "280px"
+              },
             }}
           >
             <Typography gutterBottom sx={{ fontWeight: "bold" }}>
@@ -206,7 +236,10 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRe
             sx={{
               justifyContent: "space-between",
               alignItems: "center",
-              width: "400px",
+              width: {
+                md: "400px",
+                xs: "280px"
+              },
             }}
           >
             <Typography gutterBottom sx={{ fontWeight: "bold" }}>
@@ -224,7 +257,10 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRe
           sx={{
             justifyContent: "space-between",
             alignItems: "center",
-            width: "400px",
+            width: {
+              md: "400px",
+              xs: "280px"
+            },
           }}
         >
           <Typography gutterBottom sx={{ fontWeight: "bold" }}>
@@ -239,7 +275,10 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRe
           sx={{
             justifyContent: "space-between",
             alignItems: "center",
-            width: "400px",
+            width: {
+              md: "400px",
+              xs: "280px"
+            },
           }}
         >
           <Typography gutterBottom sx={{ fontWeight: "bold" }}>
