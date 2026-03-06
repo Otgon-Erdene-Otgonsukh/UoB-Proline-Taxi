@@ -590,7 +590,7 @@ export default function DepDashboard() {
                           >
                             {statusApplied && (
                               <div
-                                className={`h-4 w-4 rounded-full border-2 ${
+                                className={`md:h-4 md:w-4 h-2.5 w-4 rounded-full border-2 ${
                                   row.booking_status === "Pending"
                                     ? "bg-yellow-300 border-yellow-500"
                                     : row.booking_status === "Approved"
