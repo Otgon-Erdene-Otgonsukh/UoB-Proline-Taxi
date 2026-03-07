@@ -77,15 +77,15 @@ const AddDepartmentDialog = ({ dialogOpen, handleDialogClose }: { dialogOpen: bo
         Add New Department
       </DialogTitle>
       <DialogContent dividers>
-      <TextField
-        fullWidth
-        label="Department Name"
-        id="depNameInput"
-        value={formData.name}
-        onChange={(e) => { setFormData({ ...formData, name: e.target.value }); }}
-        size="small"
-        sx={{ minWidth: 150 }}
-      />
+        <TextField
+          fullWidth
+          label="Department Name"
+          id="depNameInput"
+          value={formData.name}
+          onChange={(e) => { setFormData({ ...formData, name: e.target.value }); }}
+          size="small"
+          sx={{ minWidth: 150 }}
+        />
       </DialogContent>
       <DialogActions>
         <Button
@@ -122,20 +122,20 @@ const AddDepartmentDialog = ({ dialogOpen, handleDialogClose }: { dialogOpen: bo
       </DialogActions>
     </Dialog>
     <Snackbar
-        autoHideDuration={2000}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-        open={snackbarState.open}
-        onClose={() => setSnackbarState({open: false, status: 'error', message: ''})}
+      autoHideDuration={2000}
+      anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      open={snackbarState.open}
+      onClose={() => setSnackbarState({ open: false, status: 'error', message: '' })}
+    >
+      <Alert
+        onClose={() => setSnackbarState({ open: false, status: 'error', message: '' })}
+        severity={snackbarState.status === 'success' ? 'success' : 'error'}
+        variant="filled"
+        sx={{ width: '100%' }}
       >
-        <Alert
-          onClose={() => setSnackbarState({open: false, status: 'error', message: ''})}
-          severity={snackbarState.status === 'success' ? 'success' : 'error'}
-          variant="filled"
-          sx={{ width: '100%' }}
-        >
-          {snackbarState.message}
-        </Alert>
-      </Snackbar>
+        {snackbarState.message}
+      </Alert>
+    </Snackbar>
   </div>)
 }
 

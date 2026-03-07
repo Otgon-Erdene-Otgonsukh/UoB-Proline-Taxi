@@ -21,7 +21,7 @@ import {
 } from "@mui/icons-material"
 import { DepartmentRecord } from "@/model/models";
 import { useEffect, useState } from "react";
-import { getUsersByDepId } from "../request";
+import { getUsersByDepId, updateDepartmentName } from "../request";
 import { StyledStickyTableCell } from "@/components/StyledTableCell";
 import SingleInputDialog from "@/components/singleInputDialog";
 
@@ -50,7 +50,22 @@ const ViewDepartmentDialog = ({ viewData, dialogOpen, handleDialogClose }: { vie
   const handleSaveDepartmentName = (newName: string) => {
     // TODO call api to save new department name
     console.log("Saving new department name:", newName);
-    setNameEditOn(false);
+    updateDepartmentName(viewData.depId, newName).then(async (res) => {
+      if (res.status === 200) {
+        const data = await res.json()
+        console.log(data);
+        alert("Department name updated successfully");
+      } else {
+        const data = await res.json()
+        console.log(data);
+        alert("Failed to update department name: " + data.message);
+      }
+    }).catch((err) => {
+      console.error("Error updating department name:", err);
+      alert("An error occurred while updating the department name.");
+    }).finally(() => {
+      setNameEditOn(false);
+    });
   }
 
   return (<div>

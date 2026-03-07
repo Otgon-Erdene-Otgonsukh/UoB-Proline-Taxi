@@ -40,3 +40,10 @@ export const getUsersByDepId = async (depId: number): Promise<Response> => {
     depId
   })
 }
+
+export const updateDepartmentName = async (depId: number, depName: string): Promise<Response> => {
+  return easyPostRequest('departments/edit', {
+    depId,
+    depName
+  })
+}
