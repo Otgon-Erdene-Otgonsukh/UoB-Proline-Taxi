@@ -26,7 +26,7 @@ export const getDepartmentsList = async (): Promise<Response> => {
 }
 
 export const getDepartmentManageList = async (): Promise<Response> => {
-  return easyGetRequest('department-manage', {})
+  return easyGetRequest('departments/manage', {})
 }
 
 export const createDepartment = async (depName: string): Promise<Response> => {

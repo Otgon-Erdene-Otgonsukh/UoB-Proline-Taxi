@@ -61,7 +61,7 @@ export type UserRecord = {
 export type DepartmentRecord = {
   dep_id: number;
   dep_name: string;
-  manager: {
+  manager?: {
     time_created: string;
     user_id: number;
     email: string;
