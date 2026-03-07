@@ -42,3 +42,14 @@ export const getDepartmentListIncludeManagerIdAccess = async (depName: string | 
     }
   })
 }
+
+export const updateDepartmentNameAccess = async (depId: number, newName: string): Promise<department> => {
+  return prisma.department.update({
+    where: {
+      dep_id: depId
+    },
+    data: {
+      dep_name: newName
+    }
+  })
+}

@@ -3,6 +3,11 @@ import { getDepartmentListIncludeManagerIdAccess } from "@/backend/access/depart
 import { getUsersByIdsAccess } from "@/backend/access/user_access";
 import { User } from "@/generated/prisma/client";
 
+/**
+ * Get a list of departments with their managers and user count. If depName query param is provided, filter departments by name.
+ * @param request 
+ * @returns 
+ */
 export async function GET(request: NextRequest) {
   // TODO Check super admin
 
