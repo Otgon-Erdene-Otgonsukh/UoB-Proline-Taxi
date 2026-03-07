@@ -22,3 +22,18 @@ export const createNewDepartmentAccess = async (depName: string): Promise<depart
     }
   })
 }
+
+export const getDepartmentListIncludeManagerIdAccess = async (depName: string | undefined): Promise<{ dep_id: number, dep_name: string }[]> => {
+  return prisma.department.findMany({
+    select: {
+      dep_id: true,
+      dep_name: true,
+      manager_id: true,
+    },
+    where: {
+      dep_name: {
+        contains: depName
+      }
+    }
+  })
+}
