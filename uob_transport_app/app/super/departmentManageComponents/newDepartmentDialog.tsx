@@ -3,33 +3,63 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Stack,
   Button,
-  Typography,
-  IconButton,
+  TextField,
+  Snackbar,
+  Alert
 } from "@mui/material";
-import {
-  Close as CloseIcon,
-} from "@mui/icons-material"
-import { DepartmentRecord } from "@/model/models";
+import { useState } from "react";
+import { createDepartment } from "../request";
 
 const AddDepartmentDialog = ({ dialogOpen, handleDialogClose }: { dialogOpen: boolean, handleDialogClose: () => void }) => {
 
-  // TODO 
+  const [formData, setFormData] = useState<{
+    name: string,
+  }>({
+    name: '',
+  })
+
+  const [snackbarState, setSnackbarState] = useState({
+    open: false,
+    status: 'error',
+    message: ''
+  })
+
+  const handleSubmit = () => {
+    if (!formData.name) {
+      setSnackbarState({
+        open: true,
+        status: 'error',
+        message: 'Name field cannot be empty!'
+      })
+    } else {
+      createDepartment(formData.name).then(res => {
+        if (res.status === 200) {
+          res.json().then(() => {
+            setSnackbarState({
+              open: true,
+              status: 'success',
+              message: 'Create new department successfully!'
+            })
+            handleDialogClose()
+          })
+        } else {
+          setSnackbarState({
+            open: true,
+            status: 'error',
+            message: 'Some error occurs, try again later!'
+          })
+        }
+      })
+
+    }
+  }
 
   return (<div>
     <Dialog
       onClose={handleDialogClose}
       aria-labelledby="customized-dialog-title"
       open={dialogOpen}
-      sx={{
-        "& .MuiStack-root": {
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-          width: "400px",
-        }
-      }}
     >
       <DialogTitle
         sx={{
@@ -46,20 +76,16 @@ const AddDepartmentDialog = ({ dialogOpen, handleDialogClose }: { dialogOpen: bo
       >
         Add New Department
       </DialogTitle>
-      <IconButton
-        aria-label="close"
-        onClick={handleDialogClose}
-        sx={(theme) => ({
-          position: "absolute",
-          right: 8,
-          top: 8,
-          color: theme.palette.grey[500],
-        })}
-      >
-        <CloseIcon />
-      </IconButton>
       <DialogContent dividers>
-        To Be Implemented
+      <TextField
+        fullWidth
+        label="Department Name"
+        id="depNameInput"
+        value={formData.name}
+        onChange={(e) => { setFormData({ ...formData, name: e.target.value }); }}
+        size="small"
+        sx={{ minWidth: 150 }}
+      />
       </DialogContent>
       <DialogActions>
         <Button
@@ -73,8 +99,43 @@ const AddDepartmentDialog = ({ dialogOpen, handleDialogClose }: { dialogOpen: bo
         >
           Close
         </Button>
+        <Button
+          fullWidth
+          onClick={handleSubmit}
+          variant="contained"
+          sx={{
+            bgcolor: "#2c2c2c",
+            color: "white",
+            borderRadius: "0.375rem",
+            fontSize: "0.875rem",
+            fontWeight: 300,
+            "&:hover": {
+              bgcolor: "#414040",
+              transform: "scale(1.01)",
+            },
+            transition: "all 0.2s",
+          }}
+          size="small"
+        >
+          Add department
+        </Button>
       </DialogActions>
     </Dialog>
+    <Snackbar
+        autoHideDuration={2000}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        open={snackbarState.open}
+        onClose={() => setSnackbarState({open: false, status: 'error', message: ''})}
+      >
+        <Alert
+          onClose={() => setSnackbarState({open: false, status: 'error', message: ''})}
+          severity={snackbarState.status === 'success' ? 'success' : 'error'}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {snackbarState.message}
+        </Alert>
+      </Snackbar>
   </div>)
 }
 

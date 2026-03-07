@@ -44,6 +44,8 @@ const DepartmentManagePage = () => {
           },
           member_count: index
         })  
+
+        
       }
     setAllDepartments(tmpDepartments);
     setDepartments(tmpDepartments)

@@ -15,11 +15,10 @@ export const getDepartmentsListAccess = async (depName: string | undefined): Pro
   })
 }
 
-export const createNewDepartmentAccess = async (depName: string, managerId: number): Promise<department> => {
+export const createNewDepartmentAccess = async (depName: string): Promise<department> => {
   return prisma.department.create({
     data: {
       dep_name: depName,
-      manager_id: managerId
     }
   })
 }
