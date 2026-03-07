@@ -28,6 +28,25 @@ export const getUserFromID = (
   });
 };
 
+export const getUsersByIdsAccess = (userIds: number[]) => {
+  return prisma.user.findMany({
+    where: {
+      user_id: {
+        in: userIds
+      }
+    },
+    select: {
+      time_created: true,
+      user_id: true,
+      full_name: true,
+      email: true,
+      phone_number: true,
+      role: true,
+      user_status: true
+    }
+  })
+}
+
 export const updateUserPassowrdAccess = async (
   email: string,
   password: string
