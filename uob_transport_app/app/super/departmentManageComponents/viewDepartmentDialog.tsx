@@ -14,6 +14,8 @@ import {
   TableHead,
   TableRow,
   TableBody,
+  Snackbar,
+  Alert
 } from "@mui/material";
 import {
   EditOutlined as EditIcon,
@@ -46,6 +48,11 @@ const ViewDepartmentDialog = ({ viewData, dialogOpen, handleDialogClose }: { vie
   }, [])
 
   const [nameEditOn, setNameEditOn] = useState(false);
+  const [snackbarState, setSnackbarState] = useState({
+    open: false,
+    status: 'error',
+    message: ''
+  })
 
   const handleSaveDepartmentName = (newName: string) => {
     // TODO call api to save new department name
@@ -53,16 +60,27 @@ const ViewDepartmentDialog = ({ viewData, dialogOpen, handleDialogClose }: { vie
     updateDepartmentName(viewData.depId, newName).then(async (res) => {
       if (res.status === 200) {
         const data = await res.json()
-        console.log(data);
-        alert("Department name updated successfully");
+        setSnackbarState({
+          open: true,
+          status: 'success',
+          message: 'Department name updated successfully!'
+        });
       } else {
         const data = await res.json()
         console.log(data);
-        alert("Failed to update department name: " + data.message);
+        setSnackbarState({
+          open: true,
+          status: 'error',
+          message: data.message
+        });
       }
     }).catch((err) => {
       console.error("Error updating department name:", err);
-      alert("An error occurred while updating the department name.");
+      setSnackbarState({
+        open: true,
+        status: 'error',
+        message: 'An error occurred while updating the department name.'
+      });
     }).finally(() => {
       setNameEditOn(false);
     });
@@ -179,6 +197,21 @@ const ViewDepartmentDialog = ({ viewData, dialogOpen, handleDialogClose }: { vie
       }}
       cancelCallBack={() => setNameEditOn(false)}
     />
+    <Snackbar
+      autoHideDuration={2000}
+      anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      open={snackbarState.open}
+      onClose={() => setSnackbarState({ open: false, status: 'error', message: '' })}
+    >
+      <Alert
+        onClose={() => setSnackbarState({ open: false, status: 'error', message: '' })}
+        severity={snackbarState.status === 'success' ? 'success' : 'error'}
+        variant="filled"
+        sx={{ width: '100%' }}
+      >
+        {snackbarState.message}
+      </Alert>
+    </Snackbar>
   </div>)
 }
 
