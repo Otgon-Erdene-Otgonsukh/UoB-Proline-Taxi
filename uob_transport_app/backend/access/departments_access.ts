@@ -39,6 +39,9 @@ export const getDepartmentListIncludeManagerIdAccess = async (depName: string | 
       dep_name: {
         contains: depName
       }
+    },
+    orderBy: {
+      dep_name: 'asc'
     }
   })
 }

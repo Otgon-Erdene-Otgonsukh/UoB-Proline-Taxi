@@ -14,7 +14,6 @@ import { StyledStickyTableCell } from "@/components/StyledTableCell";
 import AddDepartmentDialog from "./departmentManageComponents/newDepartmentDialog";
 import ViewManagerDialog from "./departmentManageComponents/viewManagerDialog";
 import ViewDepartmentDialog from "./departmentManageComponents/viewDepartmentDialog";
-import EditDepartmentDialog from "./departmentManageComponents/editDepartmentDialog";
 import ConfirmDialog from "@/components/confirmDIalog";
 import { getDepartmentManageList } from "./request";
 
@@ -47,12 +46,6 @@ const DepartmentManagePage = () => {
   const handleView = (department: DepartmentRecord) => {
     setDepartmentData(department)
     setDepartmentDialogOpen(true)
-  };
-
-  const [departmentEditDialogOpen, setDepartmentEditDialogOpen] = useState(false)
-  const handleEdit = (department: DepartmentRecord) => {
-    setDepartmentData(department)
-    setDepartmentEditDialogOpen(true)
   };
 
   const [confirmDeleteDialogOpen, setConfirmDeleteDialogOpen] = useState(false)
@@ -170,7 +163,6 @@ const DepartmentManagePage = () => {
                   <StyledStickyTableCell>
                     <div className="flex gap-2 justify-center">
                       <CustomizedButton type="primary" click={() => handleView(department)} title="View" />
-                      <CustomizedButton type="warning" click={() => handleEdit(department)} title="Edit" />
                       <CustomizedButton type="error" click={() => handleOpenConfirmDeleteDialog(department)} title="Delete" />
                     </div>
                   </StyledStickyTableCell>
@@ -184,7 +176,6 @@ const DepartmentManagePage = () => {
       <AddDepartmentDialog dialogOpen={newDepartmentDialogOpen} handleDialogClose={() => setNewDepartmentDialogOpen(false)} />
       {managerData && (<ViewManagerDialog viewData={managerData} dialogOpen={managerDialogOpen} handleDialogClose={() => setManagerDialogOpen(false)} />)}
       {departmentData && (<ViewDepartmentDialog viewData={departmentData} dialogOpen={departmentDialogOpen} handleDialogClose={() => { setDepartmentDialogOpen(false); setDepartmentData(undefined) }} />)}
-      {departmentData && (<EditDepartmentDialog viewData={departmentData} dialogOpen={departmentEditDialogOpen} handleDialogClose={() => { setDepartmentEditDialogOpen(false); setDepartmentData(undefined) }} />)}
 
       <ConfirmDialog
         open={confirmDeleteDialogOpen}
