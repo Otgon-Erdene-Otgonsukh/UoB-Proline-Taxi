@@ -150,3 +150,20 @@ export const isAdmin = async (userId: number): Promise<boolean> => {
     return false
   }
 }
+
+export const getUsersByDepIdAccess = async (depId: number) => {
+  return prisma.user.findMany({
+    where: {
+      dep_id: depId
+    },
+    select: {
+      time_created: true,
+      user_id: true,
+      full_name: true,
+      email: true,
+      phone_number: true,
+      role: true,
+      user_status: true
+    }
+  })
+}
