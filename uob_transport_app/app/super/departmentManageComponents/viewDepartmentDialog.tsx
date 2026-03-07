@@ -14,15 +14,16 @@ import {
   TableHead,
   TableRow,
   TableBody,
-  Chip,
 } from "@mui/material";
 import {
+  EditOutlined as EditIcon,
   Close as CloseIcon,
 } from "@mui/icons-material"
 import { DepartmentRecord } from "@/model/models";
 import { useEffect, useState } from "react";
 import { getUsersByDepId } from "../request";
 import { StyledStickyTableCell } from "@/components/StyledTableCell";
+import SingleInputDialog from "@/components/singleInputDialog";
 
 const ViewDepartmentDialog = ({ viewData, dialogOpen, handleDialogClose }: { viewData: DepartmentRecord, dialogOpen: boolean, handleDialogClose: () => void }) => {
 
@@ -43,6 +44,14 @@ const ViewDepartmentDialog = ({ viewData, dialogOpen, handleDialogClose }: { vie
       setIsLoading(false);
     });
   }, [])
+
+  const [nameEditOn, setNameEditOn] = useState(false);
+
+  const handleSaveDepartmentName = (newName: string) => {
+    // TODO call api to save new department name
+    console.log("Saving new department name:", newName);
+    setNameEditOn(false);
+  }
 
   return (<div>
     <Dialog
@@ -90,8 +99,11 @@ const ViewDepartmentDialog = ({ viewData, dialogOpen, handleDialogClose }: { vie
           <Typography gutterBottom sx={{ fontWeight: "bold" }}>
             Department Name:
           </Typography>
-          <Typography gutterBottom>
-            {viewData?.depName}
+          <Typography gutterBottom sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <span>{viewData?.depName}</span>
+            <EditIcon sx={{ cursor: "pointer" }} onClick={() => {
+              setNameEditOn(true);
+            }} fontSize="small" />
           </Typography>
         </Stack>
         <Stack>
@@ -100,7 +112,6 @@ const ViewDepartmentDialog = ({ viewData, dialogOpen, handleDialogClose }: { vie
           </Typography>
         </Stack>
         <Box>
-          {/* TODO Add Data loading */}
           {isLoading ? <Typography>Loading members...</Typography> :
             (<TableContainer component={Paper} sx={{ boxShadow: "none", border: "none", maxHeight: 600 }}>
               <Table stickyHeader sx={{ minWidth: 500 }} aria-label="department table" size="small">
@@ -140,6 +151,19 @@ const ViewDepartmentDialog = ({ viewData, dialogOpen, handleDialogClose }: { vie
         </Button>
       </DialogActions>
     </Dialog>
+    <SingleInputDialog
+      open={nameEditOn}
+      dialogTitle="Edit Department Name"
+      dialogMessage="Please input the new department name:"
+      inputLabel="Department Name"
+      inputValue={viewData.depName}
+      confirmButtonText="Save"
+      cancelButtonText="Cancel"
+      confirmCallBack={(input) => {
+        handleSaveDepartmentName(input);
+      }}
+      cancelCallBack={() => setNameEditOn(false)}
+    />
   </div>)
 }
 
