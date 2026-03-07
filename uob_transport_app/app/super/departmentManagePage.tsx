@@ -139,6 +139,7 @@ const DepartmentManagePage = () => {
           </Button>
         </Box>
       </div>
+      {/* TODO Add Data loading */}
       <Box>
         <TableContainer component={Paper} sx={{ boxShadow: "none", border: "none", maxHeight: 600 }}>
           <Table stickyHeader sx={{ minWidth: 500 }} aria-label="department table">

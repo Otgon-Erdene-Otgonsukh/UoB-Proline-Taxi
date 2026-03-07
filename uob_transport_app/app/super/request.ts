@@ -34,3 +34,9 @@ export const createDepartment = async (depName: string): Promise<Response> => {
     depName
   })
 }
+
+export const getUsersByDepId = async (depId: number): Promise<Response> => {
+  return easyGetRequest('departments/user', {
+    depId
+  })
+}

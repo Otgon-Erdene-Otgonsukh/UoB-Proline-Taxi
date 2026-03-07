@@ -7,15 +7,38 @@ import {
   Button,
   Typography,
   IconButton,
+  Box,
+  TableContainer,
+  Paper,
+  Table,
+  TableHead,
+  TableRow,
+  TableBody,
+  Chip,
 } from "@mui/material";
 import {
   Close as CloseIcon,
 } from "@mui/icons-material"
 import { DepartmentRecord } from "@/model/models";
+import { useEffect, useState } from "react";
+import { getUsersByDepId } from "../request";
+import { StyledStickyTableCell } from "@/components/StyledTableCell";
 
 const ViewDepartmentDialog = ({ viewData, dialogOpen, handleDialogClose }: { viewData: DepartmentRecord, dialogOpen: boolean, handleDialogClose: () => void }) => {
 
   // TODO get all members of this department
+
+  const [members, setMembers] = useState<{ user_id: number, full_name: string, email: string, phone_number: string }[]>([]);
+
+  useEffect(() => {
+    getUsersByDepId(viewData.depId).then(async (res) => {
+      if (res.status === 200) {
+        const data = await res.json()
+        console.log(data);
+        setMembers(data)
+      }
+    });
+  }, [])
 
   return (<div>
     <Dialog
@@ -61,20 +84,47 @@ const ViewDepartmentDialog = ({ viewData, dialogOpen, handleDialogClose }: { vie
       <DialogContent dividers>
         <Stack>
           <Typography gutterBottom sx={{ fontWeight: "bold" }}>
-            Name:
+            Department Name:
           </Typography>
           <Typography gutterBottom>
-            {viewData?.dep_name}
+            {viewData?.depName}
           </Typography>
         </Stack>
         <Stack>
           <Typography gutterBottom sx={{ fontWeight: "bold" }}>
-            Members:
-          </Typography>
-          <Typography gutterBottom>
-            {[]}
+            Members (Total {viewData?.userCount}):
           </Typography>
         </Stack>
+        <Box>
+          {/* TODO Add Data loading */}
+          <TableContainer component={Paper} sx={{ boxShadow: "none", border: "none", maxHeight: 600 }}>
+            <Table stickyHeader sx={{ minWidth: 500 }} aria-label="department table" size="small">
+              <TableHead>
+                <TableRow>
+                  <StyledStickyTableCell>Name</StyledStickyTableCell>
+                  <StyledStickyTableCell>email</StyledStickyTableCell>
+                  <StyledStickyTableCell>phone number</StyledStickyTableCell>
+                  <StyledStickyTableCell>Operation</StyledStickyTableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {members.map((member) => (
+                  <TableRow key={member.user_id}>
+                    <StyledStickyTableCell>{member.full_name}</StyledStickyTableCell>
+                    <StyledStickyTableCell>
+                      {member.email}
+                    </StyledStickyTableCell>
+                    <StyledStickyTableCell>{member.phone_number}</StyledStickyTableCell>
+                    <StyledStickyTableCell>
+                      <div className="flex gap-2 justify-center">
+                      </div>
+                    </StyledStickyTableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Box>
       </DialogContent>
       <DialogActions>
         <Button
