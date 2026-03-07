@@ -29,14 +29,18 @@ const ViewDepartmentDialog = ({ viewData, dialogOpen, handleDialogClose }: { vie
   // TODO get all members of this department
 
   const [members, setMembers] = useState<{ user_id: number, full_name: string, email: string, phone_number: string }[]>([]);
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
+    setIsLoading(true);
     getUsersByDepId(viewData.depId).then(async (res) => {
       if (res.status === 200) {
         const data = await res.json()
         console.log(data);
         setMembers(data)
       }
+    }).finally(() => {
+      setIsLoading(false);
     });
   }, [])
 
@@ -97,33 +101,29 @@ const ViewDepartmentDialog = ({ viewData, dialogOpen, handleDialogClose }: { vie
         </Stack>
         <Box>
           {/* TODO Add Data loading */}
-          <TableContainer component={Paper} sx={{ boxShadow: "none", border: "none", maxHeight: 600 }}>
-            <Table stickyHeader sx={{ minWidth: 500 }} aria-label="department table" size="small">
-              <TableHead>
-                <TableRow>
-                  <StyledStickyTableCell>Name</StyledStickyTableCell>
-                  <StyledStickyTableCell>email</StyledStickyTableCell>
-                  <StyledStickyTableCell>phone number</StyledStickyTableCell>
-                  <StyledStickyTableCell>Operation</StyledStickyTableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {members.map((member) => (
-                  <TableRow key={member.user_id}>
-                    <StyledStickyTableCell>{member.full_name}</StyledStickyTableCell>
-                    <StyledStickyTableCell>
-                      {member.email}
-                    </StyledStickyTableCell>
-                    <StyledStickyTableCell>{member.phone_number}</StyledStickyTableCell>
-                    <StyledStickyTableCell>
-                      <div className="flex gap-2 justify-center">
-                      </div>
-                    </StyledStickyTableCell>
+          {isLoading ? <Typography>Loading members...</Typography> :
+            (<TableContainer component={Paper} sx={{ boxShadow: "none", border: "none", maxHeight: 600 }}>
+              <Table stickyHeader sx={{ minWidth: 500 }} aria-label="department table" size="small">
+                <TableHead>
+                  <TableRow>
+                    <StyledStickyTableCell>Name</StyledStickyTableCell>
+                    <StyledStickyTableCell>email</StyledStickyTableCell>
+                    <StyledStickyTableCell>phone number</StyledStickyTableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                </TableHead>
+                <TableBody>
+                  {members.map((member) => (
+                    <TableRow key={member.user_id}>
+                      <StyledStickyTableCell>{member.full_name}</StyledStickyTableCell>
+                      <StyledStickyTableCell>
+                        {member.email}
+                      </StyledStickyTableCell>
+                      <StyledStickyTableCell>{member.phone_number}</StyledStickyTableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>)}
         </Box>
       </DialogContent>
       <DialogActions>

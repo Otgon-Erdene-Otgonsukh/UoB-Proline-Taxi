@@ -183,8 +183,8 @@ const DepartmentManagePage = () => {
 
       <AddDepartmentDialog dialogOpen={newDepartmentDialogOpen} handleDialogClose={() => setNewDepartmentDialogOpen(false)} />
       {managerData && (<ViewManagerDialog viewData={managerData} dialogOpen={managerDialogOpen} handleDialogClose={() => setManagerDialogOpen(false)} />)}
-      {departmentData && (<ViewDepartmentDialog viewData={departmentData} dialogOpen={departmentDialogOpen} handleDialogClose={() => setDepartmentDialogOpen(false)} />)}
-      {departmentData && (<EditDepartmentDialog viewData={departmentData} dialogOpen={departmentEditDialogOpen} handleDialogClose={() => setDepartmentEditDialogOpen(false)} />)}
+      {departmentData && (<ViewDepartmentDialog viewData={departmentData} dialogOpen={departmentDialogOpen} handleDialogClose={() => { setDepartmentDialogOpen(false); setDepartmentData(undefined) }} />)}
+      {departmentData && (<EditDepartmentDialog viewData={departmentData} dialogOpen={departmentEditDialogOpen} handleDialogClose={() => { setDepartmentEditDialogOpen(false); setDepartmentData(undefined) }} />)}
 
       <ConfirmDialog
         open={confirmDeleteDialogOpen}
