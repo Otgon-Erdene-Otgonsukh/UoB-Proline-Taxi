@@ -70,7 +70,7 @@ const DepartmentManagePage = () => {
     console.log(searchFormInput);
     if (searchFormInput.name !== '') {
       setDepartments(allDepartments.filter(e => {
-        return e.dep_name.indexOf(searchFormInput.name) !== -1
+        return e.depName.indexOf(searchFormInput.name) !== -1
       }))
     } else {
       setDepartments(allDepartments)
@@ -152,8 +152,8 @@ const DepartmentManagePage = () => {
             </TableHead>
             <TableBody>
               {departments.map((department) => (
-                <TableRow key={department.dep_id}>
-                  <StyledStickyTableCell>{department.dep_name}</StyledStickyTableCell>
+                <TableRow key={department.depId}>
+                  <StyledStickyTableCell>{department.depName}</StyledStickyTableCell>
                   <StyledStickyTableCell>
                     {department.manager ?
                       (<Button onClick={() => handleViewManager(department.manager)}>
@@ -165,7 +165,7 @@ const DepartmentManagePage = () => {
                         label="To be assigned"
                       />)}
                   </StyledStickyTableCell>
-                  <StyledStickyTableCell>{department.member_count}</StyledStickyTableCell>
+                  <StyledStickyTableCell>{department.userCount}</StyledStickyTableCell>
                   <StyledStickyTableCell>
                     <div className="flex gap-2 justify-center">
                       <CustomizedButton type="primary" click={() => handleView(department)} title="View" />
