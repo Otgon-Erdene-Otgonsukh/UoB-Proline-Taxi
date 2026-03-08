@@ -96,7 +96,7 @@ export default function BookingPage() {
     CustomLoc: string;
     PickupLoc: formLocation
     Via: formLocation[];
-    ReturnTo: string;
+    ReturnTo: formLocation;
     FlightNum: string;
     Airport: string;
     DropoffLoc: formLocation;
@@ -119,7 +119,7 @@ export default function BookingPage() {
     CommonLoc: "",
     CustomLoc: "",
     Via: [],
-    ReturnTo: "",
+    ReturnTo: null,
     FlightNum: "",
     Airport: "",
     DropoffLoc: null,
@@ -443,13 +443,14 @@ export default function BookingPage() {
   const [start, setStart] = useState<{ name: string; lat: number; lng: number } | null>(null);
   const [end, setEnd] = useState<{ name: string; lat: number; lng: number } | null>(null);
   const [vias, setVias] = useState<{ name: string; lat: number; lng: number }[]>([]);
+  const [returnloc, setReturnLoc] = useState<{ name: string; lat: number; lng: number } | null>(null);
 
   // Update the route when start or end changes.
   useEffect(() => {
     if (end != null && start != null) {
       updateRoute();
     }
-  }, [start, end, vias]);
+  }, [start, end, vias, returnloc]);
 
 
   const [departmentList, setDepartmentList] = useState<department[]>([]);
@@ -505,8 +506,8 @@ export default function BookingPage() {
     }
   }
 
-  async function fetchRoutes(locations: Loc[]) {
-    const osrmRoutes = []; // Clear previous routes
+  async function fetchRoutes(locations: Loc[], returnJourney = false) {
+    const osrmRoutes = [];
     try {
       // Construct via list like this lon,lat;lon,lat;lon,lat for OSRM
       let viaList = `${locations[0].lng},${locations[0].lat}`;
@@ -525,7 +526,11 @@ export default function BookingPage() {
         }
         );
       }
-      setRoutes(osrmRoutes);
+      if (returnJourney) {
+        setRoutes([...routes, ...osrmRoutes]);
+      } else {
+        setRoutes(osrmRoutes);
+      }
     } catch (error) {
       console.error("Failed to fetch routes:", error);
     }
@@ -1078,7 +1083,7 @@ export default function BookingPage() {
                       checked={isReturnChecked}
                       onChange={(e) => {
                         setIsReturnChecked(e.target.checked);
-                        setFormData({ ...formData, ReturnTo: "" });
+                        setFormData({ ...formData, ReturnTo: null });
                       }}
                     />
                   }
@@ -1100,7 +1105,7 @@ export default function BookingPage() {
                   </div>
                   <div className="flex flex-col">
                     <label htmlFor="returnDropOff" className="mb-1 text-sm">
-                      Return Trip Drop-off location
+                       location
                     </label>
                     <input
                       id="returnDropOff"
@@ -1113,7 +1118,26 @@ export default function BookingPage() {
                         }
                       }}
                       onChange={(e) => {
-                        setFormData({ ...formData, ReturnTo: e.target.value });
+                        if (e.target.value !== "") {
+                          addFormFeedback("ReturnTo", "");
+                        }
+                      }}
+                      onBlur={async (e) => {
+                        if (e.target.value == "") {
+                          return;
+                        }
+                        const latlon = await getLatLon(e.target.value)
+                        if (latlon != null) {
+                          setReturnLoc({ name: latlon.name, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) });
+                          setFormData({ ...formData, ReturnTo: { short_name: latlon.name, address: latlon.full_address, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) } });
+                          addFormFeedback("ReturnTo", ""); // Reset any validation errors
+                          e.target.value = latlon.full_address; 
+                        } else { // No results
+                          addFormFeedback("ReturnTo", "No results found for this search term.");
+                          setFormData({ ...formData, ReturnTo: null });
+                          setReturnLoc(null);
+                          setRoutes(routes.slice(0, routes.length - 1)); // Remove return route from map
+                        }
                       }}
                     />
                   </div>
@@ -1397,6 +1421,15 @@ export default function BookingPage() {
                 </MarkerContent>
               </MapMarker>
             )}
+
+            {returnloc && routes && routes.length > 1 && (
+              <MapRoute
+                coordinates={routes[1].coordinates}
+                color={"#ec9065"}
+                width={6}
+                opacity={1}
+              />
+            )};
 
             {routes && routes.length > 0 && (
               <div className="absolute top-3 left-3 bg-black text-white opacity-80 rounded-md gap-2 p-2">
