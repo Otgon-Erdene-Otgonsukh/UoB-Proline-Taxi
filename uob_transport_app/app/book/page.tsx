@@ -482,6 +482,10 @@ export default function BookingPage() {
       route.push({ name: end.name, lat: end.lat, lng: end.lng });
       fetchRoutes(route);
 
+      if (returnloc != null) {
+        fetchRoutes([end, returnloc], true);
+      }
+
       function getRouteProperties(route: Loc[]) {
         return {
           name: route[0].name,
@@ -495,10 +499,10 @@ export default function BookingPage() {
       }
 
       // Find each corner of the square bounding box from the two start/end points and vias on the map.
-      const swLng = Math.min(start.lng, end.lng, ...vias.map(via => via.lng));
-      const swLat = Math.min(start.lat, end.lat, ...vias.map(via => via.lat));
-      const neLng = Math.max(start.lng, end.lng, ...vias.map(via => via.lng));
-      const neLat = Math.max(start.lat, end.lat, ...vias.map(via => via.lat));
+      const swLng = Math.min(start.lng, end.lng, ...vias.map(via => via.lng), ...returnloc?.lng ? [returnloc.lng] : []);
+      const swLat = Math.min(start.lat, end.lat, ...vias.map(via => via.lat), ...returnloc?.lat ? [returnloc.lat] : []);
+      const neLng = Math.max(start.lng, end.lng, ...vias.map(via => via.lng), ...returnloc?.lng ? [returnloc.lng] : []);
+      const neLat = Math.max(start.lat, end.lat, ...vias.map(via => via.lat), ...returnloc?.lat ? [returnloc.lat] : []);
 
       // Check bounds are LngLatLike type for fitBounds function.
       const bounds: [LngLatLike, LngLatLike] = [[swLng, swLat], [neLng, neLat]];
@@ -509,13 +513,15 @@ export default function BookingPage() {
   async function fetchRoutes(locations: Loc[], returnJourney = false) {
     const osrmRoutes = [];
     try {
-      // Construct via list like this lon,lat;lon,lat;lon,lat for OSRM
-      let viaList = `${locations[0].lng},${locations[0].lat}`;
-      for (let i = 1; i < locations.length; i++) {
-        viaList = viaList + `;${locations[i].lng},${locations[i].lat}`
-      }
       const response = await fetch(
-        `https://router.project-osrm.org/route/v1/driving/${viaList}?overview=full&geometries=geojson&alternatives=false`
+        "/api/route",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ points: locations })
+        }
       );
       const data = await response.json();
       if (data.routes?.length > 0) {
@@ -527,7 +533,7 @@ export default function BookingPage() {
         );
       }
       if (returnJourney) {
-        setRoutes([...routes, ...osrmRoutes]);
+        setRoutes([routes[0], ...osrmRoutes]);
       } else {
         setRoutes(osrmRoutes);
       }
@@ -1084,6 +1090,12 @@ export default function BookingPage() {
                       onChange={(e) => {
                         setIsReturnChecked(e.target.checked);
                         setFormData({ ...formData, ReturnTo: null });
+                        if (e.target.checked == false) {
+                          setReturnLoc(null);
+                          if (routes.length > 1) {
+                            setRoutes(routes.slice(0, routes.length - 1)); // Remove return route from map if return trip is unchecked.
+                          }
+                        }
                       }}
                     />
                   }
@@ -1105,7 +1117,7 @@ export default function BookingPage() {
                   </div>
                   <div className="flex flex-col">
                     <label htmlFor="returnDropOff" className="mb-1 text-sm">
-                       location
+                      Return Trip Drop-off location
                     </label>
                     <input
                       id="returnDropOff"
@@ -1422,10 +1434,19 @@ export default function BookingPage() {
               </MapMarker>
             )}
 
+            {returnloc && returnloc.lat && returnloc.lng && (
+              <MapMarker longitude={returnloc.lng} latitude={returnloc.lat}>
+                <MarkerContent>
+                  <div className="size-5 rounded-full bg-red-500 border-2 border-white shadow-lg" />
+                  <MarkerLabel position="top" className="bg-white p-1 rounded opacity-80">{returnloc.name}</MarkerLabel>
+                </MarkerContent>
+              </MapMarker>
+            )}
+
             {returnloc && routes && routes.length > 1 && (
               <MapRoute
                 coordinates={routes[1].coordinates}
-                color={"#ec9065"}
+                color={"#707070"}
                 width={6}
                 opacity={1}
               />
@@ -1443,7 +1464,15 @@ export default function BookingPage() {
                   <Route className="size-3" />
                   {formatDistance(routes[0].distance)}
                 </div>
-                <p className="text-xs opacity-80">Subject to traffic and weather conditions</p>
+                <p className="text-xs opacity-80">
+                  Subject to traffic and weather conditions<br/><br/>
+                  <b>Key:</b><br/>
+                  <span className="text-xs text-green-500">◉</span> Origin<br/>
+                  <span className="text-xs text-yellow-500">◉</span> Via<br/>
+                  <span className="text-xs text-red-500">◉</span> Destination<br/>
+                  <span className="text-xs text-indigo-500">▬</span> Outbound Trip<br/>
+                  <span className="text-xs text-gray-700">▬</span> Return Trip
+                </p>
               </div>
             )}
           </Map>
