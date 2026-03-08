@@ -77,6 +77,7 @@ export default function BookingPage() {
     AdditionalInfo: "",
     ReturnTime: "",
     ReturnDate: "",
+    ReturnTo: "",
   });
 
   const clearFeedback = () => {
@@ -1122,7 +1123,7 @@ export default function BookingPage() {
                     <input
                       id="returnDropOff"
                       placeholder="Enter"
-                      className="border-2 rounded px-3 py-2 border-gray-800"
+                      className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0 ${formFeedback.ReturnTo == "" ? "border-gray-800" : "border-red-700"}`}
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
                           e.preventDefault();
@@ -1152,6 +1153,12 @@ export default function BookingPage() {
                         }
                       }}
                     />
+                    <FormHelperText
+                      sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
+                      className={`${formFeedback.ReturnTo != "" ? "" : "hidden"}`}
+                    >
+                      {formFeedback.ReturnTo}
+                    </FormHelperText>
                   </div>
                   <div className="flex flex-col text-sm">
                     <label htmlFor="returnDate" className="mb-1">
