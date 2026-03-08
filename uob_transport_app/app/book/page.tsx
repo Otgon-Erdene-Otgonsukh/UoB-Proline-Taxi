@@ -1412,6 +1412,15 @@ export default function BookingPage() {
               />
             )};
 
+            {returnloc && returnloc.lat && returnloc.lng && (
+              <MapMarker longitude={returnloc.lng} latitude={returnloc.lat}>
+                <MarkerContent>
+                  <div className="size-5 rounded-full bg-red-500 border-2 border-white shadow-lg" />
+                  <MarkerLabel position="top" className="bg-white p-1 rounded opacity-80">{returnloc.name}</MarkerLabel>
+                </MarkerContent>
+              </MapMarker>
+            )}
+            
             {start && start.lat && start.lng && ( // Only render marker when not null
               <MapMarker longitude={start.lng} latitude={start.lat}>
                 <MarkerContent>
@@ -1437,15 +1446,6 @@ export default function BookingPage() {
                 <MarkerContent>
                   <div className="size-5 rounded-full bg-red-500 border-2 border-white shadow-lg" />
                   <MarkerLabel position="top" className="bg-white p-1 rounded opacity-80">{end.name}</MarkerLabel>
-                </MarkerContent>
-              </MapMarker>
-            )}
-
-            {returnloc && returnloc.lat && returnloc.lng && (
-              <MapMarker longitude={returnloc.lng} latitude={returnloc.lat}>
-                <MarkerContent>
-                  <div className="size-5 rounded-full bg-red-500 border-2 border-white shadow-lg" />
-                  <MarkerLabel position="top" className="bg-white p-1 rounded opacity-80">{returnloc.name}</MarkerLabel>
                 </MarkerContent>
               </MapMarker>
             )}
