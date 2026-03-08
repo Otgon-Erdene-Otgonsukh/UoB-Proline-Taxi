@@ -11,6 +11,7 @@ import { sesClient } from "@/utils/ses_client";
 import { SendEmailCommand } from "@aws-sdk/client-sesv2";
 import ResetEmail from "@/components/emails/reset_password_mail";
 import { render } from "@react-email/components";
+import { withRateLimit } from "@/lib/rateLimit";
 
 // get user reset record by uuid
 export async function GET(request: NextRequest) {
@@ -48,7 +49,7 @@ export async function GET(request: NextRequest) {
   );
 }
 
-export async function POST(request: NextRequest) {
+async function resetEmailHandler(request: NextRequest): Promise<Response> {
   const requestJson = await request.json();
   const toEmail = requestJson["email"];
 
@@ -82,51 +83,57 @@ export async function POST(request: NextRequest) {
     userReset = await createUserResetAccess(toEmail, uuid);
   }
 
-  if (userReset) {
-    const htmlEmail = await render(
-      ResetEmail({ uuid: userReset.uuid, expiry: userReset.expired_at }),
-    );
-    try {
-      const input = new SendEmailCommand({
-        FromEmailAddress: `UoB Taxi & Chauffeur <${process.env.SES_FROM_EMAIL!}>`,
-        Destination: {
-          ToAddresses: [toEmail],
-        },
-        Content: {
-          Simple: {
-            Subject: {
-              Data: "Password Reset Request",
-            },
-            Body: {
-              Html: {
-                Data: htmlEmail,
-              },
+  const htmlEmail = await render(
+    ResetEmail({ uuid: userReset!.uuid, expiry: userReset!.expired_at }),
+  );
+  try {
+    const input = new SendEmailCommand({
+      FromEmailAddress: `UoB Taxi & Chauffeur <${process.env.SES_FROM_EMAIL!}>`,
+      Destination: {
+        ToAddresses: [toEmail],
+      },
+      Content: {
+        Simple: {
+          Subject: {
+            Data: "Password Reset Request",
+          },
+          Body: {
+            Html: {
+              Data: htmlEmail,
             },
           },
         },
-      });
-      await sesClient.send(input);
-      return new Response(
-        JSON.stringify({
-          message:
-            "If the email address exists, then the password reset link has been sent. If you did not receive it, please check your spam folder or check the email you entered",
-        }),
-        {
-          status: 200,
-          headers: { "Content-Type": "application/json" },
-        },
-      );
-    } catch (error) {
-      console.error("Something went wrong", error);
-      return new Response(
-        JSON.stringify({
-          message: "send email failed, try again later",
-        }),
-        {
-          status: 201,
-          headers: { "Content-Type": "application/json" },
-        },
-      );
-    }
+      },
+    });
+    await sesClient.send(input);
+    return new Response(
+      JSON.stringify({
+        message:
+          "If the email address exists, then the password reset link has been sent. If you did not receive it, please check your spam folder or check the email you entered",
+      }),
+      {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      },
+    );
+  } catch (error) {
+    console.error("Something went wrong", error);
+    return new Response(
+      JSON.stringify({
+        message: "send email failed, try again later",
+      }),
+      {
+        status: 201,
+        headers: { "Content-Type": "application/json" },
+      },
+    );
   }
+}
+
+export async function POST(request: NextRequest) {
+  return withRateLimit({
+    limit: 100, // 100 requests per 10 minutes
+    windowMs: 1000 * 60 * 10, // 10 minutes
+    getIdentifier: (req) => req.headers.get('x-real-ip') ?? req.headers.get('x-forwarded-for') ?? 'global', // get the IP address of the request
+  })(resetEmailHandler)(request);
 }

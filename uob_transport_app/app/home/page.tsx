@@ -183,6 +183,7 @@ const Page = () => {
     bookingStatus: "All",
   });
   const [isSearchSubmitted, setIsSearchSubmitted] = useState(false);
+  const [noFilterBooking, setNoFilterBooking] = useState(false);
 
   const dateTimePickerFromAnchorRef = useRef<HTMLDivElement>(null);
   const dateTimePickerToAnchorRef = useRef<HTMLDivElement>(null);
@@ -232,6 +233,11 @@ const Page = () => {
         res.json().then((data) => {
           setBookingListData(data.bookings);
           setBookingListCount(data.totalNum);
+          if (data.totalNum === 0) {
+            setNoFilterBooking(true);
+          } else {
+            setNoFilterBooking(false);
+          }
           setIsLoading(false);
         });
       }
@@ -397,7 +403,7 @@ const Page = () => {
           </motion.div>
         </div>
       )}
-      {bookingListData.length === 0 ? (
+      {bookingListData.length === 0 && !noFilterBooking && !isLoading ? (
         <motion.div
           className="bg-white shadow-lg/20 rounded-lg p-10 md:p-12 w-full max-w-6xl my-15 mt-13 flex flex-col items-center justify-center"
           initial={{ opacity: 0, y: 6, scale: 0.98 }}
@@ -621,11 +627,11 @@ const Page = () => {
             >
               Getting your bookings...
             </Typography>
-          ) : bookingListData.length === 0 ? (
+          ) : bookingListData.length === 0 && noFilterBooking ? (
             <Typography
               sx={{ color: "gray", fontSize: 16, textAlign: "center", my: 10 }}
             >
-              No bookings to show.
+              No matching bookings.
             </Typography>
           ) : (
             <TableContainer

@@ -2,8 +2,9 @@ import { updateUserPassowrdAccess } from "@/backend/access/user_access";
 import { getUserResetByUuidAccess, deleteUserResetAccess } from "@/backend/access/user_reset_access";
 import bcrypt from "bcryptjs"
 import { NextRequest } from "next/server";
+import { withRateLimit } from "@/lib/rateLimit";
 
-export async function POST(request: NextRequest) {
+async function resetPasswordHandler(request: NextRequest) {
   const requestJson = await request.json()
   const uuid = requestJson['uuid']
   const newPassword = requestJson['password']
@@ -51,4 +52,12 @@ export async function POST(request: NextRequest) {
     status: 201,
     headers: { 'Content-Type': 'application/json' },
   });
+}
+
+export async function POST(request: NextRequest) {
+  return withRateLimit({
+    limit: 100, // 100 requests per 10 minutes
+    windowMs: 1000 * 60 * 10, // 10 minutes
+    getIdentifier: (req) => req.headers.get('x-real-ip') ?? req.headers.get('x-forwarded-for') ?? 'global', // get the IP address of the request
+  })(resetPasswordHandler)(request);
 }
