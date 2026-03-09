@@ -113,6 +113,17 @@ const DepartmentManagePage = () => {
     }))
   }
 
+  const handleDepartmentNameChange = (depId: number, newDepName: string) => {
+    setAllDepartments(allDepartments.map(e => {
+      if (e.depId === depId) {
+        e.depName = newDepName;
+        return e
+      } else {
+        return e
+      }
+    }))
+  }
+
   return (
     <>
       <div className="flex justify-between items-center mb-4">
@@ -223,6 +234,7 @@ const DepartmentManagePage = () => {
           dialogOpen={departmentDialogOpen}
           handleDialogClose={() => { setDepartmentDialogOpen(false); setDepartmentData(undefined) }}
           notifyUserCountChange={handleDepartmentUserCountChange}
+          notifyDepartmentNameChange={handleDepartmentNameChange}
         />)}
 
       <ConfirmDialog

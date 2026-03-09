@@ -37,9 +37,10 @@ interface Props {
   dialogOpen: boolean,
   handleDialogClose: () => void,
   notifyUserCountChange: (fromDepId: number, toDepId: number, userCount: number) => void
+  notifyDepartmentNameChange: (depId: number, newDepName: string) => void
 }
 
-const ViewDepartmentDialog = ({ departmentList, viewData, dialogOpen, handleDialogClose, notifyUserCountChange }: Props) => {
+const ViewDepartmentDialog = ({ departmentList, viewData, dialogOpen, handleDialogClose, notifyUserCountChange, notifyDepartmentNameChange }: Props) => {
 
   // TODO get all members of this department
 
@@ -72,15 +73,14 @@ const ViewDepartmentDialog = ({ departmentList, viewData, dialogOpen, handleDial
     console.log("Saving new department name:", newName);
     updateDepartmentName(viewData.depId, newName).then(async (res) => {
       if (res.status === 200) {
-        const data = await res.json()
         setSnackbarState({
           open: true,
           status: 'success',
           message: 'Department name updated successfully!'
         });
+        notifyDepartmentNameChange(viewData.depId, newName);
       } else {
         const data = await res.json()
-        console.log(data);
         setSnackbarState({
           open: true,
           status: 'error',
