@@ -15,7 +15,7 @@ import { changeDepartmentForUsers } from "../request";
 
 interface MemberRow { user_id: number, full_name: string, email: string, phone_number: string }
 
-export const ChangeDepartmentDialog = ({ departmentList, dialogOpen, handleDialogClose, selectedRows }: { departmentList: { depId: number, depName: string }[], dialogOpen: boolean, handleDialogClose: (isSucceed: boolean) => void, selectedRows: MemberRow[] }) => {
+export const ChangeDepartmentDialog = ({ departmentList, dialogOpen, handleDialogClose, selectedRows }: { departmentList: { depId: number, depName: string }[], dialogOpen: boolean, handleDialogClose: (isSucceed: boolean, chosenDepId?: number) => void, selectedRows: MemberRow[] }) => {
 
   const [chosenDepId, setChosenDepId] = useState<number | null>(null);
   const [departmentEmpty, setDepartmentEmpty] = useState(false);
@@ -34,7 +34,7 @@ export const ChangeDepartmentDialog = ({ departmentList, dialogOpen, handleDialo
       if (res.status === 200) {
         res.json().then(() => {
           setDepartmentEmpty(false);
-          handleDialogClose(true);
+          handleDialogClose(true, chosenDepId!);
         })
       } else {
         setSnackbarState({
@@ -50,7 +50,7 @@ export const ChangeDepartmentDialog = ({ departmentList, dialogOpen, handleDialo
     <>
       <Dialog
         open={dialogOpen}
-        onClose={handleDialogClose}
+        onClose={() => handleDialogClose(false)}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
         sx={{

@@ -95,6 +95,24 @@ const DepartmentManagePage = () => {
 
   const [newDepartmentDialogOpen, setNewDepartmentDialogOpen] = useState(false)
 
+  const handleDepartmentUserCountChange = (fromDepId: number, toDepId: number, userCount: number) => {
+    setDepartments(departments.map(dep => {
+      if (dep.depId === fromDepId) {
+        return {
+          ...dep,
+          userCount: dep.userCount - userCount
+        }
+      } else if (dep.depId === toDepId) {
+        return {
+          ...dep,
+          userCount: dep.userCount + userCount
+        }
+      } else {
+        return dep;
+      }
+    }))
+  }
+
   return (
     <>
       <div className="flex justify-between items-center mb-4">
@@ -198,7 +216,14 @@ const DepartmentManagePage = () => {
 
       <AddDepartmentDialog dialogOpen={newDepartmentDialogOpen} handleDialogClose={() => setNewDepartmentDialogOpen(false)} />
       {managerData && (<ViewManagerDialog viewData={managerData} dialogOpen={managerDialogOpen} handleDialogClose={() => setManagerDialogOpen(false)} />)}
-      {departmentData && (<ViewDepartmentDialog departmentList={allDepartments.map((d) => ({ depId: d.depId, depName: d.depName }))} viewData={departmentData} dialogOpen={departmentDialogOpen} handleDialogClose={() => { setDepartmentDialogOpen(false); setDepartmentData(undefined) }} />)}
+      {departmentData &&
+        (<ViewDepartmentDialog
+          departmentList={allDepartments.map((d) => ({ depId: d.depId, depName: d.depName }))}
+          viewData={departmentData}
+          dialogOpen={departmentDialogOpen}
+          handleDialogClose={() => { setDepartmentDialogOpen(false); setDepartmentData(undefined) }}
+          notifyUserCountChange={handleDepartmentUserCountChange}
+        />)}
 
       <ConfirmDialog
         open={confirmDeleteDialogOpen}

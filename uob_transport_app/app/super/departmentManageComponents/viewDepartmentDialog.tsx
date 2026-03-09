@@ -31,7 +31,15 @@ import SingleInputDialog from "@/components/singleInputDialog";
 import CustomizedButton from "@/components/CustomizedButton";
 import { ChangeDepartmentDialog } from "./changeDepartmentDialog";
 
-const ViewDepartmentDialog = ({ departmentList, viewData, dialogOpen, handleDialogClose }: { departmentList: { depId: number, depName: string }[], viewData: DepartmentRecord, dialogOpen: boolean, handleDialogClose: () => void }) => {
+interface Props {
+  departmentList: { depId: number, depName: string }[],
+  viewData: DepartmentRecord,
+  dialogOpen: boolean,
+  handleDialogClose: () => void,
+  notifyUserCountChange: (fromDepId: number, toDepId: number, userCount: number) => void
+}
+
+const ViewDepartmentDialog = ({ departmentList, viewData, dialogOpen, handleDialogClose, notifyUserCountChange }: Props) => {
 
   // TODO get all members of this department
 
@@ -154,7 +162,28 @@ const ViewDepartmentDialog = ({ departmentList, viewData, dialogOpen, handleDial
   }
 
   // change department for selected members
-  const [handleChangeDepartmentDialogOpen, setChangeDepartmentDialogOpen] = useState(false);
+  const [changeDepartmentDialogOpen, setChangeDepartmentDialogOpen] = useState(false);
+  const handleCloseChangeDepartmentDialog = (isSucceed: boolean, chosenDepartmentId?: number) => {
+    if (isSucceed && chosenDepartmentId) {
+      setDepartmentData({
+        ...departmentData,
+        userCount: departmentData.userCount - selected.length
+      })
+      setMembers(members.filter(member => !selected.includes(member.user_id)));
+      setSelected([]);
+      setSnackbarState({
+        open: true,
+        status: 'success',
+        message: 'Department changed successfully!'
+      });
+      notifyUserCountChange(
+        departmentData.depId,
+        chosenDepartmentId,
+        selected.length,
+      );
+    }
+    setChangeDepartmentDialogOpen(false)
+  }
 
   return (<div>
     <Dialog
@@ -316,23 +345,8 @@ const ViewDepartmentDialog = ({ departmentList, viewData, dialogOpen, handleDial
     </Snackbar>
     <ChangeDepartmentDialog
       departmentList={departmentList}
-      dialogOpen={handleChangeDepartmentDialogOpen}
-      handleDialogClose={(isSucceed) => {
-        if (isSucceed) {
-          setDepartmentData({
-            ...departmentData,
-            userCount: departmentData.userCount - selected.length
-          })
-          setMembers(members.filter(member => !selected.includes(member.user_id)));
-          setSelected([]);
-          setSnackbarState({
-            open: true,
-            status: 'success',
-            message: 'Department changed successfully!'
-          });
-        }
-        setChangeDepartmentDialogOpen(false)
-      }}
+      dialogOpen={changeDepartmentDialogOpen}
+      handleDialogClose={handleCloseChangeDepartmentDialog}
       selectedRows={members.filter(member => selected.includes(member.user_id))}
     />
   </div>)
