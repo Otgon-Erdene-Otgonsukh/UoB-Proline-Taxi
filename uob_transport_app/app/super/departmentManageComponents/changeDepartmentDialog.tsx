@@ -28,11 +28,16 @@ export const ChangeDepartmentDialog = ({ departmentList, dialogOpen, handleDialo
     onClose={handleDialogClose}
     aria-labelledby="alert-dialog-title"
     aria-describedby="alert-dialog-description"
+    sx={{
+      "& .MuiPaper-root": {
+        overflowY: "visible"
+      }
+    }}
   >
     <DialogTitle id="alert-dialog-title">
       {`Change department for ${selectedRows.length} selected members`}
     </DialogTitle>
-    <DialogContent>
+    <DialogContent sx={{ overflowY: "visible" }}>
       <DialogContentText id="alert-dialog-description">
         Choose Department
       </DialogContentText>

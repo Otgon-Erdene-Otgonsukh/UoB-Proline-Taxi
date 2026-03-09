@@ -53,3 +53,10 @@ export const deleteDepartment = async (depId: number): Promise<Response> => {
     depId
   })
 }
+
+export const changeDepartmentForUsers = async (userIds: number[], depId: number): Promise<Response> => {
+  return easyPostRequest('departments/multi-user-change', {
+    userIds,
+    depId
+  })
+}
