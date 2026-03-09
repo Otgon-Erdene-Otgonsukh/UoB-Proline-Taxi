@@ -37,6 +37,7 @@ const ViewDepartmentDialog = ({ departmentList, viewData, dialogOpen, handleDial
 
   const [members, setMembers] = useState<{ user_id: number, full_name: string, email: string, phone_number: string }[]>([]);
   const [isLoading, setIsLoading] = useState(true)
+  const [departmentData, setDepartmentData] = useState<DepartmentRecord>(viewData);
 
   useEffect(() => {
     setIsLoading(true);
@@ -130,7 +131,7 @@ const ViewDepartmentDialog = ({ departmentList, viewData, dialogOpen, handleDial
             id="tableTitle"
             component="div"
           >
-            Selected {numSelected} out of {viewData?.userCount}:
+            Selected {numSelected} out of {departmentData?.userCount}:
           </Typography>
         ) : (
           <Typography
@@ -138,7 +139,7 @@ const ViewDepartmentDialog = ({ departmentList, viewData, dialogOpen, handleDial
             id="tableTitle"
             component="div"
           >
-            Members (Total {viewData?.userCount}):
+            Members (Total {departmentData?.userCount}):
           </Typography>
         )}
         {numSelected > 0 && (
@@ -203,7 +204,7 @@ const ViewDepartmentDialog = ({ departmentList, viewData, dialogOpen, handleDial
             Department Name:
           </Typography>
           <Typography gutterBottom sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <span>{viewData?.depName}</span>
+            <span>{departmentData?.depName}</span>
             <EditIcon sx={{ cursor: "pointer" }} onClick={() => {
               setNameEditOn(true);
             }} fontSize="small" />
@@ -290,7 +291,7 @@ const ViewDepartmentDialog = ({ departmentList, viewData, dialogOpen, handleDial
       dialogTitle="Edit Department Name"
       dialogMessage="Please input the new department name:"
       inputLabel="Department Name"
-      inputValue={viewData.depName}
+      inputValue={departmentData.depName}
       confirmButtonText="Save"
       cancelButtonText="Cancel"
       confirmCallBack={(input) => {
@@ -316,7 +317,22 @@ const ViewDepartmentDialog = ({ departmentList, viewData, dialogOpen, handleDial
     <ChangeDepartmentDialog
       departmentList={departmentList}
       dialogOpen={handleChangeDepartmentDialogOpen}
-      handleDialogClose={() => setChangeDepartmentDialogOpen(false)}
+      handleDialogClose={(isSucceed) => {
+        if (isSucceed) {
+          setDepartmentData({
+            ...departmentData,
+            userCount: departmentData.userCount - selected.length
+          })
+          setMembers(members.filter(member => !selected.includes(member.user_id)));
+          setSelected([]);
+          setSnackbarState({
+            open: true,
+            status: 'success',
+            message: 'Department changed successfully!'
+          });
+        }
+        setChangeDepartmentDialogOpen(false)
+      }}
       selectedRows={members.filter(member => selected.includes(member.user_id))}
     />
   </div>)
