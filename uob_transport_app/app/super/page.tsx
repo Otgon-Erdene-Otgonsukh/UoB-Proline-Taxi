@@ -272,7 +272,7 @@ const Page = () => {
 
   };
 
-  const [tabValue, setTabValue] = useState(1);
+  const [tabValue, setTabValue] = useState(0);
 
   return (
     <div className="flex flex-col min-h-screen items-center pt-15 p-4">
@@ -311,7 +311,7 @@ const Page = () => {
           </List>
         </Box>
       </Drawer>
-      
+
       <motion.div
         className="bg-white shadow-lg rounded-lg p-6 md:p-8 w-full max-w-6xl mb-8 h-fit"
         initial={{ opacity: 0, y: 7, scale: 0.98 }}
@@ -455,22 +455,22 @@ const Page = () => {
           </div>
         )}
       </motion.div>
-      
+
       {userDetail && (
-        <ViewDialog 
-          viewData={userDetail} 
-          dialogOpen={viewDialogOpen} 
-          handleDialogClose={() => setViewDialogOpen(false)} 
+        <ViewDialog
+          viewData={userDetail}
+          dialogOpen={viewDialogOpen}
+          handleDialogClose={() => setViewDialogOpen(false)}
         />
       )}
-      
+
       {userDetail && (
-        <EditDialog 
-          key={userDetail.user_id} 
-          editData={userDetail} 
-          dialogOpen={editDialogOpen} 
-          handleDialogClose={handleEditDialogClose} 
-          departmentList={departments} 
+        <EditDialog
+          key={userDetail.user_id}
+          editData={userDetail}
+          dialogOpen={editDialogOpen}
+          handleDialogClose={handleEditDialogClose}
+          departmentList={departments}
         />
       )}
 
