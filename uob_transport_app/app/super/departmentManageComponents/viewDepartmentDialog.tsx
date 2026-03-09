@@ -17,21 +17,17 @@ import {
   Snackbar,
   Alert,
   Checkbox,
-  Toolbar,
-  Tooltip
+  DialogContentText,
 } from "@mui/material";
 import {
   EditOutlined as EditIcon,
   Close as CloseIcon,
-  Delete as DeleteIcon,
-  FilterList as FilterListIcon
 } from "@mui/icons-material"
 import { DepartmentRecord } from "@/model/models";
 import { useEffect, useState } from "react";
 import { getUsersByDepId, updateDepartmentName } from "../request";
 import { StyledStickyTableCell } from "@/components/StyledTableCell";
 import SingleInputDialog from "@/components/singleInputDialog";
-import { alpha } from '@mui/material/styles';
 import CustomizedButton from "@/components/CustomizedButton";
 
 const ViewDepartmentDialog = ({ viewData, dialogOpen, handleDialogClose }: { viewData: DepartmentRecord, dialogOpen: boolean, handleDialogClose: () => void }) => {
@@ -148,11 +144,20 @@ const ViewDepartmentDialog = ({ viewData, dialogOpen, handleDialogClose }: { vie
           <CustomizedButton
             title="change department"
             type="primary"
-            click={() => { }}
+            click={() => { setChangeDepartmentDialogOpen(true) }}
           />
         )}
       </div>
     );
+  }
+
+  // change department for selected members
+  const [handleChangeDepartmentDialogOpen, setChangeDepartmentDialogOpen] = useState(false);
+  const [chosenDepId, setChosenDepId] = useState<number | null>(null);
+  const handleConfirmChangeDepartment = () => {
+    // TODO call api to change department for selected members
+    console.log("Changing department for members:", selected);
+    setChangeDepartmentDialogOpen(false);
   }
 
   return (<div>
@@ -313,6 +318,29 @@ const ViewDepartmentDialog = ({ viewData, dialogOpen, handleDialogClose }: { vie
         {snackbarState.message}
       </Alert>
     </Snackbar>
+    <Dialog
+      open={handleChangeDepartmentDialogOpen}
+      onClose={() => setChangeDepartmentDialogOpen(false)}
+      aria-labelledby="alert-dialog-title"
+      aria-describedby="alert-dialog-description"
+    >
+      <DialogTitle id="alert-dialog-title">
+        {`Change department for ${selected.length} selected members`}
+      </DialogTitle>
+      <DialogContent>
+        <DialogContentText id="alert-dialog-description">
+          Choose Department
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={() => setChangeDepartmentDialogOpen(false)}>
+          Cancel
+        </Button>
+        <Button onClick={() => handleConfirmChangeDepartment} autoFocus>
+          Save
+        </Button>
+      </DialogActions>
+    </Dialog>
   </div>)
 }
 
