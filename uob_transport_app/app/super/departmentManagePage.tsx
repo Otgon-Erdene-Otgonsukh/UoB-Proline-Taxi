@@ -198,7 +198,7 @@ const DepartmentManagePage = () => {
 
       <AddDepartmentDialog dialogOpen={newDepartmentDialogOpen} handleDialogClose={() => setNewDepartmentDialogOpen(false)} />
       {managerData && (<ViewManagerDialog viewData={managerData} dialogOpen={managerDialogOpen} handleDialogClose={() => setManagerDialogOpen(false)} />)}
-      {departmentData && (<ViewDepartmentDialog viewData={departmentData} dialogOpen={departmentDialogOpen} handleDialogClose={() => { setDepartmentDialogOpen(false); setDepartmentData(undefined) }} />)}
+      {departmentData && (<ViewDepartmentDialog departmentList={allDepartments.map((d) => ({ depId: d.depId, depName: d.depName }))} viewData={departmentData} dialogOpen={departmentDialogOpen} handleDialogClose={() => { setDepartmentDialogOpen(false); setDepartmentData(undefined) }} />)}
 
       <ConfirmDialog
         open={confirmDeleteDialogOpen}

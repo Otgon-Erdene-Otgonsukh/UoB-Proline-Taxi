@@ -31,7 +31,7 @@ import SingleInputDialog from "@/components/singleInputDialog";
 import CustomizedButton from "@/components/CustomizedButton";
 import { ChangeDepartmentDialog } from "./changeDepartmentDialog";
 
-const ViewDepartmentDialog = ({ viewData, dialogOpen, handleDialogClose }: { viewData: DepartmentRecord, dialogOpen: boolean, handleDialogClose: () => void }) => {
+const ViewDepartmentDialog = ({ departmentList, viewData, dialogOpen, handleDialogClose }: { departmentList: { depId: number, depName: string }[], viewData: DepartmentRecord, dialogOpen: boolean, handleDialogClose: () => void }) => {
 
   // TODO get all members of this department
 
@@ -314,6 +314,7 @@ const ViewDepartmentDialog = ({ viewData, dialogOpen, handleDialogClose }: { vie
       </Alert>
     </Snackbar>
     <ChangeDepartmentDialog
+      departmentList={departmentList}
       dialogOpen={handleChangeDepartmentDialogOpen}
       handleDialogClose={() => setChangeDepartmentDialogOpen(false)}
       selectedRows={members.filter(member => selected.includes(member.user_id))}
