@@ -6,6 +6,8 @@ import {
   Button,
   TextField,
   Chip,
+  Snackbar,
+  Alert
 } from "@mui/material";
 import React, { useState, useEffect } from "react";
 import { DepartmentRecord } from "@/model/models";
@@ -62,7 +64,18 @@ const DepartmentManagePage = () => {
   const handleDeleteDepartment = (department: DepartmentRecord) => {
     deleteDepartment(department.depId).then(async (res) => {
       if (res.status === 200) {
+        setSnackbarState({
+          open: true,
+          status: 'success',
+          message: 'Department is deleted successfully!'
+        })
         setDepartments(departments.filter(e => e.depId !== department.depId))
+      } else {
+        setSnackbarState({
+          open: true,
+          status: 'error',
+          message: 'Delete department failed, try again later!'
+        })
       }
     });
   };
@@ -194,6 +207,21 @@ const DepartmentManagePage = () => {
         confirmCallBack={() => { handleDeleteDepartment(departmentData!); setConfirmDeleteDialogOpen(false); }}
         cancelCallBack={() => setConfirmDeleteDialogOpen(false)}
       />
+      <Snackbar
+        autoHideDuration={2000}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        open={snackbarState.open}
+        onClose={() => setSnackbarState({ open: false, status: 'error', message: '' })}
+      >
+        <Alert
+          onClose={() => setSnackbarState({ open: false, status: 'error', message: '' })}
+          severity={snackbarState.status === 'success' ? 'success' : 'error'}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {snackbarState.message}
+        </Alert>
+      </Snackbar>
     </>
   );
 };
