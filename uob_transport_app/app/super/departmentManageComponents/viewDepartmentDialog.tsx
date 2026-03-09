@@ -32,6 +32,7 @@ import { getUsersByDepId, updateDepartmentName } from "../request";
 import { StyledStickyTableCell } from "@/components/StyledTableCell";
 import SingleInputDialog from "@/components/singleInputDialog";
 import { alpha } from '@mui/material/styles';
+import CustomizedButton from "@/components/CustomizedButton";
 
 const ViewDepartmentDialog = ({ viewData, dialogOpen, handleDialogClose }: { viewData: DepartmentRecord, dialogOpen: boolean, handleDialogClose: () => void }) => {
 
@@ -125,51 +126,32 @@ const ViewDepartmentDialog = ({ viewData, dialogOpen, handleDialogClose }: { vie
   }) {
     const { numSelected } = props;
     return (
-      <Toolbar
-        sx={[
-          {
-            pl: { sm: 2 },
-            pr: { xs: 1, sm: 1 },
-          },
-          numSelected > 0 && {
-            bgcolor: (theme) =>
-              alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
-          },
-        ]}
-      >
+      <div style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         {numSelected > 0 ? (
           <Typography
-            sx={{ flex: '1 1 100%' }}
-            color="inherit"
-            variant="subtitle1"
-            component="div"
-          >
-            {numSelected} selected
-          </Typography>
-        ) : (
-          <Typography
-            sx={{ flex: '1 1 100%' }}
             variant="h6"
             id="tableTitle"
             component="div"
           >
-            Nutrition
+            Selected {numSelected} out of {viewData?.userCount}:
+          </Typography>
+        ) : (
+          <Typography
+            variant="h6"
+            id="tableTitle"
+            component="div"
+          >
+            Members (Total {viewData?.userCount}):
           </Typography>
         )}
-        {numSelected > 0 ? (
-          <Tooltip title="Delete">
-            <IconButton>
-              <DeleteIcon />
-            </IconButton>
-          </Tooltip>
-        ) : (
-          <Tooltip title="Filter list">
-            <IconButton>
-              <FilterListIcon />
-            </IconButton>
-          </Tooltip>
+        {numSelected > 0 && (
+          <CustomizedButton
+            title="change department"
+            type="primary"
+            click={() => { }}
+          />
         )}
-      </Toolbar>
+      </div>
     );
   }
 
@@ -178,6 +160,7 @@ const ViewDepartmentDialog = ({ viewData, dialogOpen, handleDialogClose }: { vie
       onClose={handleDialogClose}
       aria-labelledby="customized-dialog-title"
       open={dialogOpen}
+      maxWidth="md"
       sx={{
         "& .MuiStack-root": {
           flexDirection: "row",
@@ -227,11 +210,9 @@ const ViewDepartmentDialog = ({ viewData, dialogOpen, handleDialogClose }: { vie
           </Typography>
         </Stack>
         <Stack>
-          <Typography gutterBottom sx={{ fontWeight: "bold" }}>
-            Members (Total {viewData?.userCount}):
-          </Typography>
+          <EnhancedTableToolbar numSelected={selected.length} />
         </Stack>
-        <Box>
+        <Box sx={{ marginTop: 1 }}>
           {isLoading ? <Typography>Loading members...</Typography> :
             (<TableContainer component={Paper} sx={{ boxShadow: "none", border: "none", maxHeight: 600 }}>
               <Table stickyHeader sx={{ minWidth: 500 }} aria-label="department table" size="small">
