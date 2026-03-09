@@ -56,3 +56,11 @@ export const updateDepartmentNameAccess = async (depId: number, newName: string)
     }
   })
 }
+
+export const deleteDepartmentAccess = async (depId: number): Promise<department> => {
+  return prisma.department.delete({
+    where: {
+      dep_id: depId
+    }
+  })
+}

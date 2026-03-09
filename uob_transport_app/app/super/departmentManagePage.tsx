@@ -54,6 +54,7 @@ const DepartmentManagePage = () => {
     setConfirmDeleteDialogOpen(true)
   };
   const handleDeleteDepartment = (department: DepartmentRecord) => {
+
     console.log(department);
   };
 
