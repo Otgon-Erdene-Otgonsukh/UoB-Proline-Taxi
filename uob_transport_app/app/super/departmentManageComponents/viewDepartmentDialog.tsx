@@ -15,17 +15,23 @@ import {
   TableRow,
   TableBody,
   Snackbar,
-  Alert
+  Alert,
+  Checkbox,
+  Toolbar,
+  Tooltip
 } from "@mui/material";
 import {
   EditOutlined as EditIcon,
   Close as CloseIcon,
+  Delete as DeleteIcon,
+  FilterList as FilterListIcon
 } from "@mui/icons-material"
 import { DepartmentRecord } from "@/model/models";
 import { useEffect, useState } from "react";
 import { getUsersByDepId, updateDepartmentName } from "../request";
 import { StyledStickyTableCell } from "@/components/StyledTableCell";
 import SingleInputDialog from "@/components/singleInputDialog";
+import { alpha } from '@mui/material/styles';
 
 const ViewDepartmentDialog = ({ viewData, dialogOpen, handleDialogClose }: { viewData: DepartmentRecord, dialogOpen: boolean, handleDialogClose: () => void }) => {
 
@@ -84,6 +90,87 @@ const ViewDepartmentDialog = ({ viewData, dialogOpen, handleDialogClose }: { vie
     }).finally(() => {
       setNameEditOn(false);
     });
+  }
+
+  // table enable selection
+  const [selected, setSelected] = useState<readonly number[]>([]);
+  const handleSelectAllRowsClick = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.checked) {
+      const newSelected = members.map((member) => member.user_id);
+      setSelected(newSelected);
+      return;
+    }
+    setSelected([]);
+  };
+  const handleClickRow = (event: React.MouseEvent<unknown>, id: number) => {
+    const selectedIndex = selected.indexOf(id);
+    let newSelected: readonly number[] = [];
+
+    if (selectedIndex === -1) {
+      newSelected = newSelected.concat(selected, id);
+    } else if (selectedIndex === 0) {
+      newSelected = newSelected.concat(selected.slice(1));
+    } else if (selectedIndex === selected.length - 1) {
+      newSelected = newSelected.concat(selected.slice(0, -1));
+    } else if (selectedIndex > 0) {
+      newSelected = newSelected.concat(
+        selected.slice(0, selectedIndex),
+        selected.slice(selectedIndex + 1),
+      );
+    }
+    setSelected(newSelected);
+  };
+  function EnhancedTableToolbar(props: {
+    numSelected: number;
+  }) {
+    const { numSelected } = props;
+    return (
+      <Toolbar
+        sx={[
+          {
+            pl: { sm: 2 },
+            pr: { xs: 1, sm: 1 },
+          },
+          numSelected > 0 && {
+            bgcolor: (theme) =>
+              alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
+          },
+        ]}
+      >
+        {numSelected > 0 ? (
+          <Typography
+            sx={{ flex: '1 1 100%' }}
+            color="inherit"
+            variant="subtitle1"
+            component="div"
+          >
+            {numSelected} selected
+          </Typography>
+        ) : (
+          <Typography
+            sx={{ flex: '1 1 100%' }}
+            variant="h6"
+            id="tableTitle"
+            component="div"
+          >
+            Nutrition
+          </Typography>
+        )}
+        {numSelected > 0 ? (
+          <Tooltip title="Delete">
+            <IconButton>
+              <DeleteIcon />
+            </IconButton>
+          </Tooltip>
+        ) : (
+          <Tooltip title="Filter list">
+            <IconButton>
+              <FilterListIcon />
+            </IconButton>
+          </Tooltip>
+        )}
+      </Toolbar>
+    );
   }
 
   return (<div>
@@ -150,21 +237,54 @@ const ViewDepartmentDialog = ({ viewData, dialogOpen, handleDialogClose }: { vie
               <Table stickyHeader sx={{ minWidth: 500 }} aria-label="department table" size="small">
                 <TableHead>
                   <TableRow>
+                    <StyledStickyTableCell padding="checkbox">
+                      <Checkbox
+                        color="primary"
+                        indeterminate={selected.length > 0 && selected.length < members.length}
+                        checked={members.length > 0 && selected.length === members.length}
+                        onChange={handleSelectAllRowsClick}
+                        inputProps={{
+                          'aria-label': 'select all desserts',
+                        }}
+                      />
+                    </StyledStickyTableCell>
                     <StyledStickyTableCell>Name</StyledStickyTableCell>
                     <StyledStickyTableCell>email</StyledStickyTableCell>
                     <StyledStickyTableCell>phone number</StyledStickyTableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {members.map((member) => (
-                    <TableRow key={member.user_id}>
-                      <StyledStickyTableCell>{member.full_name}</StyledStickyTableCell>
-                      <StyledStickyTableCell>
-                        {member.email}
-                      </StyledStickyTableCell>
-                      <StyledStickyTableCell>{member.phone_number}</StyledStickyTableCell>
-                    </TableRow>
-                  ))}
+                  {members.map((member, index) => {
+                    const isItemSelected = selected.includes(member.user_id);
+                    const labelId = `enhanced-table-checkbox-${index}`;
+                    return (
+                      <TableRow
+                        hover
+                        onClick={(event) => handleClickRow(event, member.user_id)}
+                        role="checkbox"
+                        aria-checked={isItemSelected}
+                        tabIndex={-1}
+                        key={member.user_id}
+                        selected={isItemSelected}
+                        sx={{ cursor: 'pointer' }}
+                      >
+                        <StyledStickyTableCell padding="checkbox">
+                          <Checkbox
+                            color="primary"
+                            checked={isItemSelected}
+                            inputProps={{
+                              'aria-labelledby': labelId,
+                            }}
+                          />
+                        </StyledStickyTableCell>
+                        <StyledStickyTableCell>{member.full_name}</StyledStickyTableCell>
+                        <StyledStickyTableCell>
+                          {member.email}
+                        </StyledStickyTableCell>
+                        <StyledStickyTableCell>{member.phone_number}</StyledStickyTableCell>
+                      </TableRow>
+                    )
+                  })}
                 </TableBody>
               </Table>
             </TableContainer>)}
