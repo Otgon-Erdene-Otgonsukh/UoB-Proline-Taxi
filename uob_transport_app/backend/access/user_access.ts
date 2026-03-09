@@ -1,5 +1,6 @@
 import prisma from '@/utils/client';
 import { department, User } from '@/generated/prisma/client'
+import { BatchPayload } from '@/generated/prisma/internal/prismaNamespace';
 type noPasswordUser = Omit<User, "password">
 
 export const searchUserAccess = async (
@@ -164,6 +165,19 @@ export const getUsersByDepIdAccess = async (depId: number) => {
       phone_number: true,
       role: true,
       user_status: true
+    }
+  })
+}
+
+export const changeDepartmentForUsersAccess = async (userIds: number[], depId: number): Promise<BatchPayload> => {
+  return prisma.user.updateMany({
+    where: {
+      user_id: {
+        in: userIds
+      }
+    },
+    data: {
+      dep_id: depId
     }
   })
 }
