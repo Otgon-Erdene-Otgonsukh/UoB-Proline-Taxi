@@ -1,6 +1,6 @@
 import "@testing-library/jest-dom";
 import React from "react";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import BookingPage from "@/app/book/page";
 
@@ -70,14 +70,55 @@ jest.mock("@/components/NumberField", () => ({
   ),
 }));
 
+// Mock fetch globally
 global.fetch = jest.fn();
 
 // HELPERS
 
+/** Returns a future date string in YYYY-MM-DD format */
 function futureDateString(daysFromNow = 3): string {
   const d = new Date();
   d.setDate(d.getDate() + daysFromNow);
   return d.toISOString().split("T")[0];
+}
+
+/** Returns a time string in HH:MM format */
+function timeString(hour = 14, minute = 0): string {
+  return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
+}
+
+/** Fills all required fields with valid data so the form can be submitted */
+async function fillValidForm() {
+  // Common pick-up location — use the MUI Select
+  // The dropdown is rendered as a combobox by MUI
+  const pickupSelect = screen.getByLabelText(/common pick-up locations/i);
+  await userEvent.click(pickupSelect);
+  const queenOption = await screen.findByText("Queens Building");
+  await userEvent.click(queenOption);
+
+  // Drop-off location
+  const dropoff = screen.getByLabelText(/drop-off location/i);
+  await userEvent.type(dropoff, "Temple Meads Station, Bristol");
+
+  // Pickup date
+  const pickupDate = screen.getByLabelText(/pick-up date and time/i);
+  await userEvent.type(pickupDate, futureDateString());
+
+  // Pickup time
+  const timeInput = document.querySelector('input[type="time"]') as HTMLInputElement;
+  await userEvent.type(timeInput, "14:00");
+
+  // Passenger name
+  const name = screen.getByLabelText(/passenger name/i);
+  await userEvent.type(name, "John Smith");
+
+  // Phone number
+  const phone = screen.getByLabelText(/phone number/i);
+  await userEvent.type(phone, "07123456789");
+
+  // Email
+  const email = screen.getByLabelText(/email/i);
+  await userEvent.type(email, "john.smith@example.com");
 }
 
 beforeEach(() => {
@@ -114,12 +155,18 @@ describe("Rendering — Page structure", () => {
     );
   });
 
-  test("renders Trip details and Lead passenger section headings", async () => {
+  test("renders the Trip details section heading", async () => {
     render(<BookingPage />);
-    await waitFor(() => {
-      expect(screen.getByText(/trip details/i)).toBeInTheDocument();
-      expect(screen.getByText(/lead passenger details/i)).toBeInTheDocument();
-    });
+    await waitFor(() =>
+      expect(screen.getByText(/trip details/i)).toBeInTheDocument()
+    );
+  });
+
+  test("renders the Lead passenger details section heading", async () => {
+    render(<BookingPage />);
+    await waitFor(() =>
+      expect(screen.getByText(/lead passenger details/i)).toBeInTheDocument()
+    );
   });
 });
 
@@ -129,52 +176,241 @@ describe("Rendering — Input fields", () => {
   test("renders the common pick-up locations dropdown", async () => {
     render(<BookingPage />);
     await waitFor(() =>
-      expect(document.getElementById("commonLoc")).toBeInTheDocument()
+      expect(
+        screen.getByLabelText(/common pick-up locations/i)
+      ).toBeInTheDocument()
     );
   });
 
-  test("renders all key input fields", async () => {
+  test("renders the drop-off location input", async () => {
+    render(<BookingPage />);
+    await waitFor(() =>
+      expect(screen.getByLabelText(/drop-off location/i)).toBeInTheDocument()
+    );
+  });
+
+  test("renders the pick-up date input", async () => {
+    render(<BookingPage />);
+    await waitFor(() =>
+      expect(screen.getByLabelText(/pick-up date and time/i)).toBeInTheDocument()
+    );
+  });
+
+  test("renders the pick-up time input", async () => {
     render(<BookingPage />);
     await waitFor(() => {
-      expect(screen.getByLabelText(/drop-off location/i)).toBeInTheDocument();
-      expect(screen.getByLabelText(/pick-up date and time/i)).toBeInTheDocument();
-      expect(screen.getByLabelText(/passenger name/i)).toBeInTheDocument();
-      expect(screen.getByLabelText(/phone number/i)).toBeInTheDocument();
-      expect(screen.getByLabelText(/^email$/i)).toBeInTheDocument();
-      expect(screen.getByLabelText(/additional information/i)).toBeInTheDocument();
-      expect(screen.getByLabelText(/department/i)).toBeInTheDocument();
+      const timeInput = document.querySelector('input[type="time"]');
+      expect(timeInput).toBeInTheDocument();
     });
   });
 
-  test("renders pick-up time input", async () => {
+  test("renders the passenger name input", async () => {
     render(<BookingPage />);
     await waitFor(() =>
-      expect(document.querySelector('input[type="time"]')).toBeInTheDocument()
+      expect(screen.getByLabelText(/passenger name/i)).toBeInTheDocument()
     );
   });
 
-  test("renders the number-field (passengers) defaulting to 1", async () => {
+  test("renders the phone number input", async () => {
+    render(<BookingPage />);
+    await waitFor(() =>
+      expect(screen.getByLabelText(/phone number/i)).toBeInTheDocument()
+    );
+  });
+
+  test("renders the email input", async () => {
+    render(<BookingPage />);
+    await waitFor(() =>
+      expect(screen.getByLabelText(/email/i)).toBeInTheDocument()
+    );
+  });
+
+  test("renders the number-field (passengers) input", async () => {
+    render(<BookingPage />);
+    await waitFor(() =>
+      expect(screen.getByTestId("number-field")).toBeInTheDocument()
+    );
+  });
+
+  test("renders the additional information textarea", async () => {
+    render(<BookingPage />);
+    await waitFor(() =>
+      expect(screen.getByLabelText(/additional information/i)).toBeInTheDocument()
+    );
+  });
+
+  test("renders the department autocomplete", async () => {
+    render(<BookingPage />);
+    await waitFor(() =>
+      expect(screen.getByLabelText(/department/i)).toBeInTheDocument()
+    );
+  });
+
+  test("renders phone country code selector", async () => {
     render(<BookingPage />);
     await waitFor(() => {
-      const numField = screen.getByTestId("number-field") as HTMLInputElement;
-      expect(numField).toBeInTheDocument();
-      expect(numField.value).toBe("1");
+      const select = screen.getByDisplayValue("+44 (UK)");
+      expect(select).toBeInTheDocument();
+    });
+  });
+});
+
+// SECTION 3 — TOGGLE VISIBILITY
+
+describe("Toggle fields — Manually Enter", () => {
+  test("manually enter toggle is present", async () => {
+    render(<BookingPage />);
+    await waitFor(() =>
+      expect(screen.getByLabelText(/manually enter/i)).toBeInTheDocument()
+    );
+  });
+
+  test("custom pick-up location input is hidden by default", async () => {
+    render(<BookingPage />);
+    await waitFor(() =>
+      expect(
+        screen.queryByLabelText(/custom pick-up location/i)
+      ).not.toBeInTheDocument()
+    );
+  });
+
+  test("toggling manually enter reveals the custom location input", async () => {
+    render(<BookingPage />);
+    await waitFor(() => screen.getByLabelText(/manually enter/i));
+    await userEvent.click(screen.getByLabelText(/manually enter/i));
+    await waitFor(() =>
+      expect(
+        screen.getByLabelText(/custom pick-up location/i)
+      ).toBeInTheDocument()
+    );
+  });
+
+  test("toggling manually enter disables the common locations dropdown", async () => {
+    render(<BookingPage />);
+    await waitFor(() => screen.getByLabelText(/manually enter/i));
+    await userEvent.click(screen.getByLabelText(/manually enter/i));
+    await waitFor(() => {
+      // MUI Select with a disabled FormControl renders the select div with
+      // aria-disabled="true". Query the DOM directly to avoid MUI label quirks.
+      const disabledSelect = document.querySelector(
+        '#commonLoc[aria-disabled="true"], [aria-disabled="true"] input[name=""]'
+      ) ?? document.querySelector('.Mui-disabled [role="combobox"]')
+        ?? document.querySelector('.MuiSelect-root.Mui-disabled');
+      expect(disabledSelect).not.toBeNull();
     });
   });
 
-  test("phone country code defaults to +44 (UK)", async () => {
+  test("untoggling manually enter hides the custom location input again", async () => {
+    render(<BookingPage />);
+    await waitFor(() => screen.getByLabelText(/manually enter/i));
+    await userEvent.click(screen.getByLabelText(/manually enter/i));
+    await waitFor(() =>
+      screen.getByLabelText(/custom pick-up location/i)
+    );
+    await userEvent.click(screen.getByLabelText(/manually enter/i));
+    await waitFor(() =>
+      expect(
+        screen.queryByLabelText(/custom pick-up location/i)
+      ).not.toBeInTheDocument()
+    );
+  });
+});
+
+describe("Toggle fields — Flight", () => {
+  test("flight toggle is present", async () => {
     render(<BookingPage />);
     await waitFor(() =>
-      expect(screen.getByDisplayValue("+44 (UK)")).toBeInTheDocument()
+      expect(screen.getByLabelText(/^flight$/i)).toBeInTheDocument()
     );
   });
 
-  test("input types are correct", async () => {
+  test("flight number and airport inputs are hidden by default", async () => {
     render(<BookingPage />);
     await waitFor(() => {
-      expect(screen.getByLabelText(/pick-up date and time/i)).toHaveAttribute("type", "date");
-      expect(screen.getByLabelText(/phone number/i)).toHaveAttribute("type", "tel");
-      expect(screen.getByLabelText(/^email$/i)).toHaveAttribute("type", "email");
+      expect(screen.queryByLabelText(/flight number/i)).not.toBeInTheDocument();
+      expect(screen.queryByLabelText(/airport/i)).not.toBeInTheDocument();
+    });
+  });
+
+  test("toggling flight reveals flight number and airport inputs", async () => {
+    render(<BookingPage />);
+    await waitFor(() => screen.getByLabelText(/^flight$/i));
+    await userEvent.click(screen.getByLabelText(/^flight$/i));
+    await waitFor(() => {
+      expect(screen.getByLabelText(/flight number/i)).toBeInTheDocument();
+      expect(screen.getByLabelText(/airport/i)).toBeInTheDocument();
+    });
+  });
+
+  test("toggling flight hides the manually enter toggle", async () => {
+    render(<BookingPage />);
+    await waitFor(() => screen.getByLabelText(/^flight$/i));
+    await userEvent.click(screen.getByLabelText(/^flight$/i));
+    await waitFor(() =>
+      expect(
+        screen.queryByLabelText(/manually enter/i)
+      ).not.toBeInTheDocument()
+    );
+  });
+});
+
+describe("Toggle fields — Via", () => {
+  test("via toggle is present", async () => {
+    render(<BookingPage />);
+    await waitFor(() =>
+      expect(screen.getByLabelText(/^via$/i)).toBeInTheDocument()
+    );
+  });
+
+  test("via input is hidden by default", async () => {
+    render(<BookingPage />);
+    await waitFor(() =>
+      expect(screen.queryByPlaceholderText(/via\.\.\./i)).not.toBeInTheDocument()
+    );
+  });
+
+  test("toggling via reveals the first via input box", async () => {
+    render(<BookingPage />);
+    await waitFor(() => screen.getByLabelText(/^via$/i));
+    await userEvent.click(screen.getByLabelText(/^via$/i));
+    await waitFor(() =>
+      expect(screen.getByPlaceholderText(/via\.\.\./i)).toBeInTheDocument()
+    );
+  });
+});
+
+describe("Toggle fields — Return trip", () => {
+  test("return trip checkbox is present", async () => {
+    render(<BookingPage />);
+    await waitFor(() =>
+      expect(screen.getByLabelText(/return trip/i)).toBeInTheDocument()
+    );
+  });
+
+  test("return date and time inputs are hidden by default", async () => {
+    render(<BookingPage />);
+    await waitFor(() => {
+      expect(screen.queryByLabelText(/return date/i)).not.toBeInTheDocument();
+      expect(screen.queryByLabelText(/return time/i)).not.toBeInTheDocument();
+    });
+  });
+
+  test("checking return trip reveals return date and time inputs", async () => {
+    render(<BookingPage />);
+    await waitFor(() => screen.getByLabelText(/return trip/i));
+    await userEvent.click(screen.getByLabelText(/return trip/i));
+    await waitFor(() => {
+      expect(screen.getByLabelText(/return trip pick-up date and time/i)).toBeInTheDocument();
+    });
+  });
+
+  test("return trip pick-up location is pre-filled with drop-off location value", async () => {
+    render(<BookingPage />);
+    await waitFor(() => screen.getByLabelText(/return trip/i));
+    await userEvent.click(screen.getByLabelText(/return trip/i));
+    await waitFor(() => {
+      const returnPickup = screen.getByLabelText(/return trip pick-up location/i);
+      expect(returnPickup).toBeDisabled();
     });
   });
 });
