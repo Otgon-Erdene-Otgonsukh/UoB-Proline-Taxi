@@ -47,3 +47,9 @@ export const updateDepartmentName = async (depId: number, depName: string): Prom
     depName
   })
 }
+
+export const deleteDepartment = async (depId: number): Promise<Response> => {
+  return easyPostRequest('departments/delete', {
+    depId
+  })
+}

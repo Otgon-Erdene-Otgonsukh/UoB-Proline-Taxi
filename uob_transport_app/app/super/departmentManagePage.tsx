@@ -15,12 +15,18 @@ import AddDepartmentDialog from "./departmentManageComponents/newDepartmentDialo
 import ViewManagerDialog from "./departmentManageComponents/viewManagerDialog";
 import ViewDepartmentDialog from "./departmentManageComponents/viewDepartmentDialog";
 import ConfirmDialog from "@/components/confirmDIalog";
-import { getDepartmentManageList } from "./request";
+import { deleteDepartment, getDepartmentManageList } from "./request";
 
 const DepartmentManagePage = () => {
 
   const [departments, setDepartments] = useState<DepartmentRecord[]>([]);
   const [allDepartments, setAllDepartments] = useState<DepartmentRecord[]>([]);
+
+  const [snackbarState, setSnackbarState] = useState({
+    open: false,
+    status: 'error',
+    message: ''
+  })
 
   useEffect(() => {
     getDepartmentManageList().then(async (res) => {
@@ -54,8 +60,11 @@ const DepartmentManagePage = () => {
     setConfirmDeleteDialogOpen(true)
   };
   const handleDeleteDepartment = (department: DepartmentRecord) => {
-
-    console.log(department);
+    deleteDepartment(department.depId).then(async (res) => {
+      if (res.status === 200) {
+        setDepartments(departments.filter(e => e.depId !== department.depId))
+      }
+    });
   };
 
   const [searchFormInput, setSearchFormInput] = useState({ name: "" })
