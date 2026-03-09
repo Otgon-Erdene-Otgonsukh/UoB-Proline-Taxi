@@ -29,6 +29,7 @@ import { getUsersByDepId, updateDepartmentName } from "../request";
 import { StyledStickyTableCell } from "@/components/StyledTableCell";
 import SingleInputDialog from "@/components/singleInputDialog";
 import CustomizedButton from "@/components/CustomizedButton";
+import { ChangeDepartmentDialog } from "./changeDepartmentDialog";
 
 const ViewDepartmentDialog = ({ viewData, dialogOpen, handleDialogClose }: { viewData: DepartmentRecord, dialogOpen: boolean, handleDialogClose: () => void }) => {
 
@@ -153,12 +154,6 @@ const ViewDepartmentDialog = ({ viewData, dialogOpen, handleDialogClose }: { vie
 
   // change department for selected members
   const [handleChangeDepartmentDialogOpen, setChangeDepartmentDialogOpen] = useState(false);
-  const [chosenDepId, setChosenDepId] = useState<number | null>(null);
-  const handleConfirmChangeDepartment = () => {
-    // TODO call api to change department for selected members
-    console.log("Changing department for members:", selected);
-    setChangeDepartmentDialogOpen(false);
-  }
 
   return (<div>
     <Dialog
@@ -318,29 +313,11 @@ const ViewDepartmentDialog = ({ viewData, dialogOpen, handleDialogClose }: { vie
         {snackbarState.message}
       </Alert>
     </Snackbar>
-    <Dialog
-      open={handleChangeDepartmentDialogOpen}
-      onClose={() => setChangeDepartmentDialogOpen(false)}
-      aria-labelledby="alert-dialog-title"
-      aria-describedby="alert-dialog-description"
-    >
-      <DialogTitle id="alert-dialog-title">
-        {`Change department for ${selected.length} selected members`}
-      </DialogTitle>
-      <DialogContent>
-        <DialogContentText id="alert-dialog-description">
-          Choose Department
-        </DialogContentText>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={() => setChangeDepartmentDialogOpen(false)}>
-          Cancel
-        </Button>
-        <Button onClick={() => handleConfirmChangeDepartment} autoFocus>
-          Save
-        </Button>
-      </DialogActions>
-    </Dialog>
+    <ChangeDepartmentDialog
+      dialogOpen={handleChangeDepartmentDialogOpen}
+      handleDialogClose={() => setChangeDepartmentDialogOpen(false)}
+      selectedRows={members.filter(member => selected.includes(member.user_id))}
+    />
   </div>)
 }
 
