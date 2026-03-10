@@ -4,9 +4,7 @@ import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import BookingPage from "@/app/book/page";
 
-// ─────────────────────────────────────────────
 // GLOBAL MOCKS
-// ─────────────────────────────────────────────
 
 const mockPush = jest.fn();
 
@@ -75,9 +73,7 @@ jest.mock("@/components/NumberField", () => ({
 // Mock fetch globally
 global.fetch = jest.fn();
 
-// ─────────────────────────────────────────────
 // HELPERS
-// ─────────────────────────────────────────────
 
 /** Returns a future date string in YYYY-MM-DD format */
 function futureDateString(daysFromNow = 3): string {
@@ -133,9 +129,7 @@ beforeEach(() => {
   });
 });
 
-// ─────────────────────────────────────────────
 // SECTION 1 — RENDERING
-// ─────────────────────────────────────────────
 
 describe("Rendering — Page structure", () => {
   test("renders the page heading", async () => {
@@ -176,9 +170,7 @@ describe("Rendering — Page structure", () => {
   });
 });
 
-// ─────────────────────────────────────────────
 // SECTION 2 — INPUT FIELDS PRESENT
-// ─────────────────────────────────────────────
 
 describe("Rendering — Input fields", () => {
   test("renders the common pick-up locations dropdown", async () => {
@@ -263,9 +255,7 @@ describe("Rendering — Input fields", () => {
   });
 });
 
-// ─────────────────────────────────────────────
 // SECTION 3 — TOGGLE VISIBILITY
-// ─────────────────────────────────────────────
 
 describe("Toggle fields — Manually Enter", () => {
   test("manually enter toggle is present", async () => {
@@ -425,9 +415,7 @@ describe("Toggle fields — Return trip", () => {
   });
 });
 
-// ─────────────────────────────────────────────
 // SECTION 4 — VALIDATION: EMPTY FORM SUBMISSION
-// ─────────────────────────────────────────────
 
 describe("Validation — Empty form submission", () => {
   test("does not redirect when submitted empty", async () => {
@@ -500,9 +488,7 @@ describe("Validation — Empty form submission", () => {
   });
 });
 
-// ─────────────────────────────────────────────
 // SECTION 5 — VALIDATION: DROP-OFF LOCATION
-// ─────────────────────────────────────────────
 
 describe("Validation — Drop-off location", () => {
   test("drop-off input has red border when error is present", async () => {
@@ -551,9 +537,7 @@ describe("Validation — Drop-off location", () => {
   });
 });
 
-// ─────────────────────────────────────────────
 // SECTION 6 — VALIDATION: CUSTOM PICK-UP LOCATION
-// ─────────────────────────────────────────────
 
 describe("Validation — Custom pick-up location (manual toggle)", () => {
   async function enableManual() {
@@ -607,9 +591,7 @@ describe("Validation — Custom pick-up location (manual toggle)", () => {
   });
 });
 
-// ─────────────────────────────────────────────
 // SECTION 7 — VALIDATION: FLIGHT FIELDS
-// ─────────────────────────────────────────────
 
 describe("Validation — Flight fields", () => {
   async function enableFlight() {
@@ -691,9 +673,7 @@ describe("Validation — Flight fields", () => {
   });
 });
 
-// ─────────────────────────────────────────────
 // SECTION 8 — VALIDATION: DATE AND TIME
-// ─────────────────────────────────────────────
 
 describe("Validation — Pickup date and time", () => {
   test("shows error when date field is empty on submit", async () => {
@@ -771,9 +751,7 @@ describe("Validation — Pickup date and time", () => {
   });
 });
 
-// ─────────────────────────────────────────────
 // SECTION 9 — VALIDATION: RETURN TRIP FIELDS
-// ─────────────────────────────────────────────
 
 describe("Validation — Return trip date and time", () => {
   async function enableReturn() {
@@ -817,11 +795,9 @@ describe("Validation — Return trip date and time", () => {
   });
 });
 
-// ─────────────────────────────────────────────
 // SECTION 10 — VALIDATION: PASSENGER NAME
-// ─────────────────────────────────────────────
 
-// NOTE: Due to a key mismatch in page.tsx (addFormFeedback writes "PassengerName"
+// IMPORTANT CONFUSE: Due to a key mismatch in page.tsx (addFormFeedback writes "PassengerName"
 // with uppercase P, but the FormHelperText reads formFeedback.passengerName with
 // lowercase p), the passenger name error text and red border are never rendered.
 // Tests below reflect the page's actual behaviour.
@@ -860,9 +836,7 @@ describe("Validation — Passenger name", () => {
   });
 });
 
-// ─────────────────────────────────────────────
 // SECTION 11 — VALIDATION: PHONE NUMBER
-// ─────────────────────────────────────────────
 
 describe("Validation — Phone number", () => {
   test("shows error when phone number is empty", async () => {
@@ -930,9 +904,8 @@ describe("Validation — Phone number", () => {
   });
 });
 
-// ─────────────────────────────────────────────
+
 // SECTION 12 — VALIDATION: EMAIL
-// ─────────────────────────────────────────────
 
 describe("Validation — Email", () => {
   test("shows error when email is empty", async () => {
