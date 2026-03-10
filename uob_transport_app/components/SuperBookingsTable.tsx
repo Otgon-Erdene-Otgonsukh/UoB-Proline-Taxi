@@ -33,6 +33,7 @@ export const BookingTable = ({ data, count, page, pageSize, onPageChange, onPage
                 <Table
                     sx={{ minWidth: 500, borderCollapse: "collapse" }}
                     aria-label="booking table"
+                    size="small"
                 >
                     <TableHead>
                         <TableRow>

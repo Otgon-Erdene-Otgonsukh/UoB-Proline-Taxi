@@ -303,16 +303,16 @@ const Page = () => {
   const _getBookingListData = (page: number, pageSize: number) => {
     getBookingsList(page, pageSize, {
       ...searchFormInput,
-      pickUpTimeFrom: searchBookingFormInput.pickUpTimeFrom
-        ? searchBookingFormInput.pickUpTimeFrom.toISOString()
+      pickUpTimeFrom: bookingSearchFormInput.pickUpTimeFrom
+        ? bookingSearchFormInput.pickUpTimeFrom.toISOString()
         : "",
-      pickUpTimeTo: searchBookingFormInput.pickUpTimeTo
-        ? searchBookingFormInput.pickUpTimeTo.toISOString()
+      pickUpTimeTo: bookingSearchFormInput.pickUpTimeTo
+        ? bookingSearchFormInput.pickUpTimeTo.toISOString()
         : "",
       bookingStatus:
-        searchBookingFormInput?.bookingStatus === "All"
+        bookingSearchFormInput?.bookingStatus === "All"
           ? ""
-          : searchBookingFormInput?.bookingStatus,
+          : bookingSearchFormInput?.bookingStatus,
     }).then((res) => {
       if (res.status === 200) {
         res.json().then((data) => {
@@ -330,7 +330,7 @@ const Page = () => {
     to?: string;
     bookingStatus?: string;
   };
-  const [searchBookingFormInput, setSearchBookingFormInput] = useState<BookingSearchFormProps>({
+  const [bookingSearchFormInput, setBookingSearchFormInput] = useState<BookingSearchFormProps>({
     pickUpTimeFrom: undefined,
     pickUpTimeTo: undefined,
     from: "",
@@ -396,9 +396,9 @@ const Page = () => {
     e.preventDefault();
 
     if (
-      searchBookingFormInput.pickUpTimeTo &&
-      searchBookingFormInput.pickUpTimeFrom &&
-      searchBookingFormInput.pickUpTimeFrom > searchBookingFormInput.pickUpTimeTo
+      bookingSearchFormInput.pickUpTimeTo &&
+      bookingSearchFormInput.pickUpTimeFrom &&
+      bookingSearchFormInput.pickUpTimeFrom > bookingSearchFormInput.pickUpTimeTo
     ) {
       setSnackbarState({
         open: true,
@@ -459,13 +459,6 @@ const Page = () => {
   const [dateTimePickerFromOpen, setDateTimePickerFromOpen] = useState(false);
   const [dateTimePickerToOpen, setDateTimePickerToOpen] = useState(false);
 
-  const [bookingSearchFormInput, setBookingSearchFormInput] = useState<BookingSearchFormProps>({
-    pickUpTimeFrom: undefined,
-    pickUpTimeTo: undefined,
-    from: undefined,
-    to: undefined,
-    bookingStatus: undefined
-  })
   const [bookingListData, setBookingListData] = useState<BookingRecord[]>([]);
   const [bookingListCount, setBookingListCount] = useState(0);
 
@@ -523,8 +516,8 @@ const Page = () => {
             <>
               <div className="flex justify-between items-center mb-4 px-20">
                 <div className="flex items-center gap-2">
-                  <h1 className="text-xl font-aleo md:text-3xl font-semibold text-shadow-lg/20">
-                    Users Table
+                  <h1 className="text-xl font-aleo md:text-3xl font-semibold text-shadow-lg/20 py-2 pr-4">
+                    Users
                   </h1>
                 </div>
                 <Box
@@ -623,36 +616,23 @@ const Page = () => {
           )}
 
           {tabValue === 1 && (
-            <div>
-              <motion.div
-                className="bg-white shadow-lg/20 rounded-lg p-6 md:p-8 w-full max-w-6xl my-15 mt-13"
-                initial={{ opacity: 0, y: 6, scale: 0.98 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ duration: 1, ease: "easeOut", delay: 0.8 }}
-              >
-                <div className="flex justify-between mb-6">
-                  <h1 className="font-aleo text-2xl sm:text-3xl font-semibold text-shadow-lg/20">
-                    Bookings Table
+            <>
+              <div className="flex justify-between items-center mb-4 px-10">
+                <div className="flex items-center gap-2">
+                  <h1 className="text-xl font-aleo md:text-3xl font-semibold text-shadow-lg/20 pr-20">
+                    Bookings
                   </h1>
-                  <CustomizedButton
-                    title="+ New Booking"
-                    type="warning"
-                    click={handleBookingDialogOpen}
-                  />
                 </div>
-
+                  
                 <Box
                   component="form"
                   onSubmit={handleSubmitSearchForm}
                   sx={{
                     display: "flex",
-                    flexDirection: { xs: "column", sm: "row" },
-                    gap: 2.5,
-                    marginBottom: 3,
+                    gap: 1,
                   }}
                 >
                   <TextField
-                    fullWidth
                     label="From"
                     id="searchFromInput"
                     value={bookingSearchFormInput.from}
@@ -663,10 +643,9 @@ const Page = () => {
                       });
                     }}
                     size="small"
-                    sx={{ minWidth: 150 }}
+                    sx={{ minWidth: 140 }}
                   />
                   <TextField
-                    fullWidth
                     label="To"
                     id="searchToInput"
                     value={bookingSearchFormInput.to}
@@ -674,14 +653,14 @@ const Page = () => {
                       setBookingSearchFormInput({ ...bookingSearchFormInput, to: e.target.value });
                     }}
                     size="small"
-                    sx={{ minWidth: 150 }}
+                    sx={{ minWidth: 140 }}
                   />
-                  <FormControl sx={{ minWidth: 150 }}>
-                    <InputLabel id="searchBookingStatusInputLabel" size="small">
+                  <FormControl sx={{ minWidth: 120 }} size="small">
+                    <InputLabel id="searchBookingStatusInputLabel">
                       Booking Status
                     </InputLabel>
                     <Select
-                      labelId="demo-simple-select-label"
+                    labelId="searchBookingStatusInputLabel"
                       label="Booking Status"
                       id="searchBookingStatusInput"
                       value={bookingSearchFormInput.bookingStatus}
@@ -706,11 +685,10 @@ const Page = () => {
                     </Select>
                   </FormControl>
                   <TextField
-                    fullWidth
                     onClick={() => setDateTimePickerFromOpen(true)}
                     label="Pick Up Date From"
                     size="small"
-                    sx={{ minWidth: 150 }}
+                    sx={{ minWidth: 200 }}
                     ref={dateTimePickerFromAnchorRef}
                     defaultValue={bookingSearchFormInput.pickUpTimeFrom?.toDateString()}
                     slotProps={{
@@ -735,11 +713,10 @@ const Page = () => {
                     </IconButton>
                   )}
                   <TextField
-                    fullWidth
                     onClick={() => setDateTimePickerToOpen(true)}
                     label="Pick Up Date To"
                     size="small"
-                    sx={{ minWidth: 150 }}
+                    sx={{ minWidth: 200 }}
                     ref={dateTimePickerToAnchorRef}
                     defaultValue={bookingSearchFormInput.pickUpTimeTo?.toDateString()}
                     slotProps={{
@@ -786,6 +763,12 @@ const Page = () => {
                     locale={enLocale}
                   />
                   <CustomizedButton title="Search" type="warning" click={() => { }} />
+
+                  <CustomizedButton
+                    title="+"
+                    type="warning"
+                    click={handleBookingDialogOpen}
+                  />
                 </Box>
                 {isSearchSubmitted &&
                   (bookingSearchFormInput.pickUpTimeFrom && bookingSearchFormInput.pickUpTimeTo ? (
@@ -815,119 +798,98 @@ const Page = () => {
                       </strong>
                     </p>
                   ) : null)}
-
-                {isLoading ? (
-                  <Typography
-                    sx={{ color: "gray", fontSize: 16, textAlign: "center", my: 10 }}
-                  >
-                    Getting your bookings...
-                  </Typography>
-                ) : bookingListData.length === 0 ? (
-                  <Typography
-                    sx={{ color: "gray", fontSize: 16, textAlign: "center", my: 10 }}
-                  >
-                    No bookings to show.
-                  </Typography>
-                ) : (
-                  <BookingTable
-                    data={bookingListData}
-                    count={bookingListCount}
-                    page={paginationMeta.page}
-                    pageSize={paginationMeta.pageSize}
-                    onPageChange={handleChangePage}
-                    onPageSizeChange={handleChangePageSize}
-                    ActionsComponent={TablePaginationActions}
-                    onViewDetails={handleBookingsViewDialogOpen}
-                    onEditBooking={handleBookingsEditDialogOpen}
-                    onCancelBooking={handleBookingsCancelBooking}
-                  />
-                )}
-                {bookDetail && (
-                  <BookingViewDialog
-                    viewData={bookDetail}
-                    dialogOpen={bookDetailDialogOpen}
-                    handleDialogClose={handleBookingsViewDialogClose}
-                  />
-                )}
-                <Dialog
-                  onClose={handleBookingsEditDialogClose}
-                  aria-labelledby="customized-dialog-title"
-                  open={editBookDialogOpen}
-                  maxWidth="md"
+              </div>
+              {isLoading ? (
+                <Typography
+                  sx={{ color: "gray", fontSize: 16, textAlign: "center", my: 10 }}
                 >
-                  <DialogTitle
-                    sx={{
-                      m: 0,
-                      p: 2,
-                      fontFamily: "inter",
-                      fontWeight: "bold",
-                      bgcolor: "#2c2c2c",
-                      color: "white",
-                      textAlign: "center",
-                      fontSize: 28,
-                    }}
-                    id="customized-dialog-title"
-                  >
-                    Edit Booking
-                  </DialogTitle>
-                  <IconButton
-                    aria-label="close"
-                    onClick={handleBookingsEditDialogClose}
-                    sx={(theme) => ({
-                      position: "absolute",
-                      right: 8,
-                      top: 8,
-                      color: theme.palette.grey[500],
-                    })}
-                  >
-                    <CloseIcon />
-                  </IconButton>
-                  <DialogContent dividers>
-                    <BookingPage />
-                  </DialogContent>
-                  <DialogActions>
-                    <Button
-                      sx={{
-                        color: "#2c2c2c",
-                        transition: "all 300ms",
-                        mr: 1,
-                        ":hover": { bgcolor: "#2c2c2c", color: "white" },
-                      }}
-                      onClick={handleCancelDialogClose}
-                    >
-                      Close
-                    </Button>
-                  </DialogActions>
-                </Dialog>
-                <ConfirmDialog
-                  open={cancelBookDialogOpen}
-                  dialogTitle="Cancel Booking"
-                  confirmMessage="Are you sure you want to cancel this booking?"
-                  confirmCallBack={handleConfirmCancel}
-                  cancelCallBack={handleCancelDialogClose}
+                  Getting your bookings...
+                </Typography>
+              ) : bookingListData.length === 0 ? (
+                <Typography
+                  sx={{ color: "gray", fontSize: 16, textAlign: "center", my: 10 }}
+                >
+                  No bookings to show.
+                </Typography>
+              ) : (
+                <BookingTable
+                  data={bookingListData}
+                  count={bookingListCount}
+                  page={paginationMeta.page}
+                  pageSize={paginationMeta.pageSize}
+                  onPageChange={handleChangePage}
+                  onPageSizeChange={handleChangePageSize}
+                  ActionsComponent={TablePaginationActions}
+                  onViewDetails={handleBookingsViewDialogOpen}
+                  onEditBooking={handleBookingsEditDialogOpen}
+                  onCancelBooking={handleBookingsCancelBooking}
                 />
-                <div className="flex justify-center mt-4">
-                  <TablePagination
-                    component="div"
-                    rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
-                    count={bookingListCount}
-                    rowsPerPage={paginationMeta.pageSize}
-                    page={paginationMeta.page}
-                    slotProps={{
-                      select: {
-                        inputProps: {
-                          "aria-label": "rows per page",
-                        },
-                        native: true,
-                      },
+              )}
+              {bookDetail && (
+                <BookingViewDialog
+                  viewData={bookDetail}
+                  dialogOpen={bookDetailDialogOpen}
+                  handleDialogClose={handleBookingsViewDialogClose}
+                />
+              )}
+              <Dialog
+                onClose={handleBookingsEditDialogClose}
+                aria-labelledby="customized-dialog-title"
+                open={editBookDialogOpen}
+                maxWidth="md"
+              >
+                <DialogTitle
+                  sx={{
+                    m: 0,
+                    p: 2,
+                    fontFamily: "inter",
+                    fontWeight: "bold",
+                    bgcolor: "#2c2c2c",
+                    color: "white",
+                    textAlign: "center",
+                    fontSize: 28,
+                  }}
+                  id="customized-dialog-title"
+                >
+                  Edit Booking
+                </DialogTitle>
+                <IconButton
+                  aria-label="close"
+                  onClick={handleBookingsEditDialogClose}
+                  sx={(theme) => ({
+                    position: "absolute",
+                    right: 8,
+                    top: 8,
+                    color: theme.palette.grey[500],
+                  })}
+                >
+                  <CloseIcon />
+                </IconButton>
+                <DialogContent dividers>
+                  <BookingPage />
+                </DialogContent>
+                <DialogActions>
+                  <Button
+                    sx={{
+                      color: "#2c2c2c",
+                      transition: "all 300ms",
+                      mr: 1,
+                      ":hover": { bgcolor: "#2c2c2c", color: "white" },
                     }}
-                    onPageChange={handleChangePage}
-                    onRowsPerPageChange={handleChangePageSize}
-                    ActionsComponent={TablePaginationActions}
-                  />
-                </div>
-              </motion.div>
-            </div>
+                    onClick={handleCancelDialogClose}
+                  >
+                    Close
+                  </Button>
+                </DialogActions>
+              </Dialog>
+              <ConfirmDialog
+                open={cancelBookDialogOpen}
+                dialogTitle="Cancel Booking"
+                confirmMessage="Are you sure you want to cancel this booking?"
+                confirmCallBack={handleConfirmCancel}
+                cancelCallBack={handleCancelDialogClose}
+              />
+            </>
           )}
         </div>
 
