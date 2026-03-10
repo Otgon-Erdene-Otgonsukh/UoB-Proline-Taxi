@@ -19,6 +19,7 @@ import {
 } from "@mui/material";
 import NumberField from "@/components/NumberField";
 import { useSession } from "next-auth/react";
+import { formLocation, location } from "@/model/models";
 import {
   Map,
   MapMarker,
@@ -112,8 +113,6 @@ export default function BookingPage() {
     Passengers: number;
     AdditionalInfo: string;
   };
-
-  type formLocation = { short_name: string; address: string; lat: number; lng: number } | null;
 
   // Variables for storing the state of the values entered into the fields.
   const [formData, setFormData] = useState<FormData>({

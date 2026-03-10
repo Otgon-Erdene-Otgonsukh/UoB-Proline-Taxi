@@ -6,6 +6,7 @@ import { sesClient } from "@/utils/ses_client";
 import { render } from "@react-email/components";
 import BookingInfo from "@/components/emails/booking_info";
 import { SendEmailCommand } from "@aws-sdk/client-sesv2";
+import { formLocation, location } from "@/model/models";
 
 const prisma = new PrismaClient();
 
@@ -24,20 +25,18 @@ export async function POST(request: Request) {
     );
   }
 
-  type formLocation = { short_name: string; address: string; lat: number; lng: number };
-
   try {
     // Get the JSON body of the POST request.
     const request_json = await request.json();
     const user_id = session.user.user_id; // Use the user ID from the session.
-    const pickup_loc: formLocation = request_json["pickup_location"];
-    const dropoff_loc: formLocation = request_json["dropoff_location"];
+    const pickup_loc: location = request_json["pickup_location"];
+    const dropoff_loc: location = request_json["dropoff_location"];
     const passenger_name: string = request_json["passenger_name"].toString();
     const email: string = request_json["email"].toString();
     const tel_number: string = request_json["tel_number"].toString();
     const pickup_time = new Date(request_json["pickup_time"]);
     const additional_info: string = request_json["additional_info"].toString();
-    const via: formLocation[] = request_json["via"];
+    const via: location[] = request_json["via"];
     const returnTo: string | undefined = request_json["returnTo"] ? request_json["returnTo"].toString() : undefined;
     const passenger_num: number = request_json["passengers"];
     const flight_num: string = request_json["flight_num"].toString();
@@ -83,9 +82,9 @@ export async function POST(request: Request) {
 
     const emailHtml = await render(
       BookingInfo({
-        from: pickup_loc.address,
+        from: pickup_loc,
         via: via,
-        to: dropoff_loc.address,
+        to: dropoff_loc,
         airport: airport,
         flightNum: flight_num,
         pickUpTime: pickup_time,

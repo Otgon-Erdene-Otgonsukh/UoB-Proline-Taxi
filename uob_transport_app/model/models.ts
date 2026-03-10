@@ -1,10 +1,13 @@
 import { department } from "@/generated/prisma/client";
 
-export type BookingLocation = {
-  name: string;
-  latitude: string;
-  longitude: string;
+export type location = {
+  short_name: string;
+  address: string;
+  lat: number;
+  lng: number;
 }
+
+export type formLocation = location | null;
 
 export type BookingStatusStr = 'Approved' | 'Pending' | 'Rejected'
 
