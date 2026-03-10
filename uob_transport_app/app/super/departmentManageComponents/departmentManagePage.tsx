@@ -7,7 +7,8 @@ import {
   TextField,
   Chip,
   Snackbar,
-  Alert
+  Alert,
+  Typography
 } from "@mui/material";
 import React, { useState, useEffect } from "react";
 import { DepartmentRecord } from "@/model/models";
@@ -21,6 +22,7 @@ import { deleteDepartment, getDepartmentManageList } from "../request";
 
 const DepartmentManagePage = () => {
 
+  const [isLoading, setIsLoading] = useState(true);
   const [departments, setDepartments] = useState<DepartmentRecord[]>([]);
   const [allDepartments, setAllDepartments] = useState<DepartmentRecord[]>([]);
 
@@ -37,6 +39,7 @@ const DepartmentManagePage = () => {
         console.log(data);
         setAllDepartments(data);
         setDepartments(data);
+        setIsLoading(false);
       }
     });
   }, []);
@@ -184,46 +187,55 @@ const DepartmentManagePage = () => {
           </Button>
         </Box>
       </div>
-      {/* TODO Add Data loading */}
-      <Box>
-        <TableContainer component={Paper} sx={{ boxShadow: "none", border: "none", maxHeight: 600 }}>
-          <Table stickyHeader sx={{ minWidth: 500 }} aria-label="department table">
-            <TableHead>
-              <TableRow>
-                <StyledStickyTableCell>Name</StyledStickyTableCell>
-                <StyledStickyTableCell>Manager</StyledStickyTableCell>
-                <StyledStickyTableCell>Member Count</StyledStickyTableCell>
-                <StyledStickyTableCell>Operation</StyledStickyTableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {departments.map((department) => (
-                <TableRow key={department.depId}>
-                  <StyledStickyTableCell>{department.depName}</StyledStickyTableCell>
-                  <StyledStickyTableCell>
-                    {department.manager ?
-                      (<Button onClick={() => handleViewManager(department.manager)}>
-                        {department.manager.full_name}
-                      </Button>) :
-                      (<Chip
-                        size="small"
-                        color='default'
-                        label="To be assigned"
-                      />)}
-                  </StyledStickyTableCell>
-                  <StyledStickyTableCell>{department.userCount}</StyledStickyTableCell>
-                  <StyledStickyTableCell>
-                    <div className="flex gap-2 justify-center">
-                      <CustomizedButton type="primary" click={() => handleView(department)} title="View" />
-                      <CustomizedButton type="error" click={() => handleOpenConfirmDeleteDialog(department)} title="Delete" />
-                    </div>
-                  </StyledStickyTableCell>
+      {isLoading ? (
+        <Typography sx={{ color: "gray", fontSize: 16, textAlign: "center", my: 10 }}>
+          Getting department data...
+        </Typography>
+      ) : departments.length === 0 ? (
+        <Typography sx={{ color: "gray", fontSize: 16, textAlign: "center", my: 10 }}>
+          No departments to show.
+        </Typography>
+      ) : (
+        <Box>
+          <TableContainer component={Paper} sx={{ boxShadow: "none", border: "none", maxHeight: 600 }}>
+            <Table stickyHeader sx={{ minWidth: 500 }} aria-label="department table">
+              <TableHead>
+                <TableRow>
+                  <StyledStickyTableCell>Name</StyledStickyTableCell>
+                  <StyledStickyTableCell>Manager</StyledStickyTableCell>
+                  <StyledStickyTableCell>Member Count</StyledStickyTableCell>
+                  <StyledStickyTableCell>Operation</StyledStickyTableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Box>
+              </TableHead>
+              <TableBody>
+                {departments.map((department) => (
+                  <TableRow key={department.depId}>
+                    <StyledStickyTableCell>{department.depName}</StyledStickyTableCell>
+                    <StyledStickyTableCell>
+                      {department.manager ?
+                        (<Button onClick={() => handleViewManager(department.manager)}>
+                          {department.manager.full_name}
+                        </Button>) :
+                        (<Chip
+                          size="small"
+                          color='default'
+                          label="To be assigned"
+                        />)}
+                    </StyledStickyTableCell>
+                    <StyledStickyTableCell>{department.userCount}</StyledStickyTableCell>
+                    <StyledStickyTableCell>
+                      <div className="flex gap-2 justify-center">
+                        <CustomizedButton type="primary" click={() => handleView(department)} title="View" />
+                        <CustomizedButton type="error" click={() => handleOpenConfirmDeleteDialog(department)} title="Delete" />
+                      </div>
+                    </StyledStickyTableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Box>
+      )}
 
       <AddDepartmentDialog dialogOpen={newDepartmentDialogOpen} handleDialogClose={() => setNewDepartmentDialogOpen(false)} />
       {managerData && (<ViewManagerDialog viewData={managerData} dialogOpen={managerDialogOpen} handleDialogClose={() => setManagerDialogOpen(false)} />)}
