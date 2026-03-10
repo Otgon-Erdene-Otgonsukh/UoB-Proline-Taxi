@@ -13,11 +13,11 @@ import React, { useState, useEffect } from "react";
 import { DepartmentRecord } from "@/model/models";
 import CustomizedButton from "@/components/CustomizedButton";
 import { StyledStickyTableCell } from "@/components/StyledTableCell";
-import AddDepartmentDialog from "./departmentManageComponents/newDepartmentDialog";
-import ViewManagerDialog from "./departmentManageComponents/viewManagerDialog";
-import ViewDepartmentDialog from "./departmentManageComponents/viewDepartmentDialog";
+import AddDepartmentDialog from "./newDepartmentDialog";
+import ViewManagerDialog from "./viewManagerDialog";
+import ViewDepartmentDialog from "./viewDepartmentDialog";
 import ConfirmDialog from "@/components/confirmDIalog";
-import { deleteDepartment, getDepartmentManageList } from "./request";
+import { deleteDepartment, getDepartmentManageList } from "../request";
 
 const DepartmentManagePage = () => {
 

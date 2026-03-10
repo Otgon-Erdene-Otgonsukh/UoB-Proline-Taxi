@@ -42,7 +42,7 @@ import EditDialog from "./userManageComponents/eidtDialog";
 import { userStatusToIntMap, userStatusToStrMap, roleStrMap, roles, roleReadableStrMap } from "./constants";
 import ConfirmDialog from "@/components/confirmDIalog";
 import { UserTable } from "@/components/SuperUsersTable";
-import DepartmentManagePage from "./departmentManagePage";
+import DepartmentManagePage from "./departmentManageComponents/departmentManagePage";
 
 interface TablePaginationActionsProps {
   count: number;
@@ -272,7 +272,7 @@ const Page = () => {
 
   };
 
-  const [tabValue, setTabValue] = useState(0);
+  const [tabValue, setTabValue] = useState(1);
 
   return (
     <div className="flex flex-col min-h-screen items-center pt-15 p-4">
