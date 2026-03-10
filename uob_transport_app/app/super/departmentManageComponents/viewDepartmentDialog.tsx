@@ -17,7 +17,6 @@ import {
   Snackbar,
   Alert,
   Checkbox,
-  DialogContentText,
 } from "@mui/material";
 import {
   EditOutlined as EditIcon,
@@ -41,8 +40,6 @@ interface Props {
 }
 
 const ViewDepartmentDialog = ({ departmentList, viewData, dialogOpen, handleDialogClose, notifyUserCountChange, notifyDepartmentNameChange }: Props) => {
-
-  // TODO get all members of this department
 
   const [members, setMembers] = useState<{ user_id: number, full_name: string, email: string, phone_number: string }[]>([]);
   const [isLoading, setIsLoading] = useState(true)
@@ -69,8 +66,6 @@ const ViewDepartmentDialog = ({ departmentList, viewData, dialogOpen, handleDial
   })
 
   const handleSaveDepartmentName = (newName: string) => {
-    // TODO call api to save new department name
-    console.log("Saving new department name:", newName);
     updateDepartmentName(viewData.depId, newName).then(async (res) => {
       if (res.status === 200) {
         setSnackbarState({
@@ -127,12 +122,13 @@ const ViewDepartmentDialog = ({ departmentList, viewData, dialogOpen, handleDial
     }
     setSelected(newSelected);
   };
+
   function EnhancedTableToolbar(props: {
     numSelected: number;
   }) {
     const { numSelected } = props;
     return (
-      <div style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <div style={{ width: "100%", display: "flex", justifyContent: "space-between" }}>
         {numSelected > 0 ? (
           <Typography
             variant="h6"
@@ -152,7 +148,7 @@ const ViewDepartmentDialog = ({ departmentList, viewData, dialogOpen, handleDial
         )}
         {numSelected > 0 && (
           <CustomizedButton
-            title="change department"
+            title="Change Department"
             type="primary"
             click={() => { setChangeDepartmentDialogOpen(true) }}
           />
@@ -228,20 +224,18 @@ const ViewDepartmentDialog = ({ departmentList, viewData, dialogOpen, handleDial
         <CloseIcon />
       </IconButton>
       <DialogContent dividers>
-        <Stack>
+        <div style={{ width: "100%", display: "flex", justifyContent: "space-between" }}>
           <Typography gutterBottom sx={{ fontWeight: "bold" }}>
             Department Name:
           </Typography>
-          <Typography gutterBottom sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <Typography gutterBottom sx={{ display: "flex", gap: 1 }}>
             <span>{departmentData?.depName}</span>
             <EditIcon sx={{ cursor: "pointer" }} onClick={() => {
               setNameEditOn(true);
             }} fontSize="small" />
           </Typography>
-        </Stack>
-        <Stack>
-          <EnhancedTableToolbar numSelected={selected.length} />
-        </Stack>
+        </div>
+        <EnhancedTableToolbar numSelected={selected.length} />
         <Box sx={{ marginTop: 1 }}>
           {isLoading ? <Typography>Loading members...</Typography> :
             (<TableContainer component={Paper} sx={{ boxShadow: "none", border: "none", maxHeight: 600 }}>
