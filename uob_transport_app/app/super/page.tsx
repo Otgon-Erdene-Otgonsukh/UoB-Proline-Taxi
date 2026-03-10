@@ -63,6 +63,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { StyledTableCell } from "@/components/StyledTableCell";
 import BookingPage from "../book/page";
 import { getBookingsList } from "./requests";
+import { BookingTable } from "@/components/SuperBookingsTable";
 
 
 interface TablePaginationActionsProps {
@@ -391,8 +392,8 @@ const Page = () => {
     });
   };
 
-    const handleSubmitSearchForm = (e: React.SubmitEvent<HTMLFormElement>) => {
-      e.preventDefault();
+  const handleSubmitSearchForm = (e: React.SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
     if (
       searchBookingFormInput.pickUpTimeTo &&
@@ -828,88 +829,18 @@ const Page = () => {
                     No bookings to show.
                   </Typography>
                 ) : (
-                  <TableContainer
-                    component={Paper}
-                    sx={{ boxShadow: "none", border: "none" }}
-                  >
-                    <Table
-                      sx={{ minWidth: 500, borderCollapse: "collapse" }}
-                      aria-label="custom pagination table"
-                    >
-                      <TableHead>
-                        <TableRow>
-                          <StyledTableCell>Pick-up Time</StyledTableCell>
-                          <StyledTableCell>From</StyledTableCell>
-                          <StyledTableCell>To</StyledTableCell>
-                          <StyledTableCell>Booking Status</StyledTableCell>
-                          <StyledTableCell>Operation</StyledTableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {bookingListData &&
-                          bookingListData.map((row, index) => (
-                            <TableRow
-                              key={index}
-                              sx={{
-                                "&:hover": { bgcolor: "#f9fafb" },
-                                transition: "background-color 0.2s",
-                              }}
-                            >
-                              <StyledTableCell>
-                                {row.trip.pickup_time
-                                  ? new Date(row.trip.pickup_time).toLocaleString()
-                                  : "N/A"}
-                              </StyledTableCell>
-                              <StyledTableCell>
-                                {row.trip.airport === "" || row.trip.airport === null
-                                  ? row.trip.pickup_location
-                                  : row.trip.airport}
-                              </StyledTableCell>
-                              <StyledTableCell>
-                                {row.trip.dropoff_location}
-                              </StyledTableCell>
-                              <StyledTableCell>
-                                <span
-                                  className={`inline-block px-5 py-1 rounded-full text-xs font-medium ${row.booking_status === "Approved"
-                                    ? "bg-green-100 text-green-800 border border-green-800"
-                                    : row.booking_status === "Rejected"
-                                      ? "bg-red-100 text-red-800 border border-red-800"
-                                      : row.booking_status === "Cancelled"
-                                        ? "bg-gray-300 text-gray-900 border border-gray-900"
-                                        : "bg-yellow-100 text-yellow-800 border border-yellow-800"
-                                    }`}
-                                >
-                                  {row.booking_status}
-                                </span>
-                              </StyledTableCell>
-                              <StyledTableCell>
-                                <div className="flex gap-2 justify-center">
-                                  <CustomizedButton
-                                    click={() => handleBookingsViewDialogOpen(row)}
-                                    type="warning"
-                                    title="View"
-                                  />
-                                  {row.booking_status === "Pending" && (
-                                    <CustomizedButton
-                                      click={() => handleBookingsEditDialogOpen(row)}
-                                      type="warning"
-                                      title="Edit"
-                                    />
-                                  )}
-                                  {row.booking_status === "Pending" && (
-                                    <CustomizedButton
-                                      click={() => handleBookingsCancelBooking(row)}
-                                      type="error"
-                                      title="Cancel"
-                                    />
-                                  )}
-                                </div>
-                              </StyledTableCell>
-                            </TableRow>
-                          ))}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
+                  <BookingTable
+                    data={bookingListData}
+                    count={bookingListCount}
+                    page={paginationMeta.page}
+                    pageSize={paginationMeta.pageSize}
+                    onPageChange={handleChangePage}
+                    onPageSizeChange={handleChangePageSize}
+                    ActionsComponent={TablePaginationActions}
+                    onViewDetails={handleBookingsViewDialogOpen}
+                    onEditBooking={handleBookingsEditDialogOpen}
+                    onCancelBooking={handleBookingsCancelBooking}
+                  />
                 )}
                 {bookDetail && (
                   <BookingViewDialog
