@@ -105,7 +105,25 @@ const Page = () => {
         transition={{ duration: 1, ease: "easeOut", delay: 0.24 }}
       >
         {tabValue === 0 && (
-          <UserManagePage toggleDrawer={toggleDrawer} departments={departments} />
+          <div>
+            <div className="flex items-center gap-2 -ml-2">
+              <IconButton
+                onClick={toggleDrawer(true)}
+                sx={{
+                  color: '#2c2c2c',
+                  '&:hover': {
+                    bgcolor: '#f3f4f6',
+                  },
+                }}
+              >
+                <MenuIcon />
+              </IconButton>
+              <h1 className="text-xl font-aleo md:text-3xl font-semibold text-shadow-lg/20">
+                User Management
+              </h1>
+            </div>
+            <UserManagePage toggleDrawer={toggleDrawer} departments={departments} />
+          </div>
         )}
 
         {tabValue === 1 && (

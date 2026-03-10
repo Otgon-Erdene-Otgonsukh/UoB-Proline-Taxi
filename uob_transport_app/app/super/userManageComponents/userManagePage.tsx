@@ -16,12 +16,11 @@ import EditDialog from "./eidtDialog";
 import ConfirmDialog from "@/components/confirmDIalog";
 
 interface Props {
-  toggleDrawer: (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => void
   departments: UserRecord["department"][]
 }
 
 export const UserManagePage = (
-  { toggleDrawer, departments }: Props
+  { departments }: Props
 ) => {
 
   const [isLoading, setIsLoading] = useState(true);
@@ -140,23 +139,7 @@ export const UserManagePage = (
   }
 
   return (<>
-    <div className="flex justify-between items-center mb-4">
-      <div className="flex items-center gap-2 -ml-2">
-        <IconButton
-          onClick={toggleDrawer(true)}
-          sx={{
-            color: '#2c2c2c',
-            '&:hover': {
-              bgcolor: '#f3f4f6',
-            },
-          }}
-        >
-          <MenuIcon />
-        </IconButton>
-        <h1 className="text-xl font-aleo md:text-3xl font-semibold text-shadow-lg/20">
-          User Management
-        </h1>
-      </div>
+    <div>
       <Box
         component="form"
         onSubmit={handleSubmitSearchForm}
