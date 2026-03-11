@@ -71,6 +71,8 @@ export type DepartmentRecord = {
     user_status: number;
   };
   member_count: number;
+}
+
 export type MonthlyBookingData = {
   month: string,
   count: number
