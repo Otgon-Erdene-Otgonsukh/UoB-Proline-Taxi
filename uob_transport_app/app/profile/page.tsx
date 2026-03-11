@@ -457,7 +457,7 @@ export default function Profile() {
                   }}
                   autoFocus
                   onChange={(_, dep) => {
-                    setEditData({ ...editData, department: dep?.dep_name! });
+                    setEditData({ ...editData, department: dep?.dep_name ?? "" });
                     setChangeError({ ...changeError, department: false });
                   }}
                   options={departments}

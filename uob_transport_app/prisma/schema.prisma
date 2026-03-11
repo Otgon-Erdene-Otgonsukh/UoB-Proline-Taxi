@@ -67,6 +67,7 @@ model trip {
   airport            String?
   flight_num         String?
   return_pickup_time DateTime? @db.Timestamp(6)
+  price              Int?
   booking            booking?
 }
 
