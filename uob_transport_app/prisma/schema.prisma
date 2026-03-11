@@ -54,11 +54,7 @@ model trip {
   trip_id            Int       @id @default(autoincrement())
   icabbi_booking_id  Int?
   pickup_location    String
-  pickup_latitude    Int?
-  pickup_longitude   Int?
   dropoff_location   String
-  dropoff_latitude   Int?
-  dropoff_longitude  Int?
   pickup_time        DateTime  @db.Timestamp(6)
   via                String?
   passenger_num      Int
