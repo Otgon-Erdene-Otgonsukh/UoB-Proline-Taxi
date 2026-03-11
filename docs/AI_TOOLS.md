@@ -70,15 +70,18 @@ This document provides an overview of all AI tools utilized in the project, in a
  - Brainstorming design ideas for email templates
  - Quick concept explanation of the tools involved
  - Generating mock data for testing
+ - Writing complex raw sql query
 
 **Example Prompts:**
  - Apply the same styling logic to other divs in the MUI component.
  - Format this markdown file to have correct heirarchy.
  - What gradient background fits this page ? 
  - What is the difference between JWT Session and Token ?
+ - How to group bookings by department and sum and count their amount and prices?
 
 **Used in the following files:**
  - `jest.config.ts`
  - `/app/register/register-req`
  - `/docs/project/project_manual_guide.md`
  - `__test__/*`
+ - `/app/api/super-data`

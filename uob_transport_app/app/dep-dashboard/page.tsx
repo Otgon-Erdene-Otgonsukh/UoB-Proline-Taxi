@@ -268,7 +268,7 @@ export default function DepDashboard() {
               setOverdueApplied(false);
             }}
           >
-            <div className="bg-gradient-to-br from-blue-300 via-blue-500 to-blue-700 rounded-lg p-2">
+            <div className="bg-linear-to-br from-blue-300 via-blue-500 to-blue-700 rounded-lg p-2">
               <HailIcon sx={{ color: "white", fontSize: 80 }} />
             </div>
             <motion.div
@@ -327,7 +327,7 @@ export default function DepDashboard() {
               setOverdueApplied(false);
             }}
           >
-            <div className="bg-gradient-to-br from-yellow-400 via-yellow-600 to-yellow-700 rounded-lg p-2 py-[13px] flex justify-center items-center">
+            <div className="bg-linear-to-br from-yellow-400 via-yellow-600 to-yellow-700 rounded-lg p-2 py-3.25 flex justify-center items-center">
               <InfoIcon sx={{ color: "white", fontSize: 70 }} />
             </div>
             <motion.div
@@ -401,7 +401,7 @@ export default function DepDashboard() {
               setStatusApplied(false);
             }}
           >
-            <div className="bg-gradient-to-br from-red-300 via-red-500 to-red-700 rounded-lg p-2 py-[13px] flex justify-center items-center">
+            <div className="bg-linear-to-br from-red-300 via-red-500 to-red-700 rounded-lg p-2 py-3.25 flex justify-center items-center">
               <AccessTimeIcon sx={{ color: "white", fontSize: 70 }} />
             </div>
             <motion.div

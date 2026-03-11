@@ -1,0 +1,492 @@
+import "@testing-library/jest-dom";
+import React from "react";
+import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import BookingPage from "@/app/book/page";
+
+// GLOBAL MOCKS
+
+const mockPush = jest.fn();
+
+jest.mock("next-auth/react", () => ({
+  useSession: () => ({
+    data: { user: { user_id: "1" } },
+    status: "authenticated",
+  }),
+}));
+
+jest.mock("next/navigation", () => ({
+  useRouter: () => ({ push: mockPush }),
+  redirect: jest.fn(),
+}));
+
+jest.mock("@/app/requests/departments", () => ({
+  getDepartments: jest.fn(() =>
+    Promise.resolve({
+      status: 200,
+      json: () =>
+        Promise.resolve([
+          { dep_id: 1, dep_name: "Engineering" },
+          { dep_id: 2, dep_name: "Finance" },
+          { dep_id: 3, dep_name: "HR" },
+        ]),
+    })
+  ),
+}));
+
+jest.mock("@/components/ui/map", () => ({
+  Map: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="map">{children}</div>
+  ),
+  MapMarker: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="map-marker">{children}</div>
+  ),
+  MarkerContent: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
+  MapRoute: () => <div data-testid="map-route" />,
+  MarkerLabel: ({ children }: { children: React.ReactNode }) => (
+    <span>{children}</span>
+  ),
+}));
+
+jest.mock("@/components/NumberField", () => ({
+  __esModule: true,
+  default: ({
+    onValueChange,
+  }: {
+    onValueChange: (v: number) => void;
+    min?: number;
+    max?: number;
+    defaultValue?: number;
+    size?: string;
+  }) => (
+    <input
+      data-testid="number-field"
+      type="number"
+      defaultValue={1}
+      onChange={(e) => onValueChange(Number(e.target.value))}
+    />
+  ),
+}));
+
+global.fetch = jest.fn();
+
+// HELPERS
+
+function futureDateString(daysFromNow = 3): string {
+  const d = new Date();
+  d.setDate(d.getDate() + daysFromNow);
+  return d.toISOString().split("T")[0];
+}
+
+beforeEach(() => {
+  jest.clearAllMocks();
+  (global.fetch as jest.Mock).mockResolvedValue({
+    status: 200,
+    json: async () => ({}),
+  });
+});
+
+// RENDERING
+
+describe("Rendering", () => {
+  test("renders all page structure, input fields, and correct attributes", async () => {
+    render(<BookingPage />);
+    await waitFor(() => screen.getByText("BOOKING DETAILS"));
+
+    // Page structure
+    expect(screen.getByText(/trip details/i)).toBeInTheDocument();
+    expect(screen.getByText(/lead passenger details/i)).toBeInTheDocument();
+    expect(screen.getByTestId("map")).toBeInTheDocument();
+    expect(document.querySelector("form")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /confirm booking/i })).not.toBeDisabled();
+
+    // All input fields present
+    expect(screen.getAllByRole("combobox").length).toBeGreaterThan(0);
+    expect(screen.getByLabelText(/drop-off location/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/pick-up date and time/i)).toBeInTheDocument();
+    expect(document.querySelector('input[type="time"]')).toBeInTheDocument();
+    expect(screen.getByLabelText(/passenger name/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/phone number/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/^email$/i)).toBeInTheDocument();
+    expect(screen.getByTestId("number-field")).toBeInTheDocument();
+    expect(screen.getByLabelText(/additional information/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/department/i)).toBeInTheDocument();
+
+    // Field types, attributes and defaults
+    expect(screen.getByLabelText(/pick-up date and time/i)).toHaveAttribute("type", "date");
+    expect(screen.getByLabelText(/phone number/i)).toHaveAttribute("type", "tel");
+    expect(screen.getByLabelText(/^email$/i)).toHaveAttribute("type", "email");
+    expect(screen.getByLabelText(/additional information/i)).toHaveAttribute("maxLength", "500");
+    expect(screen.getByLabelText(/additional information/i)).toHaveAttribute("placeholder", "Enter any additional information...");
+    expect(screen.getByLabelText(/drop-off location/i)).toHaveAttribute("placeholder");
+    expect(screen.getByTestId("number-field") as HTMLInputElement).toHaveValue(1);
+    expect(screen.getByDisplayValue("+44 (UK)")).toBeInTheDocument();
+
+    // Toggle checkboxes
+    expect(screen.getByLabelText(/manually enter/i)).toHaveAttribute("type", "checkbox");
+    expect(screen.getByLabelText(/^flight$/i)).toHaveAttribute("type", "checkbox");
+    expect(screen.getByLabelText(/^via$/i)).toHaveAttribute("type", "checkbox");
+    expect(screen.getByLabelText(/return trip/i)).toHaveAttribute("type", "checkbox");
+  });
+});
+
+// TOGGLE FIELDS
+
+describe("Toggle fields", () => {
+  test("all toggles show/hide their conditional fields correctly", async () => {
+    render(<BookingPage />);
+    await waitFor(() => screen.getByLabelText(/manually enter/i));
+
+    // Manually enter: hidden by default, shown on toggle, re-hidden on second toggle, disables dropdown
+    expect(screen.queryByLabelText(/custom pick-up location/i)).not.toBeInTheDocument();
+    await userEvent.click(screen.getByLabelText(/manually enter/i));
+    await waitFor(() => {
+      expect(screen.getByLabelText(/custom pick-up location/i)).toBeInTheDocument();
+      expect(
+        document.querySelector('#commonLoc[aria-disabled="true"]') ??
+        document.querySelector('.Mui-disabled [role="combobox"]') ??
+        document.querySelector(".MuiSelect-root.Mui-disabled")
+      ).not.toBeNull();
+    });
+    await userEvent.click(screen.getByLabelText(/manually enter/i));
+    await waitFor(() =>
+      expect(screen.queryByLabelText(/custom pick-up location/i)).not.toBeInTheDocument()
+    );
+
+    // Flight: hidden by default, shown on toggle, also hides manually enter
+    expect(screen.queryByLabelText(/flight number/i)).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/airport/i)).not.toBeInTheDocument();
+    await userEvent.click(screen.getByLabelText(/^flight$/i));
+    await waitFor(() => {
+      expect(screen.getByLabelText(/flight number/i)).toBeInTheDocument();
+      expect(screen.getByLabelText(/airport/i)).toBeInTheDocument();
+      expect(screen.queryByLabelText(/manually enter/i)).not.toBeInTheDocument();
+    });
+  });
+
+  test("via and return trip toggles show conditional fields", async () => {
+    render(<BookingPage />);
+    await waitFor(() => screen.getByLabelText(/^via$/i));
+
+    // Via: hidden by default, shown on toggle
+    expect(screen.queryByPlaceholderText(/via\.\.\./i)).not.toBeInTheDocument();
+    await userEvent.click(screen.getByLabelText(/^via$/i));
+    await waitFor(() =>
+      expect(screen.getByPlaceholderText(/via\.\.\./i)).toBeInTheDocument()
+    );
+
+    // Return trip: hidden by default, shown on toggle, pick-up location pre-filled and disabled
+    expect(screen.queryByLabelText(/return date/i)).not.toBeInTheDocument();
+    await userEvent.click(screen.getByLabelText(/return trip/i));
+    await waitFor(() => {
+      expect(screen.getByLabelText(/return trip pick-up date and time/i)).toBeInTheDocument();
+      expect(screen.getByLabelText(/return trip pick-up location/i)).toBeDisabled();
+    });
+  });
+});
+
+// VALIDATION
+
+describe("Validation", () => {
+  test("empty form submission shows all required errors and red borders, does not redirect", async () => {
+    render(<BookingPage />);
+    await waitFor(() => screen.getByRole("button", { name: /confirm booking/i }));
+    await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
+    await waitFor(() => {
+      expect(screen.getByText(/please pick one/i)).toBeInTheDocument();
+      expect(screen.getByText(/please enter a drop-off location/i)).toBeInTheDocument();
+      expect(screen.getByText(/please select a date/i)).toBeInTheDocument();
+      expect(screen.getByText(/please enter a valid email address/i)).toBeInTheDocument();
+      expect(screen.getByText(/select a department/i)).toBeInTheDocument();
+      expect(screen.getByText(/please enter the passenger's phone number/i)).toBeInTheDocument();
+      expect(screen.getByLabelText(/drop-off location/i)).toHaveClass("border-red-700");
+      expect(screen.getByLabelText(/pick-up date and time/i)).toHaveClass("border-red-700");
+      expect(screen.getByLabelText(/^email$/i)).toHaveClass("border-red-700");
+      expect(mockPush).not.toHaveBeenCalled();
+    });
+  });
+
+  test("drop-off location: validates too short, too long, and clears error on valid input", async () => {
+    render(<BookingPage />);
+    await waitFor(() => screen.getByLabelText(/drop-off location/i));
+    const input = screen.getByLabelText(/drop-off location/i);
+
+    fireEvent.change(input, { target: { value: "AB" } });
+    await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
+    await waitFor(() =>
+      expect(screen.getByText(/drop-off location not detailed enough/i)).toBeInTheDocument()
+    );
+
+    fireEvent.change(input, { target: { value: "A".repeat(101) } });
+    await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
+    await waitFor(() =>
+      expect(screen.getByText(/drop-off location too long/i)).toBeInTheDocument()
+    );
+
+    await userEvent.type(input, "Temple Meads Station");
+    await waitFor(() => expect(input).not.toHaveClass("border-red-700"));
+  });
+
+  test("custom pick-up location: validates empty, too short, too long, and red border", async () => {
+    render(<BookingPage />);
+    await waitFor(() => screen.getByLabelText(/manually enter/i));
+    await userEvent.click(screen.getByLabelText(/manually enter/i));
+    await waitFor(() => screen.getByLabelText(/custom pick-up location/i));
+    const input = screen.getByLabelText(/custom pick-up location/i);
+
+    await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
+    await waitFor(() => {
+      expect(screen.getByText(/please enter a pickup location/i)).toBeInTheDocument();
+      expect(input).toHaveClass("border-red-700");
+    });
+
+    fireEvent.change(input, { target: { value: "Hi" } });
+    await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
+    await waitFor(() =>
+      expect(screen.getByText(/pickup location not detailed enough/i)).toBeInTheDocument()
+    );
+
+    fireEvent.change(input, { target: { value: "A".repeat(101) } });
+    await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
+    await waitFor(() =>
+      expect(screen.getByText(/pickup location too long/i)).toBeInTheDocument()
+    );
+  });
+
+  test("flight fields: validates empty and invalid flight number, empty and too-long airport", async () => {
+    render(<BookingPage />);
+    await waitFor(() => screen.getByLabelText(/^flight$/i));
+    await userEvent.click(screen.getByLabelText(/^flight$/i));
+    await waitFor(() => screen.getByLabelText(/flight number/i));
+    const flightInput = screen.getByLabelText(/flight number/i);
+    const airportInput = screen.getByLabelText(/airport/i);
+
+    // Empty submit
+    await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
+    await waitFor(() => {
+      expect(screen.getByText(/please enter your flight number/i)).toBeInTheDocument();
+      expect(screen.getByText(/please enter your airport/i)).toBeInTheDocument();
+      expect(airportInput).toHaveClass("border-red-700");
+    });
+
+    // Invalid flight number format
+    await userEvent.type(flightInput, "INVALID");
+    await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
+    await waitFor(() => {
+      expect(screen.getByText(/please enter your flight number \(formatted AB1234\)/i)).toBeInTheDocument();
+      expect(flightInput).toHaveClass("border-red-700");
+    });
+
+    // Valid format clears flight error
+    fireEvent.change(flightInput, { target: { value: "BA1234" } });
+    await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
+    await waitFor(() =>
+      expect(screen.queryByText(/please enter your flight number \(formatted AB1234\)/i)).not.toBeInTheDocument()
+    );
+
+    // Airport too long
+    fireEvent.change(airportInput, { target: { value: "A".repeat(51) } });
+    await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
+    await waitFor(() =>
+      expect(screen.getByText(/airport name too long/i)).toBeInTheDocument()
+    );
+  });
+
+  test("pickup date/time: validates empty, missing time, past date, and accepts future date", async () => {
+    render(<BookingPage />);
+    await waitFor(() => screen.getByLabelText(/pick-up date and time/i));
+    const dateInput = screen.getByLabelText(/pick-up date and time/i);
+    const timeInput = document.querySelector('input[type="time"]') as HTMLInputElement;
+
+    // No date
+    await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
+    await waitFor(() =>
+      expect(screen.getByText(/please select a date/i)).toBeInTheDocument()
+    );
+
+    // Date but no time
+    await userEvent.type(dateInput, futureDateString());
+    await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
+    await waitFor(() =>
+      expect(screen.getByText(/please select a time/i)).toBeInTheDocument()
+    );
+
+    // Past date — error and red borders
+    await userEvent.clear(dateInput);
+    await userEvent.type(dateInput, "2020-01-01");
+    await userEvent.type(timeInput, "10:00");
+    await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
+    await waitFor(() => {
+      expect(screen.getByText(/booking cannot be made in the past/i)).toBeInTheDocument();
+      expect(dateInput).toHaveClass("border-red-700");
+      expect(timeInput).toHaveClass("border-red-700");
+    });
+
+    // Future date — no past error
+    await userEvent.clear(dateInput);
+    await userEvent.type(dateInput, futureDateString());
+    await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
+    await waitFor(() =>
+      expect(screen.queryByText(/booking cannot be made in the past/i)).not.toBeInTheDocument()
+    );
+  });
+
+  test("return trip date/time: validates empty return date and empty return time", async () => {
+    render(<BookingPage />);
+    await waitFor(() => screen.getByLabelText(/return trip/i));
+    await userEvent.click(screen.getByLabelText(/return trip/i));
+    await waitFor(() => screen.getByLabelText(/return trip pick-up date and time/i));
+    const returnDateInput = screen.getByLabelText(/return trip pick-up date and time/i);
+
+    await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
+    await waitFor(() => {
+      expect(screen.getByText(/please select a return date/i)).toBeInTheDocument();
+      expect(returnDateInput).toHaveClass("border-red-700");
+    });
+
+    await userEvent.type(returnDateInput, futureDateString(5));
+    await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
+    await waitFor(() =>
+      expect(screen.getByText(/please select a return time/i)).toBeInTheDocument()
+    );
+  });
+
+  test("phone number: validates empty, invalid, valid, and country code change", async () => {
+    render(<BookingPage />);
+    await waitFor(() => screen.getByLabelText(/phone number/i));
+    const phoneInput = screen.getByLabelText(/phone number/i);
+
+    await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
+    await waitFor(() =>
+      expect(screen.getByText(/please enter the passenger's phone number/i)).toBeInTheDocument()
+    );
+
+    await userEvent.type(phoneInput, "abc123");
+    await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
+    await waitFor(() => {
+      expect(screen.getByText(/please enter a valid phone number/i)).toBeInTheDocument();
+      expect(phoneInput).toHaveClass("border-red-700");
+    });
+
+    fireEvent.change(phoneInput, { target: { value: "07123456789" } });
+    await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
+    await waitFor(() =>
+      expect(screen.queryByText(/please enter a valid phone number/i)).not.toBeInTheDocument()
+    );
+
+    await userEvent.selectOptions(screen.getByDisplayValue("+44 (UK)"), "+1 (US/CA)");
+    expect(screen.getByDisplayValue("+1 (US/CA)")).toBeInTheDocument();
+  });
+
+  test("email: shows error and red border when empty, clears on valid input", async () => {
+    render(<BookingPage />);
+    await waitFor(() => screen.getByLabelText(/^email$/i));
+    const emailInput = screen.getByLabelText(/^email$/i);
+
+    await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
+    await waitFor(() => {
+      expect(screen.getByText(/please enter a valid email address/i)).toBeInTheDocument();
+      expect(emailInput).toHaveClass("border-red-700");
+    });
+
+    await userEvent.type(emailInput, "valid@example.com");
+    await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
+    await waitFor(() =>
+      expect(screen.queryByText(/please enter a valid email address/i)).not.toBeInTheDocument()
+    );
+  });
+
+  test("fixing one field preserves errors on others and re-validates correctly on resubmit", async () => {
+    render(<BookingPage />);
+    await waitFor(() => screen.getByRole("button", { name: /confirm booking/i }));
+    await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
+    await waitFor(() => screen.getByText(/please enter a drop-off location/i));
+
+    await userEvent.type(screen.getByLabelText(/drop-off location/i), "Temple Meads Station");
+    expect(screen.getByText(/please enter a valid email address/i)).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
+    await waitFor(() =>
+      expect(screen.queryByText(/please enter a drop-off location/i)).not.toBeInTheDocument()
+    );
+    expect(screen.getByText(/please enter a valid email address/i)).toBeInTheDocument();
+  });
+
+  test("past date and invalid flight number each block submission", async () => {
+    // Past date
+    render(<BookingPage />);
+    await waitFor(() => screen.getByLabelText(/pick-up date and time/i));
+    await userEvent.type(screen.getByLabelText(/drop-off location/i), "Temple Meads Station, Bristol");
+    await userEvent.type(screen.getByLabelText(/passenger name/i), "Jane Doe");
+    await userEvent.type(screen.getByLabelText(/phone number/i), "07911123456");
+    await userEvent.type(screen.getByLabelText(/^email$/i), "jane@example.com");
+    await userEvent.type(screen.getByLabelText(/pick-up date and time/i), "2015-06-01");
+    await userEvent.type(document.querySelectorAll('input[type="time"]')[0] as HTMLElement, "09:00");
+    await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
+    await waitFor(() => {
+      expect(screen.getByText(/booking cannot be made in the past/i)).toBeInTheDocument();
+      expect(mockPush).not.toHaveBeenCalled();
+    });
+  });
+});
+
+// DEPARTMENT AUTOCOMPLETE & INTERACTIVITY
+
+describe("Department autocomplete and interactivity", () => {
+  test("department: shows error when missing, loads API options, selection clears error", async () => {
+    render(<BookingPage />);
+    await waitFor(() => screen.getByLabelText(/department/i));
+    const deptInput = screen.getByLabelText(/department/i);
+
+    await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
+    await waitFor(() =>
+      expect(screen.getByText(/select a department/i)).toBeInTheDocument()
+    );
+
+    await userEvent.click(deptInput);
+    await userEvent.type(deptInput, "Eng");
+    await waitFor(() => screen.getByText("Engineering"));
+
+    await userEvent.clear(deptInput);
+    await waitFor(() => {
+      expect(screen.getByText("Engineering")).toBeInTheDocument();
+      expect(screen.getByText("Finance")).toBeInTheDocument();
+      expect(screen.getByText("HR")).toBeInTheDocument();
+    });
+
+    await userEvent.click(screen.getByText("Finance"));
+    expect(deptInput).toHaveValue("Finance");
+    await waitFor(() =>
+      expect(screen.queryByText(/select a department/i)).not.toBeInTheDocument()
+    );
+  });
+
+  test("text inputs accept typed values and pick-up dropdown shows all six locations", async () => {
+    render(<BookingPage />);
+    await waitFor(() => screen.getByLabelText(/drop-off location/i));
+
+    await userEvent.type(screen.getByLabelText(/drop-off location/i), "Clifton Village");
+    expect(screen.getByLabelText(/drop-off location/i)).toHaveValue("Clifton Village");
+
+    await userEvent.type(screen.getByLabelText(/passenger name/i), "Alice Johnson");
+    expect(screen.getByLabelText(/passenger name/i)).toHaveValue("Alice Johnson");
+
+    await userEvent.type(screen.getByLabelText(/phone number/i), "07911123456");
+    expect(screen.getByLabelText(/phone number/i)).toHaveValue("07911123456");
+
+    await userEvent.type(screen.getByLabelText(/additional information/i), "Please call on arrival.");
+    expect(screen.getByLabelText(/additional information/i)).toHaveValue("Please call on arrival.");
+
+    fireEvent.mouseDown(screen.getAllByRole("combobox")[0]);
+    await waitFor(() => {
+      expect(screen.getByText("Queens Building")).toBeInTheDocument();
+      expect(screen.getByText("Merchant Venturers Building")).toBeInTheDocument();
+      expect(screen.getByText("Richmond Building")).toBeInTheDocument();
+      expect(screen.getByText("Victoria Rooms")).toBeInTheDocument();
+      expect(screen.getByText("Wills Memorial Building")).toBeInTheDocument();
+      expect(screen.getByText("Physics Building")).toBeInTheDocument();
+    });
+  });
+});

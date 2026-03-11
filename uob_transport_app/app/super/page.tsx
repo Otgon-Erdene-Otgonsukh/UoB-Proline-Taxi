@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react";
 import { BookingRecord, UserRecord } from "@/model/models";
 import { useTheme } from "@mui/material/styles";
 import { motion } from "framer-motion";
+import SuperDashboard from "@/components/SuperDashboard";
 import {
   Box,
   Button,
@@ -30,6 +31,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import LocalTaxiIcon from '@mui/icons-material/LocalTaxi';
 import SettingsIcon from '@mui/icons-material/Settings';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import DashboardIcon from '@mui/icons-material/Dashboard';
 import GroupsIcon from '@mui/icons-material/Groups';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { DateTimePicker } from "@/components/datetimePicker/DateTimePicker";
@@ -232,6 +234,13 @@ const Page = () => {
     role: roleStrMap.normalUser
   })
 
+  const handleUsersSubmitSearchForm = (e: React.FormEvent) => {
+    e.preventDefault()
+    console.log('submit');
+    setIsLoading(true)
+    _rerenderTable()
+  }
+
   const [userDetail, setUserDetail] = useState<UserRecord>()
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
 
@@ -393,7 +402,7 @@ const Page = () => {
     });
   };
 
-  const handleSubmitSearchForm = (e: React.SubmitEvent<HTMLFormElement>) => {
+  const handleBookingsSubmitSearchForm = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (
@@ -494,10 +503,11 @@ const Page = () => {
             <List>
               {[
                 { text: 'Users', icon: <PeopleIcon />, index: 0 },
-                { text: 'Departments', icon: <GroupsIcon />, index: 1 },
-                { text: 'Bookings', icon: <LocalTaxiIcon />, index: 2 },
-                { text: 'Export Bookings', icon: <FileDownloadIcon />, index: 3 },
-                { text: 'Admin Settings', icon: <SettingsIcon />, index: 4 },
+                { text: 'Bookings', icon: <LocalTaxiIcon />, index: 1 },
+                { text: 'Departments', icon: <GroupsIcon />, index: 2 },
+                { text: 'Dashboard', icon: <DashboardIcon />, index: 3},
+                { text: 'Export Bookings', icon: <FileDownloadIcon />, index: 4 },
+                { text: 'Admin Settings', icon: <SettingsIcon />, index: 5 },
               ].map((item) => (
                 <ListItem key={item.text} disablePadding>
                   <ListItemButton onClick={() => setTabValue(item.index)}>
@@ -523,7 +533,7 @@ const Page = () => {
                 </div>
                 <Box
                   component="form"
-                  onSubmit={handleSubmitSearchForm}
+                  onSubmit={handleUsersSubmitSearchForm}
                   sx={{
                     display: "flex",
                     gap: 2.5,
@@ -627,7 +637,7 @@ const Page = () => {
                   
                 <Box
                   component="form"
-                  onSubmit={handleSubmitSearchForm}
+                  onSubmit={handleBookingsSubmitSearchForm}
                   sx={{
                     display: "flex",
                     gap: 1,
@@ -892,7 +902,10 @@ const Page = () => {
               />
             </>
           )}
+          {tabValue === 3 && <SuperDashboard/>}
         </div>
+
+        
 
         {userDetail && (
           <ViewDialog
