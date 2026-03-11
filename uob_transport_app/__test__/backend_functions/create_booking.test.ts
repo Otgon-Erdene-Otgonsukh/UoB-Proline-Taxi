@@ -92,25 +92,21 @@ test("Create booking function correctly creates a trip and booking entry", async
   expect(prismaMock.trip.create).toHaveBeenCalledWith({
     data: {
       icabbi_booking_id: null,
-      pickup_location: {
+      pickup_location: JSON.stringify({
         short_name: 'Queens Building',
         address: "Faculty of Engineering, University Walk, Tyndall's Park, Cotham, Bristol, City of Bristol, West of England, England, BS8 1TR, United Kingdom",
         lat: 51.45689,
         lng: -2.601892
-      },
-      pickup_latitude: null,
-      pickup_longitude: null,
-      dropoff_location: {
+      }),
+      dropoff_location: JSON.stringify({
         short_name: 'Queens Building',
         address: "Faculty of Engineering, University Walk, Tyndall's Park, Cotham, Bristol, City of Bristol, West of England, England, BS8 1TR, United Kingdom",
         lat: 51.45689,
         lng: -2.601892
-      },
-      dropoff_latitude: null,
-      dropoff_longitude: null,
+      }),
       pickup_time: new Date("2026-05-10"),
       return_pickup_time: null,
-      via: [],
+      via: JSON.stringify([]),
       passenger_num: 1,
       return_drop_loc: undefined,
       airport: "Heathrow Airport",
@@ -170,32 +166,33 @@ test("Create booking function correctly includes returnDT in trip when defined",
   expect(prismaMock.trip.create).toHaveBeenCalledWith({
     data: {
       icabbi_booking_id: null,
-      pickup_location: {
-        short_name: 'Queens Building',
-        address: "Faculty of Engineering, University Walk, Tyndall's Park, Cotham, Bristol, City of Bristol, West of England, England, BS8 1TR, United Kingdom",
-        lat: 52.4508,
-        lng: -1.9305
-      },
-      pickup_latitude: null,
-      pickup_longitude: null,
-      dropoff_location: {
-        short_name: 'Queens Building',
-        address: "Faculty of Engineering, University Walk, Tyndall's Park, Cotham, Bristol, City of Bristol, West of England, England, BS8 1TR, United Kingdom",
-        lat: 53.3537,
-        lng: -2.275
-      },
-      dropoff_latitude: null,
-      dropoff_longitude: null,
-      pickup_time: new Date("2026-04-20T08:30:00Z"),
-      return_pickup_time: new Date("2026-04-27T14:00:00Z"),
-      via: [{
+      pickup_location: JSON.stringify({
         short_name: 'Queens Building',
         address: "Faculty of Engineering, University Walk, Tyndall's Park, Cotham, Bristol, City of Bristol, West of England, England, BS8 1TR, United Kingdom",
         lat: 51.45689,
         lng: -2.601892
-      }],
+      }),
+      dropoff_location: JSON.stringify({
+        short_name: 'Queens Building',
+        address: "Faculty of Engineering, University Walk, Tyndall's Park, Cotham, Bristol, City of Bristol, West of England, England, BS8 1TR, United Kingdom",
+        lat: 51.45689,
+        lng: -2.601892
+      }),
+      pickup_time: new Date("2026-04-20T08:30:00Z"),
+      return_pickup_time: new Date("2026-04-27T14:00:00Z"),
+      via: JSON.stringify([{
+        short_name: 'Queens Building',
+        address: "Faculty of Engineering, University Walk, Tyndall's Park, Cotham, Bristol, City of Bristol, West of England, England, BS8 1TR, United Kingdom",
+        lat: 51.45689,
+        lng: -2.601892
+      }]),
       passenger_num: 2,
-      return_drop_loc: "University of Birmingham",
+      return_drop_loc: JSON.stringify({
+        short_name: 'Queens Building',
+        address: "Faculty of Engineering, University Walk, Tyndall's Park, Cotham, Bristol, City of Bristol, West of England, England, BS8 1TR, United Kingdom",
+        lat: 51.45689,
+        lng: -2.601892
+      }),
       airport: "Manchester Airport",
       flight_num: "EZY5678",
     },
