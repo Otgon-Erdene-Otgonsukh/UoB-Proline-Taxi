@@ -29,7 +29,7 @@ export default function BookingInfo({
   flightNum: string;
   pickUpTime: Date;
   returnTime?: Date;
-  returnTo?: string;
+  returnTo?: location;
   passengerName: string;
   phoneNumber: string;
 }) {
@@ -154,7 +154,7 @@ export default function BookingInfo({
                             <span className="text-gray-700 font-semibold">
                               Return To:
                             </span>{" "}
-                            {returnTo}
+                            {returnTo.address}
                             <br />
                             <span className="text-gray-500 text-xs">
                               Pick-up time:{" "}

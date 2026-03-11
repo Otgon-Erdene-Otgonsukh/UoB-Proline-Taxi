@@ -32,18 +32,9 @@ import { Clock, Route } from "lucide-react";
 import { LngLatLike } from "maplibre-gl";
 import { getDepartments } from "@/app/requests/departments";
 import { department } from "@/generated/prisma/client";
+import { commonLocations } from "@/model/models";
 
 export default function BookingPage() {
-  // Attach common locations as keys to hashmapped Lat/Lon for routing.
-  type commonLoc = { [key: string]: { lat: string; lng: string; address: string } };
-  const commonLocations: commonLoc = {
-    "Queens Building": { "lat": "51.456890", "lng": "-2.601892", address: "Faculty of Engineering, University Walk, Tyndall's Park, Cotham, Bristol, City of Bristol, West of England, England, BS8 1TR, United Kingdom" },
-    "Merchant Venturers Building": { "lat": "51.456111", "lng": "-2.602830", address: "Merchant Venturers Building, 75, Woodland Road, Tyndall's Park, Cotham, Bristol, City of Bristol, West of England, England, BS8 1UB, United Kingdom" },
-    "Richmond Building": { "lat": "51.456996", "lng": "-2.613267", address: "Bristol University Student Union, Queen's Road, Clifton Village, Clifton, Bristol, City of Bristol, West of England, England, BS8 1LN, United Kingdom" },
-    "Victoria Rooms": { "lat": "51.458173", "lng": "-2.609358", address: "Victoria Rooms, Whiteladies Road, Tyndall's Park, Clifton, Bristol, City of Bristol, West of England, England, BS8 2PY, United Kingdom" },
-    "Wills Memorial Building": { "lat": "51.455927", "lng": "-2.604696", address: "Wills Memorial Building, Queen's Road, Tyndall's Park, City Centre, Bristol, City of Bristol, West of England, England, BS8 1RJ, United Kingdom" },
-    "Physics Building": { "lat": "51.458986", "lng": "-2.602204", address: "H.H. Wills Physics Laboratory, Tyndall Avenue, Tyndall's Park, Cotham, Bristol, City of Bristol, West of England, England, BS8 1TL, United Kingdom" },
-  };
 
   const session = useSession();
 
@@ -171,8 +162,8 @@ export default function BookingPage() {
         fail = true;
       }
       loc = { short_name: formData.CommonLoc, address: commonLocations[formData.CommonLoc].address,
-        lat: parseFloat(commonLocations[formData.CommonLoc].lat),
-        lng: parseFloat(commonLocations[formData.CommonLoc].lng)};
+        lat: commonLocations[formData.CommonLoc].lat,
+        lng: commonLocations[formData.CommonLoc].lng};
     } else loc = formData.Airport;
 
     // Department check
@@ -590,7 +581,7 @@ export default function BookingPage() {
                         const value = e.target.value as LocKey;
                         if (e.target.value) {
                           // Convert lat and long strings to numbers for mapcn
-                          setStart({ name: e.target.value, lat: parseFloat(commonLocations[value].lat), lng: parseFloat(commonLocations[value].lng) });
+                          setStart({ name: e.target.value, lat: commonLocations[value].lat, lng: commonLocations[value].lng });
                         }
                       }}
                       error={formFeedback.CommonLoc != ""}

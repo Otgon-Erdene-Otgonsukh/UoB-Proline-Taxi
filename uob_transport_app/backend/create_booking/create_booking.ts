@@ -1,6 +1,5 @@
 import prisma from '@/utils/client';
-
-type formLocation = { short_name: string; address: string; lat: number; lng: number };
+import { formLocation } from "@/model/models";
 
 export default async function createBooking(
     userID: number,
@@ -13,7 +12,7 @@ export default async function createBooking(
     tel_number: string,
     additional_info: string,
     via: formLocation[],
-    returnTo: string | undefined,
+    returnTo: formLocation | undefined,
     passenger_num: number,
     airport: string,
     flight_num: string,
@@ -29,7 +28,7 @@ export default async function createBooking(
             return_pickup_time: returnDT ? returnDT : null,
             via: JSON.stringify(via),
             passenger_num: passenger_num,
-            return_drop_loc: returnTo,
+            return_drop_loc: JSON.stringify(returnTo),
             airport: airport,
             flight_num: flight_num
         }

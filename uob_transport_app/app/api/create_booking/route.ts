@@ -7,6 +7,8 @@ import { render } from "@react-email/components";
 import BookingInfo from "@/components/emails/booking_info";
 import { SendEmailCommand } from "@aws-sdk/client-sesv2";
 import { formLocation, location } from "@/model/models";
+import { commonLocations } from "@/model/models";
+import { common } from "@mui/material/colors";
 
 const prisma = new PrismaClient();
 
@@ -37,12 +39,75 @@ export async function POST(request: Request) {
     const pickup_time = new Date(request_json["pickup_time"]);
     const additional_info: string = request_json["additional_info"].toString();
     const via: location[] = request_json["via"];
-    const returnTo: string | undefined = request_json["returnTo"] ? request_json["returnTo"].toString() : undefined;
+    const returnTo: location | undefined = request_json["returnTo"] ? request_json["returnTo"] : undefined;
     const passenger_num: number = request_json["passengers"];
     const flight_num: string = request_json["flight_num"].toString();
     const airport: string = request_json["airport"].toString();
     const returnDT: Date | undefined = request_json["return_time"] ? new Date(request_json["return_time"]) : undefined;
     const dep_id: number = request_json["dep_id"];
+
+    // Validation.
+
+    // Check that all required values are present and valid.
+    const aggregatedArray = [pickup_loc, dropoff_loc, ...via];
+
+    // Optionally add return location to validation if it was provided.
+    if (returnTo != undefined) {
+      aggregatedArray.push(returnTo);
+    }
+
+    for (const loc of aggregatedArray) {
+      if (loc === null || loc == undefined || loc.address.trim() === "" || loc.short_name.trim() === "" || loc.lat == null || loc.lng == null) { // Check if the location is null or has an empty address. Lat/lon can be null as we can derive them from the address or common location short name.
+        // Not allowed to be null or empty.
+        return NextResponse.json(
+          { error: "Reqired location cannot be null or empty." },
+          { status: 400 },
+        );
+      }
+
+      // Check that, if it's a commonLocation, that the short name and lat/lon and address match expected values.
+      if (loc.short_name in commonLocations) {
+        if (commonLocations[loc.short_name].address !== loc.address
+          || commonLocations[loc.short_name].lat !== loc.lat
+          || commonLocations[loc.short_name].lng !== loc.lng
+        ) {
+          return NextResponse.json(
+            { error: "Address / latitude and longitude, or short name / address mismatch." },
+            { status: 400 },
+          );
+        }
+      } else {
+        // If it's a nominatim address, check by sending the requests again.
+        // adapted from booking page client.
+        const headers = new Headers();
+        headers.append("Accept-Language", "en-GB");
+        const result = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(loc.address)}`, { headers });
+        if (result.ok) {
+          const data = await result.json();
+          if (data && data.length > 0) {
+            const expected_loc : location = { short_name: data[0].name, lat: data[0].lat, lng: data[0].lon, address: data[0].name};
+            console.log(loc, expected_loc);
+            if (loc.lat != expected_loc.lat || loc.lng != expected_loc.lng || loc.short_name != expected_loc.short_name) {
+              return NextResponse.json(
+                { error: "Location address does not match its longitude, latitude, or short name." },
+                { status: 400 },
+              );
+            }
+
+          } else {
+            return NextResponse.json(
+              { error: "Invalid location address." },
+              { status: 400 },
+            );
+          }
+        } else {
+          return NextResponse.json(
+            { error: "Error validating location address." },
+            { status: 400 },
+          );
+        };
+      }
+    }
 
     if (passenger_num > 5) {
       return NextResponse.json(
