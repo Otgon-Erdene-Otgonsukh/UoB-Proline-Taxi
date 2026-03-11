@@ -65,6 +65,14 @@ const DepartmentManagePage = () => {
     setConfirmDeleteDialogOpen(true)
   };
   const handleDeleteDepartment = (department: DepartmentRecord) => {
+    if (department.userCount > 0) {
+      setSnackbarState({
+        open: true,
+        status: 'error',
+        message: 'Department has users, cannot be deleted!'
+      })
+      return;
+    }
     deleteDepartment(department.depId).then(async (res) => {
       if (res.status === 200) {
         setSnackbarState({

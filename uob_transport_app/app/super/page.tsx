@@ -122,7 +122,7 @@ const Page = () => {
                 User Management
               </h1>
             </div>
-            <UserManagePage toggleDrawer={toggleDrawer} departments={departments} />
+            <UserManagePage departments={departments} />
           </div>
         )}
 
