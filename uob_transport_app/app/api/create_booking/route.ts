@@ -85,15 +85,21 @@ export async function POST(request: Request) {
         if (result.ok) {
           const data = await result.json();
           if (data && data.length > 0) {
-            const expected_loc : location = { short_name: data[0].name, lat: data[0].lat, lng: data[0].lon, address: data[0].name};
-            console.log(loc, expected_loc);
+            const expected_loc : location = { short_name: data[0].name, lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon), address: data[0].display_name };
             if (loc.lat != expected_loc.lat || loc.lng != expected_loc.lng || loc.short_name != expected_loc.short_name) {
               return NextResponse.json(
                 { error: "Location address does not match its longitude, latitude, or short name." },
                 { status: 400 },
               );
+            } else {
+              // Check that the result is in the UK
+              if (!data[0].display_name.includes("United Kingdom")) {
+                return NextResponse.json(
+                  { error: "Location must be in United Kingdom." },
+                  { status: 400 },
+                );
+              }
             }
-
           } else {
             return NextResponse.json(
               { error: "Invalid location address." },
@@ -103,7 +109,7 @@ export async function POST(request: Request) {
         } else {
           return NextResponse.json(
             { error: "Error validating location address." },
-            { status: 400 },
+            { status: 500 },
           );
         };
       }
