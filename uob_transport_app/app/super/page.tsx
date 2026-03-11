@@ -292,6 +292,7 @@ const Page = () => {
     }).then(res => {
       if (res.status === 200) {
         res.json().then(data => {
+          console.log("Backend API User Data:", data.userList[0]);
           setPendingUsersData(data.userList)
           setPendingUserCount(data.userCount)
           setIsLoading(false)

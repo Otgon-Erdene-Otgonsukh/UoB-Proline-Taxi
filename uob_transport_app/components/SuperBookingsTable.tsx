@@ -37,6 +37,7 @@ export const BookingTable = ({ data, count, page, pageSize, onPageChange, onPage
                 >
                     <TableHead>
                         <TableRow>
+                            <StyledTableCell>Name</StyledTableCell>
                             <StyledTableCell>Pick-up Time</StyledTableCell>
                             <StyledTableCell>From</StyledTableCell>
                             <StyledTableCell>To</StyledTableCell>
@@ -52,6 +53,7 @@ export const BookingTable = ({ data, count, page, pageSize, onPageChange, onPage
                                     "&:hover": { bgcolor: "#f9fafb" },
                                     transition: "background-color 0.3s"
                                 }}>
+                                <StyledTableCell>{row.booking_id}</StyledTableCell>
                                 <StyledTableCell>{row.trip.pickup_time}</StyledTableCell>
                                 <StyledTableCell>{row.trip.pickup_location}</StyledTableCell>
                                 <StyledTableCell>{row.trip.dropoff_location}</StyledTableCell>
