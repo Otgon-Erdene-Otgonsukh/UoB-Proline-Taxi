@@ -64,3 +64,20 @@ export const deleteDepartmentAccess = async (depId: number): Promise<department>
     }
   })
 }
+
+export const getDepartmentByIdAccess = async (depId: number): Promise<{ dep_id: number, dep_name: string, _count: { User: number } } | null> => {
+  return prisma.department.findUnique({
+    select: {
+      dep_id: true,
+      dep_name: true,
+      _count: {
+        select: {
+          User: true
+        }
+      }
+    },
+    where: {
+      dep_id: depId
+    }
+  })
+}
