@@ -8,6 +8,7 @@ import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import FindInPageIcon from "@mui/icons-material/FindInPage";
 import { BookingWithTrip } from "@/app/dep-dashboard/constants";
+import {location} from "@/model/models";
 
 export default function Page({ open, handleDialogClose, viewData }: { open: boolean; handleDialogClose: () => void; viewData: BookingWithTrip; }) {
   return (
@@ -155,7 +156,11 @@ export default function Page({ open, handleDialogClose, viewData }: { open: bool
           <Typography gutterBottom>
             {viewData?.trip.airport === "" ||
               viewData?.trip.airport === null
-              ? viewData?.trip.pickup_location
+              ? (
+                (viewData?.trip.pickup_location.includes("{"))? // Temporary check to see if this is an old style booking.
+                JSON.parse(viewData?.trip.pickup_location).address
+                : viewData?.trip.pickup_location
+              )
               : viewData?.trip.airport}
           </Typography>
         </Stack>
@@ -189,7 +194,7 @@ export default function Page({ open, handleDialogClose, viewData }: { open: bool
               Via:
             </Typography>
             <Typography gutterBottom>
-              {viewData?.trip.via}
+              {viewData?.trip.via.includes("{") ? JSON.parse(viewData?.trip.via).map((loc : location) => loc.address).join("; ") : viewData?.trip.via}
             </Typography>
           </Stack>
         )}
@@ -205,7 +210,9 @@ export default function Page({ open, handleDialogClose, viewData }: { open: bool
             To:
           </Typography>
           <Typography gutterBottom>
-            {viewData?.trip.dropoff_location}
+            {viewData?.trip.dropoff_location.includes("{")? // Temporary check to see if this is an old style booking.
+              JSON.parse(viewData?.trip.dropoff_location).address
+              : viewData?.trip.dropoff_location}
           </Typography>
         </Stack>
         <Stack
