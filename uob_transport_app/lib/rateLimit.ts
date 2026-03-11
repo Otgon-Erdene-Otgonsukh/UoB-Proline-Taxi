@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 type NextHandler = (
   req: NextRequest,
-  ctx?: any
+  ctx?: unknown
 ) => Promise<Response> | Response;
 
 interface RateLimitOptions {
@@ -18,7 +18,7 @@ export function withRateLimit(options: RateLimitOptions) {
   const { limit, windowMs, getIdentifier } = options;
 
   return function decorate(handler: NextHandler): NextHandler {
-    return async function (req: NextRequest, ctx?: any) {
+    return async function (req: NextRequest, ctx?: unknown) {
       const id =
         getIdentifier?.(req) ??
         req.headers.get("x-real-ip") ??

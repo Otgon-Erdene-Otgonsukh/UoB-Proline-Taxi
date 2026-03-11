@@ -13,7 +13,7 @@ export function Landing_page() {
   return (
     <div>
       <motion.div
-        className="flex flex-col mb-8 lg:flex-row min-h-screen justify-evenly items-center px-4 md:-mt-13 mt-10 lg:py-0"
+        className="flex flex-col md:mb-8 mb-0 lg:flex-row min-h-screen justify-evenly items-center px-4 md:-mt-13 -mt-18 lg:py-0"
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, ease: "easeOut" }}
@@ -27,7 +27,7 @@ export function Landing_page() {
           alt="Landing"
         />
         <div className="lg:order-1 text-center lg:text-left">
-          <h1 className="font-aleo font-light text-2xl sm:text-3xl lg:text-4xl text-shadow-lg/20 lg:ml-6 lg:mt-20 px-4 lg:px-0">
+          <h1 className="font-aleo font-light text-2xl sm:text-3xl lg:text-4xl text-shadow-lg/20 -mt-10 lg:ml-6 lg:mt-20 px-4 lg:px-0">
             From <strong>quick</strong> campus rides to <br /> professional{" "}
             <strong>chauffeur</strong> journeys,
             <br /> make every trip smooth, safe, and <br /> comfortable with{" "}
@@ -49,7 +49,7 @@ export function Landing_page() {
               <button
                 onClick={() => setLoading(true)}
                 type="button"
-                className="w-full lg:min-w-[250px] lg:w-auto border-[#2c2c2c] border-1 bg-[#2c2c2c] text-white font-inter font-light rounded-md py-3 px-11 text-sm cursor-pointer hover:scale-103 hover:bg-[#393939] transition-all duration-300 active:bg-[#4d4d4d] whitespace-nowrap"
+                className="w-full lg:min-w-62.5 lg:w-auto border-[#2c2c2c] border bg-[#2c2c2c] text-white font-inter font-light rounded-md py-3 px-11 text-sm cursor-pointer hover:scale-103 hover:bg-[#393939] transition-all duration-300 active:bg-[#4d4d4d] whitespace-nowrap"
               >
                 {loading ? (
                   <CircularProgress
@@ -70,7 +70,7 @@ export function Landing_page() {
             <Link href="/about">
               <button
                 type="button"
-                className="w-full lg:w-auto border-1 border-[#2c2c2c] text-[#303030] font-inter font-medium rounded-md py-3 px-20 text-sm cursor-pointer hover:scale-103 transition-all duration-300 hover:bg-[#f9f7f7] whitespace-nowrap active:bg-[#efefef]"
+                className="w-full lg:w-auto border border-[#2c2c2c] text-[#303030] font-inter font-medium rounded-md py-3 px-20 text-sm cursor-pointer hover:scale-103 transition-all duration-300 hover:bg-[#f9f7f7] whitespace-nowrap active:bg-[#efefef]"
               >
                 MORE INFO
               </button>
