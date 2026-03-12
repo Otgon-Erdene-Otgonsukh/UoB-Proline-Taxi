@@ -73,6 +73,21 @@ export type UserRecord = {
   user_status: number;
 }
 
+export type DepartmentRecord = {
+  depId: number;
+  depName: string;
+  manager?: {
+    time_created: string;
+    user_id: number;
+    email: string;
+    full_name: string;
+    phone_number: string;
+    role: string;
+    user_status: number;
+  };
+  userCount: number;
+}
+
 export type MonthlyBookingData = {
   month: string,
   count: number

@@ -173,7 +173,7 @@ describe("Profile page render test with event testing logic", () => {
     // Clicking Cancel should derender the buttons and edit textfield
     await user.click(buttons[1]);
     await waitFor(() => {
-      expect(screen.queryAllByRole("button").length).toBe(0);
+      expect(screen.queryAllByRole("button").length).toBe(1);
     });
     expect(screen.queryByTestId("nameTextField")).toBe(null);
   });

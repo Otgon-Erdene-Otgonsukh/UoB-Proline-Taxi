@@ -130,6 +130,20 @@ export default function Profile() {
     });
   };
 
+  const handleEnterEditMode = () => {
+    setEditData({
+      name: session?.user.name ?? "",
+      email: userData?.email ?? "",
+      phone_number: userData?.phone_number ?? "",
+      department: userData?.department?.dep_name ?? "",
+    });
+    setEditMode(true);
+    setNameEditOn(true);
+    setEmailEditOn(true);
+    setPhoneEditOn(true);
+    setDepartmentEditOn(true);
+  };
+
   const handleSave = () => {
     let fail = false;
     // Setting all the errors at once to avoid overwritting the other erros with set function
@@ -457,7 +471,10 @@ export default function Profile() {
                   }}
                   autoFocus
                   onChange={(_, dep) => {
-                    setEditData({ ...editData, department: dep?.dep_name ?? "" });
+                    setEditData({
+                      ...editData,
+                      department: dep?.dep_name ?? "",
+                    });
                     setChangeError({ ...changeError, department: false });
                   }}
                   options={departments}
@@ -531,7 +548,32 @@ export default function Profile() {
               </div>
             )}
           </div>
+          {/* Dedicated Edit button for mobile displays without hover option */}
+          {!editMode && (
+            <Button
+              variant="contained"
+              sx={{
+                bgcolor: "#2c2c2c",
+                color: "white",
+                textTransform: "none",
+                fontSize: 15,
+                px: 3,
+                py: 1,
+                display: {
+                  md: "hidden",
+                  xs: "block",
+                },
+                mt: 2,
+                width: "100%"
+              }}
+              onClick={handleEnterEditMode}
+            >
+              <EditIcon sx={{ fontSize: 18, mr: 1, mb: 0.5 }} />
+              Edit
+            </Button>
+          )}
         </motion.div>
+
         {editMode && (
           <div className="flex justify-end gap-3 pt-4">
             <Button
