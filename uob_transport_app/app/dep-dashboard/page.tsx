@@ -207,10 +207,10 @@ export default function DepDashboard() {
           prev.map((b) =>
             b.booking_id === pendingBookingId
               ? {
-                ...b,
-                booking_status: "Approved",
-                trip: { ...b.trip, PO: poNumber },
-              }
+                  ...b,
+                  booking_status: "Approved",
+                  trip: { ...b.trip, PO: poNumber },
+                }
               : b,
           ),
         );
@@ -417,7 +417,9 @@ export default function DepDashboard() {
                   <h1 className="text-3xl font-bold text-red-600 text-right">
                     {bookingData?.overdue && bookingData.overdue}
                   </h1>
-                  <p className="text-gray-600 text-[15px] text-right">Overdue Bookings</p>
+                  <p className="text-gray-600 text-[15px] text-right">
+                    Overdue Bookings
+                  </p>
                 </>
               )}
             </motion.div>
@@ -453,7 +455,7 @@ export default function DepDashboard() {
         <div className="flex md:flex-row flex-col justify-between items-center">
           <div className="flex">
             <h1 className="text-2xl font-aleo md:text-3xl font-semibold text-shadow-lg/20">
-            Department Bookings
+              Department Bookings
             </h1>
             <div className="md:mr-4 md:mt-5 mr-0 mt-0 md:ml-0 ml-6">
               <CustomSwitch
@@ -463,21 +465,20 @@ export default function DepDashboard() {
                     isFlight: !searchFormInput.isFlight,
                   });
                 }}
-            ></CustomSwitch>
+              ></CustomSwitch>
             </div>
-          </div>      
+          </div>
           <Box
             component="form"
             onSubmit={handleSubmitSearchForm}
             sx={{
               display: "flex",
-              flexDirection: {md: "row", xs: "column"},
+              flexDirection: { md: "row", xs: "column" },
               gap: 2.5,
-              mt: {md: 0, xs: 4},
-              width: "100%"
+              mt: { md: 0, xs: 4 },
+              width: "100%",
             }}
           >
-            
             <TextField
               fullWidth
               label="Passenger Name"
@@ -517,7 +518,7 @@ export default function DepDashboard() {
               size="small"
               sx={{ minWidth: 150 }}
             />
-            <CustomizedButton title="Search" type="warning" click={() => { }} />
+            <CustomizedButton title="Search" type="warning" click={() => {}} />
           </Box>
         </div>
         <p
@@ -571,6 +572,7 @@ export default function DepDashboard() {
                     <StyledTableCell>From</StyledTableCell>
                     <StyledTableCell>To</StyledTableCell>
                     <StyledTableCell>Passenger Name</StyledTableCell>
+                    <StyledTableCell>Price</StyledTableCell>
                     <StyledTableCell>Operation</StyledTableCell>
                   </TableRow>
                 </TableHead>
@@ -617,9 +619,10 @@ export default function DepDashboard() {
                           {row.trip.dropoff_location}
                         </StyledTableCell>
                         <StyledTableCell>
-                          <span>
-                            {row.passenger_name}
-                          </span>
+                          <span>{row.passenger_name}</span>
+                        </StyledTableCell>
+                        <StyledTableCell>
+                          {row.trip.price ? `${row.trip.price} £` : "N/A"}
                         </StyledTableCell>
                         <StyledTableCell>
                           <div className="flex gap-2 justify-center">
@@ -628,7 +631,19 @@ export default function DepDashboard() {
                               type="warning"
                               title="View"
                             />
-                            {(row.booking_status === "Pending" && (
+                            {!row.trip.price ? (
+                              <Chip
+                                label="Awaiting Price"
+                                sx={{
+                                  bgcolor: "#e0e7ff",
+                                  border: 2,
+                                  borderColor: "#6366f1",
+                                  color: "#4338ca",
+                                  px: 1,
+                                  fontWeight: "bold",
+                                }}
+                              />
+                            ) : row.booking_status === "Pending" ? (
                               <>
                                 <CustomizedButton
                                   click={() => handleApprove(row.booking_id)}
@@ -644,7 +659,7 @@ export default function DepDashboard() {
                                   title="Reject"
                                 />
                               </>
-                            )) || (
+                            ) : (
                               <>
                                 <Chip
                                   label={row.booking_status}
@@ -663,8 +678,7 @@ export default function DepDashboard() {
                                 />
                                 {row.booking_status === "Approved" && (
                                   <Chip
-                                    label={row.trip.PO}
-                                    deleteIcon={<ReceiptIcon />}
+                                    label={"PO: " + row.trip.PO}
                                     sx={{
                                       px: 1,
                                       border: 2,
