@@ -74,7 +74,7 @@ const ViewDepartmentDialog = ({ viewData, dialogOpen, handleDialogClose }: { vie
             Name:
           </Typography>
           <Typography gutterBottom>
-            {viewData.full_name}
+            {viewData!.full_name}
           </Typography>
         </Stack>
         <Stack>
@@ -82,7 +82,7 @@ const ViewDepartmentDialog = ({ viewData, dialogOpen, handleDialogClose }: { vie
             email
           </Typography>
           <Typography gutterBottom>
-            {viewData.email}
+            {viewData!.email}
           </Typography>
         </Stack>
         <Stack>
@@ -96,7 +96,7 @@ const ViewDepartmentDialog = ({ viewData, dialogOpen, handleDialogClose }: { vie
             Role:
           </Typography>
           <Typography gutterBottom>
-            {roleReadableStrMap[viewData?.role]}
+            {roleReadableStrMap[viewData!.role]}
           </Typography>
         </Stack>
         <Stack>
@@ -113,7 +113,7 @@ const ViewDepartmentDialog = ({ viewData, dialogOpen, handleDialogClose }: { vie
                   ? "default"
                   : "error"
               }`}
-            label={userStatusToStrMap[viewData?.user_status]}
+            label={userStatusToStrMap[viewData!.user_status]}
           />
         </Stack>
       </DialogContent>

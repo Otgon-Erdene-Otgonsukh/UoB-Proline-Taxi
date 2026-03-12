@@ -41,6 +41,12 @@ jest.mock("@/app/super/userManageComponents/eidtDialog", () => {
   };
 });
 
+jest.mock("@/app/super/userManageComponents/userManagePage", () => {
+  return function MockUserManagePage() {
+    return <div>User Management</div>;
+  };
+});
+
 jest.mock("@/components/confirmDIalog", () => {
   return function MockConfirmDialog({
     open,
