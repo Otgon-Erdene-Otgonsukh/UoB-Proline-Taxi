@@ -60,7 +60,7 @@ const Page = () => {
     setIsDrawerOpen(open);
   };
 
-  const [tabValue, setTabValue] = useState(1);
+  const [tabValue, setTabValue] = useState(0);
 
   return (
     <div className={`min-h-screen ${tabValue === 3 ? "-pt-25 md:-mt-2 mt-0 md:mb-0" : "pt-15 flex flex-col items-center p-4"}`}>
