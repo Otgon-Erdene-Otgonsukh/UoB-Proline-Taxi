@@ -78,25 +78,34 @@ export async function POST(request: Request) {
       } else {
         // If it's a nominatim address, check by sending the requests again.
         // adapted from booking page client.
-        const headers = new Headers();
-        headers.append("Accept-Language", "en-GB");
+        const headers = {
+          "Content-Type": "application/json",
+          "Accept-Language": "en-GB",
+          "User-Agent": "UoB Transport App - https://uobst.ilm.gg/ (Backend address validation)"
+        }
+
         const result = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(loc.address)}`, { headers });
         if (result.ok) {
           const data = await result.json();
           if (data && data.length > 0) {
-            const expected_loc : location = { short_name: data[0].name, lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon), address: data[0].display_name };
-            if (loc.lat != expected_loc.lat || loc.lng != expected_loc.lng || loc.short_name != expected_loc.short_name) {
-              return NextResponse.json(
-                { error: "Location address does not match its longitude, latitude, or short name." },
-                { status: 400 },
-              );
-            } else {
-              // Check that the result is in the UK
-              if (!data[0].display_name.includes("United Kingdom")) {
-                return NextResponse.json(
-                  { error: "Location must be in United Kingdom." },
-                  { status: 400 },
-                );
+            for (const resloc of data) {
+              if (parseFloat(resloc.lat) === loc.lat && parseFloat(resloc.lon) === loc.lng && resloc.display_name.toLowerCase() === loc.address.toLowerCase()) {
+                const expected_loc : location = { short_name: resloc.name, lat: parseFloat(resloc.lat), lng: parseFloat(resloc.lon), address: resloc.display_name };
+                if (loc.lat != expected_loc.lat || loc.lng != expected_loc.lng || loc.short_name.toLowerCase() != expected_loc.short_name.toLowerCase()) {
+                  console.log(loc, expected_loc);
+                  return NextResponse.json(
+                    { error: "Location address does not match its longitude, latitude, or short name." },
+                    { status: 400 },
+                  );
+                } else {
+                  // Check that the result is in the UK
+                  if (!data[0].display_name.includes("United Kingdom")) {
+                    return NextResponse.json(
+                      { error: "Location must be in United Kingdom." },
+                      { status: 400 },
+                    );
+                  }
+                }
               }
             }
           } else {
@@ -111,6 +120,20 @@ export async function POST(request: Request) {
             { status: 500 },
           );
         };
+      }
+    }
+
+
+    const aggregatedArray2 = [pickup_loc, dropoff_loc, ...via];
+    // Ensure that none of the locations (except returnTo) are the same:
+    for (const locX of aggregatedArray2) {
+      for (const locY of aggregatedArray2) {
+        if (locX.address === locY.address && locX !== locY) {
+          return NextResponse.json(
+            { error: "Cannot have duplicate locations." },
+            { status: 400 },
+          );
+        }
       }
     }
 

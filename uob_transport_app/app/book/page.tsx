@@ -19,7 +19,7 @@ import {
 } from "@mui/material";
 import NumberField from "@/components/NumberField";
 import { useSession } from "next-auth/react";
-import { formLocation, location } from "@/model/models";
+import { formLocation } from "@/model/models";
 import {
   Map,
   MapMarker,
@@ -688,7 +688,7 @@ export default function BookingPage() {
                       if (e.target.value == "") {
                         return; // Do not try to update route if field is empty
                       }
-                      const latlon = await getLatLon(e.target.value)
+                      const latlon = await getLatLon(e.target.value, true)
                       if (latlon != null) {
                         setStart({ name: latlon.name, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) });
                         addFormFeedback("CustomLoc", ""); // Reset any validation errors
@@ -738,7 +738,7 @@ export default function BookingPage() {
                         setVias([]);
                         return; // Do not try to update route if field is empty
                       }
-                      const latlon = await getLatLon(e.target.value)
+                      const latlon = await getLatLon(e.target.value, true)
                       if (latlon != null) {
                         setVias([{ name: latlon.name, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) }, ...vias.slice(1)]);
                         setFormData({
@@ -778,7 +778,7 @@ export default function BookingPage() {
               {/* Via Box 2 if Via Box 1 is populated, cleared when modified */}
 
               {isViaChecked &&
-                formData.Via.length > 0 && formData.Via[0] != null && (
+                vias.length > 0 && (
                   <div className="flex flex-col">
                     <input
                       id="via2"
@@ -842,7 +842,7 @@ export default function BookingPage() {
               {/* Via Box 3 if Via Box 1&2 are populated, cleared when modified */}
 
               {isViaChecked &&
-                formData.Via.length > 1 && formData.Via[0] != null && formData.Via[1] != null && (
+                vias.length > 1 && (
                   <div className="flex flex-col">
                     <input
                       id="via3"
@@ -981,7 +981,7 @@ export default function BookingPage() {
                     if (e.target.value == "") {
                       return; // Do not try to update route if field is empty
                     }
-                    const latlon = await getLatLon(e.target.value)
+                    const latlon = await getLatLon(e.target.value, true)
                     if (latlon != null) {
                       setEnd({ name: latlon.name, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) });
                       addFormFeedback("DropoffLoc", ""); // Reset any validation errors
@@ -1107,7 +1107,7 @@ export default function BookingPage() {
                         if (e.target.value == "") {
                           return;
                         }
-                        const latlon = await getLatLon(e.target.value)
+                        const latlon = await getLatLon(e.target.value, true)
                         if (latlon != null) {
                           setReturnLoc({ name: latlon.name, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) });
                           setFormData({ ...formData, ReturnTo: { short_name: latlon.name, address: latlon.full_address, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) } });
