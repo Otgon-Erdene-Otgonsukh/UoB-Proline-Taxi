@@ -45,6 +45,7 @@ jest.mock("@/app/dep-dashboard/requests", () => ({
             PO: null,
             airport: null,
             flight_num: null,
+            price: 12
           },
         },
       ],
