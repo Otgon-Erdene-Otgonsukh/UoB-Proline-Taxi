@@ -4,7 +4,7 @@ import Page from "@/app/super/page";
 import type { Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import { getUsersAsAdmin } from "@/app/super/request";
-import { getDepartmentsList } from "@/app/super/requests";
+import { getDepartmentsList } from "@/app/super/request";
 
 // ========== mocks ==========
 
@@ -25,9 +25,6 @@ jest.mock("next-auth/react", () => ({
 jest.mock("@/app/super/request", () => ({
   getUsersAsAdmin: jest.fn(),
   updateUserAsAdmin: jest.fn(),
-}));
-
-jest.mock("@/app/super/requests", () => ({
   getDepartmentsList: jest.fn(),
 }));
 

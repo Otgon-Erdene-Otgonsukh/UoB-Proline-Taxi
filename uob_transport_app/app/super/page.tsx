@@ -38,13 +38,13 @@ import {
   LastPage,
   FirstPage
 } from "@mui/icons-material"
-import { getUsersAsAdmin, updateUserAsAdmin } from "./request";
+import { getUsersAsAdmin, updateUserAsAdmin, getDepartmentsList } from "./request";
 import ViewDialog from "./userManageComponents/viewDialog";
 import EditDialog from "./userManageComponents/eidtDialog";
 import { userStatusToIntMap, userStatusToStrMap, roleStrMap, roles, roleReadableStrMap } from "./constants";
-import { getDepartmentsList } from "./requests";
 import ConfirmDialog from "@/components/confirmDIalog";
 import { UserTable } from "@/components/SuperUsersTable";
+import DepartmentManagePage from "./departmentManagePage";
 
 interface TablePaginationActionsProps {
   count: number;
@@ -454,9 +454,7 @@ const Page = () => {
                 Departments
               </h1>
             </div>
-            <Typography sx={{ color: "gray", fontSize: 16, textAlign: "center", my: 10 }}>
-              Departments Table View (to be implemented)
-            </Typography>
+            <DepartmentManagePage />
           </div>
         )}
       </motion.div>
