@@ -92,7 +92,6 @@ export async function POST(request: Request) {
               if (parseFloat(resloc.lat) === loc.lat && parseFloat(resloc.lon) === loc.lng && resloc.display_name.toLowerCase() === loc.address.toLowerCase()) {
                 const expected_loc : location = { short_name: resloc.name, lat: parseFloat(resloc.lat), lng: parseFloat(resloc.lon), address: resloc.display_name };
                 if (loc.lat != expected_loc.lat || loc.lng != expected_loc.lng || loc.short_name.toLowerCase() != expected_loc.short_name.toLowerCase()) {
-                  console.log(loc, expected_loc);
                   return NextResponse.json(
                     { error: "Location address does not match its longitude, latitude, or short name." },
                     { status: 400 },
