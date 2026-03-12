@@ -22,7 +22,10 @@ export default function Page({ open, handleDialogClose, viewData }: { open: bool
         sx={{
           color: "white",
           textAlign: "center",
-          fontSize: 30,
+          fontSize: {
+            md: 30,
+            xs: 25
+          },
           fontWeight: "bold",
           font: "aleo",
           bgcolor: "#2c2c2c",
@@ -40,14 +43,20 @@ export default function Page({ open, handleDialogClose, viewData }: { open: bool
           sx={{
             justifyContent: "space-between",
             alignItems: "center",
-            width: "400px",
+            width: {
+              md: "400px",
+              xs: "280px"
+            },
           }}
         >
           <Typography
             gutterBottom
-            sx={{ fontWeight: "bold", fontSize: 20 }}
+            sx={{ fontWeight: "bold", fontSize: {
+              md: 20,
+              xs: 19
+            } }}
           >
-            Information about lead passenger:
+            Information about passenger:
           </Typography>
         </Stack>
         <Stack
@@ -55,7 +64,10 @@ export default function Page({ open, handleDialogClose, viewData }: { open: bool
           sx={{
             justifyContent: "space-between",
             alignItems: "center",
-            width: "400px",
+            width: {
+              md: "400px",
+              xs: "280px"
+            },
           }}
         >
           <Typography gutterBottom sx={{ fontWeight: "bold" }}>
@@ -70,7 +82,10 @@ export default function Page({ open, handleDialogClose, viewData }: { open: bool
           sx={{
             justifyContent: "space-between",
             alignItems: "center",
-            width: "400px",
+            width: {
+              md: "400px",
+              xs: "280px"
+            },
           }}
         >
           <Typography gutterBottom sx={{ fontWeight: "bold" }}>
@@ -85,7 +100,10 @@ export default function Page({ open, handleDialogClose, viewData }: { open: bool
           sx={{
             justifyContent: "space-between",
             alignItems: "center",
-            width: "400px",
+            width: {
+              md: "400px",
+              xs: "280px"
+            },
           }}
         >
           <Typography gutterBottom sx={{ fontWeight: "bold" }}>
@@ -98,7 +116,10 @@ export default function Page({ open, handleDialogClose, viewData }: { open: bool
           sx={{
             justifyContent: "space-between",
             alignItems: "center",
-            width: "400px",
+            width: {
+              md: "400px",
+              xs: "280px"
+            },
           }}
         >
           <Typography gutterBottom sx={{ fontWeight: "bold" }}>
@@ -113,7 +134,10 @@ export default function Page({ open, handleDialogClose, viewData }: { open: bool
           sx={{
             justifyContent: "space-between",
             alignItems: "center",
-            width: "400px",
+            width: {
+              md: "400px",
+              xs: "280px"
+            },
             mt: 4,
           }}
         >
@@ -129,13 +153,16 @@ export default function Page({ open, handleDialogClose, viewData }: { open: bool
           sx={{
             justifyContent: "space-between",
             alignItems: "center",
-            width: "400px",
+            width: {
+              md: "400px",
+              xs: "280px"
+            },
           }}
         >
           <Typography gutterBottom sx={{ fontWeight: "bold" }}>
             Time Created:
           </Typography>
-          <Typography gutterBottom>
+          <Typography gutterBottom textAlign="right">
             {viewData?.time_created
               ? new Date(viewData?.time_created).toLocaleString()
               : ""}
@@ -146,7 +173,10 @@ export default function Page({ open, handleDialogClose, viewData }: { open: bool
           sx={{
             justifyContent: "space-between",
             alignItems: "center",
-            width: "400px",
+            width: {
+              md: "400px",
+              xs: "280px"
+            },
           }}
         >
           <Typography gutterBottom sx={{ fontWeight: "bold" }}>
@@ -165,7 +195,10 @@ export default function Page({ open, handleDialogClose, viewData }: { open: bool
             sx={{
               justifyContent: "space-between",
               alignItems: "center",
-              width: "400px",
+              width: {
+                md: "400px",
+                xs: "280px"
+              },
             }}
           >
             <Typography gutterBottom sx={{ fontWeight: "bold" }}>
@@ -182,7 +215,10 @@ export default function Page({ open, handleDialogClose, viewData }: { open: bool
             sx={{
               justifyContent: "space-between",
               alignItems: "center",
-              width: "400px",
+              width: {
+                md: "400px",
+                xs: "280px"
+              },
             }}
           >
             <Typography gutterBottom sx={{ fontWeight: "bold" }}>
@@ -198,7 +234,10 @@ export default function Page({ open, handleDialogClose, viewData }: { open: bool
           sx={{
             justifyContent: "space-between",
             alignItems: "center",
-            width: "400px",
+            width: {
+              md: "400px",
+              xs: "280px"
+            },
           }}
         >
           <Typography gutterBottom sx={{ fontWeight: "bold" }}>
@@ -213,22 +252,25 @@ export default function Page({ open, handleDialogClose, viewData }: { open: bool
           sx={{
             justifyContent: "space-between",
             alignItems: "center",
-            width: "400px",
+            width: {
+              md: "400px",
+              xs: "280px"
+            },
           }}
         >
           <Typography gutterBottom sx={{ fontWeight: "bold" }}>
             Booking Status:
           </Typography>
           {viewData?.booking_status === "Approved" ? (
-            <span className="inline-block px-10 py-[3px] rounded-full text-xs font-medium border border-green-800 bg-green-200 text-green-800">
+            <span className="inline-block px-10 py-0.75 rounded-full text-xs font-medium border border-green-800 bg-green-200 text-green-800">
               Approved
             </span>
           ) : viewData?.booking_status === "Rejected" ? (
-            <span className="inline-block px-10 py-[3px] rounded-full text-xs font-medium border border-red-800 bg-red-200 text-red-800">
+            <span className="inline-block px-10 py-0.75 rounded-full text-xs font-medium border border-red-800 bg-red-200 text-red-800">
               Rejected
             </span>
           ) : (
-            <span className="inline-block px-10 py-[3px] rounded-full text-xs font-medium border border-yellow-800 bg-yellow-200 text-yellow-800">
+            <span className="inline-block px-10 py-0.75 rounded-full text-xs font-medium border border-yellow-800 bg-yellow-200 text-yellow-800">
               Pending
             </span>
           )}
@@ -238,7 +280,10 @@ export default function Page({ open, handleDialogClose, viewData }: { open: bool
           sx={{
             justifyContent: "space-between",
             alignItems: "center",
-            width: "400px",
+            width: {
+              md: "400px",
+              xs: "280px"
+            },
           }}
         >
           <Typography gutterBottom sx={{ fontWeight: "bold" }}>
@@ -253,7 +298,10 @@ export default function Page({ open, handleDialogClose, viewData }: { open: bool
           sx={{
             justifyContent: "space-between",
             alignItems: "center",
-            width: "400px",
+            width: {
+              md: "400px",
+              xs: "280px"
+            },
           }}
         >
           <Typography gutterBottom sx={{ fontWeight: "bold" }}>
@@ -272,7 +320,10 @@ export default function Page({ open, handleDialogClose, viewData }: { open: bool
               sx={{
                 justifyContent: "space-between",
                 alignItems: "center",
-                width: "400px",
+                width: {
+                  md: "400px",
+                  xs: "280px"
+                },
               }}
             >
               <Typography gutterBottom sx={{ fontWeight: "bold" }}>
@@ -291,7 +342,10 @@ export default function Page({ open, handleDialogClose, viewData }: { open: bool
               sx={{
                 justifyContent: "space-between",
                 alignItems: "center",
-                width: "400px",
+                width: {
+                  md: "400px",
+                  xs: "280px"
+                },
               }}
             >
               <Typography gutterBottom sx={{ fontWeight: "bold" }}>
@@ -309,7 +363,10 @@ export default function Page({ open, handleDialogClose, viewData }: { open: bool
             sx={{
               justifyContent: "space-between",
               alignItems: "center",
-              width: "400px",
+              width: {
+                md: "400px",
+                xs: "280px"
+              },
             }}
           >
             <Typography gutterBottom sx={{ fontWeight: "bold" }}>
@@ -324,7 +381,10 @@ export default function Page({ open, handleDialogClose, viewData }: { open: bool
             sx={{
               justifyContent: "space-between",
               alignItems: "center",
-              width: "400px",
+              width: {
+                md: "400px",
+                xs: "280px"
+              },
             }}
           >
             <Typography gutterBottom sx={{ fontWeight: "bold" }}>
