@@ -375,6 +375,26 @@ export default function Page({ open, handleDialogClose, viewData }: { open: bool
             <Typography gutterBottom>{viewData?.trip.PO}</Typography>
           </Stack>
         )}
+        {viewData?.trip.price && (
+          <Stack
+            direction="row"
+            sx={{
+              justifyContent: "space-between",
+              alignItems: "center",
+              width: {
+                md: "400px",
+                xs: "280px"
+              },
+            }}
+          >
+            <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+              Price
+            </Typography>
+            <Typography gutterBottom sx={{ textAlign: "right", color: "green", fontWeight: "bold" }}>
+              {viewData?.trip.price} £
+            </Typography>
+          </Stack>
+        )}
         {viewData?.additional_info && (
           <Stack
             direction="row"
