@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { UserRecord } from "@/model/models";
 import { motion } from "framer-motion";
+import SuperDashboard from "@/components/SuperDashboard";
 import {
   Box,
   Typography,
@@ -22,6 +23,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import LocalTaxiIcon from '@mui/icons-material/LocalTaxi';
 import SettingsIcon from '@mui/icons-material/Settings';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import DashboardIcon from '@mui/icons-material/Dashboard';
 import GroupsIcon from '@mui/icons-material/Groups';
 import { getDepartmentsList } from "./request";
 import { UserManagePage } from "./userManageComponents/userManagePage";
@@ -61,7 +63,7 @@ const Page = () => {
   const [tabValue, setTabValue] = useState(1);
 
   return (
-    <div className="flex flex-col min-h-screen items-center pt-15 p-4">
+    <div className={`min-h-screen ${tabValue === 3 ? "-pt-25 md:-mt-2 mt-0 md:mb-0" : "pt-15 flex flex-col items-center p-4"}`}>
       <Drawer
         anchor="left"
         open={isDrawerOpen}
@@ -82,8 +84,9 @@ const Page = () => {
               { text: 'Users', icon: <PeopleIcon />, index: 0 },
               { text: 'Departments', icon: <GroupsIcon />, index: 1 },
               { text: 'Bookings', icon: <LocalTaxiIcon />, index: 2 },
-              { text: 'Export Bookings', icon: <FileDownloadIcon />, index: 3 },
-              { text: 'Admin Settings', icon: <SettingsIcon />, index: 4 },
+              { text: 'Dashboard', icon: <DashboardIcon />, index: 3 },
+              { text: 'Export Bookings', icon: <FileDownloadIcon />, index: 4 },
+              { text: 'Admin Settings', icon: <SettingsIcon />, index: 5 },
             ].map((item) => (
               <ListItem key={item.text} disablePadding>
                 <ListItemButton onClick={() => setTabValue(item.index)}>
@@ -99,7 +102,7 @@ const Page = () => {
       </Drawer>
 
       <motion.div
-        className="bg-white shadow-lg rounded-lg p-6 md:p-8 w-full max-w-6xl mb-8 h-fit"
+        className={`bg-white shadow-lg rounded-lg p-6 md:p-8 w-full max-w-6xl mb-8 h-fit ${tabValue === 3 && "hidden"}`}
         initial={{ opacity: 0, y: 7, scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 1, ease: "easeOut", delay: 0.24 }}
@@ -148,6 +151,8 @@ const Page = () => {
           </div>
         )}
       </motion.div>
+
+      {tabValue === 3 && <SuperDashboard />}
 
     </div>
   );

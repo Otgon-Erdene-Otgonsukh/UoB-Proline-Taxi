@@ -1352,11 +1352,11 @@ export default function BookingPage() {
                     {formatDuration(routes[0].duration)}
                   </span>
                 </div>
-                <div className="flex items-center gap-1.5 text-xs opacity-80">
+                <div className="flex items-center gap-1.5 text-xs">
                   <Route className="size-3" />
                   {formatDistance(routes[0].distance)}
                 </div>
-                <p className="text-xs opacity-80">Subject to traffic and weather conditions</p>
+                <p className="text-[11px] opacity-80 mt-1">Subject to traffic and weather conditions</p>
               </div>
             )}
           </Map>

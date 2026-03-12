@@ -249,10 +249,10 @@ export default function DepDashboard() {
 
   return (
     <div className="flex flex-col min-h-screen items-center pt-15 p-4">
-      <div className="flex gap-20 mb-5">
+      <div className="grid md:grid-cols-3 grid-cols-1 md:gap-20 gap-0 md:mb-5 mb-2 md:mt-0 -mt-5 md:mx-0 -mx-30">
         <div className="flex flex-col gap-3 items-center">
           <motion.div
-            className="flex bg-white rounded-lg overflow-hidden drop-shadow-blue-600 drop-shadow-lg/30 cursor-pointer border-r-4 border-r-blue-500"
+            className="flex w-full bg-white rounded-lg overflow-hidden drop-shadow-blue-600 drop-shadow-lg/30 cursor-pointer border-r-4 border-r-blue-500"
             initial={{ opacity: 0, y: 10, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 1, ease: "easeOut", delay: 0 }}
@@ -268,11 +268,11 @@ export default function DepDashboard() {
               setOverdueApplied(false);
             }}
           >
-            <div className="bg-gradient-to-br from-blue-300 via-blue-500 to-blue-700 rounded-lg p-2">
+            <div className="bg-linear-to-br from-blue-300 via-blue-500 to-blue-700 rounded-lg p-2">
               <HailIcon sx={{ color: "white", fontSize: 80 }} />
             </div>
             <motion.div
-              className="flex flex-col items-end px-5 py-3 justify-center"
+              className="flex flex-col items-end px-5 pl-10 py-3 justify-center"
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, ease: "easeOut", delay: 0.08 }}
@@ -280,12 +280,12 @@ export default function DepDashboard() {
               {cardLoading ? (
                 <CircularProgress color="inherit" size={30} />
               ) : (
-                <>
+                <div className="text-right">
                   <h1 className="text-3xl font-bold text-blue-600">
                     {bookingData?.total && bookingData.total}
                   </h1>
                   <p className="text-gray-600">Total Bookings</p>
-                </>
+                </div>
               )}
             </motion.div>
           </motion.div>
@@ -311,7 +311,7 @@ export default function DepDashboard() {
         </div>
         <div className="flex flex-col gap-3 items-center">
           <motion.div
-            className="flex bg-white rounded-lg overflow-hidden drop-shadow-yellow-600 drop-shadow-lg/30 cursor-pointer border-r-4 border-r-yellow-500"
+            className="flex w-full bg-white rounded-lg overflow-hidden drop-shadow-yellow-600 drop-shadow-lg/30 cursor-pointer border-r-4 border-r-yellow-500"
             initial={{ opacity: 0, y: 10, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 1, ease: "easeOut", delay: 0.24 }}
@@ -327,11 +327,11 @@ export default function DepDashboard() {
               setOverdueApplied(false);
             }}
           >
-            <div className="bg-gradient-to-br from-yellow-400 via-yellow-600 to-yellow-700 rounded-lg p-2 py-[13px] flex justify-center items-center">
+            <div className="bg-linear-to-br from-yellow-400 via-yellow-600 to-yellow-700 rounded-lg p-2 py-3.25 flex justify-center items-center">
               <InfoIcon sx={{ color: "white", fontSize: 70 }} />
             </div>
             <motion.div
-              className="flex flex-col items-end pl-8 pr-5 py-1 justify-center text-gray-600 text-[15px]"
+              className="flex flex-col items-end pl-8 pr-5 py-1 justify-center text-gray-600 text-[15px] w-full"
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, ease: "easeOut", delay: 0.32 }}
@@ -340,19 +340,19 @@ export default function DepDashboard() {
                 <CircularProgress color="inherit" size={30} />
               ) : (
                 <>
-                  <div>
+                  <div className="text-right">
                     Pending:{" "}
                     <span className="text-yellow-500 font-bold">
                       {bookingData?.pending && bookingData.pending}
                     </span>
                   </div>
-                  <div>
+                  <div className="text-right">
                     Approved:{" "}
                     <span className="text-green-500 font-bold">
                       {bookingData?.approved && bookingData.approved}
                     </span>
                   </div>
-                  <div>
+                  <div className="text-right">
                     Rejected:{" "}
                     <span className="text-red-500 font-bold">
                       {bookingData?.rejected && bookingData.rejected}
@@ -385,7 +385,7 @@ export default function DepDashboard() {
         </div>
         <div className="flex flex-col gap-3 items-center">
           <motion.div
-            className="flex bg-white rounded-lg overflow-hidden drop-shadow-red-600 drop-shadow-lg/30 cursor-pointer border-r-4 border-r-red-500"
+            className="flex w-full bg-white rounded-lg overflow-hidden drop-shadow-red-600 drop-shadow-lg/30 cursor-pointer border-r-4 border-r-red-500"
             initial={{ opacity: 0, y: 10, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 1, ease: "easeOut", delay: 0.48 }}
@@ -401,11 +401,11 @@ export default function DepDashboard() {
               setStatusApplied(false);
             }}
           >
-            <div className="bg-gradient-to-br from-red-300 via-red-500 to-red-700 rounded-lg p-2 py-[13px] flex justify-center items-center">
+            <div className="bg-linear-to-br from-red-300 via-red-500 to-red-700 rounded-lg p-2 py-3.25 flex justify-center items-center">
               <AccessTimeIcon sx={{ color: "white", fontSize: 70 }} />
             </div>
             <motion.div
-              className="flex flex-col items-end px-5 py-3 justify-center"
+              className="flex flex-col items-end px-5 py-3 justify-center w-full"
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, ease: "easeOut", delay: 0.56 }}
@@ -414,10 +414,10 @@ export default function DepDashboard() {
                 <CircularProgress color="inherit" size={30} />
               ) : (
                 <>
-                  <h1 className="text-3xl font-bold text-red-600">
+                  <h1 className="text-3xl font-bold text-red-600 text-right">
                     {bookingData?.overdue && bookingData.overdue}
                   </h1>
-                  <p className="text-gray-600 text-[15px]">Overdue Bookings</p>
+                  <p className="text-gray-600 text-[15px] text-right">Overdue Bookings</p>
                 </>
               )}
             </motion.div>
@@ -450,26 +450,34 @@ export default function DepDashboard() {
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 1, ease: "easeOut", delay: 0.24 }}
       >
-        <div className="flex justify-between items-center">
-          <h1 className="text-xl font-aleo md:text-3xl font-semibold text-shadow-lg/20">
+        <div className="flex md:flex-row flex-col justify-between items-center">
+          <div className="flex">
+            <h1 className="text-2xl font-aleo md:text-3xl font-semibold text-shadow-lg/20">
             Department Bookings
-          </h1>
+            </h1>
+            <div className="md:mr-4 md:mt-5 mr-0 mt-0 md:ml-0 ml-6">
+              <CustomSwitch
+                onClick={() => {
+                  setSearchFormInput({
+                    ...searchFormInput,
+                    isFlight: !searchFormInput.isFlight,
+                  });
+                }}
+            ></CustomSwitch>
+            </div>
+          </div>      
           <Box
             component="form"
             onSubmit={handleSubmitSearchForm}
             sx={{
               display: "flex",
+              flexDirection: {md: "row", xs: "column"},
               gap: 2.5,
+              mt: {md: 0, xs: 4},
+              width: "100%"
             }}
           >
-            <CustomSwitch
-              onClick={() => {
-                setSearchFormInput({
-                  ...searchFormInput,
-                  isFlight: !searchFormInput.isFlight,
-                });
-              }}
-            ></CustomSwitch>
+            
             <TextField
               fullWidth
               label="Passenger Name"
@@ -582,7 +590,7 @@ export default function DepDashboard() {
                           >
                             {statusApplied && (
                               <div
-                                className={`h-4 w-4 rounded-full border-2 ${
+                                className={`md:h-4 md:w-4 h-2.5 w-4 rounded-full border-2 ${
                                   row.booking_status === "Pending"
                                     ? "bg-yellow-300 border-yellow-500"
                                     : row.booking_status === "Approved"

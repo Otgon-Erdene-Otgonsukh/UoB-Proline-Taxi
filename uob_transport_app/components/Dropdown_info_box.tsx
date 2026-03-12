@@ -6,7 +6,7 @@ export default function DdInfoBox({title, description, open, click,}: {title: st
             aria-expanded={open}>
               
             {title}
-            <span className={`flex-shrink-0 h-5 w-5 flex items-center justify-center transition-transform duration-200 ${open ? "rotate-180" : ""}`}>▼</span>
+            <span className={`shrink-0 h-5 w-5 flex items-center justify-center transition-transform duration-200 ${open ? "rotate-180" : ""}`}>▼</span>
         </button>
 
         <div className={`transition-all duration-100 ease-in-out overflow-hidden ${open ? "px-4 pb-4 max-h-40 opacity-100 mt-2" : "max-h-0 opacity-0"}`}>

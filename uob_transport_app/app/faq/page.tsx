@@ -26,9 +26,9 @@ export default function FAQPage() {
   ];
 
   return (
-    <main className="flex flex-col lg:flex-row h-screen overflow-hidden">
-      <div className="lg:w-1/2 flex flex-col justify-center mx-auto w-full px-20 py-6">
-        <h1 className="text-3xl font-bold mb-4 text-center text-shadow-lg text-gray-900 font-aleo">
+    <main className="flex flex-col lg:flex-row min-h-screen overflow-hidden">
+      <div className="lg:w-1/2 flex flex-col justify-center mx-auto w-full md:px-20 px-10 py-6 md:mt-0 mt-5">
+        <h1 className="md:text-3xl text-2xl font-bold mb-4 text-center text-shadow-lg text-gray-900 font-aleo">
           Frequently Asked Questions
         </h1>
         <div className="w-full pt-4">
@@ -45,14 +45,14 @@ export default function FAQPage() {
       </div>
 
       <div className="lg:w-1/2 flex items-center justify-center lg:border-l border-black py-6 px-20">
-        <div className="flex flex-col items-center justify-center text-center">
-          <h1 className="text-3xl font-bold mb-13 text-center text-shadow-lg text-gray-900 font-aleo">
+        <div className="flex flex-col items-center justify-center text-center md:border-t-0 border-t border-black">
+          <h1 className="md:text-3xl text-2xl font-bold md:mt-0 mt-10 mb-13 text-center text-shadow-lg text-gray-900 font-aleo">
             Contact Proline Taxi
           </h1>
 
           <div className="mt-4 mb-6 flex flex-row gap-15 items-center w-full">
             <div
-              className="flex-shrink-0 flex items-center justify-center rounded-full"
+              className="shrink-0 flex items-center justify-center rounded-full"
               style={{ width: 75, height: 75, backgroundColor: '#FED7D7' }}
             >
               <LocationOnIcon data-testid="logos" sx={{ fontSize: 40, color: '#E53E3E' }} />
@@ -64,7 +64,7 @@ export default function FAQPage() {
 
           <div className="mb-6 flex flex-row gap-15 items-center w-full">
             <div
-              className="flex-shrink-0 flex items-center justify-center rounded-full"
+              className="shrink-0 flex items-center justify-center rounded-full"
               style={{ width: 75, height: 75, backgroundColor: '#B2F5EA' }}
             >
               <PhoneIcon data-testid="logos" sx={{ fontSize: 40, color: '#2AB0A8' }} />
@@ -79,7 +79,7 @@ export default function FAQPage() {
 
           <div className="flex flex-row gap-15 items-center w-full">
             <div
-              className="flex-shrink-0 flex items-center justify-center rounded-full"
+              className="shrink-0 flex items-center justify-center rounded-full"
               style={{ width: 75, height: 75, backgroundColor: '#EDE9FE' }}
             >
               <EmailIcon data-testid="logos" sx={{ fontSize: 40, color: '#7C3AED' }} />
