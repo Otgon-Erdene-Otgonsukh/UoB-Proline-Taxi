@@ -117,7 +117,7 @@ export default function BookingInfo({
                             Via:
                           </span>{" "}
                           <li>
-                            {via.map((loc) => (
+                            {via.map((loc, key) => (
                               <ul>{loc.address}</ul>
                             ))}
                           </li>
