@@ -110,7 +110,7 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRe
           </Typography>
         </Stack>
       )}
-      {viewData?.trip.via && (
+      {viewData?.trip.via && viewData.trip.via.includes("{") && (
         <Stack
           direction="row"
           sx={{
