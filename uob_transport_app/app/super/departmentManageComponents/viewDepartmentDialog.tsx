@@ -25,10 +25,12 @@ import {
 import { DepartmentRecord } from "@/model/models";
 import { useEffect, useState } from "react";
 import { getUsersByDepId, updateDepartmentName } from "../request";
+import PersonOffIcon from '@mui/icons-material/PersonOff';
 import { StyledStickyTableCell } from "@/components/StyledTableCell";
 import SingleInputDialog from "@/components/singleInputDialog";
 import CustomizedButton from "@/components/CustomizedButton";
 import { ChangeDepartmentDialog } from "./changeDepartmentDialog";
+import { roleReadableStrMap } from "../constants";
 
 interface Props {
   departmentList: { depId: number, depName: string }[],
@@ -41,7 +43,7 @@ interface Props {
 
 const ViewDepartmentDialog = ({ departmentList, viewData, dialogOpen, handleDialogClose, notifyUserCountChange, notifyDepartmentNameChange }: Props) => {
 
-  const [members, setMembers] = useState<{ user_id: number, full_name: string, email: string, phone_number: string }[]>([]);
+  const [members, setMembers] = useState<{ user_id: number, full_name: string, email: string, phone_number: string, role: string }[]>([]);
   const [isLoading, setIsLoading] = useState(true)
   const [departmentData, setDepartmentData] = useState<DepartmentRecord>(viewData);
 
@@ -134,6 +136,7 @@ const ViewDepartmentDialog = ({ departmentList, viewData, dialogOpen, handleDial
             variant="h6"
             id="tableTitle"
             component="div"
+            sx={{ fontSize: 18 }}
           >
             Selected {numSelected} out of {departmentData?.userCount}:
           </Typography>
@@ -142,6 +145,7 @@ const ViewDepartmentDialog = ({ departmentList, viewData, dialogOpen, handleDial
             variant="h6"
             id="tableTitle"
             component="div"
+            sx={{ fontSize: 18 }}
           >
             Members (Total {departmentData?.userCount}):
           </Typography>
@@ -149,7 +153,7 @@ const ViewDepartmentDialog = ({ departmentList, viewData, dialogOpen, handleDial
         {numSelected > 0 && (
           <CustomizedButton
             title="Change Department"
-            type="primary"
+            type="warning"
             click={() => { setChangeDepartmentDialogOpen(true) }}
           />
         )}
@@ -225,19 +229,19 @@ const ViewDepartmentDialog = ({ departmentList, viewData, dialogOpen, handleDial
       </IconButton>
       <DialogContent dividers>
         <div style={{ width: "100%", display: "flex", justifyContent: "space-between" }}>
-          <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+          <Typography gutterBottom sx={{ fontWeight: "bold", fontSize: 20 }}>
             Department Name:
           </Typography>
-          <Typography gutterBottom sx={{ display: "flex", gap: 1 }}>
+          <Typography gutterBottom sx={{ display: "flex", gap: 1, fontSize: 20, ml: 6 }}>
             <span>{departmentData?.depName}</span>
-            <EditIcon sx={{ cursor: "pointer" }} onClick={() => {
+            <EditIcon sx={{ cursor: "pointer", mt: 0.5 }} onClick={() => {
               setNameEditOn(true);
             }} fontSize="small" />
           </Typography>
         </div>
         <EnhancedTableToolbar numSelected={selected.length} />
-        <Box sx={{ marginTop: 1 }}>
-          {isLoading ? <Typography>Loading members...</Typography> :
+        <Box sx={{ marginTop: 2 }}>
+          {isLoading ? <Typography sx={{ textAlign: "center", color: "gray" }}>Loading members...</Typography> : members.length === 0 ? <Typography sx={{ textAlign: "center", color: "gray" }}><PersonOffIcon sx={{ mb: 0.5 }}/> No users to show.</Typography> :
             (<TableContainer component={Paper} sx={{ boxShadow: "none", border: "none", maxHeight: 600 }}>
               <Table stickyHeader sx={{ minWidth: 500 }} aria-label="department table" size="small">
                 <TableHead>
@@ -254,8 +258,9 @@ const ViewDepartmentDialog = ({ departmentList, viewData, dialogOpen, handleDial
                       />
                     </StyledStickyTableCell>
                     <StyledStickyTableCell>Name</StyledStickyTableCell>
-                    <StyledStickyTableCell>email</StyledStickyTableCell>
-                    <StyledStickyTableCell>phone number</StyledStickyTableCell>
+                    <StyledStickyTableCell>Email</StyledStickyTableCell>
+                    <StyledStickyTableCell>Phone number</StyledStickyTableCell>
+                    <StyledStickyTableCell>Role</StyledStickyTableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -287,6 +292,7 @@ const ViewDepartmentDialog = ({ departmentList, viewData, dialogOpen, handleDial
                           {member.email}
                         </StyledStickyTableCell>
                         <StyledStickyTableCell>{member.phone_number}</StyledStickyTableCell>
+                        <StyledStickyTableCell>{roleReadableStrMap[member.role]}</StyledStickyTableCell>
                       </TableRow>
                     )
                   })}

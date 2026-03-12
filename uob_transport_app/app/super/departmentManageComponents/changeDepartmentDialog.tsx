@@ -63,7 +63,7 @@ export const ChangeDepartmentDialog = ({ departmentList, dialogOpen, handleDialo
           {`Change department for ${selectedRows.length} selected members`}
         </DialogTitle>
         <DialogContent sx={{ overflowY: "visible" }}>
-          <DialogContentText id="alert-dialog-description">
+          <DialogContentText id="alert-dialog-description" sx={{ mb: 1}}>
             Choose Department
           </DialogContentText>
           <Autocomplete
@@ -79,10 +79,11 @@ export const ChangeDepartmentDialog = ({ departmentList, dialogOpen, handleDialo
                 sx: {
                   border: "2px solid #2c2c2c",
                   boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
-                  mt: 0.5,
+                  mt: 2,
                   "& .MuiAutocomplete-option": {
                     "&:hover": {
                       backgroundColor: "#f3f4f6",
+                      borderLeft: 3
                     },
                     '&[aria-selected="true"]': {
                       backgroundColor: "#e5e7eb !important",
@@ -99,8 +100,7 @@ export const ChangeDepartmentDialog = ({ departmentList, dialogOpen, handleDialo
                 data-testid="textfield"
                 helperText={
                   departmentEmpty
-                    ? "Select a department"
-                    : "Proline staff, please ignore this field"
+                    && "Select a department"
                 }
               ></TextField>
             )}
