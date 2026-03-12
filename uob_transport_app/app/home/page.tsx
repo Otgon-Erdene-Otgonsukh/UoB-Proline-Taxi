@@ -677,7 +677,7 @@ const Page = () => {
                         </StyledTableCell>
                         <StyledTableCell>
                           {row.trip.dropoff_location.includes("{")? // Temporary check to see if this is an old style booking.
-                              JSON.parse(row.trip.dropoff_location).short_name + ", " + JSON.parse(row.trip.pickup_location).address.split(",").slice(-5)[0].trim()
+                              JSON.parse(row.trip.dropoff_location).short_name + ", " + JSON.parse(row.trip.dropoff_location).address.split(",").slice(-5)[0].trim()
                               : row.trip.dropoff_location
                           }
                         </StyledTableCell>

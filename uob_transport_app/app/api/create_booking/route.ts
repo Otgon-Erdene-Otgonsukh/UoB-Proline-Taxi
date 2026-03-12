@@ -8,7 +8,6 @@ import BookingInfo from "@/components/emails/booking_info";
 import { SendEmailCommand } from "@aws-sdk/client-sesv2";
 import { formLocation, location } from "@/model/models";
 import { commonLocations } from "@/model/models";
-import { common } from "@mui/material/colors";
 
 const prisma = new PrismaClient();
 

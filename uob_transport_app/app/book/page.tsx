@@ -33,6 +33,7 @@ import { LngLatLike } from "maplibre-gl";
 import { getDepartments } from "@/app/requests/departments";
 import { department } from "@/generated/prisma/client";
 import { commonLocations } from "@/model/models";
+import { getLatLon } from "@/components/NominatimSearch";
 
 export default function BookingPage() {
 
@@ -161,9 +162,9 @@ export default function BookingPage() {
         addFormFeedback("CommonLoc", "Please pick one.");
         fail = true;
       }
-      loc = { short_name: formData.CommonLoc, address: commonLocations[formData.CommonLoc].address,
-        lat: commonLocations[formData.CommonLoc].lat,
-        lng: commonLocations[formData.CommonLoc].lng};
+      loc = { short_name: formData.CommonLoc, address: commonLocations[formData.CommonLoc]?.address,
+        lat: commonLocations[formData.CommonLoc]?.lat,
+        lng: commonLocations[formData.CommonLoc]?.lng};
     } else loc = formData.Airport;
 
     // Department check
@@ -406,29 +407,6 @@ export default function BookingPage() {
     // We use yards and miles in the UK, so convert metres to miles and yards.
     if (meters / 0.9144 < 1760) return `${Math.round(meters / 0.9144)} yd`;
     return `${(meters / 1609.344).toFixed(1)} mi`;
-  }
-
-  // Use Nominatim to return latitude and longitude from address.
-  async function getLatLon(address: string): Promise<{ lat: string; lon: string; name: string; full_address: string } | null> {
-    // Specify English for results regardless of browser.
-    const headers = new Headers();
-    headers.append("Accept-Language", "en-GB");
-    const result = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`, { headers });
-    if (result.ok) {
-      const data = await result.json();
-      if (data && data.length > 0) {
-        const display_name = data[0].display_name
-        // Check if last item in the array made by splititng with , is United Kingdom to ensure location is not abroad.
-        if (display_name.split(",")[display_name.split(",").length - 1].trim() === "United Kingdom") {
-          return { lat: data[0].lat, lon: data[0].lon, name: data[0].name, full_address: display_name };
-        } else {
-          if (!address.includes("United Kingdom")) {
-            return getLatLon(address + ", United Kingdom"); // Try appending "United Kingdom" to the search query if initial search isn't a place in the UK.
-          }
-        }
-      }
-    };
-    return null;
   }
 
   const [start, setStart] = useState<{ name: string; lat: number; lng: number } | null>(null);

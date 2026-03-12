@@ -63,14 +63,31 @@ describe("create booking api route tests", () => {
 
     const jsonBody = {
       user_id: 3,
-      pickup_location: "Test",
-      dropoff_location: "test",
+      pickup_location: {
+        short_name: "Physics Laboratory",
+        lat: 51.4585453,
+        lng: -2.6021440,
+        address: "H.H. Wills Physics Laboratory, Tyndall Avenue, Tyndall's Park, Cotham, Bristol, City of Bristol, West of England, England, BS8 1TL, United Kingdom"
+      },
+      dropoff_location: { 
+        short_name: "Wills Memorial Building",
+        lat: 51.455927,
+        lng: -2.604696,
+        address: "Wills Memorial Building, Queen's Road, Tyndall's Park, City Centre, Bristol, City of Bristol, West of England, England, BS8 1RJ, United Kingdom"
+      },
       pickup_time: "2024-12-01T10:00:00Z",
       passenger_name: "John",
       email: "test@example.com",
       tel_number: "1234567890",
       additional_info: "Some info",
-      via: "Via location",
+      via: [
+        { 
+          short_name: "Victoria Rooms",
+          lat: 51.458173,
+          lng: -2.609358,
+          address: "Victoria Rooms, Whiteladies Road, Tyndall's Park, Clifton, Bristol, City of Bristol, West of England, England, BS8 2PY, United Kingdom"
+        }
+      ],
       passengers: 1,
       airport: "LHR",
       flight_num: "BA123",
@@ -88,11 +105,7 @@ describe("create booking api route tests", () => {
     expect(createBooking).toHaveBeenCalledWith(
       3, // from session.user.user_id
       jsonBody.pickup_location,
-      null,
-      null,
       jsonBody.dropoff_location,
-      null,
-      null,
       expect.any(Date),
       undefined, // no return_time
       jsonBody.passenger_name,
