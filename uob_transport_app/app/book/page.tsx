@@ -19,6 +19,7 @@ import {
 } from "@mui/material";
 import NumberField from "@/components/NumberField";
 import { useSession } from "next-auth/react";
+import { formLocation } from "@/model/models";
 import {
   Map,
   MapMarker,
@@ -31,17 +32,10 @@ import { Clock, Route } from "lucide-react";
 import { LngLatLike } from "maplibre-gl";
 import { getDepartments } from "@/app/requests/departments";
 import { department } from "@/generated/prisma/client";
+import { commonLocations } from "@/model/models";
+import { getLatLon } from "@/components/NominatimSearch";
 
 export default function BookingPage() {
-  // Attach common locations as keys to hashmapped Lat/Lon for routing.
-  const commonLocations = {
-    "Queens Building": { "lat": "51.456890", "lng": "-2.601892" },
-    "Merchant Venturers Building": { "lat": "51.456111", "lng": "-2.602830" },
-    "Richmond Building": { "lat": "51.456996", "lng": "-2.613267" },
-    "Victoria Rooms": { "lat": "51.458173", "lng": "-2.609358" },
-    "Wills Memorial Building": { "lat": "51.455927", "lng": "-2.604696" },
-    "Physics Building": { "lat": "51.458986", "lng": "-2.602204" },
-  };
 
   const session = useSession();
 
@@ -76,6 +70,7 @@ export default function BookingPage() {
     AdditionalInfo: "",
     ReturnTime: "",
     ReturnDate: "",
+    ReturnTo: "",
   });
 
   const clearFeedback = () => {
@@ -93,11 +88,12 @@ export default function BookingPage() {
   type FormData = {
     CommonLoc: string;
     CustomLoc: string;
-    Via: string[];
-    ReturnTo: string;
+    PickupLoc: formLocation
+    Via: formLocation[];
+    ReturnTo: formLocation;
     FlightNum: string;
     Airport: string;
-    DropoffLoc: string;
+    DropoffLoc: formLocation;
     PickupDate: string;
     PickupTime: string;
     ReturnDate: string;
@@ -110,16 +106,16 @@ export default function BookingPage() {
     AdditionalInfo: string;
   };
 
-
   // Variables for storing the state of the values entered into the fields.
   const [formData, setFormData] = useState<FormData>({
     CommonLoc: "",
     CustomLoc: "",
     Via: [],
-    ReturnTo: "",
+    ReturnTo: null,
     FlightNum: "",
     Airport: "",
-    DropoffLoc: "",
+    DropoffLoc: null,
+    PickupLoc: null,
     PickupDate: "",
     PickupTime: "",
     ReturnDate: "",
@@ -144,7 +140,7 @@ export default function BookingPage() {
     // Reset all messages to default:
     clearFeedback();
 
-    let loc = "";
+    let loc = null;
 
     // Custom Location
     if (isManualChecked) {
@@ -159,14 +155,16 @@ export default function BookingPage() {
         fail = true;
       }
 
-      loc = formData.CustomLoc;
+      loc = formData.PickupLoc
     } else if (!isFlightChecked && !isManualChecked) {
       // Common Pickup Location / Dropdown
       if (formData.CommonLoc == "") {
         addFormFeedback("CommonLoc", "Please pick one.");
         fail = true;
       }
-      loc = formData.CommonLoc;
+      loc = { short_name: formData.CommonLoc, address: commonLocations[formData.CommonLoc]?.address,
+        lat: commonLocations[formData.CommonLoc]?.lat,
+        lng: commonLocations[formData.CommonLoc]?.lng};
     } else loc = formData.Airport;
 
     // Department check
@@ -177,13 +175,13 @@ export default function BookingPage() {
 
     // Drop-Off Location
     // Not too long, not too short.
-    if (formData.DropoffLoc == "") {
+    if (formData.DropoffLoc == null) {
       addFormFeedback("DropoffLoc", "Please enter a drop-off location.");
       fail = true;
-    } else if (formData.DropoffLoc.length < 5) {
+    } else if (formData.DropoffLoc.address.length < 5) {
       addFormFeedback("DropoffLoc", "Drop-off location not detailed enough.");
       fail = true;
-    } else if (formData.DropoffLoc.length > 100) {
+    } else if (formData.DropoffLoc.address.length > 200) {
       addFormFeedback("DropoffLoc", "Drop-off location too long.");
       fail = true;
     } else if (!routes || routes.length == 0) {
@@ -411,39 +409,17 @@ export default function BookingPage() {
     return `${(meters / 1609.344).toFixed(1)} mi`;
   }
 
-  // Use Nominatim to return latitude and longitude from address.
-  async function getLatLon(address: string): Promise<{ lat: string; lon: string; name: string; full_address: string } | null> {
-    // Specify English for results regardless of browser.
-    const headers = new Headers();
-    headers.append("Accept-Language", "en-GB");
-    const result = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`, { headers });
-    if (result.ok) {
-      const data = await result.json();
-      if (data && data.length > 0) {
-        const display_name = data[0].display_name
-        // Check if last item in the array made by splititng with , is United Kingdom to ensure location is not abroad.
-        if (display_name.split(",")[display_name.split(",").length - 1].trim() === "United Kingdom") {
-          return { lat: data[0].lat, lon: data[0].lon, name: data[0].name, full_address: display_name };
-        } else {
-          if (!address.includes("United Kingdom")) {
-            return getLatLon(address + ", United Kingdom"); // Try appending "United Kingdom" to the search query if initial search isn't a place in the UK.
-          }
-        }
-      }
-    };
-    return null;
-  }
-
   const [start, setStart] = useState<{ name: string; lat: number; lng: number } | null>(null);
   const [end, setEnd] = useState<{ name: string; lat: number; lng: number } | null>(null);
   const [vias, setVias] = useState<{ name: string; lat: number; lng: number }[]>([]);
+  const [returnloc, setReturnLoc] = useState<{ name: string; lat: number; lng: number } | null>(null);
 
   // Update the route when start or end changes.
   useEffect(() => {
     if (end != null && start != null) {
       updateRoute();
     }
-  }, [start, end, vias]);
+  }, [start, end, vias, returnloc]);
 
 
   const [departmentList, setDepartmentList] = useState<department[]>([]);
@@ -475,6 +451,10 @@ export default function BookingPage() {
       route.push({ name: end.name, lat: end.lat, lng: end.lng });
       fetchRoutes(route);
 
+      if (returnloc != null) {
+        fetchRoutes([end, returnloc], true);
+      }
+
       function getRouteProperties(route: Loc[]) {
         return {
           name: route[0].name,
@@ -488,10 +468,10 @@ export default function BookingPage() {
       }
 
       // Find each corner of the square bounding box from the two start/end points and vias on the map.
-      const swLng = Math.min(start.lng, end.lng, ...vias.map(via => via.lng));
-      const swLat = Math.min(start.lat, end.lat, ...vias.map(via => via.lat));
-      const neLng = Math.max(start.lng, end.lng, ...vias.map(via => via.lng));
-      const neLat = Math.max(start.lat, end.lat, ...vias.map(via => via.lat));
+      const swLng = Math.min(start.lng, end.lng, ...vias.map(via => via.lng), ...returnloc?.lng ? [returnloc.lng] : []);
+      const swLat = Math.min(start.lat, end.lat, ...vias.map(via => via.lat), ...returnloc?.lat ? [returnloc.lat] : []);
+      const neLng = Math.max(start.lng, end.lng, ...vias.map(via => via.lng), ...returnloc?.lng ? [returnloc.lng] : []);
+      const neLat = Math.max(start.lat, end.lat, ...vias.map(via => via.lat), ...returnloc?.lat ? [returnloc.lat] : []);
 
       // Check bounds are LngLatLike type for fitBounds function.
       const bounds: [LngLatLike, LngLatLike] = [[swLng, swLat], [neLng, neLat]];
@@ -499,16 +479,18 @@ export default function BookingPage() {
     }
   }
 
-  async function fetchRoutes(locations: Loc[]) {
-    const osrmRoutes = []; // Clear previous routes
+  async function fetchRoutes(locations: Loc[], returnJourney = false) {
+    const osrmRoutes = [];
     try {
-      // Construct via list like this lon,lat;lon,lat;lon,lat for OSRM
-      let viaList = `${locations[0].lng},${locations[0].lat}`;
-      for (let i = 1; i < locations.length; i++) {
-        viaList = viaList + `;${locations[i].lng},${locations[i].lat}`
-      }
       const response = await fetch(
-        `https://router.project-osrm.org/route/v1/driving/${viaList}?overview=full&geometries=geojson&alternatives=false`
+        "/api/route",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ points: locations })
+        }
       );
       const data = await response.json();
       if (data.routes?.length > 0) {
@@ -519,7 +501,11 @@ export default function BookingPage() {
         }
         );
       }
-      setRoutes(osrmRoutes);
+      if (returnJourney) {
+        setRoutes([routes[0], ...osrmRoutes]);
+      } else {
+        setRoutes(osrmRoutes);
+      }
     } catch (error) {
       console.error("Failed to fetch routes:", error);
     }
@@ -573,7 +559,7 @@ export default function BookingPage() {
                         const value = e.target.value as LocKey;
                         if (e.target.value) {
                           // Convert lat and long strings to numbers for mapcn
-                          setStart({ name: e.target.value, lat: parseFloat(commonLocations[value].lat), lng: parseFloat(commonLocations[value].lng) });
+                          setStart({ name: e.target.value, lat: commonLocations[value].lat, lng: commonLocations[value].lng });
                         }
                       }}
                       error={formFeedback.CommonLoc != ""}
@@ -702,7 +688,7 @@ export default function BookingPage() {
                       if (e.target.value == "") {
                         return; // Do not try to update route if field is empty
                       }
-                      const latlon = await getLatLon(e.target.value)
+                      const latlon = await getLatLon(e.target.value, true)
                       if (latlon != null) {
                         setStart({ name: latlon.name, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) });
                         addFormFeedback("CustomLoc", ""); // Reset any validation errors
@@ -748,19 +734,33 @@ export default function BookingPage() {
                       }
                     }}
                     onBlur={async (e) => {
-                      setFormData({ ...formData, Via: [e.target.value, ...formData.Via.slice(1)] });
                       if (e.target.value == "") {
                         setVias([]);
                         return; // Do not try to update route if field is empty
                       }
-                      const latlon = await getLatLon(e.target.value)
+                      const latlon = await getLatLon(e.target.value, true)
                       if (latlon != null) {
                         setVias([{ name: latlon.name, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) }, ...vias.slice(1)]);
+                        setFormData({
+                          ...formData,
+                          Via: [{ 
+                            short_name: latlon.name,
+                            address: latlon.full_address, 
+                            lat: parseFloat(latlon.lat), 
+                            lng: parseFloat(latlon.lon) 
+                          },
+                            ...formData.Via.slice(1)] 
+                          });
                         addFormFeedback("Via1", ""); // Reset any validation errors
                         e.target.value = latlon.full_address;
                       } else {
                         // Reset start and routes if no result is found.
                         addFormFeedback("Via1", "No results found for this search term.");
+                        // Remove this via (and the next ones) if it is removed or changed to an invalid location.
+                        setFormData({
+                          ...formData,
+                          Via: [...formData.Via.slice(1)] 
+                        });
                         setVias([]);
                       }
                     }}
@@ -778,7 +778,7 @@ export default function BookingPage() {
               {/* Via Box 2 if Via Box 1 is populated, cleared when modified */}
 
               {isViaChecked &&
-                formData.Via.length > 0 && formData.Via[0] != "" && (
+                vias.length > 0 && (
                   <div className="flex flex-col">
                     <input
                       id="via2"
@@ -795,7 +795,6 @@ export default function BookingPage() {
                         }
                       }}
                       onBlur={async (e) => {
-                        setFormData({ ...formData, Via: [...formData.Via.slice(0, 1), e.target.value, ...formData.Via.slice(2)] });
                         if (e.target.value == "") {
                           setVias([...vias.slice(0, 1), ...vias.slice(2)]); // Remove via if field is cleared.
                           return; // Do not try to update route if field is empty
@@ -803,11 +802,29 @@ export default function BookingPage() {
                         const latlon = await getLatLon(e.target.value)
                         if (latlon != null) {
                           setVias([...vias.slice(0, 1), { name: latlon.name, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) }, ...vias.slice(2)]);
+                          setFormData({
+                            ...formData,
+                            Via: [
+                              ...formData.Via.slice(0, 1),
+                              { 
+                                short_name: latlon.name,
+                                address: latlon.full_address, 
+                                lat: parseFloat(latlon.lat), 
+                                lng: parseFloat(latlon.lon) 
+                              },
+                              ...formData.Via.slice(2)] 
+                          });
                           addFormFeedback("Via2", ""); // Reset any validation errors
                           e.target.value = latlon.full_address;
                         } else {
                           // Reset start and routes if no result is found.
                           addFormFeedback("Via2", "No results found for this search term.");
+                          // Remove this via (and the next ones) if it is removed or changed to an invalid location.
+                          setFormData({
+                            ...formData,
+                            Via: [...formData.Via.slice(0, 1)] 
+                          });
+                          // Remove it from the map too.
                           setVias(vias.slice(0, 1));
                         }
                       }}
@@ -825,7 +842,7 @@ export default function BookingPage() {
               {/* Via Box 3 if Via Box 1&2 are populated, cleared when modified */}
 
               {isViaChecked &&
-                formData.Via.length > 1 && formData.Via[0] != "" && formData.Via[1] != "" && (
+                vias.length > 1 && (
                   <div className="flex flex-col">
                     <input
                       id="via3"
@@ -838,7 +855,6 @@ export default function BookingPage() {
                         }
                       }}
                       onBlur={async (e) => {
-                        setFormData({ ...formData, Via: [...formData.Via.slice(0, 2), e.target.value] });
                         if (e.target.value == "") {
                           setVias([...vias.slice(0, 2), ...vias.slice(3)]); // Remove via if field is cleared.
                           return; // Do not try to update route if field is empty
@@ -846,11 +862,28 @@ export default function BookingPage() {
                         const latlon = await getLatLon(e.target.value)
                         if (latlon != null) {
                           setVias([...vias.slice(0, 2), { name: latlon.name, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) }]);
+                          setFormData({
+                            ...formData,
+                            Via: [...formData.Via.slice(0, 2),
+                              { 
+                                short_name: latlon.name,
+                                address: latlon.full_address, 
+                                lat: parseFloat(latlon.lat), 
+                                lng: parseFloat(latlon.lon) 
+                              },
+                            ] 
+                          });
                           addFormFeedback("Via3", ""); // Reset any validation errors
                           e.target.value = latlon.full_address;
                         } else {
                           // Reset start and routes if no result is found.
                           addFormFeedback("Via3", "No results found for this search term.");
+                          // Remove this via if it is removed or changed to an invalid location.
+                          setFormData({
+                            ...formData,
+                            Via: [...formData.Via.slice(0, 2)] 
+                          });
+                          // Remove the vias from the map.
                           setVias(vias.slice(0, 2));
                         }
                       }}
@@ -940,7 +973,6 @@ export default function BookingPage() {
                     }
                   }}
                   onChange={(e) => {
-                    setFormData({ ...formData, DropoffLoc: e.target.value });
                     if (e.target.value !== "") {
                       addFormFeedback("DropoffLoc", "");
                     }
@@ -949,14 +981,16 @@ export default function BookingPage() {
                     if (e.target.value == "") {
                       return; // Do not try to update route if field is empty
                     }
-                    const latlon = await getLatLon(e.target.value)
+                    const latlon = await getLatLon(e.target.value, true)
                     if (latlon != null) {
                       setEnd({ name: latlon.name, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) });
                       addFormFeedback("DropoffLoc", ""); // Reset any validation errors
+                      setFormData({ ...formData, DropoffLoc: { short_name: latlon.name, address: latlon.full_address, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) } });
                       e.target.value = latlon.full_address;
                     } else {
                       // Reset destination and show error if there are no results.
                       addFormFeedback("DropoffLoc", "No results found for this search term.");
+                      setFormData({ ...formData, DropoffLoc: null });
                       setEnd(null);
                       setRoutes([]);
                     }
@@ -1024,7 +1058,13 @@ export default function BookingPage() {
                       checked={isReturnChecked}
                       onChange={(e) => {
                         setIsReturnChecked(e.target.checked);
-                        setFormData({ ...formData, ReturnTo: "" });
+                        setFormData({ ...formData, ReturnTo: null });
+                        if (e.target.checked == false) {
+                          setReturnLoc(null);
+                          if (routes.length > 1) {
+                            setRoutes(routes.slice(0, routes.length - 1)); // Remove return route from map if return trip is unchecked.
+                          }
+                        }
                       }}
                     />
                   }
@@ -1040,7 +1080,7 @@ export default function BookingPage() {
                     <input
                       id="returnPickUp"
                       className="border-2 rounded px-3 py-2 border-gray-800"
-                      value={formData.DropoffLoc}
+                      value={formData.DropoffLoc?.address || ""}
                       disabled
                     />
                   </div>
@@ -1051,7 +1091,7 @@ export default function BookingPage() {
                     <input
                       id="returnDropOff"
                       placeholder="Enter"
-                      className="border-2 rounded px-3 py-2 border-gray-800"
+                      className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0 ${formFeedback.ReturnTo == "" ? "border-gray-800" : "border-red-700"}`}
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
                           e.preventDefault();
@@ -1059,9 +1099,34 @@ export default function BookingPage() {
                         }
                       }}
                       onChange={(e) => {
-                        setFormData({ ...formData, ReturnTo: e.target.value });
+                        if (e.target.value !== "") {
+                          addFormFeedback("ReturnTo", "");
+                        }
+                      }}
+                      onBlur={async (e) => {
+                        if (e.target.value == "") {
+                          return;
+                        }
+                        const latlon = await getLatLon(e.target.value, true)
+                        if (latlon != null) {
+                          setReturnLoc({ name: latlon.name, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) });
+                          setFormData({ ...formData, ReturnTo: { short_name: latlon.name, address: latlon.full_address, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) } });
+                          addFormFeedback("ReturnTo", ""); // Reset any validation errors
+                          e.target.value = latlon.full_address; 
+                        } else { // No results
+                          addFormFeedback("ReturnTo", "No results found for this search term.");
+                          setFormData({ ...formData, ReturnTo: null });
+                          setReturnLoc(null);
+                          setRoutes(routes.slice(0, routes.length - 1)); // Remove return route from map
+                        }
                       }}
                     />
+                    <FormHelperText
+                      sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
+                      className={`${formFeedback.ReturnTo != "" ? "" : "hidden"}`}
+                    >
+                      {formFeedback.ReturnTo}
+                    </FormHelperText>
                   </div>
                   <div className="flex flex-col text-sm">
                     <label htmlFor="returnDate" className="mb-1">
@@ -1303,7 +1368,7 @@ export default function BookingPage() {
 
         {/* Map Section */}
         { /* https://mapcn.vercel.app/docs/routes */}
-        <div className="container hidden lg:block lg:w-1/2 w-full object-contain min-w-150 border-l-3 border-gray-700 rounded-[0px_5px_5px_0px] overflow-hidden">
+        <div className="container hidden lg:block lg:w-1/2 w-full object-contain min-w-150 border-l-3 border-[#2c2c2c] rounded-[0px_5px_5px_0px] overflow-hidden">
           { /* Lat and long are inverted by MAPCN here */}
           <Map ref={mapRef} center={[-2.602, 51.458]} zoom={14}>
             {start && routes && routes.length > 0 && (
@@ -1315,6 +1380,15 @@ export default function BookingPage() {
               />
             )};
 
+            {returnloc && returnloc.lat && returnloc.lng && (
+              <MapMarker longitude={returnloc.lng} latitude={returnloc.lat}>
+                <MarkerContent>
+                  <div className="size-5 rounded-full bg-red-500 border-2 border-white shadow-lg" />
+                  <MarkerLabel position="top" className="bg-white p-1 rounded opacity-80">{returnloc.name}</MarkerLabel>
+                </MarkerContent>
+              </MapMarker>
+            )}
+            
             {start && start.lat && start.lng && ( // Only render marker when not null
               <MapMarker longitude={start.lng} latitude={start.lat}>
                 <MarkerContent>
@@ -1344,6 +1418,15 @@ export default function BookingPage() {
               </MapMarker>
             )}
 
+            {returnloc && routes && routes.length > 1 && (
+              <MapRoute
+                coordinates={routes[1].coordinates}
+                color={"#707070"}
+                width={6}
+                opacity={1}
+              />
+            )};
+
             {routes && routes.length > 0 && (
               <div className="absolute top-3 left-3 bg-black text-white opacity-80 rounded-md gap-2 p-2">
                 <div className="flex items-center gap-1.5">
@@ -1356,7 +1439,15 @@ export default function BookingPage() {
                   <Route className="size-3" />
                   {formatDistance(routes[0].distance)}
                 </div>
-                <p className="text-[11px] opacity-80 mt-1">Subject to traffic and weather conditions</p>
+                <p className="text-[11px] opacity-80 mt-1">
+                  Subject to traffic and weather conditions<br/><br/>
+                  <b>Key:</b><br/>
+                  <span className="text-xs text-green-500">◉</span> Origin<br/>
+                  <span className="text-xs text-yellow-500">◉</span> Via<br/>
+                  <span className="text-xs text-red-500">◉</span> Destination<br/>
+                  <span className="text-xs text-indigo-500">▬</span> Outbound Trip<br/>
+                  <span className="text-xs text-gray-700">▬</span> Return Trip
+                </p>
               </div>
             )}
           </Map>
