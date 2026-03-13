@@ -33,6 +33,8 @@ import {
   TablePagination,
   CircularProgress,
   Chip,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { StyledTableCell } from "@/components/StyledTableCell";
 import CustomizedButton from "@/components/CustomizedButton";
@@ -65,6 +67,13 @@ export default function DepDashboard() {
     overdue: false,
   });
   const [isLoading, setIsLoading] = useState(true);
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  useEffect(() => {
+    setHovered({ total: isMobile, status: isMobile, overdue: isMobile });
+  }, [isMobile]);
 
   // Get NextAuth Session.
   const { status } = useSession();
@@ -249,7 +258,7 @@ export default function DepDashboard() {
 
   return (
     <div className="flex flex-col min-h-screen items-center pt-15 p-4">
-      <div className="grid md:grid-cols-3 grid-cols-1 md:gap-20 gap-0 md:mb-5 mb-2 md:mt-0 -mt-5 md:mx-0 -mx-30">
+      <div className="grid md:grid-cols-3 grid-cols-1 md:gap-20 gap-3 md:mb-5 mb-2 md:mt-0 -mt-5 md:mx-0 -mx-30">
         <div className="flex flex-col gap-3 items-center">
           <motion.div
             className="flex w-full bg-white rounded-lg overflow-hidden drop-shadow-blue-600 drop-shadow-lg/30 cursor-pointer border-r-4 border-r-blue-500"
@@ -261,7 +270,7 @@ export default function DepDashboard() {
               transition: { duration: 0.12, ease: "easeOut" },
             }}
             onMouseEnter={() => setHovered({ ...hovered, total: true })}
-            onMouseLeave={() => setHovered({ ...hovered, total: false })}
+            onMouseLeave={() => setHovered({ ...hovered, total: isMobile ? true : false })}
             onClick={() => {
               setTotalApplied((prev) => !prev);
               setStatusApplied(false);
@@ -290,7 +299,7 @@ export default function DepDashboard() {
             </motion.div>
           </motion.div>
           <p
-            className={`text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded mt-2 border border-blue-200 transition-opacity ease-in-out duration-200 ${hovered.total || totalApplied ? "opacity-100" : "opacity-0"}`}
+            className={`text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded md:mt-2 border border-blue-200 transition-opacity ease-in-out duration-200 ${hovered.total || totalApplied ? "opacity-100" : "opacity-0"}`}
           >
             {totalApplied ? (
               <Button
@@ -305,7 +314,7 @@ export default function DepDashboard() {
                 <CancelIcon sx={{ fontSize: 17, mr: 1 }} /> Clear filter
               </Button>
             ) : (
-              "🔍 Click to filter"
+              <span onClick={() => {setTotalApplied(true); setStatusApplied(false); setOverdueApplied(false)}}>🔍 Click to filter</span>
             )}
           </p>
         </div>
@@ -320,7 +329,7 @@ export default function DepDashboard() {
               transition: { duration: 0.12, ease: "easeOut" },
             }}
             onMouseEnter={() => setHovered({ ...hovered, status: true })}
-            onMouseLeave={() => setHovered({ ...hovered, status: false })}
+            onMouseLeave={() => setHovered({ ...hovered, status: isMobile ? true : false })}
             onClick={() => {
               setStatusApplied((prev) => !prev);
               setTotalApplied(false);
@@ -363,7 +372,7 @@ export default function DepDashboard() {
             </motion.div>
           </motion.div>
           <p
-            className={`text-xs font-semibold text-yellow-700 bg-yellow-50 px-2 py-1 rounded mt-2 border border-yellow-300 transition-opacity ease-in-out duration-200 ${hovered.status || statusApplied ? "opacity-100" : "opacity-0"}`}
+            className={`text-xs font-semibold text-yellow-700 bg-yellow-50 px-2 py-1 rounded md:mt-2 border border-yellow-300 transition-opacity ease-in-out duration-200 ${hovered.status || statusApplied ? "opacity-100" : "opacity-0"}`}
           >
             {statusApplied ? (
               <Button
@@ -379,7 +388,7 @@ export default function DepDashboard() {
                 <CancelIcon sx={{ fontSize: 17, mr: 1 }} /> Clear filter
               </Button>
             ) : (
-              "🔍 Click to filter"
+              <span onClick={() => {setStatusApplied(true); setTotalApplied(false); setOverdueApplied(false)}}>🔍 Click to filter</span>
             )}
           </p>
         </div>
@@ -394,7 +403,7 @@ export default function DepDashboard() {
               transition: { duration: 0.12, ease: "easeOut" },
             }}
             onMouseEnter={() => setHovered({ ...hovered, overdue: true })}
-            onMouseLeave={() => setHovered({ ...hovered, overdue: false })}
+            onMouseLeave={() => setHovered({ ...hovered, overdue: isMobile ? true : false })}
             onClick={() => {
               setOverdueApplied((prev) => !prev);
               setTotalApplied(false);
@@ -425,7 +434,7 @@ export default function DepDashboard() {
             </motion.div>
           </motion.div>
           <p
-            className={`text-xs font-semibold text-red-600 bg-red-50 px-2 py-1 rounded mt-2 border border-red-200 transition-opacity ease-in-out duration-200 ${hovered.overdue || overdueApplied ? "opacity-100" : "opacity-0"}`}
+            className={`text-xs font-semibold text-red-600 bg-red-50 px-2 py-1 rounded md:mt-2 md:mb-0 mb-2 border border-red-200 transition-opacity ease-in-out duration-200 ${hovered.overdue || overdueApplied ? "opacity-100" : "opacity-0"}`}
           >
             {overdueApplied ? (
               <Button
@@ -441,7 +450,7 @@ export default function DepDashboard() {
                 <CancelIcon sx={{ fontSize: 17, mr: 1 }} /> Clear filter
               </Button>
             ) : (
-              "🔍 Click to filter"
+              <span onClick={() => {setOverdueApplied(true); setTotalApplied(false); setStatusApplied(false)}}>🔍 Click to filter</span>
             )}
           </p>
         </div>
