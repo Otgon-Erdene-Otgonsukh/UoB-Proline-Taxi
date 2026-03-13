@@ -610,11 +610,15 @@ export default function DepDashboard() {
                         </StyledTableCell>
                         <StyledTableCell>
                           {row.trip.airport === "" || row.trip.airport === null
-                            ? row.trip.pickup_location
+                            ? ((row.trip.pickup_location.includes("{"))? // Temporary check to see if this is an old style booking.
+                              JSON.parse(row.trip.pickup_location).address
+                              : row.trip.pickup_location)
                             : row.trip.airport}
                         </StyledTableCell>
                         <StyledTableCell>
-                          {row.trip.dropoff_location}
+                          {row.trip.dropoff_location.includes("{") ? // Temporary check to see if this is an old style booking.
+                            JSON.parse(row.trip.dropoff_location).address
+                            : row.trip.dropoff_location}
                         </StyledTableCell>
                         <StyledTableCell>
                           <span>

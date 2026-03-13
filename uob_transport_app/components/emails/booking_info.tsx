@@ -8,6 +8,7 @@ import {
   Section,
   Hr,
 } from "@react-email/components";
+import { location } from "@/model/models";
 
 export default function BookingInfo({
   from,
@@ -21,14 +22,14 @@ export default function BookingInfo({
   passengerName,
   phoneNumber,
 }: {
-  from: string;
-  via: string;
-  to: string;
+  from: location;
+  via: location[];
+  to: location;
   airport: string;
   flightNum: string;
   pickUpTime: Date;
   returnTime?: Date;
-  returnTo?: string;
+  returnTo?: location;
   passengerName: string;
   phoneNumber: string;
 }) {
@@ -93,7 +94,7 @@ export default function BookingInfo({
                         <span className="text-gray-700 font-semibold">
                           From:
                         </span>{" "}
-                        {from}
+                        {from.address}
                         <br />
                         <span className="text-gray-500 text-xs">
                           Pick-up time: {new Date(pickUpTime).toLocaleString()}
@@ -115,7 +116,11 @@ export default function BookingInfo({
                           <span className="text-gray-700 font-semibold">
                             Via:
                           </span>{" "}
-                          {via}
+                          <li>
+                            {via.map((loc, i) => (
+                              <ul key={i}>{loc.address}</ul>
+                            ))}
+                          </li>
                         </td>
                       </tr>
                     </tbody>
@@ -130,7 +135,7 @@ export default function BookingInfo({
                       </td>
                       <td className="align-top pl-2">
                         <span className="text-gray-700 font-semibold">To:</span>{" "}
-                        {to}
+                        {to.address}
                       </td>
                     </tr>
                   </tbody>
@@ -149,7 +154,7 @@ export default function BookingInfo({
                             <span className="text-gray-700 font-semibold">
                               Return To:
                             </span>{" "}
-                            {returnTo}
+                            {returnTo.address}
                             <br />
                             <span className="text-gray-500 text-xs">
                               Pick-up time:{" "}
