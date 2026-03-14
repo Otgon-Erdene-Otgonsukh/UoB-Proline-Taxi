@@ -35,6 +35,10 @@ import {
   Chip,
   useMediaQuery,
   useTheme,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
 } from "@mui/material";
 import { StyledTableCell } from "@/components/StyledTableCell";
 import CustomizedButton from "@/components/CustomizedButton";
@@ -61,6 +65,7 @@ export default function DepDashboard() {
   const [totalApplied, setTotalApplied] = useState(false);
   const [statusApplied, setStatusApplied] = useState(false);
   const [overdueApplied, setOverdueApplied] = useState(false);
+  const [priceFilter, setPriceFilter] = useState("all");
   const [hovered, setHovered] = useState({
     total: false,
     status: false,
@@ -163,7 +168,13 @@ export default function DepDashboard() {
       pageSize: paginationMeta.pageSize,
     });
     _getBookingListData(0, paginationMeta.pageSize);
-  }, [totalApplied, statusApplied, overdueApplied, searchFormInput.isFlight]);
+  }, [
+    totalApplied,
+    statusApplied,
+    overdueApplied,
+    searchFormInput.isFlight,
+    priceFilter,
+  ]);
 
   const _getBookingListData = (page: number, pageSize: number) => {
     // fetch data with current paginationMeta and searchParams
@@ -175,6 +186,8 @@ export default function DepDashboard() {
       total: totalApplied,
       status: statusApplied,
       overdue: overdueApplied,
+      price: priceFilter === "withPrice",
+      withoutPrice: priceFilter === "withoutPrice",
     }).then((res) => {
       if (res.status === 200) {
         res.json().then((data) => {
@@ -261,6 +274,7 @@ export default function DepDashboard() {
       <div className="grid md:grid-cols-3 grid-cols-1 md:gap-20 gap-3 md:mb-5 mb-2 md:mt-0 -mt-5 md:mx-0 -mx-30">
         <div className="flex flex-col gap-3 items-center">
           <motion.div
+            data-testid="totalCard"
             className="flex w-full bg-white rounded-lg overflow-hidden drop-shadow-blue-600 drop-shadow-lg/30 cursor-pointer border-r-4 border-r-blue-500"
             initial={{ opacity: 0, y: 10, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -270,7 +284,9 @@ export default function DepDashboard() {
               transition: { duration: 0.12, ease: "easeOut" },
             }}
             onMouseEnter={() => setHovered({ ...hovered, total: true })}
-            onMouseLeave={() => setHovered({ ...hovered, total: isMobile ? true : false })}
+            onMouseLeave={() =>
+              setHovered({ ...hovered, total: isMobile ? true : false })
+            }
             onClick={() => {
               setTotalApplied((prev) => !prev);
               setStatusApplied(false);
@@ -314,12 +330,21 @@ export default function DepDashboard() {
                 <CancelIcon sx={{ fontSize: 17, mr: 1 }} /> Clear filter
               </Button>
             ) : (
-              <span onClick={() => {setTotalApplied(true); setStatusApplied(false); setOverdueApplied(false)}}>🔍 Click to filter</span>
+              <span
+                onClick={() => {
+                  setTotalApplied(true);
+                  setStatusApplied(false);
+                  setOverdueApplied(false);
+                }}
+              >
+                🔍 Click to filter
+              </span>
             )}
           </p>
         </div>
         <div className="flex flex-col gap-3 items-center">
           <motion.div
+            data-testid="statusCard"
             className="flex w-full bg-white rounded-lg overflow-hidden drop-shadow-yellow-600 drop-shadow-lg/30 cursor-pointer border-r-4 border-r-yellow-500"
             initial={{ opacity: 0, y: 10, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -329,7 +354,9 @@ export default function DepDashboard() {
               transition: { duration: 0.12, ease: "easeOut" },
             }}
             onMouseEnter={() => setHovered({ ...hovered, status: true })}
-            onMouseLeave={() => setHovered({ ...hovered, status: isMobile ? true : false })}
+            onMouseLeave={() =>
+              setHovered({ ...hovered, status: isMobile ? true : false })
+            }
             onClick={() => {
               setStatusApplied((prev) => !prev);
               setTotalApplied(false);
@@ -388,12 +415,21 @@ export default function DepDashboard() {
                 <CancelIcon sx={{ fontSize: 17, mr: 1 }} /> Clear filter
               </Button>
             ) : (
-              <span onClick={() => {setStatusApplied(true); setTotalApplied(false); setOverdueApplied(false)}}>🔍 Click to filter</span>
+              <span
+                onClick={() => {
+                  setStatusApplied(true);
+                  setTotalApplied(false);
+                  setOverdueApplied(false);
+                }}
+              >
+                🔍 Click to filter
+              </span>
             )}
           </p>
         </div>
         <div className="flex flex-col gap-3 items-center">
           <motion.div
+            data-testid="overdueCard"
             className="flex w-full bg-white rounded-lg overflow-hidden drop-shadow-red-600 drop-shadow-lg/30 cursor-pointer border-r-4 border-r-red-500"
             initial={{ opacity: 0, y: 10, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -403,7 +439,9 @@ export default function DepDashboard() {
               transition: { duration: 0.12, ease: "easeOut" },
             }}
             onMouseEnter={() => setHovered({ ...hovered, overdue: true })}
-            onMouseLeave={() => setHovered({ ...hovered, overdue: isMobile ? true : false })}
+            onMouseLeave={() =>
+              setHovered({ ...hovered, overdue: isMobile ? true : false })
+            }
             onClick={() => {
               setOverdueApplied((prev) => !prev);
               setTotalApplied(false);
@@ -450,7 +488,15 @@ export default function DepDashboard() {
                 <CancelIcon sx={{ fontSize: 17, mr: 1 }} /> Clear filter
               </Button>
             ) : (
-              <span onClick={() => {setOverdueApplied(true); setTotalApplied(false); setStatusApplied(false)}}>🔍 Click to filter</span>
+              <span
+                onClick={() => {
+                  setOverdueApplied(true);
+                  setTotalApplied(false);
+                  setStatusApplied(false);
+                }}
+              >
+                🔍 Click to filter
+              </span>
             )}
           </p>
         </div>
@@ -527,32 +573,49 @@ export default function DepDashboard() {
               size="small"
               sx={{ minWidth: 150 }}
             />
+            <FormControl fullWidth size="small" sx={{ minWidth: 150 }}>
+              <InputLabel id="price-filter-label">Price</InputLabel>
+              <Select
+                labelId="price-filter-label"
+                id="price-filter"
+                value={priceFilter}
+                label="Price"
+                onChange={(e) => setPriceFilter(e.target.value)}
+              >
+                <MenuItem value="all">All</MenuItem>
+                <MenuItem value="withPrice">With Price</MenuItem>
+                <MenuItem value="withoutPrice">Without Price</MenuItem>
+              </Select>
+            </FormControl>
             <CustomizedButton title="Search" type="warning" click={() => {}} />
           </Box>
         </div>
-        <p
-          className={`text-lg font-semibold mt-3 ${
-            totalApplied
-              ? "text-blue-600"
+        <div data-testid="filter_text">
+          <p
+            className={`text-lg font-semibold mt-3 ${
+              totalApplied
+                ? "text-blue-600"
+                : statusApplied
+                  ? "text-green-600"
+                  : overdueApplied
+                    ? "text-red-600"
+                    : searchFormInput.isFlight
+                      ? "text-cyan-700"
+                      : "text-yellow-600"
+            }`}
+          >
+            {totalApplied
+              ? "All Bookings"
               : statusApplied
-                ? "text-green-600"
+                ? "All Bookings with Statuses"
                 : overdueApplied
-                  ? "text-red-600"
+                  ? "Overdue Bookings"
                   : searchFormInput.isFlight
-                    ? "text-cyan-700"
-                    : "text-yellow-600"
-          }`}
-        >
-          {totalApplied
-            ? "All Bookings"
-            : statusApplied
-              ? "All Bookings with Statuses"
-              : overdueApplied
-                ? "Overdue Bookings"
-                : searchFormInput.isFlight
-                  ? "Flight Bookings ✈"
-                  : "Pending Bookings"}
-        </p>
+                    ? "Flight Bookings ✈"
+                    : "Pending Bookings"}
+          </p>
+        </div>
+
         {isLoading ? (
           <Typography
             sx={{ color: "gray", fontSize: 16, textAlign: "center", my: 10 }}
@@ -621,14 +684,34 @@ export default function DepDashboard() {
                         </StyledTableCell>
                         <StyledTableCell>
                           {row.trip.airport === "" || row.trip.airport === null
-                            ? ((row.trip.pickup_location.includes("{"))? // Temporary check to see if this is an old style booking.
-                              JSON.parse(row.trip.pickup_location).address
-                              : row.trip.pickup_location)
+                            ? row.trip.pickup_location.includes("{") // Temporary check to see if this is an old style booking.
+                              ? !JSON.parse(
+                                  row.trip.pickup_location,
+                                ).address.includes("University of Bristol")
+                                ? JSON.parse(row.trip.pickup_location)
+                                    .short_name +
+                                  ", " +
+                                  JSON.parse(row.trip.pickup_location)
+                                    .address.split(",")
+                                    .slice(-5)[0]
+                                    .trim()
+                                : JSON.parse(row.trip.pickup_location).address
+                              : row.trip.pickup_location
                             : row.trip.airport}
                         </StyledTableCell>
                         <StyledTableCell>
-                          {row.trip.dropoff_location.includes("{") ? // Temporary check to see if this is an old style booking.
-                            JSON.parse(row.trip.dropoff_location).address
+                          {row.trip.dropoff_location.includes("{") // Temporary check to see if this is an old style booking.
+                            ? !JSON.parse(
+                                row.trip.dropoff_location,
+                              ).address.includes("University of Bristol")
+                              ? JSON.parse(row.trip.dropoff_location)
+                                  .short_name +
+                                ", " +
+                                JSON.parse(row.trip.dropoff_location)
+                                  .address.split(",")
+                                  .slice(-5)[0]
+                                  .trim()
+                              : JSON.parse(row.trip.dropoff_location).address
                             : row.trip.dropoff_location}
                         </StyledTableCell>
                         <StyledTableCell>
@@ -644,7 +727,9 @@ export default function DepDashboard() {
                               type="warning"
                               title="View"
                             />
-                            {!row.trip.price ? (
+                            {!row.trip.price &&
+                            row.booking_status === "Rejected" ? null : !row.trip
+                                .price ? (
                               <Chip
                                 label="Awaiting Price"
                                 sx={{

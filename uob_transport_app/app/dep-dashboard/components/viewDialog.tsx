@@ -8,9 +8,17 @@ import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import FindInPageIcon from "@mui/icons-material/FindInPage";
 import { BookingWithTrip } from "@/app/dep-dashboard/constants";
-import {location} from "@/model/models";
+import { location } from "@/model/models";
 
-export default function Page({ open, handleDialogClose, viewData }: { open: boolean; handleDialogClose: () => void; viewData: BookingWithTrip; }) {
+export default function Page({
+  open,
+  handleDialogClose,
+  viewData,
+}: {
+  open: boolean;
+  handleDialogClose: () => void;
+  viewData: BookingWithTrip;
+}) {
   return (
     <Dialog
       open={open}
@@ -25,7 +33,7 @@ export default function Page({ open, handleDialogClose, viewData }: { open: bool
           textAlign: "center",
           fontSize: {
             md: 30,
-            xs: 25
+            xs: 25,
           },
           fontWeight: "bold",
           font: "aleo",
@@ -46,16 +54,19 @@ export default function Page({ open, handleDialogClose, viewData }: { open: bool
             alignItems: "center",
             width: {
               md: "400px",
-              xs: "280px"
+              xs: "280px",
             },
           }}
         >
           <Typography
             gutterBottom
-            sx={{ fontWeight: "bold", fontSize: {
-              md: 20,
-              xs: 19
-            } }}
+            sx={{
+              fontWeight: "bold",
+              fontSize: {
+                md: 20,
+                xs: 19,
+              },
+            }}
           >
             Information about passenger:
           </Typography>
@@ -67,16 +78,14 @@ export default function Page({ open, handleDialogClose, viewData }: { open: bool
             alignItems: "center",
             width: {
               md: "400px",
-              xs: "280px"
+              xs: "280px",
             },
           }}
         >
           <Typography gutterBottom sx={{ fontWeight: "bold" }}>
             Passenger name:
           </Typography>
-          <Typography gutterBottom>
-            {viewData?.passenger_name}
-          </Typography>
+          <Typography gutterBottom>{viewData?.passenger_name}</Typography>
         </Stack>
         <Stack
           direction="row"
@@ -85,16 +94,14 @@ export default function Page({ open, handleDialogClose, viewData }: { open: bool
             alignItems: "center",
             width: {
               md: "400px",
-              xs: "280px"
+              xs: "280px",
             },
           }}
         >
           <Typography gutterBottom sx={{ fontWeight: "bold" }}>
             Phone number:
           </Typography>
-          <Typography gutterBottom>
-            {viewData?.tel_number}
-          </Typography>
+          <Typography gutterBottom>{viewData?.tel_number}</Typography>
         </Stack>
         <Stack
           direction="row"
@@ -103,7 +110,7 @@ export default function Page({ open, handleDialogClose, viewData }: { open: bool
             alignItems: "center",
             width: {
               md: "400px",
-              xs: "280px"
+              xs: "280px",
             },
           }}
         >
@@ -119,7 +126,7 @@ export default function Page({ open, handleDialogClose, viewData }: { open: bool
             alignItems: "center",
             width: {
               md: "400px",
-              xs: "280px"
+              xs: "280px",
             },
           }}
         >
@@ -137,15 +144,12 @@ export default function Page({ open, handleDialogClose, viewData }: { open: bool
             alignItems: "center",
             width: {
               md: "400px",
-              xs: "280px"
+              xs: "280px",
             },
             mt: 4,
           }}
         >
-          <Typography
-            gutterBottom
-            sx={{ fontWeight: "bold", fontSize: 19 }}
-          >
+          <Typography gutterBottom sx={{ fontWeight: "bold", fontSize: 19 }}>
             Information about booking:
           </Typography>
         </Stack>
@@ -156,7 +160,7 @@ export default function Page({ open, handleDialogClose, viewData }: { open: bool
             alignItems: "center",
             width: {
               md: "400px",
-              xs: "280px"
+              xs: "280px",
             },
           }}
         >
@@ -173,24 +177,28 @@ export default function Page({ open, handleDialogClose, viewData }: { open: bool
           direction="row"
           sx={{
             justifyContent: "space-between",
-            alignItems: "center",
+            alignItems: "top",
             width: {
               md: "400px",
-              xs: "280px"
+              xs: "280px",
             },
           }}
         >
           <Typography gutterBottom sx={{ fontWeight: "bold" }}>
             From:
           </Typography>
-          <Typography gutterBottom>
-            {viewData?.trip.airport === "" ||
-              viewData?.trip.airport === null
-              ? (
-                (viewData?.trip.pickup_location.includes("{"))? // Temporary check to see if this is an old style booking.
-                JSON.parse(viewData?.trip.pickup_location).address
+          <Typography gutterBottom align="right">
+            {viewData?.trip.airport === "" || viewData?.trip.airport === null
+              ? viewData?.trip.pickup_location.includes("{")
+                ? JSON.parse(viewData.trip.pickup_location).address.includes(
+                    "University of Bristol",
+                  ) // Temporary check to see if this is an old style booking.
+                  ? JSON.parse(viewData?.trip.pickup_location).address
+                  : JSON.parse(viewData.trip.pickup_location).short_name + ", " + JSON.parse(viewData?.trip.pickup_location)
+                      .address.split(",")
+                      .slice(-5)[0]
+                      .trim()
                 : viewData?.trip.pickup_location
-              )
               : viewData?.trip.airport}
           </Typography>
         </Stack>
@@ -202,16 +210,14 @@ export default function Page({ open, handleDialogClose, viewData }: { open: bool
               alignItems: "center",
               width: {
                 md: "400px",
-                xs: "280px"
+                xs: "280px",
               },
             }}
           >
             <Typography gutterBottom sx={{ fontWeight: "bold" }}>
               Flight number:
             </Typography>
-            <Typography gutterBottom>
-              {viewData.trip.flight_num}
-            </Typography>
+            <Typography gutterBottom>{viewData.trip.flight_num}</Typography>
           </Stack>
         )}
         {viewData?.trip.via && (
@@ -219,18 +225,22 @@ export default function Page({ open, handleDialogClose, viewData }: { open: bool
             direction="row"
             sx={{
               justifyContent: "space-between",
-              alignItems: "center",
+              alignItems: "top",
               width: {
                 md: "400px",
-                xs: "280px"
+                xs: "280px",
               },
             }}
           >
             <Typography gutterBottom sx={{ fontWeight: "bold" }}>
               Via:
             </Typography>
-            <Typography gutterBottom>
-              {viewData?.trip.via.includes("{") ? JSON.parse(viewData?.trip.via).map((loc : location) => loc.address).join("; ") : viewData?.trip.via}
+            <Typography gutterBottom sx={{ whiteSpace: "pre-line" }} align="right">
+              {viewData?.trip.via.includes("{")
+                ? JSON.parse(viewData?.trip.via)
+                    .map((loc: location) => loc.short_name + ", " + loc.address.split(",").slice(-5)[0].trim())
+                    .join("\n")
+                : viewData?.trip.via}
             </Typography>
           </Stack>
         )}
@@ -238,19 +248,26 @@ export default function Page({ open, handleDialogClose, viewData }: { open: bool
           direction="row"
           sx={{
             justifyContent: "space-between",
-            alignItems: "center",
+            alignItems: "top",
             width: {
               md: "400px",
-              xs: "280px"
+              xs: "280px",
             },
           }}
         >
           <Typography gutterBottom sx={{ fontWeight: "bold" }}>
             To:
           </Typography>
-          <Typography gutterBottom>
-            {viewData?.trip.dropoff_location.includes("{")? // Temporary check to see if this is an old style booking.
-              JSON.parse(viewData?.trip.dropoff_location).address
+          <Typography gutterBottom align="right">
+            {viewData?.trip.dropoff_location.includes("{") // Temporary check to see if this is an old style booking.
+              ? JSON.parse(viewData.trip.dropoff_location).address.includes(
+                  "University of Bristol",
+                ) // Temporary check to see if this is an old style booking.
+                ? JSON.parse(viewData?.trip.dropoff_location).address
+                : JSON.parse(viewData.trip.dropoff_location).short_name + ", " + JSON.parse(viewData?.trip.dropoff_location)
+                    .address.split(",")
+                    .slice(-5)[0]
+                    .trim()
               : viewData?.trip.dropoff_location}
           </Typography>
         </Stack>
@@ -261,7 +278,7 @@ export default function Page({ open, handleDialogClose, viewData }: { open: bool
             alignItems: "center",
             width: {
               md: "400px",
-              xs: "280px"
+              xs: "280px",
             },
           }}
         >
@@ -289,16 +306,14 @@ export default function Page({ open, handleDialogClose, viewData }: { open: bool
             alignItems: "center",
             width: {
               md: "400px",
-              xs: "280px"
+              xs: "280px",
             },
           }}
         >
           <Typography gutterBottom sx={{ fontWeight: "bold" }}>
             Passenger Number:
           </Typography>
-          <Typography gutterBottom>
-            {viewData?.trip.passenger_num}
-          </Typography>
+          <Typography gutterBottom>{viewData?.trip.passenger_num}</Typography>
         </Stack>
         <Stack
           direction="row"
@@ -307,7 +322,7 @@ export default function Page({ open, handleDialogClose, viewData }: { open: bool
             alignItems: "center",
             width: {
               md: "400px",
-              xs: "280px"
+              xs: "280px",
             },
           }}
         >
@@ -329,7 +344,7 @@ export default function Page({ open, handleDialogClose, viewData }: { open: bool
                 alignItems: "center",
                 width: {
                   md: "400px",
-                  xs: "280px"
+                  xs: "280px",
                 },
               }}
             >
@@ -338,9 +353,7 @@ export default function Page({ open, handleDialogClose, viewData }: { open: bool
               </Typography>
               <Typography gutterBottom align="right">
                 {viewData?.trip.return_pickup_time
-                  ? new Date(
-                    viewData?.trip.return_pickup_time
-                  ).toLocaleString()
+                  ? new Date(viewData?.trip.return_pickup_time).toLocaleString()
                   : ""}
               </Typography>
             </Stack>
@@ -351,7 +364,7 @@ export default function Page({ open, handleDialogClose, viewData }: { open: bool
                 alignItems: "center",
                 width: {
                   md: "400px",
-                  xs: "280px"
+                  xs: "280px",
                 },
               }}
             >
@@ -372,7 +385,7 @@ export default function Page({ open, handleDialogClose, viewData }: { open: bool
               alignItems: "center",
               width: {
                 md: "400px",
-                xs: "280px"
+                xs: "280px",
               },
             }}
           >
@@ -390,14 +403,17 @@ export default function Page({ open, handleDialogClose, viewData }: { open: bool
               alignItems: "center",
               width: {
                 md: "400px",
-                xs: "280px"
+                xs: "280px",
               },
             }}
           >
             <Typography gutterBottom sx={{ fontWeight: "bold" }}>
               Price
             </Typography>
-            <Typography gutterBottom sx={{ textAlign: "right", color: "green", fontWeight: "bold" }}>
+            <Typography
+              gutterBottom
+              sx={{ textAlign: "right", color: "green", fontWeight: "bold" }}
+            >
               {viewData?.trip.price} £
             </Typography>
           </Stack>
@@ -410,7 +426,7 @@ export default function Page({ open, handleDialogClose, viewData }: { open: bool
               alignItems: "center",
               width: {
                 md: "400px",
-                xs: "280px"
+                xs: "280px",
               },
             }}
           >
@@ -442,5 +458,5 @@ export default function Page({ open, handleDialogClose, viewData }: { open: bool
         </Button>
       </DialogActions>
     </Dialog>
-  )
+  );
 }
