@@ -73,7 +73,7 @@ jest.mock("@/components/NumberField", () => ({
 // Simulate nominatim address searching.
 jest.mock("@/components/NominatimSearch", () => ({
   __esModule: true,
-  getLatLon: jest.fn(async (address : string) => {
+  getLatLon: jest.fn(async (address: string) => {
     if (address === "Temple Meads") { // A value to simulate a real resolvable location.
       return { lat: "51.4490991", lon: "-2.5804029", name: "Temple Meads Bristol", full_address: "Temple Meads Bristol, Cattle Market Road, The Dings, St Philip's, Bristol, City of Bristol, West of England, England, BS1 6QF, United Kingdom" };
     }
@@ -105,6 +105,8 @@ describe("Rendering", () => {
   test("renders all page structure, input fields, and correct attributes", async () => {
     render(<BookingPage />);
     await waitFor(() => screen.getByText("BOOKING DETAILS"));
+    await waitFor(() => screen.getByLabelText(/I am the lead passenger/i));
+    await userEvent.click(screen.getByLabelText(/I am the lead passenger/i));
 
     // Page structure
     expect(screen.getByText(/trip details/i)).toBeInTheDocument();
@@ -203,6 +205,8 @@ describe("Toggle fields", () => {
 describe("Validation", () => {
   test("empty form submission shows all required errors and red borders, does not redirect", async () => {
     render(<BookingPage />);
+    await waitFor(() => screen.getByLabelText(/I am the lead passenger/i));
+    await userEvent.click(screen.getByLabelText(/I am the lead passenger/i));
     await waitFor(() => screen.getByRole("button", { name: /confirm booking/i }));
     await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
     await waitFor(() => {
@@ -362,6 +366,8 @@ describe("Validation", () => {
 
   test("phone number: validates empty, invalid, valid, and country code change", async () => {
     render(<BookingPage />);
+    await waitFor(() => screen.getByLabelText(/I am the lead passenger/i));
+    await userEvent.click(screen.getByLabelText(/I am the lead passenger/i));
     await waitFor(() => screen.getByLabelText(/phone number/i));
     const phoneInput = screen.getByLabelText(/phone number/i);
 
@@ -389,6 +395,8 @@ describe("Validation", () => {
 
   test("email: shows error and red border when empty, clears on valid input", async () => {
     render(<BookingPage />);
+    await waitFor(() => screen.getByLabelText(/I am the lead passenger/i));
+    await userEvent.click(screen.getByLabelText(/I am the lead passenger/i));
     await waitFor(() => screen.getByLabelText(/^email$/i));
     const emailInput = screen.getByLabelText(/^email$/i);
 
@@ -407,6 +415,8 @@ describe("Validation", () => {
 
   test("fixing one field preserves errors on others and re-validates correctly on resubmit", async () => {
     render(<BookingPage />);
+    await waitFor(() => screen.getByLabelText(/I am the lead passenger/i));
+    await userEvent.click(screen.getByLabelText(/I am the lead passenger/i));
     await waitFor(() => screen.getByRole("button", { name: /confirm booking/i }));
     await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
     await waitFor(() => screen.getByText(/please enter a drop-off location/i));
@@ -425,6 +435,8 @@ describe("Validation", () => {
   test("past date and invalid flight number each block submission", async () => {
     // Past date
     render(<BookingPage />);
+    await waitFor(() => screen.getByLabelText(/I am the lead passenger/i));
+    await userEvent.click(screen.getByLabelText(/I am the lead passenger/i));
     await waitFor(() => screen.getByLabelText(/pick-up date and time/i));
     await userEvent.type(screen.getByLabelText(/drop-off location/i), "Real Place");
     await userEvent.type(screen.getByLabelText(/passenger name/i), "Jane Doe");
@@ -445,6 +457,8 @@ describe("Validation", () => {
 describe("Department autocomplete and interactivity", () => {
   test("department: shows error when missing, loads API options, selection clears error", async () => {
     render(<BookingPage />);
+    await waitFor(() => screen.getByLabelText(/I am the lead passenger/i));
+    await userEvent.click(screen.getByLabelText(/I am the lead passenger/i));
     await waitFor(() => screen.getByLabelText(/department/i));
     const deptInput = screen.getByLabelText(/department/i);
 
@@ -474,6 +488,9 @@ describe("Department autocomplete and interactivity", () => {
   test("text inputs accept typed values and pick-up dropdown shows all six locations", async () => {
     render(<BookingPage />);
     await waitFor(() => screen.getByLabelText(/drop-off location/i));
+
+    await waitFor(() => screen.getByLabelText(/I am the lead passenger/i));
+    await userEvent.click(screen.getByLabelText(/I am the lead passenger/i));
 
     await userEvent.type(screen.getByLabelText(/drop-off location/i), "Clifton Village");
     expect(screen.getByLabelText(/drop-off location/i)).toHaveValue("Clifton Village");
