@@ -49,7 +49,7 @@ export default function BookingPage() {
   const [isFlightChecked, setIsFlightChecked] = useState(false);
   const [isViaChecked, setIsViaChecked] = useState(false);
   const [isReturnChecked, setIsReturnChecked] = useState(false);
-  const [isMyselfChecked, setIsMyselfChecked] = useState(true);
+  const [isLeadPassengerMyself, setIsLeadPassengerMyself] = useState(true);
   const [phoneCode, setPhoneCode] = useState("+44");
   const [loadingBar, setLoadingBar] = useState(false);
   const [departmentEmpty, setDepartmentEmpty] = useState(false);
@@ -268,34 +268,37 @@ export default function BookingPage() {
       }
     }
 
+    // Below Section is about lead passenger details.
     // Phone number
     // Some additional leniency for international numbers may need to be added later.
     // Matches UK formatting for mobile numbers (expecting mobile numbers only).
-    const numberCriteria = /^(0)?[0-9]{4}(\s)?[0-9]{3}(\s)?[0-9]{1,3}$/;
-    if (formData.Number == "") {
-      addFormFeedback("Number", "Please enter the passenger's Phone Number.");
-    } else if (!numberCriteria.test(formData.Number)) {
-      addFormFeedback("Number", "Please enter a valid phone number.");
-    }
+    if (!isLeadPassengerMyself) {
+      const numberCriteria = /^(0)?[0-9]{4}(\s)?[0-9]{3}(\s)?[0-9]{1,3}$/;
+      if (formData.Number == "") {
+        addFormFeedback("Number", "Please enter the passenger's Phone Number.");
+      } else if (!numberCriteria.test(formData.Number)) {
+        addFormFeedback("Number", "Please enter a valid phone number.");
+      }
 
-    // Passenger name, between 1 and 100 chars.
-    if (formData.PassengerName == "") {
-      addFormFeedback("PassengerName", "Please enter the passenger's name.");
-      fail = true;
-    } else if (formData.PassengerName.length > 100) {
-      addFormFeedback(
-        "Passenger",
-        "Passenger Name too long. Please use an abbreviation.",
-      );
-      fail = true;
-    }
+      // Passenger name, between 1 and 100 chars.
+      if (formData.PassengerName == "") {
+        addFormFeedback("PassengerName", "Please enter the passenger's name.");
+        fail = true;
+      } else if (formData.PassengerName.length > 100) {
+        addFormFeedback(
+          "Passenger",
+          "Passenger Name too long. Please use an abbreviation.",
+        );
+        fail = true;
+      }
 
-    // Email (at least one letter (not space), an @ symbol, and domain of
-    // at least one letter before and two letters after a full stop.)
-    const emailCriteria = /^[^\s]{1,}\@[^\s]{1,}\.[^\s]{2,}$/;
-    if (!emailCriteria.test(formData.Email)) {
-      addFormFeedback("Email", "Please enter a valid email address.");
-      fail = true;
+      // Email (at least one letter (not space), an @ symbol, and domain of
+      // at least one letter before and two letters after a full stop.)
+      const emailCriteria = /^[^\s]{1,}\@[^\s]{1,}\.[^\s]{2,}$/;
+      if (!emailCriteria.test(formData.Email)) {
+        addFormFeedback("Email", "Please enter a valid email address.");
+        fail = true;
+      }
     }
 
     // Additional details (optional field)
@@ -324,6 +327,7 @@ export default function BookingPage() {
         dep_id: formData.dep_id,
         airport: formData.Airport,
         flight_num: formData.FlightNum,
+        isLeadPassengerMyself: isLeadPassengerMyself
       };
 
       fetch("/api/create_booking", {
@@ -1189,16 +1193,16 @@ export default function BookingPage() {
                       sx={{
                         color: "#2c2c2c",
                       }}
-                      checked={isMyselfChecked}
+                      checked={isLeadPassengerMyself}
                       onChange={(e) => {
-                        setIsMyselfChecked(e.target.checked);
+                        setIsLeadPassengerMyself(e.target.checked);
                       }}
                     />
                   }
                   label="I am the lead passenger"
                 />
               </div>
-              {!isMyselfChecked && (
+              {!isLeadPassengerMyself && (
                 <>
                   <div className="flex flex-col">
                     <label htmlFor="name" className="mb-1 text-sm">
@@ -1301,7 +1305,7 @@ export default function BookingPage() {
               )}
 
               <div className="flex flex-col sm:flex-row gap-4">
-                {!isMyselfChecked && (
+                {!isLeadPassengerMyself && (
                   <div className="flex flex-col flex-1">
                     <label htmlFor="mail" className="mb-1 text-sm">
                       Email
