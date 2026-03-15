@@ -10,7 +10,7 @@ datasource db {
 
 model User {
   user_id      Int         @id @default(autoincrement())
-  dep_id       Int?
+  dep_id       Int          @default(14)
   email        String      @unique @db.VarChar(255)
   password     String      @db.VarChar(255)
   full_name    String      @db.VarChar(100)
@@ -18,7 +18,7 @@ model User {
   time_created DateTime    @default(now()) @db.Timestamp(6)
   role         String      @db.VarChar(255)
   user_status  Int         @default(0)
-  department   department? @relation(fields: [dep_id], references: [dep_id], onUpdate: NoAction)
+  department   department  @relation(fields: [dep_id], references: [dep_id], onUpdate: NoAction)
   booking      booking[]
 }
 

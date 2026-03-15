@@ -111,3 +111,5 @@ export type SuperData = {
   lineGraph: MonthlyBookingData[],
   barGraph: DepartmentRevenue[]
 }
+
+export const UNASSIGNED_DEPARTMENT_ID = 14;

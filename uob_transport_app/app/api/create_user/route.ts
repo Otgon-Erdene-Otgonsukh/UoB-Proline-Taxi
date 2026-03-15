@@ -55,6 +55,7 @@ async function createUserHandler(req: Request) {
         },
       });
     } else if (department === null) {
+      // TODO department should be created by normal user when registering
       const newDepartment = await prisma.department.create({
         data: {
           dep_name: departmentName,
