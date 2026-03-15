@@ -144,20 +144,24 @@ export default function BookingPage() {
 
     // Custom Location
     if (isManualChecked) {
-      /*if (formData.CustomLoc == "") {
+      if (formData.CustomLoc == null) {
         addFormFeedback("CustomLoc", "Please enter a pickup location.");
         fail = true;
-      } else if (formData.CustomLoc.length < 5) {
+      } else if (formData.CustomLoc.address.length < 5) {
         addFormFeedback("CustomLoc", "Pickup location not detailed enough.");
         fail = true;
-      } else if (formData.CustomLoc.length > 100) {
+      } else if (formData.CustomLoc.address.length > 200) {
         addFormFeedback("CustomLoc", "Pickup location too long.");
         fail = true;
-      } */  
+      } else if (!routes || routes.length == 0) {
+        addFormFeedback(
+          "CustomLoc",
+          "Unable to find route. Please check the address or try a different location.",
+        );
+        fail = true;
+      }
 
-      // a temporary fix to make the custom pickup work with location objects
-
-      loc = formData.CustomLoc
+      loc = formData.CustomLoc;
     } else if (!isFlightChecked && !isManualChecked) {
       // Common Pickup Location / Dropdown
       if (formData.CommonLoc == "") {
