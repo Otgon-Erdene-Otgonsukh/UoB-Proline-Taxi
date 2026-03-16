@@ -65,14 +65,6 @@ const DepartmentManagePage = () => {
     setConfirmDeleteDialogOpen(true)
   };
   const handleDeleteDepartment = (department: DepartmentRecord) => {
-    if (department.userCount > 0) {
-      setSnackbarState({
-        open: true,
-        status: 'error',
-        message: 'Department has users, cannot be deleted!'
-      })
-      return;
-    }
     deleteDepartment(department.depId).then(async (res) => {
       if (res.status === 200) {
         setSnackbarState({
@@ -260,7 +252,7 @@ const DepartmentManagePage = () => {
       <ConfirmDialog
         open={confirmDeleteDialogOpen}
         dialogTitle="Confirm delete department"
-        confirmMessage="Are you sure you want to delete this department?"
+        confirmMessage="Are you sure you want to delete this department? If there are still users in this department, they will be moved to 'Unassigned' department."
         confirmCallBack={() => { handleDeleteDepartment(departmentData!); setConfirmDeleteDialogOpen(false); }}
         cancelCallBack={() => setConfirmDeleteDialogOpen(false)}
       />
