@@ -1187,20 +1187,31 @@ export default function BookingPage() {
                 <h3 className="font-bold">Lead passenger details:</h3>
               </div>
               <div>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      sx={{
-                        color: "#2c2c2c",
-                      }}
-                      checked={isLeadPassengerMyself}
-                      onChange={(e) => {
-                        setIsLeadPassengerMyself(e.target.checked);
-                      }}
-                    />
-                  }
-                  label="I am the lead passenger"
-                />
+                <label
+                  htmlFor="leadPassenger"
+                  className="inline-flex items-center cursor-pointer gap-2"
+                >
+                  <span className="text-sm font-medium text-gray-900">
+                    I am the lead passenger
+                  </span>
+                  <input
+                    id="leadPassenger"
+                    type="checkbox"
+                    checked={isLeadPassengerMyself}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        e.currentTarget.blur();
+                      }
+                    }}
+                    onChange={(e) => {
+                      setIsLeadPassengerMyself(e.target.checked);
+                      setFormData({ ...formData, CustomLoc: "" });
+                    }}
+                    className="sr-only peer"
+                  />
+                  <div className="relative w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-gray-300 peer-checked:bg-[#4a4a4a] peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+                </label>
               </div>
               {!isLeadPassengerMyself && (
                 <>
