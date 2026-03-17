@@ -35,7 +35,9 @@ import { department } from "@/generated/prisma/client";
 import { commonLocations } from "@/model/models";
 import { getLatLon } from "@/components/NominatimSearch";
 
-export default function BookingPage() {
+
+// Main booking page, handles both creation (prefilledBookingID is null) and editing (when prefilledBookingID is not null)
+export default function BookingPage(prefilledBookingID: number | null = null) {
 
   const session = useSession();
 
@@ -105,7 +107,6 @@ export default function BookingPage() {
     Passengers: number;
     AdditionalInfo: string;
   };
-
   // Variables for storing the state of the values entered into the fields.
   const [formData, setFormData] = useState<FormData>({
     CommonLoc: "",
@@ -127,6 +128,50 @@ export default function BookingPage() {
     Passengers: 1,
     AdditionalInfo: "",
   });
+
+  if (prefilledBookingID != null && session.data != null) {
+    var bookingDetails: FormData | null = null;
+    // Use the get bookings details endpoint for the prefill form data.
+    fetch(`/api/get_booking_details?id=${prefilledBookingID}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json"
+      }
+    }).then(response => {
+      if (response.status === 200) {
+        response.json().then(data => {
+          bookingDetails = data;
+        })
+      }
+    }).catch(err => {
+      console.error("Error fetching booking details:", err);
+    });
+
+    if (bookingDetails == null) {
+      setFormData({
+        ...formData,
+        CommonLoc: bookingDetails?.commonLoc,
+        CustomLoc: bookingDetails?.customLoc,
+        PickupLoc: bookingDetails?.pickupLoc,
+        Via: bookingDetails?.via,
+        ReturnTo: bookingDetails?.returnTo,
+        FlightNum: bookingDetails?.flightNum,
+        Airport: bookingDetails?.airport,
+        DropoffLoc: bookingDetails?.dropoffLoc,
+        PickupDate: bookingDetails?.pickupDate,
+        PickupTime: bookingDetails?.pickupTime,
+        ReturnDate: bookingDetails?.returnDate,
+        ReturnTime: bookingDetails?.returnTime,
+        PassengerName: bookingDetails?.passengerName,
+        Number: bookingDetails?.number,
+        Email: bookingDetails?.email,
+        dep_id: bookingDetails?.dep_id,
+        Passengers: bookingDetails?.passengers,
+        AdditionalInfo: bookingDetails?.additionalInfo,
+      });
+    }
+  }
+
 
   const router = useRouter();
 
