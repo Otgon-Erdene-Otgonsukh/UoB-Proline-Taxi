@@ -130,7 +130,7 @@ export default function BookingPage(prefilledBookingID: number | null = null) {
   });
 
   if (prefilledBookingID != null && session.data != null) {
-    var bookingDetails: FormData | null = null;
+    let bookingDetails: FormData | null = null;
     // Use the get bookings details endpoint for the prefill form data.
     fetch(`/api/get_booking_details?id=${prefilledBookingID}`, {
       method: "GET",
@@ -145,29 +145,38 @@ export default function BookingPage(prefilledBookingID: number | null = null) {
       }
     }).catch(err => {
       console.error("Error fetching booking details:", err);
+      bookingDetails = null;
     });
 
-    if (bookingDetails == null) {
+    if (bookingDetails != null) {
+      let returnDate : string = ""
+      let returnTime : string = ""
+      setIsManualChecked(true);
+      if (bookingDetails["trip"]["return_pickup_time"] != "" && bookingDetails["trip"]["return_pickup_time"] != null) {
+        setIsReturnChecked(true);
+        returnDate = String(bookingDetails["trip"]["return_pickup_time"]).split("T")[0];
+        returnTime = String(bookingDetails["trip"]["return_pickup_time"]).split("T")[1].substring(0,5);
+
+      }
       setFormData({
         ...formData,
-        CommonLoc: bookingDetails?.commonLoc,
-        CustomLoc: bookingDetails?.customLoc,
-        PickupLoc: bookingDetails?.pickupLoc,
-        Via: bookingDetails?.via,
-        ReturnTo: bookingDetails?.returnTo,
-        FlightNum: bookingDetails?.flightNum,
-        Airport: bookingDetails?.airport,
-        DropoffLoc: bookingDetails?.dropoffLoc,
-        PickupDate: bookingDetails?.pickupDate,
-        PickupTime: bookingDetails?.pickupTime,
-        ReturnDate: bookingDetails?.returnDate,
-        ReturnTime: bookingDetails?.returnTime,
-        PassengerName: bookingDetails?.passengerName,
-        Number: bookingDetails?.number,
-        Email: bookingDetails?.email,
-        dep_id: bookingDetails?.dep_id,
-        Passengers: bookingDetails?.passengers,
-        AdditionalInfo: bookingDetails?.additionalInfo,
+        //CommonLoc: bookingDetails["commonLoc"],
+        CustomLoc: bookingDetails["trip"]["pickup_location"]["address"],
+        PickupLoc: bookingDetails["trip"]["pickup_location"],
+        Via: bookingDetails["trip"]["via"],
+        ReturnTo: bookingDetails["trip"]["return_drop_loc"],
+        FlightNum: bookingDetails["trip"]["flight_num"],
+        Airport: bookingDetails["trip"]["airport"],
+        DropoffLoc: bookingDetails["trip"]["dropoff_location"],
+        PickupDate: String(bookingDetails["trip"]["return_pickup_time"]).split("T")[0],
+        ReturnDate: returnDate,
+        ReturnTime: returnTime,
+        PassengerName: bookingDetails["passenger_name"],
+        Number: bookingDetails["tel_number"],
+        Email: bookingDetails["email"],
+        dep_id: bookingDetails["dep_id"],
+        Passengers: bookingDetails["trip"]["passenger_num"],
+        AdditionalInfo: bookingDetails["additional_info"],
       });
     }
   }
