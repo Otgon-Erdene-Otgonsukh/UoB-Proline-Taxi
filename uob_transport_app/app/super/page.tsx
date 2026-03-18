@@ -473,49 +473,56 @@ const Page = () => {
   const [bookingListCount, setBookingListCount] = useState(0);
 
   return (
-    <div className="flex flex-col min-h-screen items-center pt-15 p-4">
-      <Drawer
-        anchor="left"
-        open={isDrawerOpen}
-        onClose={toggleDrawer(false)}
-      >
-        <Box
-          sx={{ width: 250 }}
-          role="presentation"
-          onClick={toggleDrawer(false)}
-          onKeyDown={toggleDrawer(false)}
+    <div className="flex-col font-inter">
+      <header className="w-full bg-[#2c2c2c] text-white p-3 shadow-lg items-center flex gap-4 sticky top-0 z-50">
+        <Button
+          onClick={toggleDrawer(true)}
+          sx={{ color: "white", minWidth: '40px' }}
         >
-          <Typography variant="h6" sx={{ p: 2, fontWeight: 'bold', fontFamily: "aleo", fontSize: 25 }}>
-            Admin Menu
-          </Typography>
-          <Divider />
-          <List>
-            {[
-              { text: 'Users', icon: <PeopleIcon />, index: 0 },
-              { text: 'Departments', icon: <GroupsIcon />, index: 1 },
-              { text: 'Bookings', icon: <LocalTaxiIcon />, index: 2 },
-              { text: 'Export Bookings', icon: <FileDownloadIcon />, index: 3 },
-              { text: 'Admin Settings', icon: <SettingsIcon />, index: 4 },
-            ].map((item) => (
-              <ListItem key={item.text} disablePadding>
-                <ListItemButton onClick={() => setTabValue(item.index)}>
-                  <ListItemIcon>
-                    {item.icon}
-                  </ListItemIcon>
-                  <ListItemText primary={item.text} />
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
-        </Box>
-      </Drawer>
+          <MenuIcon fontSize="medium" />
+        </Button>
+        <span className="font-aleo text-2xl sm:text-3xl font-semibold">User Management</span>
+      </header>
+
+      <div className="w-full flex justify-center items-start p-4">
+        <Drawer
+          anchor="left"
+          open={isDrawerOpen}
+          onClose={toggleDrawer(false)}
+        >
+          <Box
+            sx={{ width: 250 }}
+            role="presentation"
+            onClick={toggleDrawer(false)}
+            onKeyDown={toggleDrawer(false)}
+          >
+            <Typography variant="h6" sx={{ p: 2, fontWeight: 'bold', fontFamily: "aleo", fontSize: 25 }}>
+              Admin Menu
+            </Typography>
+            <Divider />
+            <List>
+              {[
+                { text: 'Users', icon: <PeopleIcon />, index: 0 },
+                { text: 'Bookings', icon: <LocalTaxiIcon />, index: 1 },
+                { text: 'Departments', icon: <GroupsIcon />, index: 2 },
+                { text: 'Dashboard', icon: <DashboardIcon />, index: 3},
+                { text: 'Export Bookings', icon: <FileDownloadIcon />, index: 4 },
+                { text: 'Admin Settings', icon: <SettingsIcon />, index: 5 },
+              ].map((item) => (
+                <ListItem key={item.text} disablePadding>
+                  <ListItemButton onClick={() => setTabValue(item.index)}>
+                    <ListItemIcon>
+                      {item.icon}
+                    </ListItemIcon>
+                    <ListItemText primary={item.text} />
+                  </ListItemButton>
+                </ListItem>
+              ))}
+            </List>
+          </Box>
+        </Drawer>
       
-      <motion.div
-        className="bg-white shadow-lg rounded-lg p-6 md:p-8 w-full max-w-6xl mb-8 h-fit"
-        initial={{ opacity: 0, y: 7, scale: 0.98 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 1, ease: "easeOut", delay: 0.24 }}
-      >
+      <div className="w-full">
         {tabValue === 0 && (
           <div>
             <div className="flex items-center gap-2 -ml-2">
@@ -836,7 +843,6 @@ const Page = () => {
             </>
           )}
           {tabValue === 3 && <SuperDashboard/>}
-      </motion.div>
       
       {userDetail && (
         <ViewDialog 
@@ -871,7 +877,9 @@ const Page = () => {
         confirmCallBack={() => { handleRejectUserRegister(userDetail!); setConfirmRejectDialogOpen(false); }}
         cancelCallBack={() => setConfirmRejectDialogOpen(false)}
       />
-    </div>
+      </div>
+      </div>
+      </div>
   );
 };
 
