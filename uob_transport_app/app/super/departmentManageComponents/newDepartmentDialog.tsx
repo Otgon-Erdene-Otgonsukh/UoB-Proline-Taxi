@@ -70,11 +70,12 @@ const AddDepartmentDialog = ({ dialogOpen, handleDialogClose }: { dialogOpen: bo
           bgcolor: "#2c2c2c",
           color: "white",
           textAlign: "center",
-          fontSize: 28,
+          fontSize: 25,
+          px: 5
         }}
         id="customized-dialog-title"
       >
-        Add New Department
+        + Add New Department
       </DialogTitle>
       <DialogContent dividers>
         <TextField
@@ -85,6 +86,7 @@ const AddDepartmentDialog = ({ dialogOpen, handleDialogClose }: { dialogOpen: bo
           onChange={(e) => { setFormData({ ...formData, name: e.target.value }); }}
           size="small"
           sx={{ minWidth: 150 }}
+          variant="standard"
         />
       </DialogContent>
       <DialogActions>
@@ -92,32 +94,32 @@ const AddDepartmentDialog = ({ dialogOpen, handleDialogClose }: { dialogOpen: bo
           sx={{
             color: "#2c2c2c",
             mr: 1,
-            transition: "all 250ms",
-            ":hover": { bgcolor: "#2c2c2c", color: "white" },
           }}
           onClick={handleDialogClose}
         >
           Close
         </Button>
         <Button
-          fullWidth
           onClick={handleSubmit}
           variant="contained"
           sx={{
             bgcolor: "#2c2c2c",
             color: "white",
             borderRadius: "0.375rem",
-            fontSize: "0.875rem",
+            px: 2,
+            py: 1,
+            fontSize: "0.75rem",
             fontWeight: 300,
             "&:hover": {
               bgcolor: "#414040",
               transform: "scale(1.01)",
             },
             transition: "all 0.2s",
+            mr: 1
           }}
           size="small"
         >
-          Add department
+          Create
         </Button>
       </DialogActions>
     </Dialog>
