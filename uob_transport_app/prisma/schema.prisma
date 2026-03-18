@@ -52,7 +52,6 @@ model department {
 
 model trip {
   trip_id            Int       @id @default(autoincrement())
-  icabbi_booking_id  Int?
   pickup_location    String
   dropoff_location   String
   pickup_time        DateTime  @db.Timestamp(6)
@@ -64,6 +63,7 @@ model trip {
   flight_num         String?
   return_pickup_time DateTime? @db.Timestamp(6)
   price              Int?
+  icabbi_booking_id  Int?
   booking            booking?
 }
 

@@ -111,3 +111,20 @@ export type SuperData = {
   lineGraph: MonthlyBookingData[],
   barGraph: DepartmentRevenue[]
 }
+
+export type NormalBookings = {
+  booking_status: string
+  trip: {
+    pickup_location: location,
+    via: location[] | null,
+    dropoff_location: location,
+    pickup_time: Date,
+  }
+}
+
+export type NormalDashboardData = {
+  recentBookings: NormalBookings[],
+  totalBookings: number,
+  totalPrice: number,
+  upcomingBookings: number
+}
