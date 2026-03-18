@@ -1,6 +1,6 @@
 import prisma from '@/utils/client';
 
-export async function getPendingBookings(page: number, pageSize: number, searchParams: { from?: string, to?: string, passengerName?: string, pickUpTimeFrom?: string, pickUpTimeTo?: string, isFlight: boolean, total: boolean, status: boolean, overdue: boolean }) {
+export async function getPendingBookings(page: number, pageSize: number, searchParams: { from?: string, to?: string, passengerName?: string, pickUpTimeFrom?: string, pickUpTimeTo?: string, isFlight: boolean, total: boolean, status: boolean, overdue: boolean, price: boolean, withoutPrice: boolean }) {
   const query: { [key: string]: string | object } = {};
   if (searchParams.from !== undefined) {
     query["trip"] = {
@@ -41,6 +41,22 @@ export async function getPendingBookings(page: number, pageSize: number, searchP
         not: null,
         notIn: [""],
       }
+    }
+  }
+
+  if (searchParams.price) {
+    query['trip'] = {
+      ...query.trip as object,
+      price: {
+        not: null
+      }
+    }
+  }
+
+  if (searchParams.withoutPrice) {
+    query['trip'] = {
+      ...query.trip as object,
+      price: null,
     }
   }
 
@@ -117,7 +133,7 @@ export async function getPendingBookings(page: number, pageSize: number, searchP
     });
 }
 
-export async function getPendingBookingsCount(searchParams: { from?: string, to?: string, passengerName?: string, pickUpTimeFrom?: string, pickUpTimeTo?: string, isFlight: boolean, total: boolean, status: boolean, overdue: boolean }) {
+export async function getPendingBookingsCount(searchParams: { from?: string, to?: string, passengerName?: string, pickUpTimeFrom?: string, pickUpTimeTo?: string, isFlight: boolean, total: boolean, status: boolean, overdue: boolean, price: boolean, withoutPrice: boolean }) {
   const query: { [key: string]: string | object } = {};
   if (searchParams.from !== undefined) {
     query["trip"] = {
@@ -127,6 +143,23 @@ export async function getPendingBookingsCount(searchParams: { from?: string, to?
       },
     };
   }
+
+  if (searchParams.price) {
+    query['trip'] = {
+      ...query.trip as object,
+      price: {
+        not: null
+      }
+    }
+  }
+
+  if (searchParams.withoutPrice) {
+    query['trip'] = {
+      ...query.trip as object,
+      price: null,
+    }
+  }
+  
   if (searchParams.to !== undefined) {
     query["trip"] = {
       ...query.trip as object,

@@ -560,7 +560,7 @@ export default function Profile() {
                 px: 3,
                 py: 1,
                 display: {
-                  md: "hidden",
+                  md: "none",
                   xs: "block",
                 },
                 mt: 2,

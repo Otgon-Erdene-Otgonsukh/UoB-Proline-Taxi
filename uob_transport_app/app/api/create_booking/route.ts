@@ -8,6 +8,7 @@ import BookingInfo from "@/components/emails/booking_info";
 import { SendEmailCommand } from "@aws-sdk/client-sesv2";
 import { formLocation, location } from "@/model/models";
 import { commonLocations } from "@/model/models";
+import { getUserFromID } from "@/backend/access/user_access";
 
 const prisma = new PrismaClient();
 
@@ -44,6 +45,7 @@ export async function POST(request: Request) {
     const airport: string = request_json["airport"].toString();
     const returnDT: Date | undefined = request_json["return_time"] ? new Date(request_json["return_time"]) : undefined;
     const dep_id: number = request_json["dep_id"];
+    const isLeadPassengerMyself: boolean = request_json["isLeadPassengerMyself"];
 
     // Validation.
 
@@ -90,7 +92,7 @@ export async function POST(request: Request) {
           if (data && data.length > 0) {
             for (const resloc of data) {
               if (parseFloat(resloc.lat) === loc.lat && parseFloat(resloc.lon) === loc.lng && resloc.display_name.toLowerCase() === loc.address.toLowerCase()) {
-                const expected_loc : location = { short_name: resloc.name, lat: parseFloat(resloc.lat), lng: parseFloat(resloc.lon), address: resloc.display_name };
+                const expected_loc: location = { short_name: resloc.name, lat: parseFloat(resloc.lat), lng: parseFloat(resloc.lon), address: resloc.display_name };
                 if (loc.lat != expected_loc.lat || loc.lng != expected_loc.lng || loc.short_name.toLowerCase() != expected_loc.short_name.toLowerCase()) {
                   return NextResponse.json(
                     { error: "Location address does not match its longitude, latitude, or short name." },
@@ -143,6 +145,11 @@ export async function POST(request: Request) {
       );
     }
 
+    let user = null;
+    if (isLeadPassengerMyself) {
+      user = await getUserFromID(user_id);
+    }
+
     // Lat/lon fields are null as we introduce lat/lon automatically later on / vice versa.
     await createBooking(
       user_id,
@@ -150,16 +157,16 @@ export async function POST(request: Request) {
       dropoff_loc,
       pickup_time,
       returnDT,
-      passenger_name,
-      email,
-      tel_number,
+      user?.full_name || passenger_name,
+      user?.email || email,
+      user?.phone_number || tel_number,
       additional_info,
       via,
       returnTo,
       passenger_num,
       airport,
       flight_num,
-      dep_id
+      user?.dep_id || dep_id,
     );
 
     // Email sending with AWS SES

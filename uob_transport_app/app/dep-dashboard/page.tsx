@@ -33,6 +33,12 @@ import {
   TablePagination,
   CircularProgress,
   Chip,
+  useMediaQuery,
+  useTheme,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
 } from "@mui/material";
 import { StyledTableCell } from "@/components/StyledTableCell";
 import CustomizedButton from "@/components/CustomizedButton";
@@ -59,12 +65,20 @@ export default function DepDashboard() {
   const [totalApplied, setTotalApplied] = useState(false);
   const [statusApplied, setStatusApplied] = useState(false);
   const [overdueApplied, setOverdueApplied] = useState(false);
+  const [priceFilter, setPriceFilter] = useState("all");
   const [hovered, setHovered] = useState({
     total: false,
     status: false,
     overdue: false,
   });
   const [isLoading, setIsLoading] = useState(true);
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  useEffect(() => {
+    setHovered({ total: isMobile, status: isMobile, overdue: isMobile });
+  }, [isMobile]);
 
   // Get NextAuth Session.
   const { status } = useSession();
@@ -154,7 +168,13 @@ export default function DepDashboard() {
       pageSize: paginationMeta.pageSize,
     });
     _getBookingListData(0, paginationMeta.pageSize);
-  }, [totalApplied, statusApplied, overdueApplied, searchFormInput.isFlight]);
+  }, [
+    totalApplied,
+    statusApplied,
+    overdueApplied,
+    searchFormInput.isFlight,
+    priceFilter,
+  ]);
 
   const _getBookingListData = (page: number, pageSize: number) => {
     // fetch data with current paginationMeta and searchParams
@@ -166,6 +186,8 @@ export default function DepDashboard() {
       total: totalApplied,
       status: statusApplied,
       overdue: overdueApplied,
+      price: priceFilter === "withPrice",
+      withoutPrice: priceFilter === "withoutPrice",
     }).then((res) => {
       if (res.status === 200) {
         res.json().then((data) => {
@@ -207,10 +229,10 @@ export default function DepDashboard() {
           prev.map((b) =>
             b.booking_id === pendingBookingId
               ? {
-                ...b,
-                booking_status: "Approved",
-                trip: { ...b.trip, PO: poNumber },
-              }
+                  ...b,
+                  booking_status: "Approved",
+                  trip: { ...b.trip, PO: poNumber },
+                }
               : b,
           ),
         );
@@ -249,9 +271,10 @@ export default function DepDashboard() {
 
   return (
     <div className="flex flex-col min-h-screen items-center pt-15 p-4">
-      <div className="grid md:grid-cols-3 grid-cols-1 md:gap-20 gap-0 md:mb-5 mb-2 md:mt-0 -mt-5 md:mx-0 -mx-30">
+      <div className="grid md:grid-cols-3 grid-cols-1 md:gap-20 gap-3 md:mb-5 mb-2 md:mt-0 -mt-5 md:mx-0 -mx-30">
         <div className="flex flex-col gap-3 items-center">
           <motion.div
+            data-testid="totalCard"
             className="flex w-full bg-white rounded-lg overflow-hidden drop-shadow-blue-600 drop-shadow-lg/30 cursor-pointer border-r-4 border-r-blue-500"
             initial={{ opacity: 0, y: 10, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -261,7 +284,9 @@ export default function DepDashboard() {
               transition: { duration: 0.12, ease: "easeOut" },
             }}
             onMouseEnter={() => setHovered({ ...hovered, total: true })}
-            onMouseLeave={() => setHovered({ ...hovered, total: false })}
+            onMouseLeave={() =>
+              setHovered({ ...hovered, total: isMobile ? true : false })
+            }
             onClick={() => {
               setTotalApplied((prev) => !prev);
               setStatusApplied(false);
@@ -290,7 +315,7 @@ export default function DepDashboard() {
             </motion.div>
           </motion.div>
           <p
-            className={`text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded mt-2 border border-blue-200 transition-opacity ease-in-out duration-200 ${hovered.total || totalApplied ? "opacity-100" : "opacity-0"}`}
+            className={`text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded md:mt-2 border border-blue-200 transition-opacity ease-in-out duration-200 ${hovered.total || totalApplied ? "opacity-100" : "opacity-0"}`}
           >
             {totalApplied ? (
               <Button
@@ -305,12 +330,21 @@ export default function DepDashboard() {
                 <CancelIcon sx={{ fontSize: 17, mr: 1 }} /> Clear filter
               </Button>
             ) : (
-              "🔍 Click to filter"
+              <span
+                onClick={() => {
+                  setTotalApplied(true);
+                  setStatusApplied(false);
+                  setOverdueApplied(false);
+                }}
+              >
+                🔍 Click to filter
+              </span>
             )}
           </p>
         </div>
         <div className="flex flex-col gap-3 items-center">
           <motion.div
+            data-testid="statusCard"
             className="flex w-full bg-white rounded-lg overflow-hidden drop-shadow-yellow-600 drop-shadow-lg/30 cursor-pointer border-r-4 border-r-yellow-500"
             initial={{ opacity: 0, y: 10, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -320,7 +354,9 @@ export default function DepDashboard() {
               transition: { duration: 0.12, ease: "easeOut" },
             }}
             onMouseEnter={() => setHovered({ ...hovered, status: true })}
-            onMouseLeave={() => setHovered({ ...hovered, status: false })}
+            onMouseLeave={() =>
+              setHovered({ ...hovered, status: isMobile ? true : false })
+            }
             onClick={() => {
               setStatusApplied((prev) => !prev);
               setTotalApplied(false);
@@ -363,7 +399,7 @@ export default function DepDashboard() {
             </motion.div>
           </motion.div>
           <p
-            className={`text-xs font-semibold text-yellow-700 bg-yellow-50 px-2 py-1 rounded mt-2 border border-yellow-300 transition-opacity ease-in-out duration-200 ${hovered.status || statusApplied ? "opacity-100" : "opacity-0"}`}
+            className={`text-xs font-semibold text-yellow-700 bg-yellow-50 px-2 py-1 rounded md:mt-2 border border-yellow-300 transition-opacity ease-in-out duration-200 ${hovered.status || statusApplied ? "opacity-100" : "opacity-0"}`}
           >
             {statusApplied ? (
               <Button
@@ -379,12 +415,21 @@ export default function DepDashboard() {
                 <CancelIcon sx={{ fontSize: 17, mr: 1 }} /> Clear filter
               </Button>
             ) : (
-              "🔍 Click to filter"
+              <span
+                onClick={() => {
+                  setStatusApplied(true);
+                  setTotalApplied(false);
+                  setOverdueApplied(false);
+                }}
+              >
+                🔍 Click to filter
+              </span>
             )}
           </p>
         </div>
         <div className="flex flex-col gap-3 items-center">
           <motion.div
+            data-testid="overdueCard"
             className="flex w-full bg-white rounded-lg overflow-hidden drop-shadow-red-600 drop-shadow-lg/30 cursor-pointer border-r-4 border-r-red-500"
             initial={{ opacity: 0, y: 10, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -394,7 +439,9 @@ export default function DepDashboard() {
               transition: { duration: 0.12, ease: "easeOut" },
             }}
             onMouseEnter={() => setHovered({ ...hovered, overdue: true })}
-            onMouseLeave={() => setHovered({ ...hovered, overdue: false })}
+            onMouseLeave={() =>
+              setHovered({ ...hovered, overdue: isMobile ? true : false })
+            }
             onClick={() => {
               setOverdueApplied((prev) => !prev);
               setTotalApplied(false);
@@ -417,13 +464,15 @@ export default function DepDashboard() {
                   <h1 className="text-3xl font-bold text-red-600 text-right">
                     {bookingData?.overdue && bookingData.overdue}
                   </h1>
-                  <p className="text-gray-600 text-[15px] text-right">Overdue Bookings</p>
+                  <p className="text-gray-600 text-[15px] text-right">
+                    Overdue Bookings
+                  </p>
                 </>
               )}
             </motion.div>
           </motion.div>
           <p
-            className={`text-xs font-semibold text-red-600 bg-red-50 px-2 py-1 rounded mt-2 border border-red-200 transition-opacity ease-in-out duration-200 ${hovered.overdue || overdueApplied ? "opacity-100" : "opacity-0"}`}
+            className={`text-xs font-semibold text-red-600 bg-red-50 px-2 py-1 rounded md:mt-2 md:mb-0 mb-2 border border-red-200 transition-opacity ease-in-out duration-200 ${hovered.overdue || overdueApplied ? "opacity-100" : "opacity-0"}`}
           >
             {overdueApplied ? (
               <Button
@@ -439,7 +488,15 @@ export default function DepDashboard() {
                 <CancelIcon sx={{ fontSize: 17, mr: 1 }} /> Clear filter
               </Button>
             ) : (
-              "🔍 Click to filter"
+              <span
+                onClick={() => {
+                  setOverdueApplied(true);
+                  setTotalApplied(false);
+                  setStatusApplied(false);
+                }}
+              >
+                🔍 Click to filter
+              </span>
             )}
           </p>
         </div>
@@ -453,7 +510,7 @@ export default function DepDashboard() {
         <div className="flex md:flex-row flex-col justify-between items-center">
           <div className="flex">
             <h1 className="text-2xl font-aleo md:text-3xl font-semibold text-shadow-lg/20">
-            Department Bookings
+              Department Bookings
             </h1>
             <div className="md:mr-4 md:mt-5 mr-0 mt-0 md:ml-0 ml-6">
               <CustomSwitch
@@ -463,21 +520,20 @@ export default function DepDashboard() {
                     isFlight: !searchFormInput.isFlight,
                   });
                 }}
-            ></CustomSwitch>
+              ></CustomSwitch>
             </div>
-          </div>      
+          </div>
           <Box
             component="form"
             onSubmit={handleSubmitSearchForm}
             sx={{
               display: "flex",
-              flexDirection: {md: "row", xs: "column"},
+              flexDirection: { md: "row", xs: "column" },
               gap: 2.5,
-              mt: {md: 0, xs: 4},
-              width: "100%"
+              mt: { md: 0, xs: 4 },
+              width: "100%",
             }}
           >
-            
             <TextField
               fullWidth
               label="Passenger Name"
@@ -517,32 +573,49 @@ export default function DepDashboard() {
               size="small"
               sx={{ minWidth: 150 }}
             />
-            <CustomizedButton title="Search" type="warning" click={() => { }} />
+            <FormControl fullWidth size="small" sx={{ minWidth: 150 }}>
+              <InputLabel id="price-filter-label">Price</InputLabel>
+              <Select
+                labelId="price-filter-label"
+                id="price-filter"
+                value={priceFilter}
+                label="Price"
+                onChange={(e) => setPriceFilter(e.target.value)}
+              >
+                <MenuItem value="all">All</MenuItem>
+                <MenuItem value="withPrice">With Price</MenuItem>
+                <MenuItem value="withoutPrice">Without Price</MenuItem>
+              </Select>
+            </FormControl>
+            <CustomizedButton title="Search" type="warning" click={() => {}} />
           </Box>
         </div>
-        <p
-          className={`text-lg font-semibold mt-3 ${
-            totalApplied
-              ? "text-blue-600"
+        <div data-testid="filter_text">
+          <p
+            className={`text-lg font-semibold mt-3 ${
+              totalApplied
+                ? "text-blue-600"
+                : statusApplied
+                  ? "text-green-600"
+                  : overdueApplied
+                    ? "text-red-600"
+                    : searchFormInput.isFlight
+                      ? "text-cyan-700"
+                      : "text-yellow-600"
+            }`}
+          >
+            {totalApplied
+              ? "All Bookings"
               : statusApplied
-                ? "text-green-600"
+                ? "All Bookings with Statuses"
                 : overdueApplied
-                  ? "text-red-600"
+                  ? "Overdue Bookings"
                   : searchFormInput.isFlight
-                    ? "text-cyan-700"
-                    : "text-yellow-600"
-          }`}
-        >
-          {totalApplied
-            ? "All Bookings"
-            : statusApplied
-              ? "All Bookings with Statuses"
-              : overdueApplied
-                ? "Overdue Bookings"
-                : searchFormInput.isFlight
-                  ? "Flight Bookings ✈"
-                  : "Pending Bookings"}
-        </p>
+                    ? "Flight Bookings ✈"
+                    : "Pending Bookings"}
+          </p>
+        </div>
+
         {isLoading ? (
           <Typography
             sx={{ color: "gray", fontSize: 16, textAlign: "center", my: 10 }}
@@ -571,6 +644,7 @@ export default function DepDashboard() {
                     <StyledTableCell>From</StyledTableCell>
                     <StyledTableCell>To</StyledTableCell>
                     <StyledTableCell>Passenger Name</StyledTableCell>
+                    <StyledTableCell>Price</StyledTableCell>
                     <StyledTableCell>Operation</StyledTableCell>
                   </TableRow>
                 </TableHead>
@@ -610,20 +684,41 @@ export default function DepDashboard() {
                         </StyledTableCell>
                         <StyledTableCell>
                           {row.trip.airport === "" || row.trip.airport === null
-                            ? ((row.trip.pickup_location.includes("{"))? // Temporary check to see if this is an old style booking.
-                              JSON.parse(row.trip.pickup_location).address
-                              : row.trip.pickup_location)
+                            ? row.trip.pickup_location.includes("{") // Temporary check to see if this is an old style booking.
+                              ? !JSON.parse(
+                                  row.trip.pickup_location,
+                                ).address.includes("University of Bristol")
+                                ? JSON.parse(row.trip.pickup_location)
+                                    .short_name +
+                                  ", " +
+                                  JSON.parse(row.trip.pickup_location)
+                                    .address.split(",")
+                                    .slice(-5)[0]
+                                    .trim()
+                                : JSON.parse(row.trip.pickup_location).address
+                              : row.trip.pickup_location
                             : row.trip.airport}
                         </StyledTableCell>
                         <StyledTableCell>
-                          {row.trip.dropoff_location.includes("{") ? // Temporary check to see if this is an old style booking.
-                            JSON.parse(row.trip.dropoff_location).address
+                          {row.trip.dropoff_location.includes("{") // Temporary check to see if this is an old style booking.
+                            ? !JSON.parse(
+                                row.trip.dropoff_location,
+                              ).address.includes("University of Bristol")
+                              ? JSON.parse(row.trip.dropoff_location)
+                                  .short_name +
+                                ", " +
+                                JSON.parse(row.trip.dropoff_location)
+                                  .address.split(",")
+                                  .slice(-5)[0]
+                                  .trim()
+                              : JSON.parse(row.trip.dropoff_location).address
                             : row.trip.dropoff_location}
                         </StyledTableCell>
                         <StyledTableCell>
-                          <span>
-                            {row.passenger_name}
-                          </span>
+                          <span>{row.passenger_name}</span>
+                        </StyledTableCell>
+                        <StyledTableCell>
+                          {row.trip.price ? `${row.trip.price} £` : "N/A"}
                         </StyledTableCell>
                         <StyledTableCell>
                           <div className="flex gap-2 justify-center">
@@ -632,7 +727,21 @@ export default function DepDashboard() {
                               type="warning"
                               title="View"
                             />
-                            {(row.booking_status === "Pending" && (
+                            {!row.trip.price &&
+                            row.booking_status === "Rejected" ? null : !row.trip
+                                .price ? (
+                              <Chip
+                                label="Awaiting Price"
+                                sx={{
+                                  bgcolor: "#e0e7ff",
+                                  border: 2,
+                                  borderColor: "#6366f1",
+                                  color: "#4338ca",
+                                  px: 1,
+                                  fontWeight: "bold",
+                                }}
+                              />
+                            ) : row.booking_status === "Pending" ? (
                               <>
                                 <CustomizedButton
                                   click={() => handleApprove(row.booking_id)}
@@ -648,7 +757,7 @@ export default function DepDashboard() {
                                   title="Reject"
                                 />
                               </>
-                            )) || (
+                            ) : (
                               <>
                                 <Chip
                                   label={row.booking_status}
@@ -667,8 +776,7 @@ export default function DepDashboard() {
                                 />
                                 {row.booking_status === "Approved" && (
                                   <Chip
-                                    label={row.trip.PO}
-                                    deleteIcon={<ReceiptIcon />}
+                                    label={"PO: " + row.trip.PO}
                                     sx={{
                                       px: 1,
                                       border: 2,
