@@ -89,7 +89,7 @@ export default function BookingPage() {
 
   type FormData = {
     CommonLoc: string;
-    CustomLoc: string;
+    CustomLoc: formLocation;
     PickupLoc: formLocation
     Via: formLocation[];
     ReturnTo: formLocation;
@@ -111,7 +111,7 @@ export default function BookingPage() {
   // Variables for storing the state of the values entered into the fields.
   const [formData, setFormData] = useState<FormData>({
     CommonLoc: "",
-    CustomLoc: "",
+    CustomLoc: null,
     Via: [],
     ReturnTo: null,
     FlightNum: "",
@@ -146,18 +146,24 @@ export default function BookingPage() {
 
     // Custom Location
     if (isManualChecked) {
-      if (formData.CustomLoc == "") {
+      if (formData.CustomLoc == null) {
         addFormFeedback("CustomLoc", "Please enter a pickup location.");
         fail = true;
-      } else if (formData.CustomLoc.length < 5) {
+      } else if (formData.CustomLoc.address.length < 5) {
         addFormFeedback("CustomLoc", "Pickup location not detailed enough.");
         fail = true;
-      } else if (formData.CustomLoc.length > 100) {
+      } else if (formData.CustomLoc.address.length > 200) {
         addFormFeedback("CustomLoc", "Pickup location too long.");
+        fail = true;
+      } else if (!routes || routes.length == 0) {
+        addFormFeedback(
+          "CustomLoc",
+          "Unable to find route. Please check the address or try a different location.",
+        );
         fail = true;
       }
 
-      loc = formData.PickupLoc
+      loc = formData.CustomLoc;
     } else if (!isFlightChecked && !isManualChecked) {
       // Common Pickup Location / Dropdown
       if (formData.CommonLoc == "") {
@@ -261,7 +267,7 @@ export default function BookingPage() {
       const targetDateTime = new Date(formData.PickupDate);
       const [h, m] = formData.PickupTime.split(":").map(Number);
       targetDateTime.setHours(h, m, 0, 0);
-      if (pickupDateTime >= targetDateTime) {
+      if (pickupDateTime >= returnDateTime) {
         addFormFeedback("ReturnDate", "Return Booking must be after pick-up.");
         addFormFeedback("ReturnTime", ""); // Make both boxes go red, hacky workaround.
         fail = true;
@@ -329,6 +335,7 @@ export default function BookingPage() {
         flight_num: formData.FlightNum,
         isLeadPassengerMyself: isLeadPassengerMyself
       };
+      console.log(jsonBody);
 
       fetch("/api/create_booking", {
         method: "POST",
@@ -616,7 +623,7 @@ export default function BookingPage() {
                       }}
                       onChange={(e) => {
                         setIsManualChecked(e.target.checked);
-                        setFormData({ ...formData, CustomLoc: "" });
+                        setFormData({ ...formData, CustomLoc: null }); // temporary
                       }}
                       className="sr-only peer"
                     />
@@ -681,9 +688,8 @@ export default function BookingPage() {
                     className={`border-2 rounded px-3 py-2 ${formFeedback.CustomLoc == "" ? "border-gray-800" : "border-red-700"
                       }`}
                     onChange={(e) => {
-                      setFormData({ ...formData, CustomLoc: e.target.value });
                       if (e.target.value !== "") {
-                        addFormFeedback("CustomLoc", "");
+                      addFormFeedback("CustomLoc", "");
                       }
                     }}
                     onKeyDown={(e) => {
@@ -699,6 +705,7 @@ export default function BookingPage() {
                       const latlon = await getLatLon(e.target.value, true)
                       if (latlon != null) {
                         setStart({ name: latlon.name, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) });
+                        setFormData({...formData, CustomLoc: {short_name: latlon.name, address: latlon.full_address, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon)}})
                         addFormFeedback("CustomLoc", ""); // Reset any validation errors
                         e.target.value = latlon.full_address;
                       } else {
