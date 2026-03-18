@@ -20,6 +20,8 @@ describe("The tests for the 2 functions for fetching bookings/count for dep-dash
       total: false,
       status: false,
       overdue: false,
+      price: false,
+      withoutPrice: false,
     };
     await getPendingBookings(4, 10, mockSearchParams);
     await getPendingBookingsCount(mockSearchParams);
@@ -61,6 +63,8 @@ describe("The tests for the 2 functions for fetching bookings/count for dep-dash
       total: true,
       status: false,
       overdue: false,
+      price: false,
+      withoutPrice: false,
     };
     prismaMock.booking.findMany.mockResolvedValue([{}]); //returning an empty object array to make the sort call work
     await getPendingBookings(2, 5, mockSearchParams);
@@ -138,6 +142,8 @@ describe("The tests for the 2 functions for fetching bookings/count for dep-dash
       total: false,
       status: false,
       overdue: true,
+      price: false,
+      withoutPrice: false,
     };
 
     await getPendingBookings(1, 10, mockSearchParams);

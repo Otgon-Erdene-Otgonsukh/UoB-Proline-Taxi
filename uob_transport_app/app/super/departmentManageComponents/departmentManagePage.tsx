@@ -15,6 +15,7 @@ import { DepartmentRecord } from "@/model/models";
 import CustomizedButton from "@/components/CustomizedButton";
 import { StyledStickyTableCell } from "@/components/StyledTableCell";
 import AddDepartmentDialog from "./newDepartmentDialog";
+import ApartmentIcon from '@mui/icons-material/Apartment';
 import ViewManagerDialog from "./viewManagerDialog";
 import ViewDepartmentDialog from "./viewDepartmentDialog";
 import ConfirmDialog from "@/components/confirmDIalog";
@@ -65,14 +66,6 @@ const DepartmentManagePage = () => {
     setConfirmDeleteDialogOpen(true)
   };
   const handleDeleteDepartment = (department: DepartmentRecord) => {
-    if (department.userCount > 0) {
-      setSnackbarState({
-        open: true,
-        status: 'error',
-        message: 'Department has users, cannot be deleted!'
-      })
-      return;
-    }
     deleteDepartment(department.depId).then(async (res) => {
       if (res.status === 200) {
         setSnackbarState({
@@ -94,10 +87,9 @@ const DepartmentManagePage = () => {
   const [searchFormInput, setSearchFormInput] = useState({ name: "" })
   const handleSubmitSearchForm = (e: React.SubmitEvent) => {
     e.preventDefault()
-    console.log(searchFormInput);
     if (searchFormInput.name !== '') {
       setDepartments(allDepartments.filter(e => {
-        return e.depName.indexOf(searchFormInput.name) !== -1
+        return e.depName.toLowerCase().includes(searchFormInput.name)
       }))
     } else {
       setDepartments(allDepartments)
@@ -191,17 +183,17 @@ const DepartmentManagePage = () => {
             }}
             size="small"
           >
-            New Department
+            <span className="text-lg mr-1 mb-0.5">+</span> New Department
           </Button>
         </Box>
       </div>
       {isLoading ? (
         <Typography sx={{ color: "gray", fontSize: 16, textAlign: "center", my: 10 }}>
-          Getting department data...
+          <ApartmentIcon sx={{ mb: 0.5 }}/> Getting department data...
         </Typography>
       ) : departments.length === 0 ? (
         <Typography sx={{ color: "gray", fontSize: 16, textAlign: "center", my: 10 }}>
-          No departments to show.
+          <ApartmentIcon sx={{ mb: 0.5 }}/> No matching department.
         </Typography>
       ) : (
         <Box>
@@ -211,7 +203,7 @@ const DepartmentManagePage = () => {
                 <TableRow>
                   <StyledStickyTableCell>Name</StyledStickyTableCell>
                   <StyledStickyTableCell>Manager</StyledStickyTableCell>
-                  <StyledStickyTableCell>Member Count</StyledStickyTableCell>
+                  <StyledStickyTableCell>User Count</StyledStickyTableCell>
                   <StyledStickyTableCell>Operation</StyledStickyTableCell>
                 </TableRow>
               </TableHead>
@@ -228,12 +220,13 @@ const DepartmentManagePage = () => {
                           size="small"
                           color='default'
                           label="To be assigned"
+                          sx={{ border: 2, borderColor: "gray" }}
                         />)}
                     </StyledStickyTableCell>
                     <StyledStickyTableCell>{department.userCount}</StyledStickyTableCell>
                     <StyledStickyTableCell>
                       <div className="flex gap-2 justify-center">
-                        <CustomizedButton type="primary" click={() => handleView(department)} title="View" />
+                        <CustomizedButton type="warning" click={() => handleView(department)} title="View" />
                         <CustomizedButton type="error" click={() => handleOpenConfirmDeleteDialog(department)} title="Delete" />
                       </div>
                     </StyledStickyTableCell>
@@ -260,7 +253,7 @@ const DepartmentManagePage = () => {
       <ConfirmDialog
         open={confirmDeleteDialogOpen}
         dialogTitle="Confirm delete department"
-        confirmMessage="Are you sure you want to delete this department?"
+        confirmMessage="Are you sure you want to delete this department? If there are still users in this department, they will be moved to 'Unassigned' department."
         confirmCallBack={() => { handleDeleteDepartment(departmentData!); setConfirmDeleteDialogOpen(false); }}
         cancelCallBack={() => setConfirmDeleteDialogOpen(false)}
       />
