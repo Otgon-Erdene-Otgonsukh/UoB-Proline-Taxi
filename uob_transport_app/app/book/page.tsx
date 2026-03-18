@@ -1206,7 +1206,7 @@ export default function BookingPage() {
                     }}
                     onChange={(e) => {
                       setIsLeadPassengerMyself(e.target.checked);
-                      setFormData({ ...formData, CustomLoc: "" });
+                      //setFormData({ ...formData, CustomLoc: "" });
                     }}
                     className="sr-only peer"
                   />
