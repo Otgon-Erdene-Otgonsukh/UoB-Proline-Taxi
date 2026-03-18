@@ -208,7 +208,7 @@ const Page = () => {
       page: newPage
     })
     setIsLoading(true);
-    _rerenderTable()
+    _getBookingListData(newPage, paginationMeta.pageSize);
   };
 
   const handleChangePageSize = (
@@ -219,7 +219,6 @@ const Page = () => {
       pageSize: parseInt(event.target.value, 10),
     });
     setIsLoading(true)
-    _rerenderTable()
   };
 
   // search form
@@ -233,13 +232,6 @@ const Page = () => {
     user_status: userStatusToIntMap.pending,
     role: roleStrMap.normalUser
   })
-
-  const handleUsersSubmitSearchForm = (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log('submit');
-    setIsLoading(true)
-    _rerenderTable()
-  }
 
   const [userDetail, setUserDetail] = useState<UserRecord>()
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
@@ -262,53 +254,14 @@ const Page = () => {
     // after edit dialog closed, rerender table to get updated data
     if (isEdited) {
       setIsLoading(true)
-      _rerenderTable()
+      _getBookingListData(0, paginationMeta.pageSize)
     }
   }
 
-  const [confirmAcceptDialogOpen, setConfirmAcceptDialogOpen] = useState(false);
-  const handleAcceptUserRegister = (row: UserRecord) => {
-    updateUserAsAdmin({
-      ...row,
-      user_status: userStatusToIntMap.approved
-    }).then(res => {
-      if (res.status === 200) {
-        setIsLoading(true)
-        _rerenderTable()
-      }
-    })
-  };
 
-  const [confirmRejectDialogOpen, setConfirmRejectDialogOpen] = useState(false);
-  const handleRejectUserRegister = (row: UserRecord) => {
-    updateUserAsAdmin({
-      ...row,
-      user_status: userStatusToIntMap.rejected
-    }).then(res => {
-      if (res.status === 200) {
-        setIsLoading(true)
-        _rerenderTable()
-      }
-    })
-  };
 
-  const _rerenderTable = () => {
-    getUsersAsAdmin({
-      name: undefined,
-      ...searchFormInput,
-      page: paginationMeta.page,
-      pageSize: paginationMeta.pageSize
-    }).then(res => {
-      if (res.status === 200) {
-        res.json().then(data => {
-          console.log("Backend API User Data:", data.userList[0]);
-          setPendingUsersData(data.userList)
-          setPendingUserCount(data.userCount)
-          setIsLoading(false)
-        })
-      }
-    })
-  }
+
+
 
   const _getBookingListData = (page: number, pageSize: number) => {
     getBookingsList(page, pageSize, {
@@ -861,22 +814,6 @@ const Page = () => {
           departmentList={departments} 
         />
       )}
-
-      <ConfirmDialog
-        open={confirmAcceptDialogOpen}
-        dialogTitle="Accept User Registration"
-        confirmMessage="Are you sure you want to accept this user registration?"
-        confirmCallBack={() => { handleAcceptUserRegister(userDetail!); setConfirmAcceptDialogOpen(false); }}
-        cancelCallBack={() => setConfirmAcceptDialogOpen(false)}
-      />
-
-      <ConfirmDialog
-        open={confirmRejectDialogOpen}
-        dialogTitle="Reject User Registration"
-        confirmMessage="Are you sure you want to reject this user registration?"
-        confirmCallBack={() => { handleRejectUserRegister(userDetail!); setConfirmRejectDialogOpen(false); }}
-        cancelCallBack={() => setConfirmRejectDialogOpen(false)}
-      />
       </div>
       </div>
       </div>

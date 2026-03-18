@@ -57,10 +57,11 @@ export const getUserBookingsAccess = async (userId: number, page: number, pageSi
   return prisma.booking.findMany({
     where: {
       ...query,
-      user_id: userId,
+      user_id: userId === -1 ? undefined : userId,
     },
     include: {
       trip: true,
+      ...(userId === -1 ? { User: { select: { full_name: true } } } : {})
     },
     orderBy: {
       time_created: 'desc'
@@ -158,7 +159,7 @@ export const getUserBookingsCountAccess = async (userId: number, searchParams: {
   return prisma.booking.count({
     where: {
       ...query,
-      user_id: userId,
+      user_id: userId === -1 ? undefined : userId,
     },
   })
 }
