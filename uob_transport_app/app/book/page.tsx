@@ -34,10 +34,12 @@ import { getDepartments } from "@/app/requests/departments";
 import { department } from "@/generated/prisma/client";
 import { commonLocations } from "@/model/models";
 import { getLatLon } from "@/components/NominatimSearch";
+import { JsonObject } from "@prisma/client/runtime/library";
 
 
 // Main booking page, handles both creation (prefilledBookingID is null) and editing (when prefilledBookingID is not null)
-export default function BookingPage(prefilledBookingID: number | null = null) {
+export default function BookingPage(bookingData: JsonObject | null = null) {
+  console.log("Rendering booking page with prefilledBookingID =", bookingData);
 
   const session = useSession();
 
@@ -127,60 +129,7 @@ export default function BookingPage(prefilledBookingID: number | null = null) {
     dep_id: 0,
     Passengers: 1,
     AdditionalInfo: "",
-  });
-
-  if (prefilledBookingID != null && session.data != null) {
-    let bookingDetails: FormData | null = null;
-    // Use the get bookings details endpoint for the prefill form data.
-    fetch(`/api/get_booking_details?id=${prefilledBookingID}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json"
-      }
-    }).then(response => {
-      if (response.status === 200) {
-        response.json().then(data => {
-          bookingDetails = data;
-        })
-      }
-    }).catch(err => {
-      console.error("Error fetching booking details:", err);
-      bookingDetails = null;
-    });
-
-    if (bookingDetails != null) {
-      let returnDate : string = ""
-      let returnTime : string = ""
-      setIsManualChecked(true);
-      if (bookingDetails["trip"]["return_pickup_time"] != "" && bookingDetails["trip"]["return_pickup_time"] != null) {
-        setIsReturnChecked(true);
-        returnDate = String(bookingDetails["trip"]["return_pickup_time"]).split("T")[0];
-        returnTime = String(bookingDetails["trip"]["return_pickup_time"]).split("T")[1].substring(0,5);
-
-      }
-      setFormData({
-        ...formData,
-        //CommonLoc: bookingDetails["commonLoc"],
-        CustomLoc: bookingDetails["trip"]["pickup_location"]["address"],
-        PickupLoc: bookingDetails["trip"]["pickup_location"],
-        Via: bookingDetails["trip"]["via"],
-        ReturnTo: bookingDetails["trip"]["return_drop_loc"],
-        FlightNum: bookingDetails["trip"]["flight_num"],
-        Airport: bookingDetails["trip"]["airport"],
-        DropoffLoc: bookingDetails["trip"]["dropoff_location"],
-        PickupDate: String(bookingDetails["trip"]["return_pickup_time"]).split("T")[0],
-        ReturnDate: returnDate,
-        ReturnTime: returnTime,
-        PassengerName: bookingDetails["passenger_name"],
-        Number: bookingDetails["tel_number"],
-        Email: bookingDetails["email"],
-        dep_id: bookingDetails["dep_id"],
-        Passengers: bookingDetails["trip"]["passenger_num"],
-        AdditionalInfo: bookingDetails["additional_info"],
-      });
-    }
-  }
-
+});
 
   const router = useRouter();
 
@@ -401,6 +350,43 @@ export default function BookingPage(prefilledBookingID: number | null = null) {
         });
     }
   };
+
+  useState(() => {
+  }
+  [bookingData]);
+
+  if (bookingData != null) {
+    let returnDate : string = ""
+    let returnTime : string = ""
+    setIsManualChecked(true);
+    if (bookingData["trip"]["return_pickup_time"] != "" && bookingData["trip"]["return_pickup_time"] != null) {
+      setIsReturnChecked(true);
+      returnDate = String(bookingData["trip"]["return_pickup_time"]).split("T")[0];
+      returnTime = String(bookingData["trip"]["return_pickup_time"]).split("T")[1].substring(0,5);
+
+    }
+    setFormData({
+      ...formData,
+      //CommonLoc: bookingData["commonLoc"],
+      CustomLoc: bookingData["trip"]["pickup_location"]["address"],
+      PickupLoc: bookingData["trip"]["pickup_location"],
+      Via: bookingData["trip"]["via"],
+      ReturnTo: bookingData["trip"]["return_drop_loc"],
+      FlightNum: bookingData["trip"]["flight_num"],
+      Airport: bookingData["trip"]["airport"],
+      DropoffLoc: bookingData["trip"]["dropoff_location"],
+      PickupDate: String(bookingData["trip"]["return_pickup_time"]).split("T")[0],
+      ReturnDate: returnDate,
+      ReturnTime: returnTime,
+      PassengerName: bookingData["passenger_name"],
+      Number: bookingData["tel_number"],
+      Email: bookingData["email"],
+      dep_id: bookingData["dep_id"],
+      Passengers: bookingData["trip"]["passenger_num"],
+      AdditionalInfo: bookingData["additional_info"],
+    });
+  }
+
 
   const inputTheme = createTheme({
     //creating a custom theme outside the component
@@ -1020,6 +1006,7 @@ export default function BookingPage(prefilledBookingID: number | null = null) {
                   type="dropLoc"
                   id="dropLoc"
                   placeholder="Temple Quarter Enterprise Campus, Bristol"
+                  value={formData.DropoffLoc?.address || ""}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       e.preventDefault();
