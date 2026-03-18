@@ -16,6 +16,7 @@ import {
   CircularProgress,
   Autocomplete,
   TextField,
+  Switch,
 } from "@mui/material";
 import NumberField from "@/components/NumberField";
 import { useSession } from "next-auth/react";
@@ -48,6 +49,7 @@ export default function BookingPage() {
   const [isFlightChecked, setIsFlightChecked] = useState(false);
   const [isViaChecked, setIsViaChecked] = useState(false);
   const [isReturnChecked, setIsReturnChecked] = useState(false);
+  const [isLeadPassengerMyself, setIsLeadPassengerMyself] = useState(true);
   const [phoneCode, setPhoneCode] = useState("+44");
   const [loadingBar, setLoadingBar] = useState(false);
   const [departmentEmpty, setDepartmentEmpty] = useState(false);
@@ -162,9 +164,11 @@ export default function BookingPage() {
         addFormFeedback("CommonLoc", "Please pick one.");
         fail = true;
       }
-      loc = { short_name: formData.CommonLoc, address: commonLocations[formData.CommonLoc]?.address,
+      loc = {
+        short_name: formData.CommonLoc, address: commonLocations[formData.CommonLoc]?.address,
         lat: commonLocations[formData.CommonLoc]?.lat,
-        lng: commonLocations[formData.CommonLoc]?.lng};
+        lng: commonLocations[formData.CommonLoc]?.lng
+      };
     } else loc = formData.Airport;
 
     // Department check
@@ -264,34 +268,37 @@ export default function BookingPage() {
       }
     }
 
+    // Below Section is about lead passenger details.
     // Phone number
     // Some additional leniency for international numbers may need to be added later.
     // Matches UK formatting for mobile numbers (expecting mobile numbers only).
-    const numberCriteria = /^(0)?[0-9]{4}(\s)?[0-9]{3}(\s)?[0-9]{1,3}$/;
-    if (formData.Number == "") {
-      addFormFeedback("Number", "Please enter the passenger's Phone Number.");
-    } else if (!numberCriteria.test(formData.Number)) {
-      addFormFeedback("Number", "Please enter a valid phone number.");
-    }
+    if (!isLeadPassengerMyself) {
+      const numberCriteria = /^(0)?[0-9]{4}(\s)?[0-9]{3}(\s)?[0-9]{1,3}$/;
+      if (formData.Number == "") {
+        addFormFeedback("Number", "Please enter the passenger's Phone Number.");
+      } else if (!numberCriteria.test(formData.Number)) {
+        addFormFeedback("Number", "Please enter a valid phone number.");
+      }
 
-    // Passenger name, between 1 and 100 chars.
-    if (formData.PassengerName == "") {
-      addFormFeedback("PassengerName", "Please enter the passenger's name.");
-      fail = true;
-    } else if (formData.PassengerName.length > 100) {
-      addFormFeedback(
-        "Passenger",
-        "Passenger Name too long. Please use an abbreviation.",
-      );
-      fail = true;
-    }
+      // Passenger name, between 1 and 100 chars.
+      if (formData.PassengerName == "") {
+        addFormFeedback("PassengerName", "Please enter the passenger's name.");
+        fail = true;
+      } else if (formData.PassengerName.length > 100) {
+        addFormFeedback(
+          "Passenger",
+          "Passenger Name too long. Please use an abbreviation.",
+        );
+        fail = true;
+      }
 
-    // Email (at least one letter (not space), an @ symbol, and domain of
-    // at least one letter before and two letters after a full stop.)
-    const emailCriteria = /^[^\s]{1,}\@[^\s]{1,}\.[^\s]{2,}$/;
-    if (!emailCriteria.test(formData.Email)) {
-      addFormFeedback("Email", "Please enter a valid email address.");
-      fail = true;
+      // Email (at least one letter (not space), an @ symbol, and domain of
+      // at least one letter before and two letters after a full stop.)
+      const emailCriteria = /^[^\s]{1,}\@[^\s]{1,}\.[^\s]{2,}$/;
+      if (!emailCriteria.test(formData.Email)) {
+        addFormFeedback("Email", "Please enter a valid email address.");
+        fail = true;
+      }
     }
 
     // Additional details (optional field)
@@ -320,6 +327,7 @@ export default function BookingPage() {
         dep_id: formData.dep_id,
         airport: formData.Airport,
         flight_num: formData.FlightNum,
+        isLeadPassengerMyself: isLeadPassengerMyself
       };
 
       fetch("/api/create_booking", {
@@ -743,14 +751,14 @@ export default function BookingPage() {
                         setVias([{ name: latlon.name, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) }, ...vias.slice(1)]);
                         setFormData({
                           ...formData,
-                          Via: [{ 
+                          Via: [{
                             short_name: latlon.name,
-                            address: latlon.full_address, 
-                            lat: parseFloat(latlon.lat), 
-                            lng: parseFloat(latlon.lon) 
+                            address: latlon.full_address,
+                            lat: parseFloat(latlon.lat),
+                            lng: parseFloat(latlon.lon)
                           },
-                            ...formData.Via.slice(1)] 
-                          });
+                          ...formData.Via.slice(1)]
+                        });
                         addFormFeedback("Via1", ""); // Reset any validation errors
                         e.target.value = latlon.full_address;
                       } else {
@@ -759,7 +767,7 @@ export default function BookingPage() {
                         // Remove this via (and the next ones) if it is removed or changed to an invalid location.
                         setFormData({
                           ...formData,
-                          Via: [...formData.Via.slice(1)] 
+                          Via: [...formData.Via.slice(1)]
                         });
                         setVias([]);
                       }
@@ -806,13 +814,13 @@ export default function BookingPage() {
                             ...formData,
                             Via: [
                               ...formData.Via.slice(0, 1),
-                              { 
+                              {
                                 short_name: latlon.name,
-                                address: latlon.full_address, 
-                                lat: parseFloat(latlon.lat), 
-                                lng: parseFloat(latlon.lon) 
+                                address: latlon.full_address,
+                                lat: parseFloat(latlon.lat),
+                                lng: parseFloat(latlon.lon)
                               },
-                              ...formData.Via.slice(2)] 
+                              ...formData.Via.slice(2)]
                           });
                           addFormFeedback("Via2", ""); // Reset any validation errors
                           e.target.value = latlon.full_address;
@@ -822,7 +830,7 @@ export default function BookingPage() {
                           // Remove this via (and the next ones) if it is removed or changed to an invalid location.
                           setFormData({
                             ...formData,
-                            Via: [...formData.Via.slice(0, 1)] 
+                            Via: [...formData.Via.slice(0, 1)]
                           });
                           // Remove it from the map too.
                           setVias(vias.slice(0, 1));
@@ -865,13 +873,13 @@ export default function BookingPage() {
                           setFormData({
                             ...formData,
                             Via: [...formData.Via.slice(0, 2),
-                              { 
-                                short_name: latlon.name,
-                                address: latlon.full_address, 
-                                lat: parseFloat(latlon.lat), 
-                                lng: parseFloat(latlon.lon) 
-                              },
-                            ] 
+                            {
+                              short_name: latlon.name,
+                              address: latlon.full_address,
+                              lat: parseFloat(latlon.lat),
+                              lng: parseFloat(latlon.lon)
+                            },
+                            ]
                           });
                           addFormFeedback("Via3", ""); // Reset any validation errors
                           e.target.value = latlon.full_address;
@@ -881,7 +889,7 @@ export default function BookingPage() {
                           // Remove this via if it is removed or changed to an invalid location.
                           setFormData({
                             ...formData,
-                            Via: [...formData.Via.slice(0, 2)] 
+                            Via: [...formData.Via.slice(0, 2)]
                           });
                           // Remove the vias from the map.
                           setVias(vias.slice(0, 2));
@@ -1112,7 +1120,7 @@ export default function BookingPage() {
                           setReturnLoc({ name: latlon.name, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) });
                           setFormData({ ...formData, ReturnTo: { short_name: latlon.name, address: latlon.full_address, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) } });
                           addFormFeedback("ReturnTo", ""); // Reset any validation errors
-                          e.target.value = latlon.full_address; 
+                          e.target.value = latlon.full_address;
                         } else { // No results
                           addFormFeedback("ReturnTo", "No results found for this search term.");
                           setFormData({ ...formData, ReturnTo: null });
@@ -1178,125 +1186,160 @@ export default function BookingPage() {
               <div>
                 <h3 className="font-bold">Lead passenger details:</h3>
               </div>
-              <div className="flex flex-col">
-                <label htmlFor="name" className="mb-1 text-sm">
-                  Passenger Name
-                </label>
-                <input
-                  id="name"
-                  type="text"
-                  className={`border-2 rounded px-3 py-2 ${formFeedback.passengerName == "" ? "border-gray-800" : "border-red-700"
-                    }`}
-                  onChange={(e) => {
-                    setFormData({ ...formData, PassengerName: e.target.value });
-                  }}
-                />
-                <FormHelperText
-                  sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
-                  className={`${formFeedback.passengerName != "" ? "" : "hidden"}`}
+              <div>
+                <label
+                  htmlFor="leadPassenger"
+                  className="inline-flex items-center cursor-pointer gap-2"
                 >
-                  {formFeedback.passengerName}
-                </FormHelperText>
-              </div>
-              <div className="flex flex-col">
-                <label htmlFor="number" className="mb-1 text-sm">
-                  Phone number
-                </label>
-                <div className="flex gap-2">
-                  <select
-                    className="border-2 rounded px-2 py-2 border-gray-800"
-                    onChange={(e) => {
-                      setPhoneCode(e.target.value);
-                    }}
-                  >
-                    <option value="+44">+44 (UK)</option>
-                    <option value="+1">+1 (US/CA)</option>
-                    <option value="+91">+91 (IN)</option>
-                    <option value="+86">+86 (CN)</option>
-                    <option value="+61">+61 (AU)</option>
-                    <option value="+33">+33 (FR)</option>
-                    <option value="+49">+49 (DE)</option>
-                    <option value="+81">+81 (JP)</option>
-                  </select>
+                  <span className="text-sm font-medium text-gray-900">
+                    I am the lead passenger
+                  </span>
                   <input
-                    type="tel"
-                    id="number"
-                    placeholder="1234567890"
-                    className={`border-2 rounded flex-1 sm:px-3 py-2 min-w-0 w-full ${formFeedback.Number == "" ? "border-gray-800" : "border-red-700"
-                      }`}
-                    onChange={(e) => {
-                      setFormData({ ...formData, Number: e.target.value });
-                      addFormFeedback("Number", "");
+                    id="leadPassenger"
+                    type="checkbox"
+                    checked={isLeadPassengerMyself}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        e.currentTarget.blur();
+                      }
                     }}
+                    onChange={(e) => {
+                      setIsLeadPassengerMyself(e.target.checked);
+                      setFormData({ ...formData, CustomLoc: "" });
+                    }}
+                    className="sr-only peer"
                   />
-                </div>
-                <FormHelperText
-                  sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
-                  className={`${formFeedback.Number != "" ? "" : "hidden"}`}
-                >
-                  {formFeedback.Number}
-                </FormHelperText>
+                  <div className="relative w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-gray-300 peer-checked:bg-[#4a4a4a] peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+                </label>
               </div>
-              <ThemeProvider theme={inputTheme}>
-                <Autocomplete
-                  sx={{ my: 1 }}
-                  disablePortal
-                  onChange={(_, dep) => {
-                    setFormData({ ...formData, dep_id: dep!.dep_id });
-                    setDepartmentEmpty(false);
-                  }}
-                  options={departmentList}
-                  getOptionKey={(department) => department.dep_id}
-                  getOptionLabel={(department) => department.dep_name}
-                  slotProps={{
-                    paper: {
-                      sx: {
-                        border: "2px solid #2c2c2c",
-                        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
-                        mt: 0.5,
-                        "& .MuiAutocomplete-option": {
-                          "&:hover": {
-                            backgroundColor: "#f3f4f6",
-                          },
-                          '&[aria-selected="true"]': {
-                            backgroundColor: "#e5e7eb !important",
+              {!isLeadPassengerMyself && (
+                <>
+                  <div className="flex flex-col">
+                    <label htmlFor="name" className="mb-1 text-sm">
+                      Passenger Name
+                    </label>
+                    <input
+                      id="name"
+                      type="text"
+                      className={`border-2 rounded px-3 py-2 ${formFeedback.passengerName == "" ? "border-gray-800" : "border-red-700"
+                        }`}
+                      onChange={(e) => {
+                        setFormData({ ...formData, PassengerName: e.target.value });
+                      }}
+                    />
+                    <FormHelperText
+                      sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
+                      className={`${formFeedback.passengerName != "" ? "" : "hidden"}`}
+                    >
+                      {formFeedback.passengerName}
+                    </FormHelperText>
+                  </div>
+                  <div className="flex flex-col">
+                    <label htmlFor="number" className="mb-1 text-sm">
+                      Phone number
+                    </label>
+                    <div className="flex gap-2">
+                      <select
+                        className="border-2 rounded px-2 py-2 border-gray-800"
+                        onChange={(e) => {
+                          setPhoneCode(e.target.value);
+                        }}
+                      >
+                        <option value="+44">+44 (UK)</option>
+                        <option value="+1">+1 (US/CA)</option>
+                        <option value="+91">+91 (IN)</option>
+                        <option value="+86">+86 (CN)</option>
+                        <option value="+61">+61 (AU)</option>
+                        <option value="+33">+33 (FR)</option>
+                        <option value="+49">+49 (DE)</option>
+                        <option value="+81">+81 (JP)</option>
+                      </select>
+                      <input
+                        type="tel"
+                        id="number"
+                        placeholder="1234567890"
+                        className={`border-2 rounded flex-1 sm:px-3 py-2 min-w-0 w-full ${formFeedback.Number == "" ? "border-gray-800" : "border-red-700"
+                          }`}
+                        onChange={(e) => {
+                          setFormData({ ...formData, Number: e.target.value });
+                          addFormFeedback("Number", "");
+                        }}
+                      />
+                    </div>
+                    <FormHelperText
+                      sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
+                      className={`${formFeedback.Number != "" ? "" : "hidden"}`}
+                    >
+                      {formFeedback.Number}
+                    </FormHelperText>
+                  </div>
+                  <ThemeProvider theme={inputTheme}>
+                    <Autocomplete
+                      sx={{ my: 1 }}
+                      disablePortal
+                      onChange={(_, dep) => {
+                        setFormData({ ...formData, dep_id: dep!.dep_id });
+                        setDepartmentEmpty(false);
+                      }}
+                      options={departmentList}
+                      getOptionKey={(department) => department.dep_id}
+                      getOptionLabel={(department) => department.dep_name}
+                      slotProps={{
+                        paper: {
+                          sx: {
+                            border: "2px solid #2c2c2c",
+                            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                            mt: 0.5,
+                            "& .MuiAutocomplete-option": {
+                              "&:hover": {
+                                backgroundColor: "#f3f4f6",
+                              },
+                              '&[aria-selected="true"]': {
+                                backgroundColor: "#e5e7eb !important",
+                              },
+                            },
                           },
                         },
-                      },
-                    },
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="Department"
-                      error={departmentEmpty}
-                      helperText={departmentEmpty && "Select a department."}
+                      }}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Department"
+                          error={departmentEmpty}
+                          helperText={departmentEmpty && "Select a department."}
+                        />
+                      )}
                     />
-                  )}
-                />
-              </ThemeProvider>
+                  </ThemeProvider>
+                </>
+              )}
+
               <div className="flex flex-col sm:flex-row gap-4">
-                <div className="flex flex-col flex-1">
-                  <label htmlFor="mail" className="mb-1 text-sm">
-                    Email
-                  </label>
-                  <input
-                    id="mail"
-                    type="email"
-                    className={`border-2 rounded px-3 py-2 ${formFeedback.Email == "" ? "border-gray-800" : "border-red-700"
-                      }`}
-                    onChange={(e) => {
-                      setFormData({ ...formData, Email: e.target.value });
-                      addFormFeedback("Email", "");
-                    }}
-                  />
-                  <FormHelperText
-                    sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
-                    className={`${formFeedback.Email != "" ? "" : "hidden"}`}
-                  >
-                    {formFeedback.Email}
-                  </FormHelperText>
-                </div>
+                {!isLeadPassengerMyself && (
+                  <div className="flex flex-col flex-1">
+                    <label htmlFor="mail" className="mb-1 text-sm">
+                      Email
+                    </label>
+                    <input
+                      id="mail"
+                      type="email"
+                      className={`border-2 rounded px-3 py-2 ${formFeedback.Email == "" ? "border-gray-800" : "border-red-700"
+                        }`}
+                      onChange={(e) => {
+                        setFormData({ ...formData, Email: e.target.value });
+                        addFormFeedback("Email", "");
+                      }}
+                    />
+                    <FormHelperText
+                      sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
+                      className={`${formFeedback.Email != "" ? "" : "hidden"}`}
+                    >
+                      {formFeedback.Email}
+                    </FormHelperText>
+                  </div>
+                )}
+
                 <div className="flex flex-col flex-1">
                   <label htmlFor="passenger" className="mb-1 text-sm">
                     Passengers
@@ -1388,7 +1431,7 @@ export default function BookingPage() {
                 </MarkerContent>
               </MapMarker>
             )}
-            
+
             {start && start.lat && start.lng && ( // Only render marker when not null
               <MapMarker longitude={start.lng} latitude={start.lat}>
                 <MarkerContent>
@@ -1440,12 +1483,12 @@ export default function BookingPage() {
                   {formatDistance(routes[0].distance)}
                 </div>
                 <p className="text-[11px] opacity-80 mt-1">
-                  Subject to traffic and weather conditions<br/><br/>
-                  <b>Key:</b><br/>
-                  <span className="text-xs text-green-500">◉</span> Origin<br/>
-                  <span className="text-xs text-yellow-500">◉</span> Via<br/>
-                  <span className="text-xs text-red-500">◉</span> Destination<br/>
-                  <span className="text-xs text-indigo-500">▬</span> Outbound Trip<br/>
+                  Subject to traffic and weather conditions<br /><br />
+                  <b>Key:</b><br />
+                  <span className="text-xs text-green-500">◉</span> Origin<br />
+                  <span className="text-xs text-yellow-500">◉</span> Via<br />
+                  <span className="text-xs text-red-500">◉</span> Destination<br />
+                  <span className="text-xs text-indigo-500">▬</span> Outbound Trip<br />
                   <span className="text-xs text-gray-700">▬</span> Return Trip
                 </p>
               </div>
