@@ -1,0 +1,286 @@
+"use client";
+
+import {
+  Table, TableBody, TableHead, TableRow, TableContainer, Paper,
+  Box,
+  Button,
+  TextField,
+  Chip,
+  Snackbar,
+  Alert,
+  Typography
+} from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { DepartmentRecord } from "@/model/models";
+import CustomizedButton from "@/components/CustomizedButton";
+import { StyledStickyTableCell } from "@/components/StyledTableCell";
+import AddDepartmentDialog from "./newDepartmentDialog";
+import ViewManagerDialog from "./viewManagerDialog";
+import ViewDepartmentDialog from "./viewDepartmentDialog";
+import ConfirmDialog from "@/components/confirmDIalog";
+import { deleteDepartment, getDepartmentManageList } from "../request";
+
+const DepartmentManagePage = () => {
+
+  const [isLoading, setIsLoading] = useState(true);
+  const [departments, setDepartments] = useState<DepartmentRecord[]>([]);
+  const [allDepartments, setAllDepartments] = useState<DepartmentRecord[]>([]);
+
+  const [snackbarState, setSnackbarState] = useState({
+    open: false,
+    status: 'error',
+    message: ''
+  })
+
+  useEffect(() => {
+    getDepartmentManageList().then(async (res) => {
+      if (res.status === 200) {
+        const data = await res.json()
+        console.log(data);
+        setAllDepartments(data);
+        setDepartments(data);
+        setIsLoading(false);
+      }
+    });
+  }, []);
+
+
+  const [managerData, setManagerData] = useState<DepartmentRecord["manager"]>();
+  const [managerDialogOpen, setManagerDialogOpen] = useState(false)
+  const handleViewManager = (manager: DepartmentRecord["manager"]) => {
+    setManagerData(manager);
+    setManagerDialogOpen(true);
+  };
+
+  const [departmentData, setDepartmentData] = useState<DepartmentRecord>();
+  const [departmentDialogOpen, setDepartmentDialogOpen] = useState(false)
+  const handleView = (department: DepartmentRecord) => {
+    setDepartmentData(department)
+    setDepartmentDialogOpen(true)
+  };
+
+  const [confirmDeleteDialogOpen, setConfirmDeleteDialogOpen] = useState(false)
+  const handleOpenConfirmDeleteDialog = (department: DepartmentRecord) => {
+    setDepartmentData(department)
+    setConfirmDeleteDialogOpen(true)
+  };
+  const handleDeleteDepartment = (department: DepartmentRecord) => {
+    if (department.userCount > 0) {
+      setSnackbarState({
+        open: true,
+        status: 'error',
+        message: 'Department has users, cannot be deleted!'
+      })
+      return;
+    }
+    deleteDepartment(department.depId).then(async (res) => {
+      if (res.status === 200) {
+        setSnackbarState({
+          open: true,
+          status: 'success',
+          message: 'Department is deleted successfully!'
+        })
+        setDepartments(departments.filter(e => e.depId !== department.depId))
+      } else {
+        setSnackbarState({
+          open: true,
+          status: 'error',
+          message: 'Delete department failed, try again later!'
+        })
+      }
+    });
+  };
+
+  const [searchFormInput, setSearchFormInput] = useState({ name: "" })
+  const handleSubmitSearchForm = (e: React.SubmitEvent) => {
+    e.preventDefault()
+    console.log(searchFormInput);
+    if (searchFormInput.name !== '') {
+      setDepartments(allDepartments.filter(e => {
+        return e.depName.indexOf(searchFormInput.name) !== -1
+      }))
+    } else {
+      setDepartments(allDepartments)
+    }
+  }
+
+  const [newDepartmentDialogOpen, setNewDepartmentDialogOpen] = useState(false)
+
+  const handleDepartmentUserCountChange = (fromDepId: number, toDepId: number, userCount: number) => {
+    setDepartments(departments.map(dep => {
+      if (dep.depId === fromDepId) {
+        return {
+          ...dep,
+          userCount: dep.userCount - userCount
+        }
+      } else if (dep.depId === toDepId) {
+        return {
+          ...dep,
+          userCount: dep.userCount + userCount
+        }
+      } else {
+        return dep;
+      }
+    }))
+  }
+
+  const handleDepartmentNameChange = (depId: number, newDepName: string) => {
+    setAllDepartments(allDepartments.map(e => {
+      if (e.depId === depId) {
+        e.depName = newDepName;
+        return e
+      } else {
+        return e
+      }
+    }))
+  }
+
+  return (
+    <>
+      <div className="flex justify-between items-center mb-4">
+        <Box
+          component="form"
+          onSubmit={handleSubmitSearchForm}
+          sx={{
+            display: "flex",
+            gap: 2.5,
+          }}
+        >
+          <TextField
+            fullWidth
+            label="Name"
+            id="searchNameInput"
+            value={searchFormInput.name}
+            onChange={(e) => { setSearchFormInput({ ...searchFormInput, name: e.target.value }); }}
+            size="small"
+            sx={{ minWidth: 150 }}
+          />
+          <Button
+            fullWidth
+            type="submit"
+            variant="contained"
+            sx={{
+              bgcolor: "#2c2c2c",
+              color: "white",
+              borderRadius: "0.375rem",
+              fontSize: "0.875rem",
+              fontWeight: 300,
+              "&:hover": {
+                bgcolor: "#414040",
+                transform: "scale(1.01)",
+              },
+              transition: "all 0.2s",
+            }}
+            size="small"
+          >
+            Search
+          </Button>
+          <Button
+            fullWidth
+            onClick={() => setNewDepartmentDialogOpen(true)}
+            variant="contained"
+            sx={{
+              color: "white",
+              borderRadius: "0.375rem",
+              fontSize: "0.625rem",
+              fontWeight: 300,
+              "&:hover": {
+                transform: "scale(1.01)",
+              },
+              transition: "all 0.2s",
+            }}
+            size="small"
+          >
+            New Department
+          </Button>
+        </Box>
+      </div>
+      {isLoading ? (
+        <Typography sx={{ color: "gray", fontSize: 16, textAlign: "center", my: 10 }}>
+          Getting department data...
+        </Typography>
+      ) : departments.length === 0 ? (
+        <Typography sx={{ color: "gray", fontSize: 16, textAlign: "center", my: 10 }}>
+          No departments to show.
+        </Typography>
+      ) : (
+        <Box>
+          <TableContainer component={Paper} sx={{ boxShadow: "none", border: "none", maxHeight: 600 }}>
+            <Table stickyHeader sx={{ minWidth: 500 }} aria-label="department table">
+              <TableHead>
+                <TableRow>
+                  <StyledStickyTableCell>Name</StyledStickyTableCell>
+                  <StyledStickyTableCell>Manager</StyledStickyTableCell>
+                  <StyledStickyTableCell>Member Count</StyledStickyTableCell>
+                  <StyledStickyTableCell>Operation</StyledStickyTableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {departments.map((department) => (
+                  <TableRow key={department.depId}>
+                    <StyledStickyTableCell>{department.depName}</StyledStickyTableCell>
+                    <StyledStickyTableCell>
+                      {department.manager ?
+                        (<Button onClick={() => handleViewManager(department.manager)}>
+                          {department.manager.full_name}
+                        </Button>) :
+                        (<Chip
+                          size="small"
+                          color='default'
+                          label="To be assigned"
+                        />)}
+                    </StyledStickyTableCell>
+                    <StyledStickyTableCell>{department.userCount}</StyledStickyTableCell>
+                    <StyledStickyTableCell>
+                      <div className="flex gap-2 justify-center">
+                        <CustomizedButton type="primary" click={() => handleView(department)} title="View" />
+                        <CustomizedButton type="error" click={() => handleOpenConfirmDeleteDialog(department)} title="Delete" />
+                      </div>
+                    </StyledStickyTableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Box>
+      )}
+
+      <AddDepartmentDialog dialogOpen={newDepartmentDialogOpen} handleDialogClose={() => setNewDepartmentDialogOpen(false)} />
+      {managerData && (<ViewManagerDialog viewData={managerData} dialogOpen={managerDialogOpen} handleDialogClose={() => setManagerDialogOpen(false)} />)}
+      {departmentData &&
+        (<ViewDepartmentDialog
+          departmentList={allDepartments.map((d) => ({ depId: d.depId, depName: d.depName }))}
+          viewData={departmentData}
+          dialogOpen={departmentDialogOpen}
+          handleDialogClose={() => { setDepartmentDialogOpen(false); setDepartmentData(undefined) }}
+          notifyUserCountChange={handleDepartmentUserCountChange}
+          notifyDepartmentNameChange={handleDepartmentNameChange}
+        />)}
+
+      <ConfirmDialog
+        open={confirmDeleteDialogOpen}
+        dialogTitle="Confirm delete department"
+        confirmMessage="Are you sure you want to delete this department?"
+        confirmCallBack={() => { handleDeleteDepartment(departmentData!); setConfirmDeleteDialogOpen(false); }}
+        cancelCallBack={() => setConfirmDeleteDialogOpen(false)}
+      />
+      <Snackbar
+        autoHideDuration={2000}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        open={snackbarState.open}
+        onClose={() => setSnackbarState({ open: false, status: 'error', message: '' })}
+      >
+        <Alert
+          onClose={() => setSnackbarState({ open: false, status: 'error', message: '' })}
+          severity={snackbarState.status === 'success' ? 'success' : 'error'}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {snackbarState.message}
+        </Alert>
+      </Snackbar>
+    </>
+  );
+};
+
+export default DepartmentManagePage;

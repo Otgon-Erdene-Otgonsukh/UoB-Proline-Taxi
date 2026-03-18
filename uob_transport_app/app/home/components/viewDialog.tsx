@@ -3,7 +3,7 @@ import {
   Close as CloseIcon,
   FindInPage as FindInPageIcon,
 } from "@mui/icons-material";
-import { BookingRecord } from "@/model/models";
+import { BookingRecord, location } from "@/model/models";
 
 const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRecord, dialogOpen: boolean, handleDialogClose: () => void }) => {
   return (<Dialog
@@ -20,7 +20,10 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRe
         bgcolor: "#2c2c2c",
         color: "white",
         textAlign: "center",
-        fontSize: 28,
+        fontSize: {
+          md: 28,
+          xs: 24
+        },
       }}
       id="customized-dialog-title"
     >
@@ -47,13 +50,16 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRe
         sx={{
           justifyContent: "space-between",
           alignItems: "center",
-          width: "400px",
+          width: {
+            md: "400px",
+            xs: "280px"
+          },
         }}
       >
         <Typography gutterBottom sx={{ fontWeight: "bold" }}>
           Time Created:
         </Typography>
-        <Typography gutterBottom>
+        <Typography gutterBottom textAlign="right">
           {viewData?.time_created
             ? new Date(viewData?.time_created).toLocaleString()
             : ""}
@@ -64,7 +70,10 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRe
         sx={{
           justifyContent: "space-between",
           alignItems: "center",
-          width: "400px",
+          width: {
+            md: "400px",
+            xs: "280px"
+          },
         }}
       >
         <Typography gutterBottom sx={{ fontWeight: "bold" }}>
@@ -73,7 +82,11 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRe
         <Typography gutterBottom>
           {viewData?.trip.airport === "" ||
             viewData?.trip.airport === null
-            ? viewData?.trip.pickup_location
+            ? (
+                (viewData?.trip.pickup_location.includes("{"))? // Temporary check to see if this is an old style booking.
+                JSON.parse(viewData?.trip.pickup_location).address
+                : viewData?.trip.pickup_location
+              )
             : viewData?.trip.airport}
         </Typography>
       </Stack>
@@ -83,7 +96,10 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRe
           sx={{
             justifyContent: "space-between",
             alignItems: "center",
-            width: "400px",
+            width: {
+              md: "400px",
+              xs: "280px"
+            },
           }}
         >
           <Typography gutterBottom sx={{ fontWeight: "bold" }}>
@@ -94,19 +110,22 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRe
           </Typography>
         </Stack>
       )}
-      {viewData?.trip.via && (
+      {viewData?.trip.via && viewData.trip.via.includes("{") && (
         <Stack
           direction="row"
           sx={{
             justifyContent: "space-between",
             alignItems: "center",
-            width: "400px",
+            width: {
+              md: "400px",
+              xs: "280px"
+            },
           }}
         >
           <Typography gutterBottom sx={{ fontWeight: "bold" }}>
             Via:
           </Typography>
-          <Typography gutterBottom>{viewData?.trip.via}</Typography>
+          <Typography gutterBottom>{viewData?.trip.via.includes("{") ? JSON.parse(viewData?.trip.via).map((loc : location) => loc.address).join("; ") : viewData?.trip.via}</Typography>
         </Stack>
       )}
       <Stack
@@ -114,14 +133,21 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRe
         sx={{
           justifyContent: "space-between",
           alignItems: "center",
-          width: "400px",
+          width: {
+            md: "400px",
+            xs: "280px"
+          },
         }}
       >
         <Typography gutterBottom sx={{ fontWeight: "bold" }}>
           To:
         </Typography>
         <Typography gutterBottom>
-          {viewData?.trip.dropoff_location}
+          {
+            viewData?.trip.dropoff_location.includes("{")? // Temporary check to see if this is an old style booking.
+            JSON.parse(viewData?.trip.dropoff_location).address
+            : viewData?.trip.dropoff_location
+          }
         </Typography>
       </Stack>
       <Stack
@@ -129,7 +155,10 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRe
         sx={{
           justifyContent: "space-between",
           alignItems: "center",
-          width: "400px",
+          width: {
+            md: "400px",
+            xs: "280px"
+          },
         }}
       >
         <Typography gutterBottom sx={{ fontWeight: "bold" }}>
@@ -153,7 +182,10 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRe
         sx={{
           justifyContent: "space-between",
           alignItems: "center",
-          width: "400px",
+          width: {
+            md: "400px",
+            xs: "280px"
+          },
         }}
       >
         <Typography gutterBottom sx={{ fontWeight: "bold" }}>
@@ -168,7 +200,10 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRe
         sx={{
           justifyContent: "space-between",
           alignItems: "center",
-          width: "400px",
+          width: {
+            md: "400px",
+            xs: "280px"
+          },
         }}
       >
         <Typography gutterBottom sx={{ fontWeight: "bold" }}>
@@ -187,7 +222,10 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRe
             sx={{
               justifyContent: "space-between",
               alignItems: "center",
-              width: "400px",
+              width: {
+                md: "400px",
+                xs: "280px"
+              },
             }}
           >
             <Typography gutterBottom sx={{ fontWeight: "bold" }}>
@@ -206,7 +244,10 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRe
             sx={{
               justifyContent: "space-between",
               alignItems: "center",
-              width: "400px",
+              width: {
+                md: "400px",
+                xs: "280px"
+              },
             }}
           >
             <Typography gutterBottom sx={{ fontWeight: "bold" }}>
@@ -224,7 +265,10 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRe
           sx={{
             justifyContent: "space-between",
             alignItems: "center",
-            width: "400px",
+            width: {
+              md: "400px",
+              xs: "280px"
+            },
           }}
         >
           <Typography gutterBottom sx={{ fontWeight: "bold" }}>
@@ -239,7 +283,10 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRe
           sx={{
             justifyContent: "space-between",
             alignItems: "center",
-            width: "400px",
+            width: {
+              md: "400px",
+              xs: "280px"
+            },
           }}
         >
           <Typography gutterBottom sx={{ fontWeight: "bold" }}>

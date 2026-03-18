@@ -70,6 +70,17 @@ jest.mock("@/components/NumberField", () => ({
   ),
 }));
 
+// Simulate nominatim address searching.
+jest.mock("@/components/NominatimSearch", () => ({
+  __esModule: true,
+  getLatLon: jest.fn(async (address : string) => {
+    if (address === "Temple Meads") { // A value to simulate a real resolvable location.
+      return { lat: "51.4490991", lon: "-2.5804029", name: "Temple Meads Bristol", full_address: "Temple Meads Bristol, Cattle Market Road, The Dings, St Philip's, Bristol, City of Bristol, West of England, England, BS1 6QF, United Kingdom" };
+    }
+    return null;
+  }),
+}));
+
 global.fetch = jest.fn();
 
 // HELPERS
@@ -208,28 +219,30 @@ describe("Validation", () => {
     });
   });
 
-  test("drop-off location: validates too short, too long, and clears error on valid input", async () => {
+  test("drop-off location: validates non-existent, and clears error on valid input", async () => {
     render(<BookingPage />);
     await waitFor(() => screen.getByLabelText(/drop-off location/i));
     const input = screen.getByLabelText(/drop-off location/i);
 
-    fireEvent.change(input, { target: { value: "AB" } });
+    // Non existent location
+    fireEvent.change(input, { target: { value: "hfgnuaijekgfhnbusjiyklgbfhnsuyikglhf" } });
     await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
     await waitFor(() =>
-      expect(screen.getByText(/drop-off location not detailed enough/i)).toBeInTheDocument()
+      expect(screen.getByText(/please enter a drop\-off location/i)).toBeInTheDocument()
     );
 
-    fireEvent.change(input, { target: { value: "A".repeat(101) } });
+    // Empty location
+    fireEvent.change(input, { target: { value: "" } });
     await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
     await waitFor(() =>
-      expect(screen.getByText(/drop-off location too long/i)).toBeInTheDocument()
+      expect(screen.getByText(/please enter a drop\-off location/i)).toBeInTheDocument()
     );
 
-    await userEvent.type(input, "Temple Meads Station");
+    await userEvent.type(input, "Real Place");
     await waitFor(() => expect(input).not.toHaveClass("border-red-700"));
   });
 
-  test("custom pick-up location: validates empty, too short, too long, and red border", async () => {
+  test("custom pick-up location: validates empty, non-existent, and red border", async () => {
     render(<BookingPage />);
     await waitFor(() => screen.getByLabelText(/manually enter/i));
     await userEvent.click(screen.getByLabelText(/manually enter/i));
@@ -242,16 +255,10 @@ describe("Validation", () => {
       expect(input).toHaveClass("border-red-700");
     });
 
-    fireEvent.change(input, { target: { value: "Hi" } });
+    fireEvent.change(input, { target: { value: "hfgnuaijekgfhnbusjiyklgbfhnsuyikglhf" } });
     await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
     await waitFor(() =>
-      expect(screen.getByText(/pickup location not detailed enough/i)).toBeInTheDocument()
-    );
-
-    fireEvent.change(input, { target: { value: "A".repeat(101) } });
-    await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
-    await waitFor(() =>
-      expect(screen.getByText(/pickup location too long/i)).toBeInTheDocument()
+      expect(screen.getByText(/please enter a drop\-off location/i)).toBeInTheDocument()
     );
   });
 
@@ -404,7 +411,8 @@ describe("Validation", () => {
     await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
     await waitFor(() => screen.getByText(/please enter a drop-off location/i));
 
-    await userEvent.type(screen.getByLabelText(/drop-off location/i), "Temple Meads Station");
+    await userEvent.type(screen.getByLabelText(/drop-off location/i), "Temple Meads");
+    await userEvent.tab()
     expect(screen.getByText(/please enter a valid email address/i)).toBeInTheDocument();
 
     await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
@@ -418,7 +426,7 @@ describe("Validation", () => {
     // Past date
     render(<BookingPage />);
     await waitFor(() => screen.getByLabelText(/pick-up date and time/i));
-    await userEvent.type(screen.getByLabelText(/drop-off location/i), "Temple Meads Station, Bristol");
+    await userEvent.type(screen.getByLabelText(/drop-off location/i), "Real Place");
     await userEvent.type(screen.getByLabelText(/passenger name/i), "Jane Doe");
     await userEvent.type(screen.getByLabelText(/phone number/i), "07911123456");
     await userEvent.type(screen.getByLabelText(/^email$/i), "jane@example.com");
@@ -486,7 +494,7 @@ describe("Department autocomplete and interactivity", () => {
       expect(screen.getByText("Richmond Building")).toBeInTheDocument();
       expect(screen.getByText("Victoria Rooms")).toBeInTheDocument();
       expect(screen.getByText("Wills Memorial Building")).toBeInTheDocument();
-      expect(screen.getByText("Physics Building")).toBeInTheDocument();
+      expect(screen.getByText("Physics Laboratory")).toBeInTheDocument();
     });
   });
 });
