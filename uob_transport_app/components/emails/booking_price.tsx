@@ -212,7 +212,7 @@ export default function BookingPrice({
                 href={
                   process.env.NODE_ENV === "development"
                     ? "http://localhost:3000/dep-dashboard"
-                    : "http://uob-transport-alb-848507222.eu-west-2.elb.amazonaws.com/dep-dashboard"
+                    : "https://uobst.ilm.gg/dep-dashboard"
                 }
               >
                 Review Booking
