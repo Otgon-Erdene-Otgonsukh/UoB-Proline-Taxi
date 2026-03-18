@@ -24,7 +24,12 @@ const testData = {
   via: [],
   returnTo: undefined,
   passenger_num: 1,
-  airport: "Heathrow Airport",
+  airport: {
+    short_name: "Heathrow Airport",
+    address: "Heathrow Airport, Lord Knyvetts Court, Stanwell, Borough of Spelthorne, Surrey, England, TW19 7JH, United Kingdom",
+    lat: 51.467739,
+    lng: -0.4587801
+  },
   flight_num: "VS1234",
   dep_id: 3,
 };
@@ -62,7 +67,12 @@ const testDataWithReturn = {
     lng: -2.601892
   },
   passenger_num: 2,
-  airport: "Manchester Airport",
+  airport: {
+    short_name: "Heathrow Airport",
+    address: "Heathrow Airport, Lord Knyvetts Court, Stanwell, Borough of Spelthorne, Surrey, England, TW19 7JH, United Kingdom",
+    lat: 51.467739,
+    lng: -0.4587801
+  },
   flight_num: "EZY5678",
   dep_id: 2,
 };
@@ -109,7 +119,12 @@ test("Create booking function correctly creates a trip and booking entry", async
       via: JSON.stringify([]),
       passenger_num: 1,
       return_drop_loc: undefined,
-      airport: "Heathrow Airport",
+      airport: JSON.stringify({
+        short_name: "Heathrow Airport",
+        address: "Heathrow Airport, Lord Knyvetts Court, Stanwell, Borough of Spelthorne, Surrey, England, TW19 7JH, United Kingdom",
+        lat: 51.467739,
+        lng: -0.4587801
+      }),
       flight_num: "VS1234",
     },
   });
@@ -193,7 +208,12 @@ test("Create booking function correctly includes returnDT in trip when defined",
         lat: 51.45689,
         lng: -2.601892
       }),
-      airport: "Manchester Airport",
+      airport: JSON.stringify({
+        short_name: "Heathrow Airport",
+        address: "Heathrow Airport, Lord Knyvetts Court, Stanwell, Borough of Spelthorne, Surrey, England, TW19 7JH, United Kingdom",
+        lat: 51.467739,
+        lng: -0.4587801
+      }),
       flight_num: "EZY5678",
     },
   });
