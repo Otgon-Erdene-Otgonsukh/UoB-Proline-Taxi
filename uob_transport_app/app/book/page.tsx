@@ -178,9 +178,11 @@ export default function BookingPage() {
     } else loc = formData.Airport;
 
     // Department check
-    if (formData.dep_id === 0) {
-      setDepartmentEmpty(true);
-      fail = true;
+    if (!isLeadPassengerMyself) {
+      if (formData.dep_id === 0) {
+        setDepartmentEmpty(true);
+        fail = true;
+      }
     }
 
     // Drop-Off Location

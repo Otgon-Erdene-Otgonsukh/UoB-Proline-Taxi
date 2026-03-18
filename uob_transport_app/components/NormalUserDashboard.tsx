@@ -402,7 +402,7 @@ export default function NormalUserDashboard() {
                   coordinates={coordinates}
                   color={isActive ? "#314158" : "#94a3b8"}
                   width={isActive ? 6 : 4}
-                  opacity={isActive ? 1 : 0.5}
+                  opacity={isActive ? 1 : 0.7}
                   onClick={() => setActiveIndex(r.index)}
                 ></MapRoute>
               );
