@@ -4,6 +4,16 @@
 
 This document provides a concise overview of the project codebase, outlining the tools and technologies used to give developers a comprehensive understanding of the project's structure. In addition to the technical guide, a website guide is included to explain how to interact with and use the application.
 
+## Contents
+
+- [Setup and Prerequisites](#setup-and-prerequisites)
+- [Project Structure and Architecture](#project-structure-and-architecture)
+- [Continuous Integration and Continuous Deployment (CI/CD)](#continuous-integration-and-continuous-deployment-cicd)
+- [Database Structure](#database-structure)
+- [AWS Setup](#aws-setup)
+- [Further Resources](#further-resources)
+- [Detailed User Instruction](#detailed-user-instruction)
+
 ## Setup and Prerequisites
 
 ### Node.js

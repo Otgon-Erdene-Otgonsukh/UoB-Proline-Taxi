@@ -33,16 +33,19 @@ A booking and account management platform to streamline how the University of Br
 
 ### Key Features
 
-- Streamlined booking: enter pick-up/drop-off, time, name, email, instant confirmation through SMS.
+- Streamlined booking: enter pick-up/drop-off, time, name, email, instant confirmation through Mail.
 - Automated data handling: routing important booking details to the corresponding head/finance team of the relevant University department for approval.
-- Real-time journey visibility: status changes and location sharing for reassurance and coordination.
-- Sustainability options: Hybrid/EV vehicle prioritisation and joining-rides feature if applicable.
+- Real-time journey visibility: live status changes and booking visibility.
+- Informative dashboards: data dashboards with numeric data and charts for analysis.
 - Centralised invoicing: booking history and faculty-specific invoices.
 
 ## Project Structure
 
 <pre>
 *2025-UoBsustainableTransport*
+│
+├── *.aws*
+│    └── task-definition.json                  # Task definition used by ECS Tasks / Container
 │
 ├── *.github*                                 
 │    ├── ISSUE_TEMPLATE                        # Issue template files
@@ -53,35 +56,30 @@ A booking and account management platform to streamline how the University of Br
 │    ├── clientMeetings/                       # All client meeting materials
 │    │    ├── clientMeetingAgenda1.md
 │    │    └── clientMeetingNotes1.md
-│    └── design/                               # All design documentation/Figma 
+│    ├── design/                               # All design documentation/Figma 
+│    │
+│    └── ...
 │
 ├── *uob_transport_app*                        # Main application directory
 │    │
 │    ├── *__test__*                            # Jest tests 
 │    │    ├── api                              # API tests
 │    │    │    └── ...                              
+│    │    ├── backend_functions                # Backend function tests
+│    │    │    └── ... 
+│    │    │
 │    │    └── pages                            # Page rendering tests
 │    │         └── ...                               
 │    │
 │    ├── *app*                                 # Next.js App directory (main application/pages)
-│    │    ├── about/                           # About page route
-│    │    │    └── page.tsx
 │    │    ├── api/                             # API routes
 │    │    │    └── ...
 │    │    ├── book/                            # Booking page route
 │    │    │    └── page.tsx                    # Booking form component
 │    │    ├── confirmed/                       # Booking confirmation page route
 │    │    │    └── page.tsx
-│    │    ├── dep-dashboard/                   # Department dashboard page route
-│    │    │    └── page.tsx
-│    │    ├── faq/                             # FAQ page route
-│    │    │    └── page.tsx
-│    │    ├── forgot/                          # Forgot password page route
-│    │    │    └── page.tsx
-│    │    ├── home/                            # Home page route
-│    │    │    └── page.tsx
-│    │    ├── login/                           # Login page route
-│    │    │    └── page.tsx
+│    │    ├── ...
+│    │    │
 │    │    ├── globals.css                      # Global styles and Tailwind imports
 │    │    ├── layout.tsx                       # Root layout 
 │    │    └── page.tsx                         # Landing page
