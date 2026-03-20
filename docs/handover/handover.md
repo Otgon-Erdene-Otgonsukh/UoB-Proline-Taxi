@@ -223,51 +223,51 @@ The following section provides a visual guidance on how each user can interact w
 1. Navigate to the website using the appropriate domain.
 2. Click login on the landing page.
 
-<img src="/docs/handover_pictures/landpage.png"/>
+<img src="/docs/handover_pictures/landpage.png" width="1000"/>
 
 3. Click on the sign up link in the login page.
 4. Enter your details and pick normal user as the account type.
 
-<img src="/docs/handover_pictures/normal.png"/>
+<img src="/docs/handover_pictures/normal.png" width="1000"/>
 
 5. Click sign up and enter your details in the login page and sign in.
 6. In the home page, you can view your recent bookings, edit them and cancel them.
 7. Click on the new bookings button in the home page bookings table.
 
-<img src="/docs/handover_pictures/normalhome.png"/>
+<img src="/docs/handover_pictures/normalhome.png" width="1000"/>
 
 8. In the bookings page, enter your trip and passenger details and click confirm.
 
-<img src="/docs/handover_pictures/book.png"/>
+<img src="/docs/handover_pictures/book.png" width="1000"/>
 
 9. When successful, a success window appears and navigate back to the home page and check the status of your booking.
 
 10. Navigate to the Dashboard tab to see recent bookings and their route in the interactive map and some statistics.
 
-<img src="/docs/handover_pictures/normaldash.png"/>
+<img src="/docs/handover_pictures/normaldash.png" width="1000"/>
 
 ### Finance Staff (UoB)
 
 1. Navigate to the sign up page and enter details using an official university email.
 2. Select "Register as Finance Staff" option.
 
-  <img src="/docs/handover_pictures/finance.png"/>
+  <img src="/docs/handover_pictures/finance.png" width="1000"/>
 
 3. Click register and wait for account approval by the corresponding department manager.
 
-  <img src="/docs/handover_pictures/inprogress.png"/>
+  <img src="/docs/handover_pictures/inprogress.png" width="1000"/>
 
 4. An email is sent when the staff registration request is responded.
 5. When approved, enter the credentials in to the login fields.
 6. After logging in, navigate to the "Dashboard" tab.
 
-  <img src="/docs/handover_pictures/dashboard.png"/>
+  <img src="/docs/handover_pictures/dashboard.png" width="1000"/>
 
 7. The table contains the bookings made under the specific department you are registered in.
 8. The bookings can be Rejected, Approved and Viewed.
 9. When approving, attach the PO number to the booking using the pop-up dialog window.
 
-  <img src="/docs/handover_pictures/attachPO.png"/>
+  <img src="/docs/handover_pictures/attachPO.png" width="1000"/>
 
 ### Super Admin
 
