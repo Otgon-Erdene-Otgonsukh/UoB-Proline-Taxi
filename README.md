@@ -192,9 +192,29 @@ Benefit from a streamlined booking process, clear driver communication, and stra
   7. Depending on your account permissions, you can manage proline staff registration requests or edit bookings.
 
 ## Developer Instructions
-For development, you can get started by cloning the repository, navigating to the root directory of it in the command line, and then do the following to get it running locally:\
-\
-**Installing dependencies**\
+For development, you can get started by cloning the repository, navigating to the root directory of it in the command line, and then do the following to get it running locally.
+
+### Environment Variables
+
+The following is all the environment variables that is required to run the project. You must replace the placeholder variables with your legitimate ones.
+
+```env
+DATABASE_URL="YOUR_DATABASE_CONNECTION_STRING"
+AUTH_SECRET="NEXT_AUTH_SECRET_KEY"
+AUTH_TRUST_HOST="TRUE_OR_NONE"
+AWS_SES_REGION="SES_REGION"
+SES_FROM_EMAIL="SES_VERIFIED_EMAIL"
+NODE_ENV="DEVELOPMENT_OR_PRODUCTION"
+AUTH_URL="YOUR_DOMAIN"
+OSRM_SECRET="OSRM_KEY_FOR_ROUTING"
+
+# AWS SES user credentials (Only for development)
+AWS_ACCESS_KEY="YOUR_AWS_ACCESS_KEY"
+AWS_SECRET_KEY="YOUR_AWS_SECRET_KEY"
+```
+
+**Installing dependencies**
+
 You'll need node.js installed on your server to run our poject in a development environment (https://nodejs.org/en/download).
 Once it's installed (test with `npm --version`), you can install the rest of the dependencies with:
 ```sh
@@ -224,15 +244,35 @@ npx auth secret
 
 > [!IMPORTANT]
 > You may need to move the secret key from the .env.local file it generates into .env, allowing the project and docker containers to access it.
-\
-And finally running the project locally:
+
+#### Running the Application
+
+After setting the environment variables and installing node.js, for development server with hot reloading, run:
+
 ```sh
 npm run dev
 ```
-You should be able to see the app running in your web browser by visiting http://localhost:3000
 
-> [!TIP]
-> If you'd like to run a production version of the app instead, consult the guide to building and running the Docker container in `/docs/Docker_Setup.md`.
+For a stable and compiled version, run:
+
+```sh
+npm run build # build/compile the code
+npm start # start a server using the compiled code
+```
+
+You can access the website by visiting `http://localhost:3000` on the browser.
+
+Further runnable script information is available at the scripts section in the `/package.json` file.
+
+#### Running with Docker
+
+If you want to run the application with docker, make sure to install docker <a href="https://docs.docker.com/get-started/introduction/get-docker-desktop/">here</a>. After installing and starting the docker engine by launching docker desktop, in the main application folder, run:
+
+```sh
+docker compose up
+```
+
+This will build the image and run the container and you can access the application in the browser on `http://localhost:3000`.
 
 ## Team Members
 
