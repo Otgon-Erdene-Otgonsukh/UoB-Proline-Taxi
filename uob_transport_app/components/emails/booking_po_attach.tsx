@@ -224,7 +224,7 @@ export default function BookingPoAttach({
                 href={
                   process.env.NODE_ENV === "development"
                     ? "http://localhost:3000/super"
-                    : "http://uob-transport-alb-848507222.eu-west-2.elb.amazonaws.com/super"
+                    : "https://uobst.ilm.gg/super"
                 }
               >
                 Go to Dashboard
