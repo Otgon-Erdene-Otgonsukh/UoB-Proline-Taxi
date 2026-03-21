@@ -43,9 +43,10 @@ const Page = () => {
     if (status === "unauthenticated") {
       router.push("/login");
       return;
-    } else if (data && data.user?.account_type !== USER_ROLE.FINANCE_STAFF && data.user?.account_type !== USER_ROLE.SUPER_ADMIN) {
+    } else if (data && data.user?.account_type !== USER_ROLE.SUPER_ADMIN) {
+      // Only super admins can access this page, so if user is not super admin, set forbidden to true to show forbidden page.
       setIsForbidden(true);
-    } else if (data && (data.user?.account_type === USER_ROLE.FINANCE_STAFF || data.user?.account_type === USER_ROLE.SUPER_ADMIN)) {
+    } else if (data && data.user?.account_type === USER_ROLE.SUPER_ADMIN) {
       setIsForbidden(false);
       getDepartmentsList().then(async res => {
         if (res.status === 200) {

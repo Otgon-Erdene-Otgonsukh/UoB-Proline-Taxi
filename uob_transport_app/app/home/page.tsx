@@ -58,6 +58,7 @@ const Page = () => {
       router.push("/login");
       return;
     } else if (data && data.user?.account_type !== USER_ROLE.NORMAL_USER) {
+      // Only normal users can access this page
       setIsForbidden(true);
     } else if (data && data.user?.account_type === USER_ROLE.NORMAL_USER) {
       setIsForbidden(false);
