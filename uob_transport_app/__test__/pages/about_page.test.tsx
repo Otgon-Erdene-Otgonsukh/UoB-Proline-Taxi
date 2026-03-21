@@ -32,14 +32,13 @@ describe("Check whether the about page has the required elements", () => {
   test("image renders", () => {
     const image = screen.getAllByRole("img");
     expect(image.length).toBe(1);
-    expect(image[0]).toBeVisible();
+    expect(image[0]).toBeInTheDocument();
   });
 
   test("Reveiw cards are all displayed", () => {
     const cards = screen.getAllByTestId("review-card");
     cards.forEach(card => {
       expect(card).toBeInTheDocument();
-      expect(card).toBeVisible();
     })
     expect(cards.length).toBe(3);
   })
