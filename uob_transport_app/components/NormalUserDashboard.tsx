@@ -15,6 +15,7 @@ import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 import CustomizedButton from "./CustomizedButton";
 import { CircularProgress } from "@mui/material";
+import { motion } from "framer-motion";
 import {
   DirectionsCar,
   CurrencyPound,
@@ -222,11 +223,17 @@ export default function NormalUserDashboard() {
 
   return (
     <div className="min-h-screen bg-linear-to-b from-slate-50 to-white lg:flex lg:flex-row">
-      <div
+      <motion.div
         id="data"
         className="flex w-full flex-col px-6 pt-8 mb-8 md:mb-0 md:h-full md:w-1/2 lg:px-8 gap-8 min-h-screen"
       >
-        <div id="cards" className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <motion.div
+          id="cards"
+          className="grid grid-cols-1 gap-4 md:grid-cols-3"
+          initial={{ opacity: 0, y: 6, scale: 0.93 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 1, ease: "easeOut", delay: 0.2 }}
+        >
           <div className="flex md:flex-col items-center md:items-start justify-between rounded-2xl border border-sky-100 bg-linear-to-br from-white to-sky-50 p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
             <div className="mb-4 w-fit rounded-full bg-sky-100 p-2.5 mt-3 md:mt-0">
               <DirectionsCar
@@ -286,8 +293,14 @@ export default function NormalUserDashboard() {
               </div>
             )}
           </div>
-        </div>
-        <div id="bookings" className="h-full md:h-99.5">
+        </motion.div>
+        <motion.div
+          id="bookings"
+          className="h-full md:h-99.5"
+          initial={{ opacity: 0, y: 6, scale: 0.93 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 1, ease: "easeOut", delay: 0.35 }}
+        >
           {dashboardData?.recentBookings.length === 0 ? (
             <div className="flex h-full flex-col items-center justify-center gap-4 rounded-2xl border border-slate-200 bg-slate-50/80 px-6 py-23 text-center">
               <div className="inline-flex items-center justify-center rounded-full bg-white p-3 text-slate-500 shadow-sm">
@@ -382,11 +395,14 @@ export default function NormalUserDashboard() {
               })}
             </div>
           )}
-        </div>
-      </div>
-      <div
+        </motion.div>
+      </motion.div>
+      <motion.div
         id="map"
         className="relative block w-full px-6 pb-8 lg:my-7.75 lg:mr-6 lg:w-1/2 lg:px-0 lg:pb-0"
+        initial={{ opacity: 0, y: 6, scale: 0.93 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 1, ease: "easeOut", delay: 0.5 }}
       >
         <div className="h-200 overflow-hidden rounded-2xl border border-slate-300 bg-white shadow-[0_10px_28px_rgba(15,23,42,0.12)] lg:h-full">
           <Map ref={mapRef} center={[-2.5955, 51.45411]} zoom={14}>
@@ -476,7 +492,7 @@ export default function NormalUserDashboard() {
               })}
           </Map>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }
