@@ -112,6 +112,7 @@ export type SuperData = {
   barGraph: DepartmentRevenue[]
 }
 
+export const UNASSIGNED_DEPARTMENT_ID = 14;
 export type NormalBookings = {
   booking_status: string
   trip: {
