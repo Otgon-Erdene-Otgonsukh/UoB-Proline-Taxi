@@ -1182,7 +1182,7 @@ export default function BookingPage() {
                   {formFeedback.DropoffLoc}
                 </FormHelperText>
               </div>
-              <div className="container block lg:hidden w-full object-contain h-140 rounded-[0px_5px_5px_0px] overflow-hidden">
+              <div className="container block lg:hidden w-full object-contain h-140 rounded-[5px_5px_5px_5px] overflow-hidden">
                 {/* Lat and long are inverted by MAPCN here */}
                 <Map ref={mobileMapRef} center={[-2.59571, 51.45453]} zoom={14}>
                   {start && routes && routes.length > 0 && (

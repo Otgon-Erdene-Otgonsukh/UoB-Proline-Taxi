@@ -234,7 +234,7 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRe
         <Typography gutterBottom sx={{ fontWeight: "bold" }}>
           Pick Up Time:
         </Typography>
-        <Typography gutterBottom>
+        <Typography gutterBottom align="right">
           {viewData?.trip.pickup_time
             ? new Date(viewData?.trip.pickup_time).toLocaleString()
             : ""}
@@ -256,7 +256,7 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRe
             <Typography gutterBottom sx={{ fontWeight: "bold" }}>
               Return trip pick-up time:
             </Typography>
-            <Typography gutterBottom>
+            <Typography gutterBottom align="right">
               {viewData?.trip.return_pickup_time
                 ? new Date(
                   viewData?.trip.return_pickup_time
