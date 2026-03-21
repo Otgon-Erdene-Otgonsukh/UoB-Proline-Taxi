@@ -205,7 +205,7 @@ export default function BookingPoAttach({
                 href={
                   process.env.NODE_ENV === "development"
                     ? "http://localhost:3000/home"
-                    : "http://uob-transport-alb-848507222.eu-west-2.elb.amazonaws.com/home"
+                    : "https://uobst.ilm.gg/home"
                 }
               >
                 Go to Home

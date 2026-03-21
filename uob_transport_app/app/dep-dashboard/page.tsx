@@ -693,34 +693,42 @@ export default function DepDashboard() {
                           </div>
                         </StyledTableCell>
                         <StyledTableCell>
-                          {row.trip.airport === "" || row.trip.airport === null
-                            ? row.trip.pickup_location.includes("{") // Temporary check to see if this is an old style booking.
-                              ? !JSON.parse(
+                          {row.trip.pickup_location.includes("{") // Temporary check to see if this is an old style booking.
+                            ? !JSON.parse(
+                              row.trip.pickup_location,
+                            ).address.includes("University of Bristol")
+                              ? JSON.parse(
                                 row.trip.pickup_location,
-                              ).address.includes("University of Bristol")
+                              ).short_name.includes("Airport")
                                 ? JSON.parse(row.trip.pickup_location)
+                                  .short_name
+                                : JSON.parse(row.trip.pickup_location)
                                   .short_name +
                                 ", " +
                                 JSON.parse(row.trip.pickup_location)
                                   .address.split(",")
                                   .slice(-5)[0]
                                   .trim()
-                                : JSON.parse(row.trip.pickup_location).address
-                              : row.trip.pickup_location
-                            : row.trip.airport}
+                              : JSON.parse(row.trip.pickup_location).address
+                            : row.trip.pickup_location}
                         </StyledTableCell>
                         <StyledTableCell>
                           {row.trip.dropoff_location.includes("{") // Temporary check to see if this is an old style booking.
                             ? !JSON.parse(
                               row.trip.dropoff_location,
                             ).address.includes("University of Bristol")
-                              ? JSON.parse(row.trip.dropoff_location)
-                                .short_name +
-                              ", " +
-                              JSON.parse(row.trip.dropoff_location)
-                                .address.split(",")
-                                .slice(-5)[0]
-                                .trim()
+                              ? JSON.parse(
+                                row.trip.dropoff_location,
+                              ).short_name.includes("Airport")
+                                ? JSON.parse(row.trip.dropoff_location)
+                                  .short_name
+                                : JSON.parse(row.trip.dropoff_location)
+                                  .short_name +
+                                ", " +
+                                JSON.parse(row.trip.dropoff_location)
+                                  .address.split(",")
+                                  .slice(-5)[0]
+                                  .trim()
                               : JSON.parse(row.trip.dropoff_location).address
                             : row.trip.dropoff_location}
                         </StyledTableCell>

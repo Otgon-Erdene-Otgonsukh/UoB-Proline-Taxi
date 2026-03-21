@@ -111,7 +111,7 @@ describe("Rendering", () => {
     // Page structure
     expect(screen.getByText(/trip details/i)).toBeInTheDocument();
     expect(screen.getByText(/lead passenger details/i)).toBeInTheDocument();
-    expect(screen.getByTestId("map")).toBeInTheDocument();
+    expect(screen.getAllByTestId("map")).toHaveLength(2);
     expect(document.querySelector("form")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /confirm booking/i })).not.toBeDisabled();
 
@@ -254,11 +254,10 @@ describe("Validation", () => {
     const input = screen.getByLabelText(/custom pick-up location/i);
 
     await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
-    //await waitFor(() => {
-      //expect(screen.getByText(/please enter a pickup location/i)).not.toBeInTheDocument();
-      //expect(input).toHaveClass("border-red-700");
-    //}); 
-    // temporary until airport is implemented with nominatim
+    await waitFor(() => {
+      expect(screen.getByText(/please enter a pickup location/i)).toBeInTheDocument();
+      expect(input).toHaveClass("border-red-700");
+    }); 
 
     fireEvent.change(input, { target: { value: "hfgnuaijekgfhnbusjiyklgbfhnsuyikglhf" } });
     await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
@@ -296,13 +295,6 @@ describe("Validation", () => {
     await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
     await waitFor(() =>
       expect(screen.queryByText(/please enter your flight number \(formatted AB1234\)/i)).not.toBeInTheDocument()
-    );
-
-    // Airport too long
-    fireEvent.change(airportInput, { target: { value: "A".repeat(51) } });
-    await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
-    await waitFor(() =>
-      expect(screen.getByText(/airport name too long/i)).toBeInTheDocument()
     );
   });
 

@@ -14,7 +14,7 @@ export default async function createBooking(
     via: formLocation[],
     returnTo: formLocation | undefined,
     passenger_num: number,
-    airport: string,
+    airport: formLocation,
     flight_num: string,
     dep_id: number
 ) {
@@ -29,7 +29,7 @@ export default async function createBooking(
             via: JSON.stringify(via),
             passenger_num: passenger_num,
             return_drop_loc: JSON.stringify(returnTo),
-            airport: airport,
+            airport: JSON.stringify(airport),
             flight_num: flight_num
         }
     });
