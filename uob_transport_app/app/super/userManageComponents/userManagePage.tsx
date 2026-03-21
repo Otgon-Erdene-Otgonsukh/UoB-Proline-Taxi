@@ -140,74 +140,81 @@ export const UserManagePage = (
 
   return (<>
     <div>
-      <Box
-        component="form"
-        onSubmit={handleSubmitSearchForm}
-        sx={{
-          display: "flex",
-          gap: 2.5,
-        }}
-      >
-        <TextField
-          fullWidth
-          label="Name"
-          id="searchNameInput"
-          value={searchFormInput.name}
-          onChange={(e) => { setSearchFormInput({ ...searchFormInput, name: e.target.value }); }}
-          size="small"
-          sx={{ minWidth: 150 }}
-        />
-        <FormControl sx={{ minWidth: 150 }}>
-          <InputLabel id="searchUserStatusInput">Account Type</InputLabel>
-          <Select
-            label="Account Type"
-            id="searchUserStatusInput"
-            value={searchFormInput.role}
-            onChange={(e) => { setSearchFormInput({ ...searchFormInput, role: e.target.value }); }}
-            size="small"
-          >
-            {roles.map(e => {
-              return <MenuItem value={e} key={e}>{roleReadableStrMap[e]}</MenuItem>
-            })}
-          </Select>
-        </FormControl>
-        <FormControl sx={{ minWidth: 150 }}>
-          <InputLabel id="searchUserStatusInput">User Status</InputLabel>
-          <Select
-            label="UserStatus"
-            id="searchUserStatusInput"
-            value={searchFormInput.user_status}
-            onChange={(e) => { setSearchFormInput({ ...searchFormInput, user_status: e.target.value }); }}
-            size="small"
-          >
-            <MenuItem value={userStatusToIntMap.pending}>{userStatusToStrMap[userStatusToIntMap.pending]}</MenuItem>
-            <MenuItem value={userStatusToIntMap.approved}>{userStatusToStrMap[userStatusToIntMap.approved]}</MenuItem>
-            <MenuItem value={userStatusToIntMap.rejected}>{userStatusToStrMap[userStatusToIntMap.rejected]}</MenuItem>
-          </Select>
-        </FormControl>
-        <Button
-          fullWidth
-          type="submit"
-          variant="contained"
-          sx={{
-            bgcolor: "#2c2c2c",
-            color: "white",
-            borderRadius: "0.375rem",
-            fontSize: "0.875rem",
-            fontWeight: 300,
-            "&:hover": {
-              bgcolor: "#414040",
-              transform: "scale(1.01)",
-            },
-            transition: "all 0.2s",
-          }}
-          size="small"
-        >
-          Search
-        </Button>
-      </Box>
-    </div>
+      <div className="flex justify-between items-center mb-4 px-20">
+        <div className="flex items-center gap-2">
+          <h1 className="text-xl font-aleo md:text-3xl font-semibold text-shadow-lg/20 py-2 pr-4">
+            Users
+          </h1>
+        </div>
 
+        <Box
+          component="form"
+          onSubmit={handleSubmitSearchForm}
+          sx={{
+            display: "flex",
+            gap: 2.5,
+          }}
+        >
+          <TextField
+            fullWidth
+            label="Name"
+            id="searchNameInput"
+            value={searchFormInput.name}
+            onChange={(e) => { setSearchFormInput({ ...searchFormInput, name: e.target.value }); }}
+            size="small"
+            sx={{ minWidth: 150 }}
+          />
+          <FormControl sx={{ minWidth: 150 }}>
+            <InputLabel id="searchUserStatusInput">Account Type</InputLabel>
+            <Select
+              label="Account Type"
+              id="searchUserStatusInput"
+              value={searchFormInput.role}
+              onChange={(e) => { setSearchFormInput({ ...searchFormInput, role: e.target.value }); }}
+              size="small"
+            >
+              {roles.map(e => {
+                return <MenuItem value={e} key={e}>{roleReadableStrMap[e]}</MenuItem>
+              })}
+            </Select>
+          </FormControl>
+          <FormControl sx={{ minWidth: 150 }}>
+            <InputLabel id="searchUserStatusInput">User Status</InputLabel>
+            <Select
+              label="UserStatus"
+              id="searchUserStatusInput"
+              value={searchFormInput.user_status}
+              onChange={(e) => { setSearchFormInput({ ...searchFormInput, user_status: e.target.value }); }}
+              size="small"
+            >
+              <MenuItem value={userStatusToIntMap.pending}>{userStatusToStrMap[userStatusToIntMap.pending]}</MenuItem>
+              <MenuItem value={userStatusToIntMap.approved}>{userStatusToStrMap[userStatusToIntMap.approved]}</MenuItem>
+              <MenuItem value={userStatusToIntMap.rejected}>{userStatusToStrMap[userStatusToIntMap.rejected]}</MenuItem>
+            </Select>
+          </FormControl>
+          <Button
+            fullWidth
+            type="submit"
+            variant="contained"
+            sx={{
+              bgcolor: "#2c2c2c",
+              color: "white",
+              borderRadius: "0.375rem",
+              fontSize: "0.875rem",
+              fontWeight: 300,
+              "&:hover": {
+                bgcolor: "#414040",
+                transform: "scale(1.01)",
+              },
+              transition: "all 0.2s",
+            }}
+            size="small"
+          >
+            Search
+          </Button>
+        </Box>
+      </div>
+    </div>
     {isLoading ? (
       <Typography sx={{ color: "gray", fontSize: 16, textAlign: "center", my: 10 }}>
         Getting user data...

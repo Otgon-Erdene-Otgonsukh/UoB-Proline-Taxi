@@ -456,8 +456,8 @@ const Page = () => {
             <List>
               {[
                 { text: 'Users', icon: <PeopleIcon />, index: 0 },
-                { text: 'Bookings', icon: <LocalTaxiIcon />, index: 1 },
-                { text: 'Departments', icon: <GroupsIcon />, index: 2 },
+                { text: 'Departments', icon: <GroupsIcon />, index: 1 },
+                { text: 'Bookings', icon: <LocalTaxiIcon />, index: 2 },
                 { text: 'Dashboard', icon: <DashboardIcon />, index: 3},
                 { text: 'Export Bookings', icon: <FileDownloadIcon />, index: 4 },
                 { text: 'Admin Settings', icon: <SettingsIcon />, index: 5 },
@@ -478,22 +478,6 @@ const Page = () => {
       <div className="w-full">
         {tabValue === 0 && (
           <div>
-            <div className="flex items-center gap-2 -ml-2">
-              <IconButton
-                onClick={toggleDrawer(true)}
-                sx={{
-                  color: '#2c2c2c',
-                  '&:hover': {
-                    bgcolor: '#f3f4f6',
-                  },
-                }}
-              >
-                <MenuIcon />
-              </IconButton>
-              <h1 className="text-xl font-aleo md:text-3xl font-semibold text-shadow-lg/20">
-                User Management
-              </h1>
-            </div>
             <UserManagePage departments={departments} />
           </div>
         )}
