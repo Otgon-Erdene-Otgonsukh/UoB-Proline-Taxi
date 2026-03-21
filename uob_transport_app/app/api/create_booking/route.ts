@@ -42,7 +42,7 @@ export async function POST(request: Request) {
     const returnTo: location | undefined = request_json["returnTo"] ? request_json["returnTo"] : undefined;
     const passenger_num: number = request_json["passengers"];
     const flight_num: string = request_json["flight_num"].toString();
-    const airport: string = request_json["airport"].toString();
+    const airport: location | null = request_json["airport"];
     const returnDT: Date | undefined = request_json["return_time"] ? new Date(request_json["return_time"]) : undefined;
     const dep_id: number = request_json["dep_id"];
     const isLeadPassengerMyself: boolean = request_json["isLeadPassengerMyself"];
@@ -86,7 +86,11 @@ export async function POST(request: Request) {
           "User-Agent": "UoB Transport App - https://uobst.ilm.gg/ (Backend address validation)"
         }
 
-        const result = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(loc.address)}`, { headers });
+        let result = null;
+        if (loc.address.includes("Airport")) {
+          result = await fetch(`https://nominatim.openstreetmap.org/search?format=json&aeroway=aerodrome&q=${encodeURIComponent(loc.short_name)}`, { headers });
+        } else result = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(loc.address)}`, { headers });
+
         if (result.ok) {
           const data = await result.json();
           if (data && data.length > 0) {
