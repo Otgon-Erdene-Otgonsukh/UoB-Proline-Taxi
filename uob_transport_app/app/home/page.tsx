@@ -13,7 +13,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { BookingRecord } from "@/model/models";
+import { BookingRecord, USER_ROLE } from "@/model/models";
 import { cancelBooking, getUserBookingList } from "./requests";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -39,10 +39,12 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { DateTimePicker } from "@/components/datetimePicker/DateTimePicker";
 import { enLocale } from "@/components/datetimePicker/locale";
+import ForbiddenPage from "@/components/ForbiddenPage";
 
 const Page = () => {
   // Get NextAuth Session.
   const { status, data } = useSession();
+  const [isForbidden, setIsForbidden] = useState(false);
 
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
@@ -55,9 +57,12 @@ const Page = () => {
     if (status === "unauthenticated") {
       router.push("/login");
       return;
+    } else if (data && data.user?.account_type !== USER_ROLE.NORMAL_USER) {
+      setIsForbidden(true);
+    } else if (data && data.user?.account_type === USER_ROLE.NORMAL_USER) {
+      setIsForbidden(false);
+      _getBookingListData(0, 10);
     }
-
-    _getBookingListData(0, 10);
   }, [status, router]);
 
   const handleClick = () => {
@@ -247,6 +252,8 @@ const Page = () => {
   // Do nothing if we get a status. Await for this check to be carried out in useEffect.
   if (status === "loading" || status === "unauthenticated") {
     return null;
+  } else if (isForbidden) {
+    return <ForbiddenPage />;
   }
 
   return (
@@ -599,7 +606,7 @@ const Page = () => {
               }}
               locale={enLocale}
             />
-            <CustomizedButton title="Search" type="warning" click={() => {}} />
+            <CustomizedButton title="Search" type="warning" click={() => { }} />
           </Box>
           {isSearchSubmitted &&
             (searchFormInput.pickUpTimeFrom && searchFormInput.pickUpTimeTo ? (
@@ -677,7 +684,7 @@ const Page = () => {
                         </StyledTableCell>
                         <StyledTableCell>
                           {row.trip.airport === "" || row.trip.airport === null
-                            ? ((row.trip.pickup_location.includes("{"))? // Temporary check to see if this is an old style booking.
+                            ? ((row.trip.pickup_location.includes("{")) ? // Temporary check to see if this is an old style booking.
                               ( // If it's a new booking style, use both the short name and the city name (last part of address - 5)
                                 JSON.parse(row.trip.pickup_location).short_name + ", " + JSON.parse(row.trip.pickup_location).address.split(",").slice(-5)[0].trim()
                               )
@@ -685,22 +692,21 @@ const Page = () => {
                             : row.trip.airport}
                         </StyledTableCell>
                         <StyledTableCell>
-                          {row.trip.dropoff_location.includes("{")? // Temporary check to see if this is an old style booking.
-                              JSON.parse(row.trip.dropoff_location).short_name + ", " + JSON.parse(row.trip.dropoff_location).address.split(",").slice(-5)[0].trim()
-                              : row.trip.dropoff_location
+                          {row.trip.dropoff_location.includes("{") ? // Temporary check to see if this is an old style booking.
+                            JSON.parse(row.trip.dropoff_location).short_name + ", " + JSON.parse(row.trip.dropoff_location).address.split(",").slice(-5)[0].trim()
+                            : row.trip.dropoff_location
                           }
                         </StyledTableCell>
                         <StyledTableCell>
                           <span
-                            className={`inline-block px-5 py-1 rounded-full text-xs font-medium ${
-                              row.booking_status === "Approved"
-                                ? "bg-green-100 text-green-800 border border-green-800"
-                                : row.booking_status === "Rejected"
-                                  ? "bg-red-100 text-red-800 border border-red-800"
-                                  : row.booking_status === "Cancelled"
-                                    ? "bg-gray-300 text-gray-900 border border-gray-900"
-                                    : "bg-yellow-100 text-yellow-800 border border-yellow-800"
-                            }`}
+                            className={`inline-block px-5 py-1 rounded-full text-xs font-medium ${row.booking_status === "Approved"
+                              ? "bg-green-100 text-green-800 border border-green-800"
+                              : row.booking_status === "Rejected"
+                                ? "bg-red-100 text-red-800 border border-red-800"
+                                : row.booking_status === "Cancelled"
+                                  ? "bg-gray-300 text-gray-900 border border-gray-900"
+                                  : "bg-yellow-100 text-yellow-800 border border-yellow-800"
+                              }`}
                           >
                             {row.booking_status}
                           </span>
