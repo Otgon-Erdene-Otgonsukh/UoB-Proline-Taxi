@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { UserRecord } from "@/model/models";
+import { USER_ROLE, UserRecord } from "@/model/models";
 import { motion } from "framer-motion";
 import SuperDashboard from "@/components/SuperDashboard";
 import {
@@ -28,10 +28,12 @@ import GroupsIcon from '@mui/icons-material/Groups';
 import { getDepartmentsList } from "./request";
 import { UserManagePage } from "./userManageComponents/userManagePage";
 import DepartmentManagePage from "./departmentManageComponents/departmentManagePage";
+import ForbiddenPage from "@/components/ForbiddenPage";
 
 const Page = () => {
   // Get NextAuth Session.
-  const { status } = useSession();
+  const { status, data } = useSession();
+  const [isForbidden, setIsForbidden] = useState(false);
 
   const router = useRouter();
 
@@ -41,15 +43,18 @@ const Page = () => {
     if (status === "unauthenticated") {
       router.push("/login");
       return;
+    } else if (data && data.user?.account_type !== USER_ROLE.FINANCE_STAFF && data.user?.account_type !== USER_ROLE.SUPER_ADMIN) {
+      setIsForbidden(true);
+    } else if (data && (data.user?.account_type === USER_ROLE.FINANCE_STAFF || data.user?.account_type === USER_ROLE.SUPER_ADMIN)) {
+      setIsForbidden(false);
+      getDepartmentsList().then(async res => {
+        if (res.status === 200) {
+          const data = await res.json();
+          setDepartments(data);
+        }
+      });
     }
-
-    getDepartmentsList().then(async res => {
-      if (res.status === 200) {
-        const data = await res.json();
-        setDepartments(data);
-      }
-    })
-  }, [status, router,]);
+  }, [status, router]);
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
@@ -61,6 +66,10 @@ const Page = () => {
   };
 
   const [tabValue, setTabValue] = useState(0);
+
+  if (isForbidden) {
+    return <ForbiddenPage />;
+  }
 
   return (
     <div className={`min-h-screen ${tabValue === 3 ? "-pt-25 md:-mt-2 mt-0 md:mb-0" : "pt-15 flex flex-col items-center p-4"}`}>
