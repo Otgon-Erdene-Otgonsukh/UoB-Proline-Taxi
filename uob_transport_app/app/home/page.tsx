@@ -44,7 +44,6 @@ import ForbiddenPage from "@/components/ForbiddenPage";
 const Page = () => {
   // Get NextAuth Session.
   const { status, data } = useSession();
-  const [isForbidden, setIsForbidden] = useState(false);
 
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
@@ -57,13 +56,8 @@ const Page = () => {
     if (status === "unauthenticated") {
       router.push("/login");
       return;
-    } else if (data && data.user?.account_type !== USER_ROLE.NORMAL_USER) {
-      // Only normal users can access this page
-      setIsForbidden(true);
-    } else if (data && data.user?.account_type === USER_ROLE.NORMAL_USER) {
-      setIsForbidden(false);
-      _getBookingListData(0, 10);
     }
+    _getBookingListData(0, 10);
   }, [status, router]);
 
   const handleClick = () => {
@@ -253,8 +247,6 @@ const Page = () => {
   // Do nothing if we get a status. Await for this check to be carried out in useEffect.
   if (status === "loading" || status === "unauthenticated") {
     return null;
-  } else if (isForbidden) {
-    return <ForbiddenPage />;
   }
 
   return (
