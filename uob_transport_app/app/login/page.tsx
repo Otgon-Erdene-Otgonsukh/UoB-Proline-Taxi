@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import {
   Box,
   Button,
@@ -22,6 +23,7 @@ import { motion } from "framer-motion";
 
 export default function Log_forgot() {
   const router = useRouter();
+  const { data, status } = useSession();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,11 +47,21 @@ export default function Log_forgot() {
           setLoadingBar(false);
         } else {
           setSnackbarState({ open: true, status: 'success' });
-          router.push("/home");
         }
       })
     }
   };
+
+  useEffect(() => {
+    if (!data) {
+      return
+    } 
+    if (data?.user.account_type === "super_admin") { // super admin gets redirected straight to super page
+      router.push("/super")
+    } else {
+      router.push("/home")
+    }
+  }, [status]);
 
   const [showPassword, setShowPassword] = useState(false);
   const [mail, setMail] = useState("");
