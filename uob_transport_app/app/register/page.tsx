@@ -46,15 +46,17 @@ export default function Register() {
   useEffect(() => {
     getDepartments().then((res) => {
       if (res.status === 200) {
-        res.json().then(data => {
-          setDepartmentList(data.map((e: department) => {
-            // Unassigned Department is not shown in the department options for user.
-            return e.dep_id !== UNASSIGNED_DEPARTMENT_ID
-          }));
-        })
+        res.json().then((data) => {
+          // Unassigned Department is not shown in the department options for user.
+          setDepartmentList(
+            data.filter(
+              (e: department) => e.dep_id !== UNASSIGNED_DEPARTMENT_ID,
+            ),
+          );
+        });
       }
     });
-  }, [])
+  }, []);
 
   const [normalUser, setNormalUser] = useState(false);
   const [financeStaff, setFinanceStaff] = useState(false);
@@ -188,7 +190,7 @@ export default function Register() {
         password: password,
         firstName: firstName,
         lastName: lastName,
-        dep_id: depId,
+        department: departments.find((e) => e.dep_id === depId)?.dep_name,
         phoneNumber: phoneCode + " " + phoneNumber,
         role: financeStaff
           ? "finance_staff"
@@ -206,18 +208,23 @@ export default function Register() {
               redirect("/login");
             }, 3000);
           } else if (data.status === 200 && (financeStaff || proLineStaff)) {
-            redirect("/register/register-req")
+            redirect("/register/register-req");
           } else {
             setLoadingBar(false);
             setSnackState({ open: true, severity: "error" });
           }
-        })
+        });
     }
   };
 
   return (
     <div className="min-h-screen flex justify-center items-center">
-      <motion.div className="bg-white shadow-lg/40 max-w-3xl rounded-md border-4 border-[#2c2c2c] md:mt-20 md:mb-20 mb-10 mt-10 md:mx-0 mx-3" initial={{opacity: 0, y: 6, scale: 0.98}} animate={{opacity: 1, y: 0, scale: 1}} transition={{duration: 1, ease: "easeInOut"}}>
+      <motion.div
+        className="bg-white shadow-lg/40 max-w-3xl rounded-md border-4 border-[#2c2c2c] md:mt-20 md:mb-20 mb-10 mt-10 md:mx-0 mx-3"
+        initial={{ opacity: 0, y: 6, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 1, ease: "easeInOut" }}
+      >
         <div className="flex md:flex-row flex-col">
           <div
             id="left"
@@ -319,6 +326,7 @@ export default function Register() {
                     type="tel"
                     data-testid="textfield"
                     onChange={(e) => {
+                      console.log(departments);
                       setPhoneNumber(e.target.value);
                       setPhoneNumberEmpty(false);
                     }}

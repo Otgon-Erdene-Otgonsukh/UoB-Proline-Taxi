@@ -115,7 +115,7 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRe
           </Typography>
         </Stack>
       )}
-      {viewData?.trip.via && viewData.trip.via.includes("{") && (
+      {viewData?.trip.via && (
         <Stack
           direction="row"
           sx={{
@@ -131,8 +131,10 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRe
             Via:
           </Typography>
           <Typography gutterBottom align="right" sx={{ whiteSpace: "pre-line" }}>
-            {viewData?.trip.via.includes("{")
-                ? JSON.parse(viewData?.trip.via)
+            {viewData?.trip.via.includes("{") || viewData.trip.via.includes("[")
+              ? JSON.parse(viewData?.trip.via).length === 0
+                ? "N/A"
+                : JSON.parse(viewData?.trip.via)
                     .map(
                       (loc: location) =>
                         loc.short_name +
@@ -140,9 +142,7 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRe
                         loc.address.split(",").slice(-5)[0].trim(),
                     )
                     .join("\n")
-                : JSON.parse(viewData?.trip.via).length === 0
-                  ? "N/A"
-                  : viewData?.trip.via}
+              : viewData?.trip.via}
             </Typography>
         </Stack>
       )}
@@ -278,9 +278,16 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRe
             <Typography gutterBottom sx={{ fontWeight: "bold" }}>
               Return Drop-off Location:
             </Typography>
-            <Typography gutterBottom>
-              {viewData?.trip.return_drop_loc}
-            </Typography>
+            <Typography gutterBottom align="right">
+                {viewData?.trip.return_drop_loc.includes("{")
+                  ? JSON.parse(viewData.trip.return_drop_loc).short_name +
+                    ", " +
+                    JSON.parse(viewData.trip.return_drop_loc).address
+                      .split(",")
+                      .slice(-5)[0]
+                      .trim()
+                  : viewData.trip.return_drop_loc}
+              </Typography>
           </Stack>
         </>
       )}

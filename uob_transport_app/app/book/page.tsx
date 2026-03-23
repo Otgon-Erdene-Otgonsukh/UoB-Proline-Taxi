@@ -1325,7 +1325,7 @@ export default function BookingPage() {
                   <input
                     id="pickupDate"
                     type="date"
-                    className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0 ${
+                    className={`border-2 rounded px-3 sm:px-3 py-2 md:w-1/2 w-full ${
                       formFeedback.PickupDate == ""
                         ? "border-gray-800"
                         : "border-red-700"
@@ -1340,7 +1340,7 @@ export default function BookingPage() {
                   <input
                     id="pickupTime"
                     type="time"
-                    className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0 ${
+                    className={`border-2 rounded px-3 sm:px-3 py-2 md:w-1/2 w-full ${
                       formFeedback.PickupTime == ""
                         ? "border-gray-800"
                         : "border-red-700"
@@ -1467,11 +1467,11 @@ export default function BookingPage() {
                     <label htmlFor="returnDate" className="mb-1">
                       Return trip pick-up date and time
                     </label>
-                    <div className="flex flex-col sm:flex-row gap-2 sm:gap-2.5">
+                    <div className="flex flex-col md:flex-row gap-2 md:gap-2.5">
                       <input
                         id="returnDate"
                         type="date"
-                        className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0 ${
+                        className={`border-2 rounded px-3 sm:px-3 py-2 md:w-1/2 w-full ${
                           formFeedback.ReturnDate == ""
                             ? "border-gray-800"
                             : "border-red-700"
@@ -1487,7 +1487,7 @@ export default function BookingPage() {
                       <input
                         id="returnTime"
                         type="time"
-                        className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0 ${
+                        className={`border-2 rounded px-3 sm:px-3 py-2 md:w-1/2 w-full ${
                           formFeedback.ReturnTime == ""
                             ? "border-gray-800"
                             : "border-red-700"
