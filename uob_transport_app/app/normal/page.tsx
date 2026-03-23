@@ -9,7 +9,7 @@ import ForbiddenPage from "@/components/ForbiddenPage";
 
 // Temporary path to test the page design, will be deleted later when dashboards are displayed according to roles
 
-const page = () => {
+const Normal = () => {
 
   const { status, data } = useSession();
   const [isForbidden, setIsForbidden] = useState(false);
@@ -34,4 +34,4 @@ const page = () => {
   )
 }
 
-export default page
+export default Normal
