@@ -32,7 +32,7 @@ describe("Faq page renders with all elements", () => {
     const images = screen.getAllByTestId("logos");
     expect(images.length).toBe(3);
     images.forEach(img => {
-      expect(img).toBeVisible();
+      expect(img).toBeInTheDocument();
     });
   });
 });

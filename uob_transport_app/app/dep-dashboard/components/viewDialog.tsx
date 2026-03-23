@@ -240,18 +240,18 @@ export default function Page({
               sx={{ whiteSpace: "pre-line" }}
               align="right"
             >
-              {viewData?.trip.via.includes("{")
-                ? JSON.parse(viewData?.trip.via)
-                    .map(
-                      (loc: location) =>
-                        loc.short_name +
-                        ", " +
-                        loc.address.split(",").slice(-5)[0].trim(),
-                    )
-                    .join("\n")
-                : JSON.parse(viewData?.trip.via).length === 0
+              {viewData?.trip.via.includes("{") || viewData.trip.via.includes("[")
+                ? JSON.parse(viewData?.trip.via).length === 0
                   ? "N/A"
-                  : viewData?.trip.via}
+                  : JSON.parse(viewData?.trip.via)
+                      .map(
+                        (loc: location) =>
+                          loc.short_name +
+                          ", " +
+                          loc.address.split(",").slice(-5)[0].trim(),
+                      )
+                      .join("\n")
+                : viewData?.trip.via}
             </Typography>
           </Stack>
         )}
@@ -384,8 +384,15 @@ export default function Page({
               <Typography gutterBottom sx={{ fontWeight: "bold" }}>
                 Return Drop-off Location:
               </Typography>
-              <Typography gutterBottom sx={{ textAlign: "right" }}>
-                {viewData?.trip.return_drop_loc}
+              <Typography gutterBottom align="right">
+                {viewData?.trip.return_drop_loc.includes("{")
+                  ? JSON.parse(viewData.trip.return_drop_loc).short_name +
+                    ", " +
+                    JSON.parse(viewData.trip.return_drop_loc)
+                      .address.split(",")
+                      .slice(-5)[0]
+                      .trim()
+                  : viewData.trip.return_drop_loc}
               </Typography>
             </Stack>
           </>

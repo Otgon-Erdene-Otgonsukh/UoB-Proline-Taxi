@@ -8,6 +8,7 @@ import {
   Section,
   Hr,
 } from "@react-email/components";
+import { location } from "@/model/models";
 
 export default function BookingPoAttach({
   from,
@@ -18,28 +19,30 @@ export default function BookingPoAttach({
   pickUpTime,
   returnTime,
   returnTo,
-  firstName,
-  surName,
+  passenger_name,
   phoneNumber,
   department,
-  po="90273",
-  price="100",
+  po = "90273",
+  price = "100",
 }: {
-  from: string;
-  via: string;
-  to: string;
-  airport: string;
+  from: location;
+  via: location[];
+  to: location;
+  airport: location | null;
   flightNum: string;
   pickUpTime: Date;
   returnTime?: Date;
-  returnTo?: string;
-  firstName: string;
-  surName: string;
+  returnTo?: location;
+  passenger_name: string;
   phoneNumber: string;
   department: string;
   po: string;
   price: string;
 }) {
+  const formatAddress = (loc: location) => {
+    return loc.short_name + ", " + loc.address.split(",").slice(-5)[0].trim();
+  };
+
   return (
     <Html>
       <Head />
@@ -59,9 +62,9 @@ export default function BookingPoAttach({
             <Hr className="border-gray-300 my-3" />
 
             <Text className="text-gray-700 mb-4 text-[16px]">
-              University finance staff has <strong>approved</strong>{" "}
-              this booking and attached the PO number. The booking is now ready
-              to be exported to CSV and forwarded to the dispatch service.
+              University finance staff has <strong>approved</strong> this
+              booking and attached the PO number. The booking is now ready to be
+              exported to CSV and forwarded to the dispatch service.
             </Text>
 
             <Section className="bg-blue-50 p-4 rounded-lg mb-4">
@@ -103,7 +106,7 @@ export default function BookingPoAttach({
                 Passenger Information
               </Text>
               <Text className="text-gray-700 mb-2">
-                <strong>Name:</strong> {firstName} {surName}
+                <strong>Name:</strong> {passenger_name}
               </Text>
               <Text className="text-gray-700 mb-2">
                 <strong>Department:</strong> {department}
@@ -132,7 +135,7 @@ export default function BookingPoAttach({
                         <span className="text-gray-700 font-semibold">
                           From:
                         </span>{" "}
-                        {from}
+                        {formatAddress(from)}
                         <br />
                         <span className="text-gray-500 text-xs">
                           Pick-up time: {new Date(pickUpTime).toLocaleString()}
@@ -142,7 +145,7 @@ export default function BookingPoAttach({
                   </tbody>
                 </table>
                 {/* Via */}
-                {via && (
+                {via.length > 0 && (
                   <table className="w-full mb-2 align-top">
                     <tbody>
                       <tr>
@@ -151,10 +154,24 @@ export default function BookingPoAttach({
                           <div className="w-0.5 h-10 bg-gray-300 mt-1 mx-auto"></div>
                         </td>
                         <td className="align-top pl-2">
-                          <span className="text-gray-700 font-semibold">
-                            Via:
-                          </span>{" "}
-                          {via}
+                          <table className="w-full" role="presentation">
+                            <tbody>
+                              <tr>
+                                <td className="align-top pr-3 whitespace-nowrap">
+                                  <span className="text-gray-700 font-semibold mr-2">
+                                    Via:
+                                  </span>
+                                </td>
+                                <td className="align-top">
+                                  <ul className="m-0 p-0">
+                                    {via.map((loc, i) => (
+                                      <li key={i}>{formatAddress(loc)}</li>
+                                    ))}
+                                  </ul>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
                         </td>
                       </tr>
                     </tbody>
@@ -169,7 +186,7 @@ export default function BookingPoAttach({
                       </td>
                       <td className="align-top pl-2">
                         <span className="text-gray-700 font-semibold">To:</span>{" "}
-                        {to}
+                        {formatAddress(to)}
                       </td>
                     </tr>
                   </tbody>
@@ -188,7 +205,7 @@ export default function BookingPoAttach({
                             <span className="text-gray-700 font-semibold">
                               Return To:
                             </span>{" "}
-                            {returnTo}
+                            {formatAddress(returnTo)}
                             <br />
                             <span className="text-gray-500 text-xs">
                               Pick-up time:{" "}
@@ -201,12 +218,12 @@ export default function BookingPoAttach({
                   </>
                 )}
               </Section>
-              {airport !== "" && flightNum !== "" && (
+              {airport !== null && (
                 <>
                   <Hr className="border-gray-300 my-4" />
                   <Text className="font-bold text-[18px]">Flight Details</Text>
                   <Text className="text-gray-700 mb-2 mt-3">
-                    <strong>Airport:</strong> {airport}
+                    <strong>Airport:</strong> {airport.short_name}
                   </Text>
                   <Text className="text-gray-700 mb-2">
                     <strong>Flight Number:</strong> {flightNum}
