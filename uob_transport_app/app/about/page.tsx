@@ -5,7 +5,6 @@ import {
   RateReview,
   Assignment,
   CheckCircle,
-  Sms,
   DirectionsCar,
   Phone,
   Email,
@@ -139,11 +138,11 @@ export default function AboutPage() {
               <div className="mb-10 w-80">
                 <div className="flex items-center gap-6 text-left">
                   <div className="shrink-0 bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center">
-                    <Sms sx={{ fontSize: 36, color: '#9333ea' }} />
+                    <Email sx={{ fontSize: 36, color: '#9333ea' }} />
                   </div>
                   <div>
                     <p className="text-lg font-bold">3. Receive confirmation</p>
-                    <p className="text-sm text-gray-600 mt-1">Get all details and driver info via SMS</p>
+                    <p className="text-sm text-gray-600 mt-1">Get all details and driver info via email</p>
                   </div>
                 </div>
               </div>

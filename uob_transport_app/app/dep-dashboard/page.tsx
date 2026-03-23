@@ -92,19 +92,8 @@ export default function DepDashboard() {
     if (status === "unauthenticated") {
       router.push("/login");
       return;
-    } else if (
-      data &&
-      data.user?.account_type !== USER_ROLE.FINANCE_STAFF &&
-      data.user?.account_type !== USER_ROLE.SUPER_ADMIN
-    ) {
-      // Staff and Admin can access this page
-      setIsForbidden(true);
-    } else if (
-      data &&
-      (data.user?.account_type === USER_ROLE.FINANCE_STAFF ||
-        data.user?.account_type === USER_ROLE.SUPER_ADMIN)
-    ) {
-      setIsForbidden(false);
+    } else {
+      setIsForbidden(data?.user.account_type !== USER_ROLE.FINANCE_STAFF)
     }
   }, [status, data, router]);
 
