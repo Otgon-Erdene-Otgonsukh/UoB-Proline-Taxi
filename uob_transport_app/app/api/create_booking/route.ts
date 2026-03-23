@@ -206,7 +206,7 @@ export async function POST(request: Request) {
             //userEmail.email === email
             //? [userEmail.email]
             //: [userEmail.email, email.trim()],
-            ["otgonerdeneotgonsukh@gmail.com"]
+            ["janedoe@ioanm"]
         },
         Content: {
           Simple: {

@@ -35,7 +35,7 @@ export default async function sendReq(
     const input = new SendEmailCommand({
       FromEmailAddress: `UoB Taxi & Chauffeur <${process.env.SES_FROM_EMAIL!}>`,
       Destination: {
-        ToAddresses: ["otgonerdeneotgonsukh@gmail.com"],
+        ToAddresses: [email],
       },
       Content: {
         Simple: {
