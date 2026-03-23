@@ -39,7 +39,7 @@ export const Navbar = () => {
 
   const pages = [
     { name: 'Home', path: '/home', icon: <HomeOutlinedIcon /> },
-    { name: 'Dashboard', path: '/dep-dashboard', icon: <DashboardOutlinedIcon /> },
+    { name: 'Dashboard', path: session?.user.account_type === "finance_staff" ? "/dep-dashboard" : "/normal", icon: <DashboardOutlinedIcon /> },
     { name: 'About', path: '/about', icon: <InfoOutlinedIcon /> },
     { name: 'Help', path: '/faq', icon: <HelpCenterOutlinedIcon /> },
   ];
