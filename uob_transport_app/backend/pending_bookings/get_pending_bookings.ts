@@ -1,6 +1,15 @@
 import prisma from '@/utils/client';
+import { getDepartmentIdfromUserId } from '../access/departments_access';
+import { auth } from '@/auth';
 
 export async function getPendingBookings(page: number, pageSize: number, searchParams: { from?: string, to?: string, passengerName?: string, pickUpTimeFrom?: string, pickUpTimeTo?: string, isFlight: boolean, total: boolean, status: boolean, overdue: boolean, price: boolean, withoutPrice: boolean }) {
+  
+  const session = await auth();
+  let depId;
+  if (session) {
+    depId = await getDepartmentIdfromUserId(session.user.user_id);
+  }
+
   const query: { [key: string]: string | object } = {};
   if (searchParams.from !== undefined) {
     query["trip"] = {
@@ -66,7 +75,8 @@ export async function getPendingBookings(page: number, pageSize: number, searchP
         ...query,
         booking_status: {
           not: "Cancelled"
-        }
+        },
+        dep_id: depId?.dep_id ?? -1
       },
       include: {
         trip: true,
@@ -90,6 +100,7 @@ export async function getPendingBookings(page: number, pageSize: number, searchP
       where: {
         ...query,
         booking_status: "Pending",
+        dep_id: depId?.dep_id ?? -1,
       },
       include: {
         trip: true,
@@ -107,6 +118,7 @@ export async function getPendingBookings(page: number, pageSize: number, searchP
     return prisma.booking.findMany({
       where: {
         booking_status: "Pending",
+        dep_id: depId?.dep_id ?? -1,
         ...(searchParams.passengerName && {
           passenger_name: {
             contains: searchParams.passengerName.trim(),
@@ -134,6 +146,13 @@ export async function getPendingBookings(page: number, pageSize: number, searchP
 }
 
 export async function getPendingBookingsCount(searchParams: { from?: string, to?: string, passengerName?: string, pickUpTimeFrom?: string, pickUpTimeTo?: string, isFlight: boolean, total: boolean, status: boolean, overdue: boolean, price: boolean, withoutPrice: boolean }) {
+  
+  const session = await auth();
+  let depId;
+  if (session) {
+    depId = await getDepartmentIdfromUserId(session.user.user_id);
+  }
+  
   const query: { [key: string]: string | object } = {};
   if (searchParams.from !== undefined) {
     query["trip"] = {
@@ -199,7 +218,8 @@ export async function getPendingBookingsCount(searchParams: { from?: string, to?
         ...query,
         booking_status: {
           not: "Cancelled"
-        }
+        },
+        dep_id: depId?.dep_id ?? -1,
       },
     });
   } else if (searchParams.overdue) {
@@ -207,12 +227,14 @@ export async function getPendingBookingsCount(searchParams: { from?: string, to?
       where: {
         ...query,
         booking_status: "Pending",
+        dep_id: depId?.dep_id ?? -1,
       },
     })
   } else
     return prisma.booking.count({
       where: {
         booking_status: "Pending",
+        dep_id: depId?.dep_id ?? -1,
         ...(searchParams.passengerName && {
           passenger_name: {
             contains: searchParams.passengerName.trim(),

@@ -81,3 +81,14 @@ export const getDepartmentByIdAccess = async (depId: number): Promise<{ dep_id: 
     }
   })
 }
+
+export const getDepartmentIdfromUserId = async (userId: number): Promise<{dep_id: number | null} | null> => {
+  return prisma.user.findUnique({
+    where: {
+      user_id: userId
+    },
+    select: {
+      dep_id: true
+    }
+  })
+}
