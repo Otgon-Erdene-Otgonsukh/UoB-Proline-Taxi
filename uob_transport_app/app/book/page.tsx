@@ -56,10 +56,9 @@ export default function BookingPage() {
   const [phoneCode, setPhoneCode] = useState("+44");
   const [loadingBar, setLoadingBar] = useState(false);
   const [departmentEmpty, setDepartmentEmpty] = useState(false);
-  const [firstLoad, setFirstLoad] = useState(true);
 
   // Get the URL parameters and populate prefilledBooking if update is present.
-  if (typeof window != "undefined" && firstLoad) {
+  if (typeof window != "undefined" && prefilledBooking == null) {
     const windowURLParams = new URLSearchParams(window.location.search);
     const prefilledBookingID = parseInt(windowURLParams.get("update") || "-1");
 
@@ -70,7 +69,6 @@ export default function BookingPage() {
           .then(async (response) => {
             if (response.status == 200) {
               setPrefilledBooking(await response.json());
-              setFirstLoad(false);
             }
           })
           .catch((err) => {
