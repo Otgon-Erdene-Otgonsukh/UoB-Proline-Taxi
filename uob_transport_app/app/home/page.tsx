@@ -159,11 +159,10 @@ const Page = () => {
 
   // Edit Dialog
   const [editBookDialogOpen, setEditBookDialogOpen] = useState(false);
-  const handleEditDialogOpen = (data: BookingRecord) => {
-    setBookDetail(data);
-    setEditBookDialogOpen(true);
+  const handleEditTrigger = (data: BookingRecord) => {
+    redirect(`/book?update=${data.booking_id}`);
   };
-  const handleEditDialogClose = () => {
+  const handleEditTriggerClose = () => {
     setEditBookDialogOpen(false);
   };
 
@@ -730,7 +729,7 @@ const Page = () => {
                             />
                             {row.booking_status === "Pending" && (
                               <CustomizedButton
-                                click={() => handleEditDialogOpen(row)}
+                                click={() => handleEditTrigger(row)}
                                 type="warning"
                                 title="Edit"
                               />
@@ -755,56 +754,6 @@ const Page = () => {
             dialogOpen={bookDetailDialogOpen}
             handleDialogClose={handleViewDialogClose}
           />
-          <Dialog
-            onClose={handleEditDialogClose}
-            aria-labelledby="customized-dialog-title"
-            open={editBookDialogOpen}
-            maxWidth="md"
-          >
-            <DialogTitle
-              sx={{
-                m: 0,
-                p: 2,
-                fontFamily: "inter",
-                fontWeight: "bold",
-                bgcolor: "#2c2c2c",
-                color: "white",
-                textAlign: "center",
-                fontSize: 28,
-              }}
-              id="customized-dialog-title"
-            >
-              Edit Booking
-            </DialogTitle>
-            <IconButton
-              aria-label="close"
-              onClick={handleEditDialogClose}
-              sx={(theme) => ({
-                position: "absolute",
-                right: 8,
-                top: 8,
-                color: theme.palette.grey[500],
-              })}
-            >
-              <CloseIcon />
-            </IconButton>
-            <DialogContent dividers>
-              <BookingPage />
-            </DialogContent>
-            <DialogActions>
-              <Button
-                sx={{
-                  color: "#2c2c2c",
-                  transition: "all 300ms",
-                  mr: 1,
-                  ":hover": { bgcolor: "#2c2c2c", color: "white" },
-                }}
-                onClick={handleEditDialogClose}
-              >
-                Close
-              </Button>
-            </DialogActions>
-          </Dialog>
           <ConfirmDialog
             open={cancelBookDialogOpen}
             dialogTitle="Cancel Booking"

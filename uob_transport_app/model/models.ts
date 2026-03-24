@@ -25,7 +25,7 @@ export type Trip = {
   via: location[];
   return_drop_loc: location;
   PO: string;
-  airport: string;
+  airport: location;
   flight_num: string;
   price: number;
 }
@@ -42,6 +42,7 @@ export type BookingRecord = {
   passenger_name: string;
   tel_number: string;
   email: string;
+  airport: location;
 }
 
 // Attach common locations as keys to hashmapped Lat/Lon for routing.

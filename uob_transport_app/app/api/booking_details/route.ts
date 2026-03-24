@@ -3,22 +3,22 @@ import { auth } from "@/auth";
 import { getBookingDetails, getTripDetails } from "@/backend/access/booking_access";
 
 export async function GET(request: Request) {
-  // Check if user is signed in.
-  const session = await auth();
-  if (!session) {
-    return new Response(
-        JSON.stringify({
-            message: "login required",
-        }),
-        {
-            status: 401,
-            headers: { "Content-Type": "application/json" },
-        },
-    );
-  }
+    // Check if user is signed in.
+    const session = await auth();
+    if (!session) {
+        return new Response(
+            JSON.stringify({
+                message: "login required",
+            }),
+            {
+                status: 401,
+                headers: { "Content-Type": "application/json" },
+            },
+        );
+    }
 
-  // Validation
-  // Check that search parameter exists.
+    // Validation
+    // Check that search parameter exists.
     const searchParams = new URL(request.url).searchParams;
     const bookingID = searchParams.get("id");
     if (!bookingID) {
@@ -44,7 +44,6 @@ export async function GET(request: Request) {
         );
     }
 
-    
     try {
         const bookingDetails = await getBookingDetails(session.user.user_id, Number(bookingID));
 
@@ -62,7 +61,7 @@ export async function GET(request: Request) {
         };
 
         const tripDetails = await getTripDetails(Number(bookingID));
-        // Should never happen, but just in case booking is free without any trips.
+        // Should never happen, but just in case booking does not have any trips.
         if (tripDetails == null) {
             return new Response(
                 JSON.stringify({
