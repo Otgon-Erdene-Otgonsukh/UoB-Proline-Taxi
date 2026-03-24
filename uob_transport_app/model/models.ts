@@ -129,3 +129,9 @@ export type NormalDashboardData = {
   totalPrice: number,
   upcomingBookings: number
 }
+
+export const USER_ROLE = {
+  NORMAL_USER: 'normal_user',
+  FINANCE_STAFF: 'finance_staff',
+  SUPER_ADMIN: 'super_admin',
+}

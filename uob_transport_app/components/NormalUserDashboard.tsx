@@ -43,13 +43,6 @@ interface UnparsedBooking {
 }
 
 export default function NormalUserDashboard() {
-  const { status } = useSession();
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      redirect("/login");
-    }
-  }, [status]);
-
   const [dashboardData, setDashboardData] = useState<NormalDashboardData>();
   const mapRef = useRef<MapRef>(null);
   const [activeIndex, setActiveIndex] = useState(-1);
