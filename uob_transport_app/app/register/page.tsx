@@ -32,6 +32,7 @@ import { useSession } from "next-auth/react";
 import { getDepartments } from "@/app/requests/departments";
 import { department } from "@/generated/prisma/client";
 import { motion } from "framer-motion";
+import { UNASSIGNED_DEPARTMENT_ID } from "@/model/models";
 
 export default function Register() {
   const session = useSession();
@@ -46,7 +47,10 @@ export default function Register() {
     getDepartments().then((res) => {
       if (res.status === 200) {
         res.json().then(data => {
-          setDepartmentList(data);
+          setDepartmentList(data.map((e: department) => {
+            // Unassigned Department is not shown in the department options for user.
+            return e.dep_id !== UNASSIGNED_DEPARTMENT_ID
+          }));
         })
       }
     });
@@ -213,7 +217,7 @@ export default function Register() {
 
   return (
     <div className="min-h-screen flex justify-center items-center">
-      <motion.div className="bg-white shadow-lg/40 max-w-3xl rounded-md border-4 border-[#2c2c2c] mt-20 mb-20" initial={{opacity: 0, y: 6, scale: 0.98}} animate={{opacity: 1, y: 0, scale: 1}} transition={{duration: 0.5, ease: "easeInOut"}}>
+      <motion.div className="bg-white shadow-lg/40 max-w-3xl rounded-md border-4 border-[#2c2c2c] mt-20 mb-20" initial={{ opacity: 0, y: 6, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: 0.5, ease: "easeInOut" }}>
         <div className="flex">
           <div
             id="left"

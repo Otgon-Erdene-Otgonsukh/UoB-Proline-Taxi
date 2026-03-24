@@ -53,7 +53,12 @@ export async function GET(request: NextRequest) {
   });
 }
 
-// This endpoint is to update user info by super admin
+/**
+ * Update user info by super admin. This is used for user management in super admin dashboard. Super admin can update user's name, email, phone number, role, user status and department.
+ * Only super admin can access this endpoint. This endpoint will also send approval/rejection email to the user when the user status is updated.
+ * @param request 
+ * @returns 
+ */
 export async function POST(request: NextRequest) {
   // TODO Check super admin
 
