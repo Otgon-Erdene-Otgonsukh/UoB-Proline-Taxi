@@ -39,6 +39,7 @@ import { easyGetRequest } from "@/utils/easyRequest";
 
 export default function BookingPage() {
   const [prefilledBooking, setPrefilledBooking] = useState<BookingRecord | null>(null);
+
   const session = useSession();
 
   if (!session) {
@@ -975,106 +976,43 @@ export default function BookingPage() {
 
               {/* Via Box 2 if Via Box 1 is populated, cleared when modified */}
 
-              {isViaChecked &&
-                vias.length > 0 && (
-                  <div className="flex flex-col">
-                    <input
-                      id="via2"
-                      placeholder="Via..."
-                      className={`border-2 rounded px-3 py-2 ${formFeedback.Via2 == "" ? "border-gray-800" : "border-red-700"}`}
-                      defaultValue={formData.Via?.[1]?.address || ""}
-                      onChange={(e) => {
-                      if (e.target.value !== "") {
-                      addFormFeedback("Via2", "");
+              {isViaChecked && vias.length > 0 && (
+                <div className="flex flex-col">
+                  <input
+                    id="via2"
+                    placeholder="Via..."
+                    className={`border-2 rounded px-3 py-2 ${formFeedback.Via2 == "" ? "border-gray-800" : "border-red-700"}`}
+                    defaultValue={formData.Via?.[1]?.address || ""}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        e.currentTarget.blur();
+                        // Go to next via box on Enter.
+                        setTimeout(() => {
+                          document.getElementById("via3")?.focus();
+                        }, 10);
                       }
                     }}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          e.preventDefault();
-                          e.currentTarget.blur();
-                          // Go to next via box on Enter.
-                          setTimeout(() => {
-                            document.getElementById("via3")?.focus();
-                          }, 10);
-                        }
-                      }}
-                      onBlur={async (e) => {
-                        if (e.target.value == "") {
-                          setVias([...vias.slice(0, 1), ...vias.slice(2)]); // Remove via if field is cleared.
-                          return; // Do not try to update route if field is empty
-                        }
-                        const latlon = await getLatLon(e.target.value)
-                        if (latlon != null) {
-                          setVias([...vias.slice(0, 1), { name: latlon.name, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) }, ...vias.slice(2)]);
-                          setFormData({
-                            ...formData,
-                            Via: [
-                              ...formData.Via.slice(0, 1),
-                              {
-                                short_name: latlon.name,
-                                address: latlon.full_address,
-                                lat: parseFloat(latlon.lat),
-                                lng: parseFloat(latlon.lon)
-                              },
-                              ...formData.Via.slice(2)]
-                          });
-                          addFormFeedback("Via2", ""); // Reset any validation errors
-                          e.target.value = latlon.full_address;
-                        } else {
-                          // Reset start and routes if no result is found.
-                          addFormFeedback("Via2", "No results found for this search term.");
-                          // Remove this via (and the next ones) if it is removed or changed to an invalid location.
-                          setFormData({
-                            ...formData,
-                            Via: [...formData.Via.slice(0, 1)]
-                          });
-                          // Remove it from the map too.
-                          setVias(vias.slice(0, 1));
-                        }
-                      }}
-                    ></input>
-                    <FormHelperText
-                      sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
-                      className={`${formFeedback.Via2 != "" ? "" : "hidden"
-                        }`}
-                    >
-                      {formFeedback.Via2}
-                    </FormHelperText>
-                  </div>
-                )}
-
-              {/* Via Box 3 if Via Box 1&2 are populated, cleared when modified */}
-
-              {isViaChecked &&
-                vias.length > 1 && (
-                  <div className="flex flex-col">
-                    <input
-                      id="via3"
-                      placeholder="Via..."
-                      className={`border-2 rounded px-3 py-2 ${formFeedback.Via3 == "" ? "border-gray-800" : "border-red-700"}`}
-                      defaultValue={formData.Via?.[2]?.address || ""}
-                      onChange={(e) => {
-                      if (e.target.value !== "") {
-                      addFormFeedback("Via3", "");
+                    onBlur={async (e) => {
+                      if (e.target.value == "") {
+                        setVias([...vias.slice(0, 1), ...vias.slice(2)]); // Remove via if field is cleared.
+                        return; // Do not try to update route if field is empty
                       }
-                    }}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          e.preventDefault();
-                          e.currentTarget.blur();
-                        }
-                      }}
-                      onBlur={async (e) => {
-                        if (e.target.value == "") {
-                          setVias([...vias.slice(0, 2), ...vias.slice(3)]); // Remove via if field is cleared.
-                          return; // Do not try to update route if field is empty
-                        }
-                        const latlon = await getLatLon(e.target.value)
-                        if (latlon != null) {
-                          setVias([...vias.slice(0, 2), { name: latlon.name, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) }]);
-                          setFormData({
-                            ...formData,
-                            Via: [...formData.Via.slice(0, 2),
+                      const latlon = await getLatLon(e.target.value);
+                      if (latlon != null) {
+                        setVias([
+                          ...vias.slice(0, 1),
+                          {
+                            name: latlon.name,
+                            lat: parseFloat(latlon.lat),
+                            lng: parseFloat(latlon.lon),
+                          },
+                          ...vias.slice(2),
+                        ]);
+                        setFormData({
+                          ...formData,
+                          Via: [
+                            ...formData.Via.slice(0, 1),
                             {
                               short_name: latlon.name,
                               address: latlon.full_address,
@@ -1119,6 +1057,7 @@ export default function BookingPage() {
                     id="via3"
                     placeholder="Via..."
                     className={`border-2 rounded px-3 py-2 ${formFeedback.Via3 == "" ? "border-gray-800" : "border-red-700"}`}
+                    defaultValue={formData.Via?.[2]?.address || ""}
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
                         e.preventDefault();
