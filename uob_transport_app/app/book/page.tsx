@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, use } from "react";
 import { useRouter, redirect } from "next/navigation";
 import {
   Button,
@@ -20,7 +20,7 @@ import {
 } from "@mui/material";
 import NumberField from "@/components/NumberField";
 import { useSession } from "next-auth/react";
-import { formLocation } from "@/model/models";
+import { BookingRecord, formLocation, location } from "@/model/models";
 import {
   Map,
   MapMarker,
@@ -35,12 +35,11 @@ import { getDepartments } from "@/app/requests/departments";
 import { department } from "@/generated/prisma/client";
 import { commonLocations } from "@/model/models";
 import { getLatLon } from "@/components/NominatimSearch";
-import { JsonObject } from "@prisma/client/runtime/library";
+import { easyGetRequest } from "@/utils/easyRequest";
 
-
-// Main booking page, handles both creation (prefilledBookingID is null) and editing (when prefilledBookingID is not null)
-export default function BookingPage(bookingData: JsonObject | null = null) {
-  console.log("Rendering booking page with prefilledBookingID =", bookingData);
+export default function BookingPage() {
+  
+  const [prefilledBooking, setPrefilledBooking] = useState<BookingRecord | null>(null);
 
   const session = useSession();
 
@@ -57,6 +56,28 @@ export default function BookingPage(bookingData: JsonObject | null = null) {
   const [phoneCode, setPhoneCode] = useState("+44");
   const [loadingBar, setLoadingBar] = useState(false);
   const [departmentEmpty, setDepartmentEmpty] = useState(false);
+  const [firstLoad, setFirstLoad] = useState(true);
+
+  // Get the URL parameters and populate prefilledBooking if update is present.
+  if (typeof window != "undefined" && firstLoad) {
+    const windowURLParams = new URLSearchParams(window.location.search);
+    const prefilledBookingID = parseInt(windowURLParams.get("update") || "-1");
+
+    if (prefilledBookingID != -1) {
+      const getRequestParams : Record<string, string | number> = { id: prefilledBookingID }
+
+      easyGetRequest("booking_details", getRequestParams)
+          .then(async (response) => {
+            if (response.status == 200) {
+              setPrefilledBooking(await response.json());
+              setFirstLoad(false);
+            }
+          })
+          .catch((err) => {
+              console.error("Error fetching booking details:", err);
+          });
+    }
+  }
 
   // Set error messages visible next to fields, default "" (empty) for hide.
   const [formFeedback, setFormFeedback] = useState({
@@ -366,43 +387,6 @@ export default function BookingPage(bookingData: JsonObject | null = null) {
     }
   };
 
-  useState(() => {
-  }
-  [bookingData]);
-
-  if (bookingData != null) {
-    let returnDate : string = ""
-    let returnTime : string = ""
-    setIsManualChecked(true);
-    if (bookingData["trip"]["return_pickup_time"] != "" && bookingData["trip"]["return_pickup_time"] != null) {
-      setIsReturnChecked(true);
-      returnDate = String(bookingData["trip"]["return_pickup_time"]).split("T")[0];
-      returnTime = String(bookingData["trip"]["return_pickup_time"]).split("T")[1].substring(0,5);
-
-    }
-    setFormData({
-      ...formData,
-      //CommonLoc: bookingData["commonLoc"],
-      CustomLoc: bookingData["trip"]["pickup_location"]["address"],
-      PickupLoc: bookingData["trip"]["pickup_location"],
-      Via: bookingData["trip"]["via"],
-      ReturnTo: bookingData["trip"]["return_drop_loc"],
-      FlightNum: bookingData["trip"]["flight_num"],
-      Airport: bookingData["trip"]["airport"],
-      DropoffLoc: bookingData["trip"]["dropoff_location"],
-      PickupDate: String(bookingData["trip"]["return_pickup_time"]).split("T")[0],
-      ReturnDate: returnDate,
-      ReturnTime: returnTime,
-      PassengerName: bookingData["passenger_name"],
-      Number: bookingData["tel_number"],
-      Email: bookingData["email"],
-      dep_id: bookingData["dep_id"],
-      Passengers: bookingData["trip"]["passenger_num"],
-      AdditionalInfo: bookingData["additional_info"],
-    });
-  }
-
-
   const inputTheme = createTheme({
     //creating a custom theme outside the component
     components: {
@@ -468,6 +452,70 @@ export default function BookingPage(bookingData: JsonObject | null = null) {
   const [end, setEnd] = useState<{ name: string; lat: number; lng: number } | null>(null);
   const [vias, setVias] = useState<{ name: string; lat: number; lng: number }[]>([]);
   const [returnloc, setReturnLoc] = useState<{ name: string; lat: number; lng: number } | null>(null);
+
+  useEffect(() => {
+    if (prefilledBooking != null && prefilledBooking != undefined && prefilledBooking["trip"] != null) {
+      let returnDate : string = ""
+      let returnTime : string = ""
+
+      // There is no way of differentiating this in the database so assume all are manual.
+      setIsManualChecked(true);
+
+      // Convert time for pickup and return to string.
+      if (prefilledBooking["trip"]["return_pickup_time"] != "" && prefilledBooking["trip"]["return_pickup_time"] != null) {
+        setIsReturnChecked(true);
+        returnDate = String(prefilledBooking["trip"]["return_pickup_time"]).split("T")[0];
+        returnTime = String(prefilledBooking["trip"]["return_pickup_time"]).split("T")[1].substring(0,5);
+      }
+
+      // Set the formData object to contain all booking information.
+      setFormData({
+        ...formData,
+        //CommonLoc: bookingData["commonLoc"],
+        CustomLoc: prefilledBooking["trip"]["pickup_location"],
+        PickupLoc: prefilledBooking["trip"]["pickup_location"],
+        Via: prefilledBooking["trip"]["via"],
+        ReturnTo: prefilledBooking["trip"]["return_drop_loc"],
+        FlightNum: prefilledBooking["trip"]["flight_num"],
+        Airport: prefilledBooking["trip"]["airport"],
+        DropoffLoc: prefilledBooking["trip"]["dropoff_location"],
+        PickupDate: String(prefilledBooking["trip"]["return_pickup_time"]),
+        ReturnDate: returnDate,
+        ReturnTime: returnTime,
+        PassengerName: prefilledBooking["passenger_name"],
+        Number: prefilledBooking["tel_number"],
+        Email: prefilledBooking["email"],
+        dep_id: prefilledBooking["dep_id"],
+        Passengers: prefilledBooking["trip"]["passenger_num"],
+        AdditionalInfo: prefilledBooking["additional_info"],
+      });
+      
+      const convertToMapLocation = (location: location) => {
+        return ({
+          name: location.short_name, 
+          lat: location.lat,
+          lng: location.lng
+        });
+      }
+
+      // Populate map information
+      let vias = []
+      for (const via of prefilledBooking["trip"]["via"]) {
+        vias.push(convertToMapLocation(via));
+      }
+
+      // If vias are present set the form to have vias.
+      if (vias.length > 0) {
+        setIsViaChecked(true);
+      }
+
+      setVias(vias);
+      setEnd(convertToMapLocation(prefilledBooking["trip"]["dropoff_location"]));
+      setStart(convertToMapLocation(prefilledBooking["trip"]["pickup_location"]));
+    }
+  },
+  [prefilledBooking]);
+
 
   // Update the route when start or end changes.
   useEffect(() => {
@@ -727,6 +775,7 @@ export default function BookingPage(bookingData: JsonObject | null = null) {
                     placeholder="Enter"
                     className={`border-2 rounded px-3 py-2 ${formFeedback.CustomLoc == "" ? "border-gray-800" : "border-red-700"
                       }`}
+                    defaultValue={formData.PickupLoc?.address || ""}
                     onChange={(e) => {
                       if (e.target.value !== "") {
                       addFormFeedback("CustomLoc", "");
@@ -777,6 +826,12 @@ export default function BookingPage(bookingData: JsonObject | null = null) {
                     id="via"
                     placeholder="Via..."
                     className={`border-2 rounded px-3 py-2 ${formFeedback.Via1 == "" ? "border-gray-800" : "border-red-700"}`}
+                    defaultValue={formData.Via?.[0]?.address || ""}
+                    onChange={(e) => {
+                      if (e.target.value !== "") {
+                      addFormFeedback("Via1", "");
+                      }
+                    }}
                     // Prevent Enter from submitting the booking form.
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
@@ -839,6 +894,12 @@ export default function BookingPage(bookingData: JsonObject | null = null) {
                       id="via2"
                       placeholder="Via..."
                       className={`border-2 rounded px-3 py-2 ${formFeedback.Via2 == "" ? "border-gray-800" : "border-red-700"}`}
+                      defaultValue={formData.Via?.[1]?.address || ""}
+                      onChange={(e) => {
+                      if (e.target.value !== "") {
+                      addFormFeedback("Via2", "");
+                      }
+                    }}
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
                           e.preventDefault();
@@ -903,6 +964,12 @@ export default function BookingPage(bookingData: JsonObject | null = null) {
                       id="via3"
                       placeholder="Via..."
                       className={`border-2 rounded px-3 py-2 ${formFeedback.Via3 == "" ? "border-gray-800" : "border-red-700"}`}
+                      defaultValue={formData.Via?.[2]?.address || ""}
+                      onChange={(e) => {
+                      if (e.target.value !== "") {
+                      addFormFeedback("Via3", "");
+                      }
+                    }}
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
                           e.preventDefault();
@@ -1070,6 +1137,7 @@ export default function BookingPage(bookingData: JsonObject | null = null) {
                     type="date"
                     className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0 ${formFeedback.PickupDate == "" ? "border-gray-800" : "border-red-700"
                       }`}
+                    defaultValue={formData.PickupDate.split("T")[0] || ""}
                     onChange={(e) => {
                       setFormData({ ...formData, PickupDate: e.target.value });
                       if (e.target.value !== "") {
@@ -1082,6 +1150,7 @@ export default function BookingPage(bookingData: JsonObject | null = null) {
                     type="time"
                     className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0 ${formFeedback.PickupTime == "" ? "border-gray-800" : "border-red-700"
                       }`}
+                    defaultValue={formData.PickupDate.split("T")[1]?.substring(0, 5) || ""}
                     onChange={(e) => {
                       setFormData({ ...formData, PickupTime: e.target.value });
                       if (e.target.value !== "") {
@@ -1147,6 +1216,7 @@ export default function BookingPage(bookingData: JsonObject | null = null) {
                     <input
                       id="returnDropOff"
                       placeholder="Enter"
+                      value={formData.ReturnTo?.address || ""}
                       className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0 ${formFeedback.ReturnTo == "" ? "border-gray-800" : "border-red-700"}`}
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
@@ -1254,7 +1324,6 @@ export default function BookingPage(bookingData: JsonObject | null = null) {
                     }}
                     onChange={(e) => {
                       setIsLeadPassengerMyself(e.target.checked);
-                      setFormData({ ...formData, CustomLoc: "" });
                     }}
                     className="sr-only peer"
                   />
@@ -1449,7 +1518,11 @@ export default function BookingPage(bookingData: JsonObject | null = null) {
                   {loadingBar ? (
                     <CircularProgress color="inherit" size="30px" />
                   ) : (
-                    "Confirm Booking"
+                    prefilledBooking ? (
+                      "Update Booking"
+                    ) : (
+                      "Confirm Booking"
+                    )
                   )}
                 </Button>
               </div>
