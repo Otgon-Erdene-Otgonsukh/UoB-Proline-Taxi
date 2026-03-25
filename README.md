@@ -35,16 +35,19 @@ A booking and account management platform to streamline how the University of Br
 
 ### Key Features
 
-- Streamlined booking: enter pick-up/drop-off, time, name, email, instant confirmation through SMS.
+- Streamlined booking: enter pick-up/drop-off, time, name, email, instant confirmation through Mail.
 - Automated data handling: routing important booking details to the corresponding head/finance team of the relevant University department for approval.
-- Real-time journey visibility: status changes and location sharing for reassurance and coordination.
-- Sustainability options: Hybrid/EV vehicle prioritisation and joining-rides feature if applicable.
+- Real-time journey visibility: live status changes and booking visibility.
+- Informative dashboards: data dashboards with numeric data and charts for analysis.
 - Centralised invoicing: booking history and faculty-specific invoices.
 
 ## Project Structure
 
 <pre>
 *2025-UoBsustainableTransport*
+│
+├── *.aws*
+│    └── task-definition.json                  # Task definition used by ECS Tasks / Container
 │
 ├── *.github*                                 
 │    ├── ISSUE_TEMPLATE                        # Issue template files
@@ -55,35 +58,30 @@ A booking and account management platform to streamline how the University of Br
 │    ├── clientMeetings/                       # All client meeting materials
 │    │    ├── clientMeetingAgenda1.md
 │    │    └── clientMeetingNotes1.md
-│    └── design/                               # All design documentation/Figma 
+│    ├── design/                               # All design documentation/Figma 
+│    │
+│    └── ...
 │
 ├── *uob_transport_app*                        # Main application directory
 │    │
 │    ├── *__test__*                            # Jest tests 
 │    │    ├── api                              # API tests
 │    │    │    └── ...                              
+│    │    ├── backend_functions                # Backend function tests
+│    │    │    └── ... 
+│    │    │
 │    │    └── pages                            # Page rendering tests
 │    │         └── ...                               
 │    │
 │    ├── *app*                                 # Next.js App directory (main application/pages)
-│    │    ├── about/                           # About page route
-│    │    │    └── page.tsx
 │    │    ├── api/                             # API routes
 │    │    │    └── ...
 │    │    ├── book/                            # Booking page route
 │    │    │    └── page.tsx                    # Booking form component
 │    │    ├── confirmed/                       # Booking confirmation page route
 │    │    │    └── page.tsx
-│    │    ├── dep-dashboard/                   # Department dashboard page route
-│    │    │    └── page.tsx
-│    │    ├── faq/                             # FAQ page route
-│    │    │    └── page.tsx
-│    │    ├── forgot/                          # Forgot password page route
-│    │    │    └── page.tsx
-│    │    ├── home/                            # Home page route
-│    │    │    └── page.tsx
-│    │    ├── login/                           # Login page route
-│    │    │    └── page.tsx
+│    │    ├── ...
+│    │    │
 │    │    ├── globals.css                      # Global styles and Tailwind imports
 │    │    ├── layout.tsx                       # Root layout 
 │    │    └── page.tsx                         # Landing page
@@ -194,9 +192,29 @@ Benefit from a streamlined booking process, clear driver communication, and stra
   7. Depending on your account permissions, you can manage proline staff registration requests or edit bookings.
 
 ## Developer Instructions
-For development, you can get started by cloning the repository, navigating to the root directory of it in the command line, and then do the following to get it running locally:\
-\
-**Installing dependencies**\
+For development, you can get started by cloning the repository, navigating to the root directory of it in the command line, and then do the following to get it running locally.
+
+### Environment Variables
+
+The following is all the environment variables that is required to run the project. You must replace the placeholder variables with your legitimate ones.
+
+```env
+DATABASE_URL="YOUR_DATABASE_CONNECTION_STRING"
+AUTH_SECRET="NEXT_AUTH_SECRET_KEY"
+AUTH_TRUST_HOST="TRUE_OR_NONE"
+AWS_SES_REGION="SES_REGION"
+SES_FROM_EMAIL="SES_VERIFIED_EMAIL"
+NODE_ENV="DEVELOPMENT_OR_PRODUCTION"
+AUTH_URL="YOUR_DOMAIN"
+OSRM_SECRET="OSRM_KEY_FOR_ROUTING"
+
+# AWS SES user credentials (Only for development)
+AWS_ACCESS_KEY="YOUR_AWS_ACCESS_KEY"
+AWS_SECRET_KEY="YOUR_AWS_SECRET_KEY"
+```
+
+**Installing dependencies**
+
 You'll need node.js installed on your server to run our poject in a development environment (https://nodejs.org/en/download).
 Once it's installed (test with `npm --version`), you can install the rest of the dependencies with:
 ```sh
@@ -226,15 +244,35 @@ npx auth secret
 
 > [!IMPORTANT]
 > You may need to move the secret key from the .env.local file it generates into .env, allowing the project and docker containers to access it.
-\
-And finally running the project locally:
+
+#### Running the Application
+
+After setting the environment variables and installing node.js, for development server with hot reloading, run:
+
 ```sh
 npm run dev
 ```
-You should be able to see the app running in your web browser by visiting http://localhost:3000
 
-> [!TIP]
-> If you'd like to run a production version of the app instead, consult the guide to building and running the Docker container in `/docs/Docker_Setup.md`.
+For a stable and compiled version, run:
+
+```sh
+npm run build # build/compile the code
+npm start # start a server using the compiled code
+```
+
+You can access the website by visiting `http://localhost:3000` on the browser.
+
+Further runnable script information is available at the scripts section in the `/package.json` file.
+
+#### Running with Docker
+
+If you want to run the application with docker, make sure to install docker <a href="https://docs.docker.com/get-started/introduction/get-docker-desktop/">here</a>. After installing and starting the docker engine by launching docker desktop, in the main application folder, run:
+
+```sh
+docker compose up
+```
+
+This will build the image and run the container and you can access the application in the browser on `http://localhost:3000`.
 
 ## Team Members
 

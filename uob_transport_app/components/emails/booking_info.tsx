@@ -11,16 +11,45 @@ import {
 import { location } from "@/model/models";
 
 export default function BookingInfo({
-  from,
-  via,
-  to,
-  airport,
-  flightNum,
-  pickUpTime,
-  returnTime,
+  from = {
+    short_name: "UoB Campus",
+    address: "Bristol, UK, BS8 1UB",
+    lat: 51.4597,
+    lng: -2.6044,
+  },
+  via = [
+    {
+      short_name: "Old Market",
+      address: "Bristol, UK, BS2 0EJ",
+      lat: 51.4569,
+      lng: -2.5789,
+    },
+    {
+      short_name: "Bristol City Centre",
+      address: "Bristol, UK, BS1 5TR",
+      lat: 51.4545,
+      lng: -2.5879,
+    },
+    {
+      short_name: "St Paul's",
+      address: "Bristol, UK, BS2 9LJ",
+      lat: 51.4555,
+      lng: -2.5895,
+    },
+  ],
+  to = {
+    short_name: "Temple Quarter",
+    address: "Bristol, UK, BS1 6AZ",
+    lat: 51.4437,
+    lng: -2.5921,
+  },
+  airport = null,
+  flightNum = "BA1234",
+  pickUpTime = new Date("2024-03-25T09:00:00"),
+  returnTime = new Date("2024-03-25T17:00:00"),
   returnTo,
-  passengerName,
-  phoneNumber,
+  passengerName = "John Doe",
+  phoneNumber = "+44 123 456 7890",
 }: {
   from: location;
   via: location[];
@@ -108,7 +137,7 @@ export default function BookingInfo({
                   </tbody>
                 </table>
                 {/* Via */}
-                {via && (
+                {via.length > 0 && (
                   <table className="w-full mb-2 align-top">
                     <tbody>
                       <tr>
@@ -117,14 +146,24 @@ export default function BookingInfo({
                           <div className="w-0.5 h-10 bg-gray-300 mt-1 mx-auto"></div>
                         </td>
                         <td className="align-top pl-2">
-                          <span className="text-gray-700 font-semibold">
-                            Via:
-                          </span>{" "}
-                          <li>
-                            {via.map((loc, i) => (
-                              <ul key={i}>{loc.short_name}</ul>
-                            ))}
-                          </li>
+                          <table className="w-full" role="presentation">
+                            <tbody>
+                              <tr>
+                                <td className="align-top pr-3 whitespace-nowrap">
+                                  <span className="text-gray-700 font-semibold mr-2">
+                                    Via:
+                                  </span>
+                                </td>
+                                <td className="align-top">
+                                  <ul className="m-0 p-0">
+                                    {via.map((loc, i) => (
+                                      <li key={i}>{formatAddress(loc)}</li>
+                                    ))}
+                                  </ul>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
                         </td>
                       </tr>
                     </tbody>

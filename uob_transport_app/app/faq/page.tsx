@@ -5,6 +5,7 @@ import { useState } from "react";
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PhoneIcon from '@mui/icons-material/Phone';
 import EmailIcon from '@mui/icons-material/Email';
+import { motion } from "framer-motion";
 
 export default function FAQPage() {
   const [open, setOpen] = useState<number | null>(null);
@@ -27,7 +28,10 @@ export default function FAQPage() {
 
   return (
     <main className="flex flex-col lg:flex-row min-h-screen overflow-hidden">
-      <div className="lg:w-1/2 flex flex-col justify-center mx-auto w-full md:px-20 px-10 py-6 md:mt-0 mt-5">
+      <motion.div className="lg:w-1/2 flex flex-col justify-center mx-auto w-full md:px-20 px-10 py-6 md:mt-0 mt-5"
+          initial={{ opacity: 0, y: 6, scale: 0.98 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 1, ease: "easeOut" }}>
         <h1 className="md:text-3xl text-2xl font-bold mb-4 text-center text-shadow-lg text-gray-900 font-aleo">
           Frequently Asked Questions
         </h1>
@@ -42,9 +46,12 @@ export default function FAQPage() {
             />
           ))}
         </div>
-      </div>
+      </motion.div>
 
-      <div className="lg:w-1/2 flex items-center justify-center lg:border-l border-black py-6 px-20">
+      <motion.div className="lg:w-1/2 flex items-center justify-center lg:border-l border-black py-6 px-20"
+          initial={{ opacity: 0, y: 6, scale: 0.98 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 1, ease: "easeOut", delay: 0.2 }}>
         <div className="flex flex-col items-center justify-center text-center md:border-t-0 border-t border-black">
           <h1 className="md:text-3xl text-2xl font-bold md:mt-0 mt-10 mb-13 text-center text-shadow-lg text-gray-900 font-aleo">
             Contact Proline Taxi
@@ -89,7 +96,7 @@ export default function FAQPage() {
             </h2>
           </div>
         </div>
-      </div>
+      </motion.div>
     </main>
   );
 }
