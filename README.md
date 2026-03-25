@@ -274,6 +274,9 @@ docker compose up
 
 This will build the image and run the container and you can access the application in the browser on `http://localhost:3000`.
 
+### Further Guidance
+If you are new to the framework and tools used in this project and struggling to get started, there is a dedicated document that provides concise description of the utilized technologies and the reason they were used alongside quick guides and code snippets to help you get started. The document can be found [`right here`](/docs/project/project_manual_guide.md).
+
 ## Team Members
 
 | **Name**                     | **Email**             |
