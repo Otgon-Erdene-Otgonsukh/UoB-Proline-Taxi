@@ -58,13 +58,13 @@ export const UserManagePage = (
   // search form
   type SearchFormProps = {
     name?: string,
-    user_status: number,
+    user_status: number | string,
     role: string,
   }
   const [searchFormInput, setSearchFormInput] = useState<SearchFormProps>({
     name: '',
-    user_status: userStatusToIntMap.pending,
-    role: roleStrMap.normalUser
+    user_status: '',
+    role: '',
   })
   const handleSubmitSearchForm = (e: React.FormEvent) => {
     e.preventDefault()
@@ -126,6 +126,8 @@ export const UserManagePage = (
     getUsersAsAdmin({
       name: undefined,
       ...searchFormInput,
+      role: searchFormInput.role === '' ? undefined : searchFormInput.role,
+      user_status: searchFormInput.user_status === '' ? undefined : searchFormInput.user_status,
       page: paginationMeta.page,
       pageSize: paginationMeta.pageSize
     }).then(res => {
@@ -174,6 +176,9 @@ export const UserManagePage = (
               onChange={(e) => { setSearchFormInput({ ...searchFormInput, role: e.target.value }); }}
               size="small"
             >
+              <MenuItem value={"All"} key={"All"}>
+                                      All
+                                    </MenuItem>
               {roles.map(e => {
                 return <MenuItem value={e} key={e}>{roleReadableStrMap[e]}</MenuItem>
               })}
@@ -188,6 +193,9 @@ export const UserManagePage = (
               onChange={(e) => { setSearchFormInput({ ...searchFormInput, user_status: e.target.value }); }}
               size="small"
             >
+              <MenuItem value={"All"} key={"All"}>
+                        All
+                      </MenuItem>
               <MenuItem value={userStatusToIntMap.pending}>{userStatusToStrMap[userStatusToIntMap.pending]}</MenuItem>
               <MenuItem value={userStatusToIntMap.approved}>{userStatusToStrMap[userStatusToIntMap.approved]}</MenuItem>
               <MenuItem value={userStatusToIntMap.rejected}>{userStatusToStrMap[userStatusToIntMap.rejected]}</MenuItem>

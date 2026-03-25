@@ -221,18 +221,6 @@ const Page = () => {
     setIsLoading(true)
   };
 
-  // search form
-  type SearchFormProps = {
-    name?: string,
-    user_status: number,
-    role: string,
-  }
-  const [searchFormInput, setSearchFormInput] = useState<SearchFormProps>({
-    name: '',
-    user_status: userStatusToIntMap.pending,
-    role: roleStrMap.normalUser
-  })
-
   const [userDetail, setUserDetail] = useState<UserRecord>()
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
 
@@ -258,24 +246,34 @@ const Page = () => {
     }
   }
 
-
-
-
-
+    type SearchFormProps = {
+    pickUpTimeFrom?: Date;
+    pickUpTimeTo?: Date;
+    from?: string;
+    to?: string;
+    bookingStatus?: string;
+  };
+  const [searchFormInput, setSearchFormInput] = useState<SearchFormProps>({
+    pickUpTimeFrom: undefined,
+    pickUpTimeTo: undefined,
+    from: "",
+    to: "",
+    bookingStatus: "All",
+  });
 
   const _getBookingListData = (page: number, pageSize: number) => {
     getBookingsList(page, pageSize, {
       ...searchFormInput,
-      pickUpTimeFrom: bookingSearchFormInput.pickUpTimeFrom
-        ? bookingSearchFormInput.pickUpTimeFrom.toISOString()
+      pickUpTimeFrom: searchFormInput.pickUpTimeFrom
+        ? searchFormInput.pickUpTimeFrom.toISOString()
         : "",
-      pickUpTimeTo: bookingSearchFormInput.pickUpTimeTo
-        ? bookingSearchFormInput.pickUpTimeTo.toISOString()
+      pickUpTimeTo: searchFormInput.pickUpTimeTo
+        ? searchFormInput.pickUpTimeTo.toISOString()
         : "",
       bookingStatus:
-        bookingSearchFormInput?.bookingStatus === "All"
+        searchFormInput?.bookingStatus === "All"
           ? ""
-          : bookingSearchFormInput?.bookingStatus,
+          : searchFormInput?.bookingStatus,
     }).then((res) => {
       if (res.status === 200) {
         res.json().then((data) => {
@@ -286,20 +284,6 @@ const Page = () => {
       }
     });
   };
-  type BookingSearchFormProps = {
-    pickUpTimeFrom?: Date;
-    pickUpTimeTo?: Date;
-    from?: string;
-    to?: string;
-    bookingStatus?: string;
-  };
-  const [bookingSearchFormInput, setBookingSearchFormInput] = useState<BookingSearchFormProps>({
-    pickUpTimeFrom: undefined,
-    pickUpTimeTo: undefined,
-    from: "",
-    to: "",
-    bookingStatus: "All",
-  });
 
   const [snackbarState, setSnackbarState] = useState({
     open: false,
@@ -359,9 +343,9 @@ const Page = () => {
     e.preventDefault();
 
     if (
-      bookingSearchFormInput.pickUpTimeTo &&
-      bookingSearchFormInput.pickUpTimeFrom &&
-      bookingSearchFormInput.pickUpTimeFrom > bookingSearchFormInput.pickUpTimeTo
+      searchFormInput.pickUpTimeTo &&
+      searchFormInput.pickUpTimeFrom &&
+      searchFormInput.pickUpTimeFrom > searchFormInput.pickUpTimeTo
     ) {
       setSnackbarState({
         open: true,
@@ -507,10 +491,10 @@ const Page = () => {
                   <TextField
                     label="From"
                     id="searchFromInput"
-                    value={bookingSearchFormInput.from}
+                    value={searchFormInput.from}
                     onChange={(e) => {
-                      setBookingSearchFormInput({
-                        ...bookingSearchFormInput,
+                      setSearchFormInput({
+                        ...searchFormInput,
                         from: e.target.value,
                       });
                     }}
@@ -520,9 +504,9 @@ const Page = () => {
                   <TextField
                     label="To"
                     id="searchToInput"
-                    value={bookingSearchFormInput.to}
+                    value={searchFormInput.to}
                     onChange={(e) => {
-                      setBookingSearchFormInput({ ...bookingSearchFormInput, to: e.target.value });
+                      setSearchFormInput({ ...searchFormInput, to: e.target.value });
                     }}
                     size="small"
                     sx={{ minWidth: 140 }}
@@ -535,10 +519,10 @@ const Page = () => {
                     labelId="searchBookingStatusInputLabel"
                       label="Booking Status"
                       id="searchBookingStatusInput"
-                      value={bookingSearchFormInput.bookingStatus}
+                      value={searchFormInput.bookingStatus}
                       onChange={(e) => {
-                        setBookingSearchFormInput({
-                          ...bookingSearchFormInput,
+                        setSearchFormInput({
+                          ...searchFormInput,
                           bookingStatus: e.target.value,
                         });
                       }}
@@ -562,20 +546,20 @@ const Page = () => {
                     size="small"
                     sx={{ minWidth: 200 }}
                     ref={dateTimePickerFromAnchorRef}
-                    defaultValue={bookingSearchFormInput.pickUpTimeFrom?.toDateString()}
+                    defaultValue={searchFormInput.pickUpTimeFrom?.toDateString()}
                     slotProps={{
                       inputLabel: {
-                        shrink: bookingSearchFormInput.pickUpTimeFrom !== undefined,
+                        shrink: searchFormInput.pickUpTimeFrom !== undefined,
                       },
                     }}
                   />
-                  {bookingSearchFormInput.pickUpTimeFrom && (
+                  {searchFormInput.pickUpTimeFrom && (
                     <IconButton
                       size="small"
                       sx={{ px: 1.3, mx: -2 }}
                       onClick={() => {
-                        setBookingSearchFormInput({
-                          ...bookingSearchFormInput,
+                        setSearchFormInput({
+                          ...searchFormInput,
                           pickUpTimeFrom: undefined,
                         });
                         setIsSearchSubmitted(false);
@@ -590,20 +574,20 @@ const Page = () => {
                     size="small"
                     sx={{ minWidth: 200 }}
                     ref={dateTimePickerToAnchorRef}
-                    defaultValue={bookingSearchFormInput.pickUpTimeTo?.toDateString()}
+                    defaultValue={searchFormInput.pickUpTimeTo?.toDateString()}
                     slotProps={{
                       inputLabel: {
-                        shrink: bookingSearchFormInput.pickUpTimeTo !== undefined,
+                        shrink: searchFormInput.pickUpTimeTo !== undefined,
                       },
                     }}
                   />
-                  {bookingSearchFormInput.pickUpTimeTo && (
+                  {searchFormInput.pickUpTimeTo && (
                     <IconButton
                       size="small"
                       sx={{ px: 1.3, mx: -2 }}
                       onClick={() => {
-                        setBookingSearchFormInput({
-                          ...bookingSearchFormInput,
+                        setSearchFormInput({
+                          ...searchFormInput,
                           pickUpTimeTo: undefined,
                         });
                         setIsSearchSubmitted(false);
@@ -616,9 +600,9 @@ const Page = () => {
                     open={dateTimePickerFromOpen}
                     onClose={() => setDateTimePickerFromOpen(false)}
                     anchorEl={dateTimePickerFromAnchorRef}
-                    selectedDate={bookingSearchFormInput.pickUpTimeFrom || null}
+                    selectedDate={searchFormInput.pickUpTimeFrom || null}
                     onDateChange={(date) => {
-                      setBookingSearchFormInput({ ...bookingSearchFormInput, pickUpTimeFrom: date });
+                      setSearchFormInput({ ...searchFormInput, pickUpTimeFrom: date });
                       setIsSearchSubmitted(false);
                     }}
                     locale={enLocale}
@@ -627,9 +611,9 @@ const Page = () => {
                     open={dateTimePickerToOpen}
                     onClose={() => setDateTimePickerToOpen(false)}
                     anchorEl={dateTimePickerToAnchorRef}
-                    selectedDate={bookingSearchFormInput.pickUpTimeTo || null}
+                    selectedDate={searchFormInput.pickUpTimeTo || null}
                     onDateChange={(date) => {
-                      setBookingSearchFormInput({ ...bookingSearchFormInput, pickUpTimeTo: date });
+                      setSearchFormInput({ ...searchFormInput, pickUpTimeTo: date });
                       setIsSearchSubmitted(false);
                     }}
                     locale={enLocale}
@@ -643,30 +627,30 @@ const Page = () => {
                   />
                 </Box>
                 {isSearchSubmitted &&
-                  (bookingSearchFormInput.pickUpTimeFrom && bookingSearchFormInput.pickUpTimeTo ? (
+                  (searchFormInput.pickUpTimeFrom && searchFormInput.pickUpTimeTo ? (
                     <p className="font-aleo text-gray-700 mb-4 text-sm bg-blue-50 border-l-4 border-blue-400 py-2 px-4 rounded w-fit">
                       Showing Bookings from{" "}
                       <strong>
-                        {bookingSearchFormInput.pickUpTimeFrom.toISOString().split("T")[0]}
+                        {searchFormInput.pickUpTimeFrom.toISOString().split("T")[0]}
                       </strong>{" "}
                       to{" "}
                       <strong>
-                        {bookingSearchFormInput.pickUpTimeTo.toISOString().split("T")[0]}
+                        {searchFormInput.pickUpTimeTo.toISOString().split("T")[0]}
                       </strong>
                     </p>
-                  ) : bookingSearchFormInput.pickUpTimeFrom ? (
+                  ) : searchFormInput.pickUpTimeFrom ? (
                     <p className="font-aleo text-gray-700 mb-4 text-sm bg-blue-50 border-l-4 border-blue-400 py-2 px-4 rounded w-fit">
                       Showing Bookings from{" "}
                       <strong>
-                        {bookingSearchFormInput.pickUpTimeFrom.toISOString().split("T")[0]}
+                        {searchFormInput.pickUpTimeFrom.toISOString().split("T")[0]}
                       </strong>{" "}
                       to <strong>{new Date().toISOString().split("T")[0]}</strong>
                     </p>
-                  ) : bookingSearchFormInput.pickUpTimeTo ? (
+                  ) : searchFormInput.pickUpTimeTo ? (
                     <p className="font-aleo text-gray-700 mb-4 text-sm bg-blue-50 border-l-4 border-blue-400 py-2 px-4 rounded w-fit">
                       Showing Bookings up to{" "}
                       <strong>
-                        {bookingSearchFormInput.pickUpTimeTo.toISOString().split("T")[0]}
+                        {searchFormInput.pickUpTimeTo.toISOString().split("T")[0]}
                       </strong>
                     </p>
                   ) : null)}
