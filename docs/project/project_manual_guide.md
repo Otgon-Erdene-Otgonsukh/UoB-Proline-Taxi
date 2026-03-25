@@ -8,6 +8,8 @@ This manual provides information on the tools used in the development of this pr
 - [Neon](#postgresql-database-hosted-with-neon)
 - [Prisma](#prisma-orm)
 - [Jest](#jest-for-testing)
+- [CI/CD](#github-actions-cicd)
+- [AWS](#aws--deployment)
 
 ## Next.js (Javascript Framework)
  [![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=Next.js&color=black)](https://nextjs.org)
@@ -181,6 +183,8 @@ const name = session.user.name;
 > The object structure of the session object and what information is stored within it can be found in the file `/types/next-auth.d.ts`.
 
 ## AWS & Deployment
+[![AWS](https://img.shields.io/badge/Amazon_Web_Services-FB7A24?style=for-the-badge&logoColor=white)](https://aws.amazon.com/)
+
 The project is deployed on AWS, utilizing the following services: 
 
  - AWS ECR

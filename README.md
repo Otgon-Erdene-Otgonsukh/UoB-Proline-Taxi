@@ -14,6 +14,8 @@
 [![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=for-the-badge&logo=Prisma)
 ](https://www.prisma.io/)
 [![Jest](https://img.shields.io/badge/Jest-C21325?style=for-the-badge&logo=Jest)](https://jestjs.io/)
+[![OpenStreetMap](https://img.shields.io/badge/Open_Street_Map-7EBC6F?style=for-the-badge&logo=OpenStreetMap&logoColor=white)](https://wiki.openstreetmap.org/)
+[![AWS](https://img.shields.io/badge/Amazon_Web_Services-FB7A24?style=for-the-badge&logoColor=white)](https://aws.amazon.com/)
 
 
 ## Table of Contents
