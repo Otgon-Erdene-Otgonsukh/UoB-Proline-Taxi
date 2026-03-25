@@ -484,22 +484,6 @@ const Page = () => {
 
         {tabValue === 1 && (
           <div>
-            <div className="flex items-center gap-2 mb-4">
-              <IconButton
-                onClick={toggleDrawer(true)}
-                sx={{
-                  color: '#2c2c2c',
-                  '&:hover': {
-                    bgcolor: '#f3f4f6',
-                  },
-                }}
-              >
-                <MenuIcon />
-              </IconButton>
-              <h1 className="text-xl font-aleo md:text-3xl font-semibold text-shadow-lg/20">
-                Departments
-              </h1>
-            </div>
             <DepartmentManagePage />
           </div>
         )}

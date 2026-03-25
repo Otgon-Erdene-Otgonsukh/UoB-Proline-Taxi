@@ -98,6 +98,10 @@ const DepartmentManagePage = () => {
 
   const [newDepartmentDialogOpen, setNewDepartmentDialogOpen] = useState(false)
 
+ const handleNewDepartmentDiologOpen = () => {
+  setNewDepartmentDialogOpen(true)
+ }
+
   const handleDepartmentUserCountChange = (fromDepId: number, toDepId: number, userCount: number) => {
     setDepartments(departments.map(dep => {
       if (dep.depId === fromDepId) {
@@ -128,8 +132,13 @@ const DepartmentManagePage = () => {
   }
 
   return (
-    <>
-      <div className="flex justify-between items-center mb-4">
+    <div>
+      <div className="flex justify-between items-center mb-4 px-20">
+        <div className="flex items-center gap-2">
+          <h1 className="text-xl font-aleo md:text-3xl font-semibold text-shadow-lg/20 py-2 pr-4">
+            Departments
+          </h1>
+        </div>
         <Box
           component="form"
           onSubmit={handleSubmitSearchForm}
@@ -147,44 +156,12 @@ const DepartmentManagePage = () => {
             size="small"
             sx={{ minWidth: 150 }}
           />
-          <Button
-            fullWidth
-            type="submit"
-            variant="contained"
-            sx={{
-              bgcolor: "#2c2c2c",
-              color: "white",
-              borderRadius: "0.375rem",
-              fontSize: "0.875rem",
-              fontWeight: 300,
-              "&:hover": {
-                bgcolor: "#414040",
-                transform: "scale(1.01)",
-              },
-              transition: "all 0.2s",
-            }}
-            size="small"
-          >
-            Search
-          </Button>
-          <Button
-            fullWidth
-            onClick={() => setNewDepartmentDialogOpen(true)}
-            variant="contained"
-            sx={{
-              color: "white",
-              borderRadius: "0.375rem",
-              fontSize: "0.625rem",
-              fontWeight: 300,
-              "&:hover": {
-                transform: "scale(1.01)",
-              },
-              transition: "all 0.2s",
-            }}
-            size="small"
-          >
-            <span className="text-lg mr-1 mb-0.5">+</span> New Department
-          </Button>
+          <CustomizedButton title="Search" type="warning" click={() => { }} />
+          <CustomizedButton
+            title="+"
+            type="warning"
+            click={handleNewDepartmentDiologOpen}
+          />
         </Box>
       </div>
       {isLoading ? (
@@ -272,7 +249,7 @@ const DepartmentManagePage = () => {
           {snackbarState.message}
         </Alert>
       </Snackbar>
-    </>
+    </div>
   );
 };
 

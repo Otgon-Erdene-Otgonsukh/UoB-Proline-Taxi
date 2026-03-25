@@ -14,6 +14,7 @@ import { UserTable } from "@/components/SuperUsersTable";
 import ViewDialog from "./viewDialog";
 import EditDialog from "./eidtDialog";
 import ConfirmDialog from "@/components/confirmDIalog";
+import CustomizedButton from "@/components/CustomizedButton";
 
 interface Props {
   departments: UserRecord["department"][]
@@ -192,26 +193,7 @@ export const UserManagePage = (
               <MenuItem value={userStatusToIntMap.rejected}>{userStatusToStrMap[userStatusToIntMap.rejected]}</MenuItem>
             </Select>
           </FormControl>
-          <Button
-            fullWidth
-            type="submit"
-            variant="contained"
-            sx={{
-              bgcolor: "#2c2c2c",
-              color: "white",
-              borderRadius: "0.375rem",
-              fontSize: "0.875rem",
-              fontWeight: 300,
-              "&:hover": {
-                bgcolor: "#414040",
-                transform: "scale(1.01)",
-              },
-              transition: "all 0.2s",
-            }}
-            size="small"
-          >
-            Search
-          </Button>
+          <CustomizedButton title="Search" type="warning" click={() => { }} />
         </Box>
       </div>
     </div>
