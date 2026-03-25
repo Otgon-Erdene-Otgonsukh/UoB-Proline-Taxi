@@ -49,7 +49,9 @@ export const UserTable = ({ data, count, page, pageSize, onPageChange, onPageSiz
                     </TableHead>
                     <TableBody>
                         {data &&
-                            data.map((row, index) => (
+                            data
+                            .filter (row => row.role !== 'super_admin') // dont show super admin (george) account
+                            .map((row, index) => (
                                 <TableRow
                                     key={index}
                                     sx={{

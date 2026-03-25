@@ -58,13 +58,13 @@ export const UserManagePage = (
   // search form
   type SearchFormProps = {
     name?: string,
-    user_status: number | string,
-    role: string,
+    user_status?: number | string,
+    role?: string,
   }
   const [searchFormInput, setSearchFormInput] = useState<SearchFormProps>({
     name: '',
-    user_status: '',
-    role: '',
+    user_status: "All",
+    role: "All",
   })
   const handleSubmitSearchForm = (e: React.FormEvent) => {
     e.preventDefault()
@@ -126,8 +126,8 @@ export const UserManagePage = (
     getUsersAsAdmin({
       name: undefined,
       ...searchFormInput,
-      role: searchFormInput.role === '' ? undefined : searchFormInput.role,
-      user_status: searchFormInput.user_status === '' ? undefined : searchFormInput.user_status,
+      role: searchFormInput.role === "All" ? undefined : searchFormInput.role,
+      user_status: searchFormInput.user_status === "All" ? undefined : (searchFormInput.user_status as number),
       page: paginationMeta.page,
       pageSize: paginationMeta.pageSize
     }).then(res => {
@@ -177,8 +177,8 @@ export const UserManagePage = (
               size="small"
             >
               <MenuItem value={"All"} key={"All"}>
-                                      All
-                                    </MenuItem>
+                All
+              </MenuItem>
               {roles.map(e => {
                 return <MenuItem value={e} key={e}>{roleReadableStrMap[e]}</MenuItem>
               })}
@@ -194,8 +194,8 @@ export const UserManagePage = (
               size="small"
             >
               <MenuItem value={"All"} key={"All"}>
-                        All
-                      </MenuItem>
+                All
+              </MenuItem>
               <MenuItem value={userStatusToIntMap.pending}>{userStatusToStrMap[userStatusToIntMap.pending]}</MenuItem>
               <MenuItem value={userStatusToIntMap.approved}>{userStatusToStrMap[userStatusToIntMap.approved]}</MenuItem>
               <MenuItem value={userStatusToIntMap.rejected}>{userStatusToStrMap[userStatusToIntMap.rejected]}</MenuItem>
