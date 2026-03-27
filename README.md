@@ -14,6 +14,8 @@
 [![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=for-the-badge&logo=Prisma)
 ](https://www.prisma.io/)
 [![Jest](https://img.shields.io/badge/Jest-C21325?style=for-the-badge&logo=Jest)](https://jestjs.io/)
+[![OpenStreetMap](https://img.shields.io/badge/Open_Street_Map-7EBC6F?style=for-the-badge&logo=OpenStreetMap&logoColor=white)](https://wiki.openstreetmap.org/)
+[![AWS](https://img.shields.io/badge/Amazon_Web_Services-FB7A24?style=for-the-badge&logoColor=white)](https://aws.amazon.com/)
 
 
 ## Table of Contents
@@ -25,6 +27,8 @@
   - [Secondary Users](#secondary-users)
 - [User Stories](#user-stories)
 - [Project Architecture](#project-architecture)
+- [Developer Instructions](#developer-instructions)
+- [Further Guidance](#further-guidance)
 - [Team Members](#team-members)
 
 ## Project Overview
@@ -33,11 +37,12 @@ A booking and account management platform to streamline how the University of Br
 
 ### Key Features
 
-- Streamlined booking: enter pick-up/drop-off, time, name, email, instant confirmation through Mail.
+- Streamlined booking: enter pick-up/drop-off, time, name, email, instant confirmation through email.
+- Interactive map: intuitive map component with routing, ETA and distance information.
 - Automated data handling: routing important booking details to the corresponding head/finance team of the relevant University department for approval.
 - Real-time journey visibility: live status changes and booking visibility.
 - Informative dashboards: data dashboards with numeric data and charts for analysis.
-- Centralised invoicing: booking history and faculty-specific invoices.
+- CSV booking export: convert and export booking information as CSV for management and data compiling. 
 
 ## Project Structure
 
@@ -271,6 +276,9 @@ docker compose up
 ```
 
 This will build the image and run the container and you can access the application in the browser on `http://localhost:3000`.
+
+## Further Guidance
+If you are new to the framework and tools used in this project and struggling to get started, there is a dedicated document that provides concise description of the utilized technologies and the reason they were used alongside quick guides and code snippets to help you get started. The document can be found [`right here`](/docs/project/project_manual_guide.md).
 
 ## Team Members
 
