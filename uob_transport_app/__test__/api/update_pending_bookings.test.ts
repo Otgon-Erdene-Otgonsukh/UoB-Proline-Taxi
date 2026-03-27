@@ -2,7 +2,7 @@
  * @jest-environment node
  */
 
-import { POST } from "@/app/api/update_booking/route";
+import { POST } from "@/app/api/approve_booking/route";
 import updateStatus from "@/backend/update_booking_status/update_status";
 import { getBookingDetails } from "@/backend/access/booking_access";
 import { isAdmin } from "@/backend/access/user_access";

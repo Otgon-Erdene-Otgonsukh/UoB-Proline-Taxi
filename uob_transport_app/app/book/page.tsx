@@ -344,6 +344,7 @@ export default function BookingPage() {
     if (fail == false) {
       setLoadingBar(true);
       const jsonBody = {
+        booking_id: prefilledBooking?.booking_id,
         user_id: session.data?.user.user_id,
         pickup_location: loc,
         dropoff_location: formData.DropoffLoc,
@@ -364,7 +365,14 @@ export default function BookingPage() {
       };
       console.log(jsonBody);
 
-      fetch("/api/create_booking", {
+      // Swtich between edit / create booking.
+      let targetURL = "/api/create_booking";
+      if (prefilledBooking != null) {
+        jsonBody.bookingId = prefilledBooking.booking_id;
+        targetURL = "/api/update_booking";
+      }
+
+      fetch(targetURL, {
         method: "POST",
         body: JSON.stringify(jsonBody),
       })
@@ -375,7 +383,7 @@ export default function BookingPage() {
             // Use additional info box to mark error. Will replace with specific errors in the future.
             addFormFeedback(
               "AdditionalInfo",
-              "Form failed to submit. Please try again or check inputs.",
+              "Form failed to submit: " + response.statusText,
             );
           }
         })

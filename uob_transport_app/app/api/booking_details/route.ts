@@ -60,7 +60,7 @@ export async function GET(request: Request) {
             );
         };
 
-        const tripDetails = await getTripDetails(Number(bookingID));
+        const tripDetails = await getTripDetails(Number(bookingDetails.trip_id));
         // Should never happen, but just in case booking does not have any trips.
         if (tripDetails == null) {
             return new Response(
