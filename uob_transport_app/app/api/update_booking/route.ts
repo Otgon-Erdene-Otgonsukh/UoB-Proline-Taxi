@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { getBookingDetails } from "@/backend/access/booking_access";
 import { auth } from "@/auth";
 import { isAdmin } from "@/backend/access/user_access";
+import { USER_ROLE } from "@/model/models";
 
 export async function POST(req: Request) {
   // Check if user is signed in.
@@ -23,11 +24,9 @@ export async function POST(req: Request) {
     const bookingId: number = body.bookingId;
     let booking = null;
 
-    // Check if booking ID belongs to user, or if user is admin who can update the booking.
-    if (await isAdmin(session.user.user_id)) {
+    // Check if the logged in user is an Admin or Finance staff
+    if (await isAdmin(session.user.user_id) || session.user.account_type === USER_ROLE.FINANCE_STAFF) {
       booking = await getBookingDetails(-1, bookingId)
-    } else {
-      booking = await getBookingDetails(session.user.user_id, bookingId)
     }
 
     // Booking is null if booking does not exist or does not belong to user/admin.

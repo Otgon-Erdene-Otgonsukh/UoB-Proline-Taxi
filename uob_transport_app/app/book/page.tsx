@@ -1224,7 +1224,7 @@ export default function BookingPage() {
                   type="dropLoc"
                   id="dropLoc"
                   placeholder="Temple Quarter Enterprise Campus, Bristol"
-                  value={formData.DropoffLoc?.address || ""}
+                  defaultValue={formData.DropoffLoc?.address || ""}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       e.preventDefault();
