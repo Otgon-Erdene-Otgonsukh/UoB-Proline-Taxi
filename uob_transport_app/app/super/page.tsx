@@ -3,14 +3,11 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import { useSession } from "next-auth/react";
-import { BookingRecord, UserRecord } from "@/model/models";
-import { useTheme } from "@mui/material/styles";
-import { motion } from "framer-motion";
+import { UserRecord } from "@/model/models";
 import SuperDashboard from "@/components/SuperDashboard";
 import {
   Box,
   Typography,
-  IconButton,
   Drawer,
   List,
   ListItem,
@@ -18,11 +15,6 @@ import {
   ListItemText,
   ListItemIcon,
   Divider,
-  MenuItem,
-  FormControl,
-  TextField,
-  Select,
-  InputLabel,
   Button,
 } from "@mui/material";
 import PeopleIcon from '@mui/icons-material/People';
@@ -32,36 +24,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import GroupsIcon from '@mui/icons-material/Groups';
-import CancelIcon from '@mui/icons-material/Cancel';
-import { DateTimePicker } from "@/components/datetimePicker/DateTimePicker";
-import { enLocale } from "@/components/datetimePicker/locale";
-import {
-  KeyboardArrowLeft,
-  KeyboardArrowRight,
-  LastPage,
-  FirstPage
-} from "@mui/icons-material"
-import { getUsersAsAdmin, updateUserAsAdmin, cancelBooking, getBookingList } from "./request";
-import ViewDialog from "./userManageComponents/viewDialog";
-import EditDialog from "./userManageComponents/eidtDialog";
-import { userStatusToIntMap, userStatusToStrMap, roleStrMap, roles, roleReadableStrMap } from "./constants";
 import { getDepartmentsList } from "./requests";
-import ConfirmDialog from "@/components/confirmDIalog";
-import { UserTable } from "@/components/SuperUsersTable";
-import CustomizedButton from "@/components/CustomizedButton";
-import { bookingStatus } from "../home/constants";
-import TableContainer from "@mui/material/TableContainer";
-import Paper from "@mui/material/Paper";
-import Table from "@mui/material/Table";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import TableBody from "@mui/material/TableBody";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogActions from "@mui/material/DialogActions";
-import CloseIcon from "@mui/icons-material/Close";
-import { StyledTableCell } from "@/components/StyledTableCell";
 import DepartmentManagePage from "./departmentManageComponents/departmentManagePage";
 import { UserManagePage } from "./userManageComponents/userManagePage";
 import { BookingManagePage } from "./bookingManageComponents/bookingManagePage";
