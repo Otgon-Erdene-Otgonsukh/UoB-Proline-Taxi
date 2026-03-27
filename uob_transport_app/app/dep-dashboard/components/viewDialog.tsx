@@ -188,18 +188,18 @@ export default function Page({
             From:
           </Typography>
           <Typography gutterBottom align="right">
-            {viewData?.trip.airport === "" || viewData?.trip.airport === null
-              ? viewData?.trip.pickup_location.includes("{")
-                ? JSON.parse(viewData.trip.pickup_location).address.includes(
-                    "University of Bristol",
-                  ) // Temporary check to see if this is an old style booking.
-                  ? JSON.parse(viewData?.trip.pickup_location).address
-                  : JSON.parse(viewData.trip.pickup_location).short_name + ", " + JSON.parse(viewData?.trip.pickup_location)
-                      .address.split(",")
-                      .slice(-5)[0]
-                      .trim()
-                : viewData?.trip.pickup_location
-              : viewData?.trip.airport}
+            {viewData?.trip.pickup_location.includes("{")
+              ? JSON.parse(viewData.trip.pickup_location).address.includes(
+                  "University of Bristol",
+                ) // Temporary check to see if this is an old style booking.
+                ? JSON.parse(viewData?.trip.pickup_location).address
+                : JSON.parse(viewData.trip.pickup_location).short_name +
+                  ", " +
+                  JSON.parse(viewData?.trip.pickup_location)
+                    .address.split(",")
+                    .slice(-5)[0]
+                    .trim()
+              : viewData?.trip.pickup_location}
           </Typography>
         </Stack>
         {viewData?.trip.flight_num && (
@@ -235,12 +235,23 @@ export default function Page({
             <Typography gutterBottom sx={{ fontWeight: "bold" }}>
               Via:
             </Typography>
-            <Typography gutterBottom sx={{ whiteSpace: "pre-line" }} align="right">
+            <Typography
+              gutterBottom
+              sx={{ whiteSpace: "pre-line" }}
+              align="right"
+            >
               {viewData?.trip.via.includes("{")
                 ? JSON.parse(viewData?.trip.via)
-                    .map((loc: location) => loc.short_name + ", " + loc.address.split(",").slice(-5)[0].trim())
+                    .map(
+                      (loc: location) =>
+                        loc.short_name +
+                        ", " +
+                        loc.address.split(",").slice(-5)[0].trim(),
+                    )
                     .join("\n")
-                : viewData?.trip.via}
+                : JSON.parse(viewData?.trip.via).length === 0
+                  ? "N/A"
+                  : viewData?.trip.via}
             </Typography>
           </Stack>
         )}
@@ -264,7 +275,9 @@ export default function Page({
                   "University of Bristol",
                 ) // Temporary check to see if this is an old style booking.
                 ? JSON.parse(viewData?.trip.dropoff_location).address
-                : JSON.parse(viewData.trip.dropoff_location).short_name + ", " + JSON.parse(viewData?.trip.dropoff_location)
+                : JSON.parse(viewData.trip.dropoff_location).short_name +
+                  ", " +
+                  JSON.parse(viewData?.trip.dropoff_location)
                     .address.split(",")
                     .slice(-5)[0]
                     .trim()

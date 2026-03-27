@@ -115,6 +115,7 @@ export type SuperData = {
   barGraph: DepartmentRevenue[]
 }
 
+export const UNASSIGNED_DEPARTMENT_ID = 14;
 export type NormalBookings = {
   booking_status: string
   trip: {
@@ -130,4 +131,10 @@ export type NormalDashboardData = {
   totalBookings: number,
   totalPrice: number,
   upcomingBookings: number
+}
+
+export const USER_ROLE = {
+  NORMAL_USER: 'normal_user',
+  FINANCE_STAFF: 'finance_staff',
+  SUPER_ADMIN: 'super_admin',
 }

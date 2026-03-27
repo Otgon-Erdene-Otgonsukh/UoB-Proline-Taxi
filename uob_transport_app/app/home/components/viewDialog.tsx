@@ -69,7 +69,7 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRe
         direction="row"
         sx={{
           justifyContent: "space-between",
-          alignItems: "center",
+          alignItems: "top",
           width: {
             md: "400px",
             xs: "280px"
@@ -79,15 +79,20 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRe
         <Typography gutterBottom sx={{ fontWeight: "bold" }}>
           From:
         </Typography>
-        <Typography gutterBottom>
-          {viewData?.trip.airport === "" ||
-            viewData?.trip.airport === null
-            ? (
-                (viewData?.trip.pickup_location.includes("{"))? // Temporary check to see if this is an old style booking.
-                JSON.parse(viewData?.trip.pickup_location).address
+        <Typography gutterBottom align="right">
+          {viewData?.trip.pickup_location.includes("{")
+                ? JSON.parse(viewData.trip.pickup_location).address.includes(
+                    "University of Bristol",
+                  ) // Temporary check to see if this is an old style booking.
+                  ? JSON.parse(viewData?.trip.pickup_location).address
+                  : JSON.parse(viewData.trip.pickup_location).short_name +
+                    ", " +
+                    JSON.parse(viewData?.trip.pickup_location)
+                      .address.split(",")
+                      .slice(-5)[0]
+                      .trim()
                 : viewData?.trip.pickup_location
-              )
-            : viewData?.trip.airport}
+              }
         </Typography>
       </Stack>
       {viewData?.trip.flight_num && (
@@ -115,7 +120,7 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRe
           direction="row"
           sx={{
             justifyContent: "space-between",
-            alignItems: "center",
+            alignItems: "top",
             width: {
               md: "400px",
               xs: "280px"
@@ -125,14 +130,27 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRe
           <Typography gutterBottom sx={{ fontWeight: "bold" }}>
             Via:
           </Typography>
-          <Typography gutterBottom>{viewData?.trip.via.includes("{") ? JSON.parse(viewData?.trip.via).map((loc : location) => loc.address).join("; ") : viewData?.trip.via}</Typography>
+          <Typography gutterBottom align="right" sx={{ whiteSpace: "pre-line" }}>
+            {viewData?.trip.via.includes("{")
+                ? JSON.parse(viewData?.trip.via)
+                    .map(
+                      (loc: location) =>
+                        loc.short_name +
+                        ", " +
+                        loc.address.split(",").slice(-5)[0].trim(),
+                    )
+                    .join("\n")
+                : JSON.parse(viewData?.trip.via).length === 0
+                  ? "N/A"
+                  : viewData?.trip.via}
+            </Typography>
         </Stack>
       )}
       <Stack
         direction="row"
         sx={{
           justifyContent: "space-between",
-          alignItems: "center",
+          alignItems: "top",
           width: {
             md: "400px",
             xs: "280px"
@@ -142,12 +160,19 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRe
         <Typography gutterBottom sx={{ fontWeight: "bold" }}>
           To:
         </Typography>
-        <Typography gutterBottom>
-          {
-            viewData?.trip.dropoff_location.includes("{")? // Temporary check to see if this is an old style booking.
-            JSON.parse(viewData?.trip.dropoff_location).address
-            : viewData?.trip.dropoff_location
-          }
+        <Typography gutterBottom align="right">
+          {viewData?.trip.dropoff_location.includes("{") // Temporary check to see if this is an old style booking.
+              ? JSON.parse(viewData.trip.dropoff_location).address.includes(
+                  "University of Bristol",
+                ) // Temporary check to see if this is an old style booking.
+                ? JSON.parse(viewData?.trip.dropoff_location).address
+                : JSON.parse(viewData.trip.dropoff_location).short_name +
+                  ", " +
+                  JSON.parse(viewData?.trip.dropoff_location)
+                    .address.split(",")
+                    .slice(-5)[0]
+                    .trim()
+              : viewData?.trip.dropoff_location}
         </Typography>
       </Stack>
       <Stack

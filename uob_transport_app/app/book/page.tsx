@@ -37,7 +37,6 @@ import { commonLocations } from "@/model/models";
 import { getLatLon } from "@/components/NominatimSearch";
 
 export default function BookingPage() {
-
   const session = useSession();
 
   if (!session) {
@@ -90,11 +89,11 @@ export default function BookingPage() {
   type FormData = {
     CommonLoc: string;
     CustomLoc: formLocation;
-    PickupLoc: formLocation
+    PickupLoc: formLocation;
     Via: formLocation[];
     ReturnTo: formLocation;
     FlightNum: string;
-    Airport: string;
+    Airport: formLocation;
     DropoffLoc: formLocation;
     PickupDate: string;
     PickupTime: string;
@@ -115,7 +114,7 @@ export default function BookingPage() {
     Via: [],
     ReturnTo: null,
     FlightNum: "",
-    Airport: "",
+    Airport: null,
     DropoffLoc: null,
     PickupLoc: null,
     PickupDate: "",
@@ -171,16 +170,19 @@ export default function BookingPage() {
         fail = true;
       }
       loc = {
-        short_name: formData.CommonLoc, address: commonLocations[formData.CommonLoc]?.address,
+        short_name: formData.CommonLoc,
+        address: commonLocations[formData.CommonLoc]?.address,
         lat: commonLocations[formData.CommonLoc]?.lat,
-        lng: commonLocations[formData.CommonLoc]?.lng
+        lng: commonLocations[formData.CommonLoc]?.lng,
       };
     } else loc = formData.Airport;
 
     // Department check
-    if (formData.dep_id === 0) {
-      setDepartmentEmpty(true);
-      fail = true;
+    if (!isLeadPassengerMyself) {
+      if (formData.dep_id === 0) {
+        setDepartmentEmpty(true);
+        fail = true;
+      }
     }
 
     // Drop-Off Location
@@ -195,7 +197,10 @@ export default function BookingPage() {
       addFormFeedback("DropoffLoc", "Drop-off location too long.");
       fail = true;
     } else if (!routes || routes.length == 0) {
-      addFormFeedback("DropoffLoc", "Unable to find route. Please check the address or try a different location.");
+      addFormFeedback(
+        "DropoffLoc",
+        "Unable to find route. Please check the address or try a different location.",
+      );
     }
 
     // Flight number (LLN{1,4}) and Airport
@@ -213,16 +218,16 @@ export default function BookingPage() {
       }
 
       // Airport, between 2 and 50 characters.
-      if (formData.Airport == "") {
+      if (formData.Airport === null) {
         addFormFeedback("Airport", "Please enter your airport.");
         fail = true;
-      } else if (formData.Airport.length < 2) {
+      } else if (formData.Airport.address.length < 2) {
         addFormFeedback("Airport", "Airport name too short.");
         fail = true;
-      } else if (formData.Airport.length > 50) {
+      } else if (formData.Airport.address.length > 200) {
         addFormFeedback("Airport", "Airport name too long.");
         fail = true;
-      }
+      } else loc = formData.Airport;
     }
 
     // Pickup Date & Time
@@ -333,7 +338,7 @@ export default function BookingPage() {
         dep_id: formData.dep_id,
         airport: formData.Airport,
         flight_num: formData.FlightNum,
-        isLeadPassengerMyself: isLeadPassengerMyself
+        isLeadPassengerMyself: isLeadPassengerMyself,
       };
       console.log(jsonBody);
 
@@ -424,10 +429,24 @@ export default function BookingPage() {
     return `${(meters / 1609.344).toFixed(1)} mi`;
   }
 
-  const [start, setStart] = useState<{ name: string; lat: number; lng: number } | null>(null);
-  const [end, setEnd] = useState<{ name: string; lat: number; lng: number } | null>(null);
-  const [vias, setVias] = useState<{ name: string; lat: number; lng: number }[]>([]);
-  const [returnloc, setReturnLoc] = useState<{ name: string; lat: number; lng: number } | null>(null);
+  const [start, setStart] = useState<{
+    name: string;
+    lat: number;
+    lng: number;
+  } | null>(null);
+  const [end, setEnd] = useState<{
+    name: string;
+    lat: number;
+    lng: number;
+  } | null>(null);
+  const [vias, setVias] = useState<
+    { name: string; lat: number; lng: number }[]
+  >([]);
+  const [returnloc, setReturnLoc] = useState<{
+    name: string;
+    lat: number;
+    lng: number;
+  } | null>(null);
 
   // Update the route when start or end changes.
   useEffect(() => {
@@ -436,23 +455,23 @@ export default function BookingPage() {
     }
   }, [start, end, vias, returnloc]);
 
-
   const [departmentList, setDepartmentList] = useState<department[]>([]);
 
   useEffect(() => {
-    getDepartments().then(res => {
+    getDepartments().then((res) => {
       if (res.status === 200) {
-        res.json().then(data => {
+        res.json().then((data) => {
           setDepartmentList(data);
-        })
+        });
       }
-    })
-  }, [])
+    });
+  }, []);
 
   const [routes, setRoutes] = useState<RouteData[]>([]);
-  const mapRef = useRef<MapRef>(null);
+  const mobileMapRef = useRef<MapRef>(null);
+  const desktopMapRef = useRef<MapRef>(null);
 
-  type Loc = { name: string; lat: number; lng: number }
+  type Loc = { name: string; lat: number; lng: number };
 
   // Only call updateRoute when both start and end are set.
   async function updateRoute() {
@@ -474,7 +493,7 @@ export default function BookingPage() {
         return {
           name: route[0].name,
           lat: route[0].lat,
-          lng: route[0].lng
+          lng: route[0].lng,
         };
       }
 
@@ -483,38 +502,58 @@ export default function BookingPage() {
       }
 
       // Find each corner of the square bounding box from the two start/end points and vias on the map.
-      const swLng = Math.min(start.lng, end.lng, ...vias.map(via => via.lng), ...returnloc?.lng ? [returnloc.lng] : []);
-      const swLat = Math.min(start.lat, end.lat, ...vias.map(via => via.lat), ...returnloc?.lat ? [returnloc.lat] : []);
-      const neLng = Math.max(start.lng, end.lng, ...vias.map(via => via.lng), ...returnloc?.lng ? [returnloc.lng] : []);
-      const neLat = Math.max(start.lat, end.lat, ...vias.map(via => via.lat), ...returnloc?.lat ? [returnloc.lat] : []);
+      const swLng = Math.min(
+        start.lng,
+        end.lng,
+        ...vias.map((via) => via.lng),
+        ...(returnloc?.lng ? [returnloc.lng] : []),
+      );
+      const swLat = Math.min(
+        start.lat,
+        end.lat,
+        ...vias.map((via) => via.lat),
+        ...(returnloc?.lat ? [returnloc.lat] : []),
+      );
+      const neLng = Math.max(
+        start.lng,
+        end.lng,
+        ...vias.map((via) => via.lng),
+        ...(returnloc?.lng ? [returnloc.lng] : []),
+      );
+      const neLat = Math.max(
+        start.lat,
+        end.lat,
+        ...vias.map((via) => via.lat),
+        ...(returnloc?.lat ? [returnloc.lat] : []),
+      );
 
       // Check bounds are LngLatLike type for fitBounds function.
-      const bounds: [LngLatLike, LngLatLike] = [[swLng, swLat], [neLng, neLat]];
-      mapRef.current?.fitBounds(bounds, { padding: 100 });
+      const bounds: [LngLatLike, LngLatLike] = [
+        [swLng, swLat],
+        [neLng, neLat],
+      ];
+      mobileMapRef.current?.fitBounds(bounds, { padding: 100 });
+      desktopMapRef.current?.fitBounds(bounds, { padding: 100 });
     }
   }
 
   async function fetchRoutes(locations: Loc[], returnJourney = false) {
     const osrmRoutes = [];
     try {
-      const response = await fetch(
-        "/api/route",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ points: locations })
-        }
-      );
+      const response = await fetch("/api/route", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ points: locations }),
+      });
       const data = await response.json();
       if (data.routes?.length > 0) {
         osrmRoutes.push({
           coordinates: data.routes[0].geometry.coordinates,
           duration: data.routes[0].duration,
-          distance: data.routes[0].distance
-        }
-        );
+          distance: data.routes[0].distance,
+        });
       }
       if (returnJourney) {
         setRoutes([routes[0], ...osrmRoutes]);
@@ -528,7 +567,7 @@ export default function BookingPage() {
 
   return (
     <div className="flex min-h-screen justify-center items-center font-inter p-4">
-      <div className="border-3 border-[#2c2c2c] flex flex-col lg:flex-row bg-white shadow-lg rounded-lg my-8 max-w-10xl overflow-hidden">
+      <div className="border-3 border-[#2c2c2c] flex flex-col lg:flex-row bg-white shadow-lg rounded-lg my-8 w-full md:mx-30 max-w-10xl overflow-hidden">
         {/* Booking Form Section */}
         <div className="p-4 sm:p-6 md:p-8 w-full lg:w-1/2">
           <div className="bg-[#2c2c2c] text-white py-6 -mx-4 sm:-mx-6 md:-mx-8 px-4 sm:px-6 md:px-8 -mt-4 sm:-mt-6 md:-mt-8 mb-6">
@@ -544,8 +583,9 @@ export default function BookingPage() {
                 <h3 className="font-bold">Trip details:</h3>
               </div>
               <div
-                className={`flex flex-col ${isManualChecked || isFlightChecked ? "text-gray-400" : ""
-                  }`}
+                className={`flex flex-col ${
+                  isManualChecked || isFlightChecked ? "text-gray-400" : ""
+                }`}
               >
                 {/*using the custom theme above*/}
                 <ThemeProvider theme={inputTheme}>
@@ -574,10 +614,15 @@ export default function BookingPage() {
                         const value = e.target.value as LocKey;
                         if (e.target.value) {
                           // Convert lat and long strings to numbers for mapcn
-                          setStart({ name: e.target.value, lat: commonLocations[value].lat, lng: commonLocations[value].lng });
+                          setStart({
+                            name: e.target.value,
+                            lat: commonLocations[value].lat,
+                            lng: commonLocations[value].lng,
+                          });
                         }
                       }}
                       error={formFeedback.CommonLoc != ""}
+                      value={formData.CommonLoc}
                     >
                       <MenuItem value="">
                         <em>Select a location</em>
@@ -591,8 +636,9 @@ export default function BookingPage() {
                     </Select>
                     <FormHelperText
                       sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
-                      className={`${formFeedback.CommonLoc != "" ? "" : "hidden"
-                        }`}
+                      className={`${
+                        formFeedback.CommonLoc != "" ? "" : "hidden"
+                      }`}
                     >
                       {formFeedback.CommonLoc}
                     </FormHelperText>
@@ -608,7 +654,7 @@ export default function BookingPage() {
                     htmlFor="manual"
                     className="inline-flex items-center cursor-pointer gap-2"
                   >
-                    <span className="text-sm font-medium text-gray-900">
+                    <span className="md:text-sm text-xs font-medium text-gray-900">
                       Manually Enter
                     </span>
                     <input
@@ -622,8 +668,14 @@ export default function BookingPage() {
                         }
                       }}
                       onChange={(e) => {
+                        setStart(null);
+                        setRoutes([]);
                         setIsManualChecked(e.target.checked);
-                        setFormData({ ...formData, CustomLoc: null }); // temporary
+                        setFormData({
+                          ...formData,
+                          CustomLoc: null,
+                          CommonLoc: "",
+                        }); // temporary
                       }}
                       className="sr-only peer"
                     />
@@ -634,7 +686,7 @@ export default function BookingPage() {
                   htmlFor="flight"
                   className="inline-flex items-center cursor-pointer gap-2"
                 >
-                  <span className="text-sm font-medium text-gray-900">
+                  <span className="md:text-sm text-xs font-medium text-gray-900">
                     Flight
                   </span>
                   <input
@@ -648,9 +700,16 @@ export default function BookingPage() {
                       }
                     }}
                     onChange={(e) => {
+                      setStart(null);
+                      setRoutes([]);
                       setIsFlightChecked(e.target.checked);
                       setIsManualChecked(false);
-                      setFormData({ ...formData, FlightNum: "", Airport: "" });
+                      setFormData({
+                        ...formData,
+                        FlightNum: "",
+                        Airport: null,
+                        CommonLoc: "",
+                      });
                     }}
                     className="sr-only peer"
                   />
@@ -660,7 +719,9 @@ export default function BookingPage() {
                   htmlFor="via"
                   className="inline-flex items-center cursor-pointer gap-2 ml-2"
                 >
-                  <span className="text-sm font-medium text-gray-900">Via</span>
+                  <span className="md:text-sm text-xs font-medium text-gray-900">
+                    Via
+                  </span>
                   <input
                     id="via"
                     type="checkbox"
@@ -685,11 +746,14 @@ export default function BookingPage() {
                   <input
                     id="custom"
                     placeholder="Enter"
-                    className={`border-2 rounded px-3 py-2 ${formFeedback.CustomLoc == "" ? "border-gray-800" : "border-red-700"
-                      }`}
+                    className={`border-2 rounded px-3 py-2 ${
+                      formFeedback.CustomLoc == ""
+                        ? "border-gray-800"
+                        : "border-red-700"
+                    }`}
                     onChange={(e) => {
                       if (e.target.value !== "") {
-                      addFormFeedback("CustomLoc", "");
+                        addFormFeedback("CustomLoc", "");
                       }
                     }}
                     onKeyDown={(e) => {
@@ -702,15 +766,30 @@ export default function BookingPage() {
                       if (e.target.value == "") {
                         return; // Do not try to update route if field is empty
                       }
-                      const latlon = await getLatLon(e.target.value, true)
+                      const latlon = await getLatLon(e.target.value, true);
                       if (latlon != null) {
-                        setStart({ name: latlon.name, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) });
-                        setFormData({...formData, CustomLoc: {short_name: latlon.name, address: latlon.full_address, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon)}})
+                        setStart({
+                          name: latlon.name,
+                          lat: parseFloat(latlon.lat),
+                          lng: parseFloat(latlon.lon),
+                        });
+                        setFormData({
+                          ...formData,
+                          CustomLoc: {
+                            short_name: latlon.name,
+                            address: latlon.full_address,
+                            lat: parseFloat(latlon.lat),
+                            lng: parseFloat(latlon.lon),
+                          },
+                        });
                         addFormFeedback("CustomLoc", ""); // Reset any validation errors
                         e.target.value = latlon.full_address;
                       } else {
                         // Reset start and routes if no result is found.
-                        addFormFeedback("CustomLoc", "No results found for this search term.");
+                        addFormFeedback(
+                          "CustomLoc",
+                          "No results found for this search term.",
+                        );
                         setStart(null);
                         setRoutes([]);
                       }
@@ -718,8 +797,9 @@ export default function BookingPage() {
                   />
                   <FormHelperText
                     sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
-                    className={`${formFeedback.CustomLoc != "" ? "" : "hidden"
-                      }`}
+                    className={`${
+                      formFeedback.CustomLoc != "" ? "" : "hidden"
+                    }`}
                   >
                     {formFeedback.CustomLoc}
                   </FormHelperText>
@@ -753,28 +833,40 @@ export default function BookingPage() {
                         setVias([]);
                         return; // Do not try to update route if field is empty
                       }
-                      const latlon = await getLatLon(e.target.value, true)
+                      const latlon = await getLatLon(e.target.value, true);
                       if (latlon != null) {
-                        setVias([{ name: latlon.name, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) }, ...vias.slice(1)]);
+                        setVias([
+                          {
+                            name: latlon.name,
+                            lat: parseFloat(latlon.lat),
+                            lng: parseFloat(latlon.lon),
+                          },
+                          ...vias.slice(1),
+                        ]);
                         setFormData({
                           ...formData,
-                          Via: [{
-                            short_name: latlon.name,
-                            address: latlon.full_address,
-                            lat: parseFloat(latlon.lat),
-                            lng: parseFloat(latlon.lon)
-                          },
-                          ...formData.Via.slice(1)]
+                          Via: [
+                            {
+                              short_name: latlon.name,
+                              address: latlon.full_address,
+                              lat: parseFloat(latlon.lat),
+                              lng: parseFloat(latlon.lon),
+                            },
+                            ...formData.Via.slice(1),
+                          ],
                         });
                         addFormFeedback("Via1", ""); // Reset any validation errors
                         e.target.value = latlon.full_address;
                       } else {
                         // Reset start and routes if no result is found.
-                        addFormFeedback("Via1", "No results found for this search term.");
+                        addFormFeedback(
+                          "Via1",
+                          "No results found for this search term.",
+                        );
                         // Remove this via (and the next ones) if it is removed or changed to an invalid location.
                         setFormData({
                           ...formData,
-                          Via: [...formData.Via.slice(1)]
+                          Via: [...formData.Via.slice(1)],
                         });
                         setVias([]);
                       }
@@ -782,8 +874,7 @@ export default function BookingPage() {
                   ></input>
                   <FormHelperText
                     sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
-                    className={`${formFeedback.Via1 != "" ? "" : "hidden"
-                      }`}
+                    className={`${formFeedback.Via1 != "" ? "" : "hidden"}`}
                   >
                     {formFeedback.Via1}
                   </FormHelperText>
@@ -792,126 +883,145 @@ export default function BookingPage() {
 
               {/* Via Box 2 if Via Box 1 is populated, cleared when modified */}
 
-              {isViaChecked &&
-                vias.length > 0 && (
-                  <div className="flex flex-col">
-                    <input
-                      id="via2"
-                      placeholder="Via..."
-                      className={`border-2 rounded px-3 py-2 ${formFeedback.Via2 == "" ? "border-gray-800" : "border-red-700"}`}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          e.preventDefault();
-                          e.currentTarget.blur();
-                          // Go to next via box on Enter.
-                          setTimeout(() => {
-                            document.getElementById("via3")?.focus();
-                          }, 10);
-                        }
-                      }}
-                      onBlur={async (e) => {
-                        if (e.target.value == "") {
-                          setVias([...vias.slice(0, 1), ...vias.slice(2)]); // Remove via if field is cleared.
-                          return; // Do not try to update route if field is empty
-                        }
-                        const latlon = await getLatLon(e.target.value)
-                        if (latlon != null) {
-                          setVias([...vias.slice(0, 1), { name: latlon.name, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) }, ...vias.slice(2)]);
-                          setFormData({
-                            ...formData,
-                            Via: [
-                              ...formData.Via.slice(0, 1),
-                              {
-                                short_name: latlon.name,
-                                address: latlon.full_address,
-                                lat: parseFloat(latlon.lat),
-                                lng: parseFloat(latlon.lon)
-                              },
-                              ...formData.Via.slice(2)]
-                          });
-                          addFormFeedback("Via2", ""); // Reset any validation errors
-                          e.target.value = latlon.full_address;
-                        } else {
-                          // Reset start and routes if no result is found.
-                          addFormFeedback("Via2", "No results found for this search term.");
-                          // Remove this via (and the next ones) if it is removed or changed to an invalid location.
-                          setFormData({
-                            ...formData,
-                            Via: [...formData.Via.slice(0, 1)]
-                          });
-                          // Remove it from the map too.
-                          setVias(vias.slice(0, 1));
-                        }
-                      }}
-                    ></input>
-                    <FormHelperText
-                      sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
-                      className={`${formFeedback.Via2 != "" ? "" : "hidden"
-                        }`}
-                    >
-                      {formFeedback.Via2}
-                    </FormHelperText>
-                  </div>
-                )}
-
-              {/* Via Box 3 if Via Box 1&2 are populated, cleared when modified */}
-
-              {isViaChecked &&
-                vias.length > 1 && (
-                  <div className="flex flex-col">
-                    <input
-                      id="via3"
-                      placeholder="Via..."
-                      className={`border-2 rounded px-3 py-2 ${formFeedback.Via3 == "" ? "border-gray-800" : "border-red-700"}`}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          e.preventDefault();
-                          e.currentTarget.blur();
-                        }
-                      }}
-                      onBlur={async (e) => {
-                        if (e.target.value == "") {
-                          setVias([...vias.slice(0, 2), ...vias.slice(3)]); // Remove via if field is cleared.
-                          return; // Do not try to update route if field is empty
-                        }
-                        const latlon = await getLatLon(e.target.value)
-                        if (latlon != null) {
-                          setVias([...vias.slice(0, 2), { name: latlon.name, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) }]);
-                          setFormData({
-                            ...formData,
-                            Via: [...formData.Via.slice(0, 2),
+              {isViaChecked && vias.length > 0 && (
+                <div className="flex flex-col">
+                  <input
+                    id="via2"
+                    placeholder="Via..."
+                    className={`border-2 rounded px-3 py-2 ${formFeedback.Via2 == "" ? "border-gray-800" : "border-red-700"}`}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        e.currentTarget.blur();
+                        // Go to next via box on Enter.
+                        setTimeout(() => {
+                          document.getElementById("via3")?.focus();
+                        }, 10);
+                      }
+                    }}
+                    onBlur={async (e) => {
+                      if (e.target.value == "") {
+                        setVias([...vias.slice(0, 1), ...vias.slice(2)]); // Remove via if field is cleared.
+                        return; // Do not try to update route if field is empty
+                      }
+                      const latlon = await getLatLon(e.target.value);
+                      if (latlon != null) {
+                        setVias([
+                          ...vias.slice(0, 1),
+                          {
+                            name: latlon.name,
+                            lat: parseFloat(latlon.lat),
+                            lng: parseFloat(latlon.lon),
+                          },
+                          ...vias.slice(2),
+                        ]);
+                        setFormData({
+                          ...formData,
+                          Via: [
+                            ...formData.Via.slice(0, 1),
                             {
                               short_name: latlon.name,
                               address: latlon.full_address,
                               lat: parseFloat(latlon.lat),
-                              lng: parseFloat(latlon.lon)
+                              lng: parseFloat(latlon.lon),
                             },
-                            ]
-                          });
-                          addFormFeedback("Via3", ""); // Reset any validation errors
-                          e.target.value = latlon.full_address;
-                        } else {
-                          // Reset start and routes if no result is found.
-                          addFormFeedback("Via3", "No results found for this search term.");
-                          // Remove this via if it is removed or changed to an invalid location.
-                          setFormData({
-                            ...formData,
-                            Via: [...formData.Via.slice(0, 2)]
-                          });
-                          // Remove the vias from the map.
-                          setVias(vias.slice(0, 2));
-                        }
-                      }}
-                    ></input>
-                    <FormHelperText
-                      sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
-                      className={`${formFeedback.Via3 != "" ? "" : "hidden"
-                        }`}
-                    >
-                      {formFeedback.Via3}
-                    </FormHelperText>
-                  </div>
-                )}
+                            ...formData.Via.slice(2),
+                          ],
+                        });
+                        addFormFeedback("Via2", ""); // Reset any validation errors
+                        e.target.value = latlon.full_address;
+                      } else {
+                        // Reset start and routes if no result is found.
+                        addFormFeedback(
+                          "Via2",
+                          "No results found for this search term.",
+                        );
+                        // Remove this via (and the next ones) if it is removed or changed to an invalid location.
+                        setFormData({
+                          ...formData,
+                          Via: [...formData.Via.slice(0, 1)],
+                        });
+                        // Remove it from the map too.
+                        setVias(vias.slice(0, 1));
+                      }
+                    }}
+                  ></input>
+                  <FormHelperText
+                    sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
+                    className={`${formFeedback.Via2 != "" ? "" : "hidden"}`}
+                  >
+                    {formFeedback.Via2}
+                  </FormHelperText>
+                </div>
+              )}
+
+              {/* Via Box 3 if Via Box 1&2 are populated, cleared when modified */}
+
+              {isViaChecked && vias.length > 1 && (
+                <div className="flex flex-col">
+                  <input
+                    id="via3"
+                    placeholder="Via..."
+                    className={`border-2 rounded px-3 py-2 ${formFeedback.Via3 == "" ? "border-gray-800" : "border-red-700"}`}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        e.currentTarget.blur();
+                      }
+                    }}
+                    onBlur={async (e) => {
+                      if (e.target.value == "") {
+                        setVias([...vias.slice(0, 2), ...vias.slice(3)]); // Remove via if field is cleared.
+                        return; // Do not try to update route if field is empty
+                      }
+                      const latlon = await getLatLon(e.target.value);
+                      if (latlon != null) {
+                        setVias([
+                          ...vias.slice(0, 2),
+                          {
+                            name: latlon.name,
+                            lat: parseFloat(latlon.lat),
+                            lng: parseFloat(latlon.lon),
+                          },
+                        ]);
+                        setFormData({
+                          ...formData,
+                          Via: [
+                            ...formData.Via.slice(0, 2),
+                            {
+                              short_name: latlon.name,
+                              address: latlon.full_address,
+                              lat: parseFloat(latlon.lat),
+                              lng: parseFloat(latlon.lon),
+                            },
+                          ],
+                        });
+                        addFormFeedback("Via3", ""); // Reset any validation errors
+                        e.target.value = latlon.full_address;
+                      } else {
+                        // Reset start and routes if no result is found.
+                        addFormFeedback(
+                          "Via3",
+                          "No results found for this search term.",
+                        );
+                        // Remove this via if it is removed or changed to an invalid location.
+                        setFormData({
+                          ...formData,
+                          Via: [...formData.Via.slice(0, 2)],
+                        });
+                        // Remove the vias from the map.
+                        setVias(vias.slice(0, 2));
+                      }
+                    }}
+                  ></input>
+                  <FormHelperText
+                    sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
+                    className={`${formFeedback.Via3 != "" ? "" : "hidden"}`}
+                  >
+                    {formFeedback.Via3}
+                  </FormHelperText>
+                </div>
+              )}
 
               {/* Show flight input field only when flight checkbox is checked */}
               {isFlightChecked && (
@@ -923,8 +1033,11 @@ export default function BookingPage() {
                     <input
                       id="flightNum"
                       placeholder="AB1234"
-                      className={`border-2 rounded px-3 py-2 ${formFeedback.FlightNum == "" ? "border-gray-800" : "border-red-700"
-                        }`}
+                      className={`border-2 rounded px-3 py-2 ${
+                        formFeedback.FlightNum == ""
+                          ? "border-gray-800"
+                          : "border-red-700"
+                      }`}
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
                           e.preventDefault();
@@ -940,8 +1053,9 @@ export default function BookingPage() {
                     />
                     <FormHelperText
                       sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
-                      className={`${formFeedback.FlightNum != "" ? "" : "hidden"
-                        }`}
+                      className={`${
+                        formFeedback.FlightNum != "" ? "" : "hidden"
+                      }`}
                     >
                       {formFeedback.FlightNum}
                     </FormHelperText>
@@ -953,19 +1067,53 @@ export default function BookingPage() {
                     <input
                       id="airport"
                       placeholder="Bristol Airport"
-                      className={`border-2 rounded px-3 py-2 ${formFeedback.Airport == "" ? "border-gray-800" : "border-red-700"
-                        }`}
+                      className={`border-2 rounded px-3 py-2 ${
+                        formFeedback.Airport == ""
+                          ? "border-gray-800"
+                          : "border-red-700"
+                      }`}
                       onChange={(e) => {
-                        setFormData({ ...formData, Airport: e.target.value });
+                        setStart(null);
                         if (e.target.value !== "") {
                           addFormFeedback("Airport", "");
+                        }
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          e.currentTarget.blur();
+                        }
+                      }}
+                      onBlur={async (e) => {
+                        if (e.target.value === "") {
+                          return;
+                        }
+                        const latlon = await getLatLon(e.target.value, true);
+                        if (latlon !== null) {
+                          setStart({
+                            name: latlon.name,
+                            lat: parseFloat(latlon.lat),
+                            lng: parseFloat(latlon.lon),
+                          });
+                          setFormData({
+                            ...formData,
+                            Airport: {
+                              short_name: latlon.name,
+                              address: latlon.full_address,
+                              lat: parseFloat(latlon.lat),
+                              lng: parseFloat(latlon.lon),
+                            },
+                          });
+                          addFormFeedback("Airport", "");
+                          e.target.value = latlon.full_address;
                         }
                       }}
                     />
                     <FormHelperText
                       sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
-                      className={`${formFeedback.Airport != "" ? "" : "hidden"
-                        }`}
+                      className={`${
+                        formFeedback.Airport != "" ? "" : "hidden"
+                      }`}
                     >
                       {formFeedback.Airport}
                     </FormHelperText>
@@ -996,15 +1144,30 @@ export default function BookingPage() {
                     if (e.target.value == "") {
                       return; // Do not try to update route if field is empty
                     }
-                    const latlon = await getLatLon(e.target.value, true)
+                    const latlon = await getLatLon(e.target.value, true);
                     if (latlon != null) {
-                      setEnd({ name: latlon.name, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) });
+                      setEnd({
+                        name: latlon.name,
+                        lat: parseFloat(latlon.lat),
+                        lng: parseFloat(latlon.lon),
+                      });
                       addFormFeedback("DropoffLoc", ""); // Reset any validation errors
-                      setFormData({ ...formData, DropoffLoc: { short_name: latlon.name, address: latlon.full_address, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) } });
+                      setFormData({
+                        ...formData,
+                        DropoffLoc: {
+                          short_name: latlon.name,
+                          address: latlon.full_address,
+                          lat: parseFloat(latlon.lat),
+                          lng: parseFloat(latlon.lon),
+                        },
+                      });
                       e.target.value = latlon.full_address;
                     } else {
                       // Reset destination and show error if there are no results.
-                      addFormFeedback("DropoffLoc", "No results found for this search term.");
+                      addFormFeedback(
+                        "DropoffLoc",
+                        "No results found for this search term.",
+                      );
                       setFormData({ ...formData, DropoffLoc: null });
                       setEnd(null);
                       setRoutes([]);
@@ -1019,6 +1182,141 @@ export default function BookingPage() {
                   {formFeedback.DropoffLoc}
                 </FormHelperText>
               </div>
+              <div className="container block lg:hidden w-full object-contain h-140 rounded-[0px_5px_5px_0px] overflow-hidden">
+                {/* Lat and long are inverted by MAPCN here */}
+                <Map ref={mobileMapRef} center={[-2.59571, 51.45453]} zoom={14}>
+                  {start && routes && routes.length > 0 && (
+                    <MapRoute
+                      coordinates={routes[0].coordinates}
+                      color={"#6366f1"}
+                      width={6}
+                      opacity={1}
+                    />
+                  )}
+                  ;
+                  {returnloc && returnloc.lat && returnloc.lng && (
+                    <MapMarker
+                      longitude={returnloc.lng}
+                      latitude={returnloc.lat}
+                    >
+                      <MarkerContent>
+                        <div className="size-5 rounded-full bg-red-500 border-2 border-white shadow-lg" />
+                        <MarkerLabel
+                          position="top"
+                          className="bg-white p-1 rounded opacity-80"
+                        >
+                          {returnloc.name}
+                        </MarkerLabel>
+                      </MarkerContent>
+                    </MapMarker>
+                  )}
+                  {start &&
+                    start.lat &&
+                    start.lng && ( // Only render marker when not null
+                      <MapMarker longitude={start.lng} latitude={start.lat}>
+                        <MarkerContent>
+                          <div className="size-5 rounded-full bg-green-500 border-2 border-white shadow-lg" />
+                          <MarkerLabel
+                            position="top"
+                            className="bg-white p-1 rounded opacity-80"
+                          >
+                            {start.name}
+                          </MarkerLabel>
+                        </MarkerContent>
+                      </MapMarker>
+                    )}
+                  {vias &&
+                    vias.length > 0 &&
+                    vias.map(
+                      (via, index) =>
+                        via.lat &&
+                        via.lng && (
+                          <MapMarker
+                            key={index}
+                            longitude={via.lng}
+                            latitude={via.lat}
+                          >
+                            <MarkerContent>
+                              <div className="size-5 rounded-full bg-yellow-500 border-2 border-white shadow-lg" />
+                              <MarkerLabel
+                                position="top"
+                                className="bg-white p-1 rounded opacity-80"
+                              >
+                                {via.name}
+                              </MarkerLabel>
+                            </MarkerContent>
+                          </MapMarker>
+                        ),
+                    )}
+                  {end && end.lat && end.lng && (
+                    <MapMarker longitude={end.lng} latitude={end.lat}>
+                      <MarkerContent>
+                        <div className="size-5 rounded-full bg-red-500 border-2 border-white shadow-lg" />
+                        <MarkerLabel
+                          position="top"
+                          className="bg-white p-1 rounded opacity-80"
+                        >
+                          {end.name}
+                        </MarkerLabel>
+                      </MarkerContent>
+                    </MapMarker>
+                  )}
+                  {returnloc && routes && routes.length > 1 && (
+                    <MapRoute
+                      coordinates={routes[1].coordinates}
+                      color={"#707070"}
+                      width={6}
+                      opacity={1}
+                    />
+                  )}
+                  ;
+                  {routes && routes.length > 0 && (
+                    <div className="absolute top-3 left-3 bg-black text-white opacity-80 rounded-md py-3 px-4 flex flex-row w-80 justify-between">
+
+                      <div className="flex flex-col gap-1">
+                        <div className="flex items-center gap-1">
+                          <Clock className="size-3.5" />
+                          {formatDuration(routes[0].duration)}
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Route className="size-3" />
+                          {formatDistance(routes[0].distance)}
+                        </div>
+                        <p className="text-xs mt-1">
+                          Subject to traffic and <br/> weather conditions
+                        </p>
+                      </div>
+
+
+                      <div className="flex flex-col text-[11px] gap-1">
+                        <b>Key:</b>
+                        <div className="flex flex-col gap-0.5">
+                          <div className="flex items-center gap-1">
+                            <span className="text-xs text-green-500">◉</span>{" "}
+                            Origin
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <span className="text-xs text-yellow-500">◉</span>{" "}
+                            Via
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <span className="text-xs text-red-500">◉</span>{" "}
+                            Destination
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <span className="text-xs text-indigo-500">▬</span>{" "}
+                            Outbound Trip
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <span className="text-xs text-gray-700">▬</span>{" "}
+                            Return Trip
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </Map>
+              </div>
               <div className="flex flex-col text-sm">
                 <label htmlFor="pickupDate" className="mb-1">
                   Pick-up date and time
@@ -1027,8 +1325,11 @@ export default function BookingPage() {
                   <input
                     id="pickupDate"
                     type="date"
-                    className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0 ${formFeedback.PickupDate == "" ? "border-gray-800" : "border-red-700"
-                      }`}
+                    className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0 ${
+                      formFeedback.PickupDate == ""
+                        ? "border-gray-800"
+                        : "border-red-700"
+                    }`}
                     onChange={(e) => {
                       setFormData({ ...formData, PickupDate: e.target.value });
                       if (e.target.value !== "") {
@@ -1039,8 +1340,11 @@ export default function BookingPage() {
                   <input
                     id="pickupTime"
                     type="time"
-                    className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0 ${formFeedback.PickupTime == "" ? "border-gray-800" : "border-red-700"
-                      }`}
+                    className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0 ${
+                      formFeedback.PickupTime == ""
+                        ? "border-gray-800"
+                        : "border-red-700"
+                    }`}
                     onChange={(e) => {
                       setFormData({ ...formData, PickupTime: e.target.value });
                       if (e.target.value !== "") {
@@ -1122,14 +1426,30 @@ export default function BookingPage() {
                         if (e.target.value == "") {
                           return;
                         }
-                        const latlon = await getLatLon(e.target.value, true)
+                        const latlon = await getLatLon(e.target.value, true);
                         if (latlon != null) {
-                          setReturnLoc({ name: latlon.name, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) });
-                          setFormData({ ...formData, ReturnTo: { short_name: latlon.name, address: latlon.full_address, lat: parseFloat(latlon.lat), lng: parseFloat(latlon.lon) } });
+                          setReturnLoc({
+                            name: latlon.name,
+                            lat: parseFloat(latlon.lat),
+                            lng: parseFloat(latlon.lon),
+                          });
+                          setFormData({
+                            ...formData,
+                            ReturnTo: {
+                              short_name: latlon.name,
+                              address: latlon.full_address,
+                              lat: parseFloat(latlon.lat),
+                              lng: parseFloat(latlon.lon),
+                            },
+                          });
                           addFormFeedback("ReturnTo", ""); // Reset any validation errors
                           e.target.value = latlon.full_address;
-                        } else { // No results
-                          addFormFeedback("ReturnTo", "No results found for this search term.");
+                        } else {
+                          // No results
+                          addFormFeedback(
+                            "ReturnTo",
+                            "No results found for this search term.",
+                          );
                           setFormData({ ...formData, ReturnTo: null });
                           setReturnLoc(null);
                           setRoutes(routes.slice(0, routes.length - 1)); // Remove return route from map
@@ -1151,8 +1471,11 @@ export default function BookingPage() {
                       <input
                         id="returnDate"
                         type="date"
-                        className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0 ${formFeedback.ReturnDate == "" ? "border-gray-800" : "border-red-700"
-                          }`}
+                        className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0 ${
+                          formFeedback.ReturnDate == ""
+                            ? "border-gray-800"
+                            : "border-red-700"
+                        }`}
                         onChange={(e) => {
                           setFormData({
                             ...formData,
@@ -1164,8 +1487,11 @@ export default function BookingPage() {
                       <input
                         id="returnTime"
                         type="time"
-                        className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0 ${formFeedback.ReturnTime == "" ? "border-gray-800" : "border-red-700"
-                          }`}
+                        className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0 ${
+                          formFeedback.ReturnTime == ""
+                            ? "border-gray-800"
+                            : "border-red-700"
+                        }`}
                         onChange={(e) => {
                           setFormData({
                             ...formData,
@@ -1213,7 +1539,6 @@ export default function BookingPage() {
                     }}
                     onChange={(e) => {
                       setIsLeadPassengerMyself(e.target.checked);
-                      setFormData({ ...formData, CustomLoc: "" });
                     }}
                     className="sr-only peer"
                   />
@@ -1229,10 +1554,16 @@ export default function BookingPage() {
                     <input
                       id="name"
                       type="text"
-                      className={`border-2 rounded px-3 py-2 ${formFeedback.passengerName == "" ? "border-gray-800" : "border-red-700"
-                        }`}
+                      className={`border-2 rounded px-3 py-2 ${
+                        formFeedback.passengerName == ""
+                          ? "border-gray-800"
+                          : "border-red-700"
+                      }`}
                       onChange={(e) => {
-                        setFormData({ ...formData, PassengerName: e.target.value });
+                        setFormData({
+                          ...formData,
+                          PassengerName: e.target.value,
+                        });
                       }}
                     />
                     <FormHelperText
@@ -1266,8 +1597,11 @@ export default function BookingPage() {
                         type="tel"
                         id="number"
                         placeholder="1234567890"
-                        className={`border-2 rounded flex-1 sm:px-3 py-2 min-w-0 w-full ${formFeedback.Number == "" ? "border-gray-800" : "border-red-700"
-                          }`}
+                        className={`border-2 rounded flex-1 sm:px-3 py-2 min-w-0 w-full ${
+                          formFeedback.Number == ""
+                            ? "border-gray-800"
+                            : "border-red-700"
+                        }`}
                         onChange={(e) => {
                           setFormData({ ...formData, Number: e.target.value });
                           addFormFeedback("Number", "");
@@ -1331,8 +1665,11 @@ export default function BookingPage() {
                     <input
                       id="mail"
                       type="email"
-                      className={`border-2 rounded px-3 py-2 ${formFeedback.Email == "" ? "border-gray-800" : "border-red-700"
-                        }`}
+                      className={`border-2 rounded px-3 py-2 ${
+                        formFeedback.Email == ""
+                          ? "border-gray-800"
+                          : "border-red-700"
+                      }`}
                       onChange={(e) => {
                         setFormData({ ...formData, Email: e.target.value });
                         addFormFeedback("Email", "");
@@ -1371,8 +1708,11 @@ export default function BookingPage() {
                 </label>
                 <textarea
                   id="addInfo"
-                  className={`border-2 rounded px-3 py-2 min-h-20 ${formFeedback.AdditionalInfo == "" ? "border-gray-800" : "border-red-700"
-                    }`}
+                  className={`border-2 rounded px-3 py-2 min-h-20 ${
+                    formFeedback.AdditionalInfo == ""
+                      ? "border-gray-800"
+                      : "border-red-700"
+                  }`}
                   onChange={(e) => {
                     setFormData({
                       ...formData,
@@ -1385,8 +1725,9 @@ export default function BookingPage() {
                 ></textarea>
                 <FormHelperText
                   sx={{ color: "oklch(50.5% 0.213 27.518) !important" }}
-                  className={`${formFeedback.AdditionalInfo != "" ? "" : "hidden"
-                    }`}
+                  className={`${
+                    formFeedback.AdditionalInfo != "" ? "" : "hidden"
+                  }`}
                 >
                   {formFeedback.AdditionalInfo}
                 </FormHelperText>
@@ -1417,10 +1758,10 @@ export default function BookingPage() {
         </div>
 
         {/* Map Section */}
-        { /* https://mapcn.vercel.app/docs/routes */}
+        {/* https://mapcn.vercel.app/docs/routes */}
         <div className="container hidden lg:block lg:w-1/2 w-full object-contain min-w-150 border-l-3 border-[#2c2c2c] rounded-[0px_5px_5px_0px] overflow-hidden">
-          { /* Lat and long are inverted by MAPCN here */}
-          <Map ref={mapRef} center={[-2.602, 51.458]} zoom={14}>
+          {/* Lat and long are inverted by MAPCN here */}
+          <Map ref={desktopMapRef} center={[-2.602, 51.458]} zoom={14}>
             {start && routes && routes.length > 0 && (
               <MapRoute
                 coordinates={routes[0].coordinates}
@@ -1428,46 +1769,72 @@ export default function BookingPage() {
                 width={6}
                 opacity={1}
               />
-            )};
-
+            )}
+            ;
             {returnloc && returnloc.lat && returnloc.lng && (
               <MapMarker longitude={returnloc.lng} latitude={returnloc.lat}>
                 <MarkerContent>
                   <div className="size-5 rounded-full bg-red-500 border-2 border-white shadow-lg" />
-                  <MarkerLabel position="top" className="bg-white p-1 rounded opacity-80">{returnloc.name}</MarkerLabel>
+                  <MarkerLabel
+                    position="top"
+                    className="bg-white p-1 rounded opacity-80"
+                  >
+                    {returnloc.name}
+                  </MarkerLabel>
                 </MarkerContent>
               </MapMarker>
             )}
-
-            {start && start.lat && start.lng && ( // Only render marker when not null
-              <MapMarker longitude={start.lng} latitude={start.lat}>
-                <MarkerContent>
-                  <div className="size-5 rounded-full bg-green-500 border-2 border-white shadow-lg" />
-                  <MarkerLabel position="top" className="bg-white p-1 rounded opacity-80">{start.name}</MarkerLabel>
-                </MarkerContent>
-              </MapMarker>
-            )}
-
-            {vias && vias.length > 0 && vias.map((via, index) => (
-              via.lat && via.lng && (
-                <MapMarker key={index} longitude={via.lng} latitude={via.lat}>
+            {start &&
+              start.lat &&
+              start.lng && ( // Only render marker when not null
+                <MapMarker longitude={start.lng} latitude={start.lat}>
                   <MarkerContent>
-                    <div className="size-5 rounded-full bg-yellow-500 border-2 border-white shadow-lg" />
-                    <MarkerLabel position="top" className="bg-white p-1 rounded opacity-80">{via.name}</MarkerLabel>
+                    <div className="size-5 rounded-full bg-green-500 border-2 border-white shadow-lg" />
+                    <MarkerLabel
+                      position="top"
+                      className="bg-white p-1 rounded opacity-80"
+                    >
+                      {start.name}
+                    </MarkerLabel>
                   </MarkerContent>
                 </MapMarker>
-              )
-            ))}
-
+              )}
+            {vias &&
+              vias.length > 0 &&
+              vias.map(
+                (via, index) =>
+                  via.lat &&
+                  via.lng && (
+                    <MapMarker
+                      key={index}
+                      longitude={via.lng}
+                      latitude={via.lat}
+                    >
+                      <MarkerContent>
+                        <div className="size-5 rounded-full bg-yellow-500 border-2 border-white shadow-lg" />
+                        <MarkerLabel
+                          position="top"
+                          className="bg-white p-1 rounded opacity-80"
+                        >
+                          {via.name}
+                        </MarkerLabel>
+                      </MarkerContent>
+                    </MapMarker>
+                  ),
+              )}
             {end && end.lat && end.lng && (
               <MapMarker longitude={end.lng} latitude={end.lat}>
                 <MarkerContent>
                   <div className="size-5 rounded-full bg-red-500 border-2 border-white shadow-lg" />
-                  <MarkerLabel position="top" className="bg-white p-1 rounded opacity-80">{end.name}</MarkerLabel>
+                  <MarkerLabel
+                    position="top"
+                    className="bg-white p-1 rounded opacity-80"
+                  >
+                    {end.name}
+                  </MarkerLabel>
                 </MarkerContent>
               </MapMarker>
             )}
-
             {returnloc && routes && routes.length > 1 && (
               <MapRoute
                 coordinates={routes[1].coordinates}
@@ -1475,8 +1842,8 @@ export default function BookingPage() {
                 width={6}
                 opacity={1}
               />
-            )};
-
+            )}
+            ;
             {routes && routes.length > 0 && (
               <div className="absolute top-3 left-3 bg-black text-white opacity-80 rounded-md gap-2 p-2">
                 <div className="flex items-center gap-1.5">
@@ -1490,12 +1857,20 @@ export default function BookingPage() {
                   {formatDistance(routes[0].distance)}
                 </div>
                 <p className="text-[11px] opacity-80 mt-1">
-                  Subject to traffic and weather conditions<br /><br />
-                  <b>Key:</b><br />
-                  <span className="text-xs text-green-500">◉</span> Origin<br />
-                  <span className="text-xs text-yellow-500">◉</span> Via<br />
-                  <span className="text-xs text-red-500">◉</span> Destination<br />
-                  <span className="text-xs text-indigo-500">▬</span> Outbound Trip<br />
+                  Subject to traffic and weather conditions
+                  <br />
+                  <br />
+                  <b>Key:</b>
+                  <br />
+                  <span className="text-xs text-green-500">◉</span> Origin
+                  <br />
+                  <span className="text-xs text-yellow-500">◉</span> Via
+                  <br />
+                  <span className="text-xs text-red-500">◉</span> Destination
+                  <br />
+                  <span className="text-xs text-indigo-500">▬</span> Outbound
+                  Trip
+                  <br />
                   <span className="text-xs text-gray-700">▬</span> Return Trip
                 </p>
               </div>

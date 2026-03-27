@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { UserRecord } from "@/model/models";
+import { USER_ROLE } from "@/model/models";
 import SuperDashboard from "@/components/SuperDashboard";
 import {
   Box,
@@ -28,10 +29,12 @@ import { getDepartmentsList } from "./requests";
 import DepartmentManagePage from "./departmentManageComponents/departmentManagePage";
 import { UserManagePage } from "./userManageComponents/userManagePage";
 import { BookingManagePage } from "./bookingManageComponents/bookingManagePage";
+import ForbiddenPage from "@/components/ForbiddenPage";
 
 const Page = () => {
   // Get NextAuth Session.
-  const { status } = useSession();
+  const { status, data } = useSession();
+  const [isForbidden, setIsForbidden] = useState(false);
 
   const router = useRouter();
 
@@ -41,15 +44,19 @@ const Page = () => {
     if (status === "unauthenticated") {
       router.push("/login");
       return;
+    } else if (data && data.user?.account_type !== USER_ROLE.SUPER_ADMIN) {
+      // Only super admins can access this page, so if user is not super admin, set forbidden to true to show forbidden page.
+      setIsForbidden(true);
+    } else if (data && data.user?.account_type === USER_ROLE.SUPER_ADMIN) {
+      setIsForbidden(false);
+      getDepartmentsList().then(async res => {
+        if (res.status === 200) {
+          const data = await res.json();
+          setDepartments(data);
+        }
+      });
     }
-
-    getDepartmentsList().then(async res => {
-      if (res.status === 200) {
-        const data = await res.json();
-        setDepartments(data);
-      }
-    })
-  }, [status, router,]);
+  }, [status, router]);
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
@@ -61,6 +68,10 @@ const Page = () => {
   };
 
   const [tabValue, setTabValue] = useState(0);
+
+  if (isForbidden) {
+    return <ForbiddenPage />;
+  }
 
   return (
     <div className="flex-col font-inter">

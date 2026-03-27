@@ -43,13 +43,6 @@ interface UnparsedBooking {
 }
 
 export default function NormalUserDashboard() {
-  const { status } = useSession();
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      redirect("/login");
-    }
-  }, [status]);
-
   const [dashboardData, setDashboardData] = useState<NormalDashboardData>();
   const mapRef = useRef<MapRef>(null);
   const [activeIndex, setActiveIndex] = useState(-1);
@@ -224,7 +217,7 @@ export default function NormalUserDashboard() {
     <div className="min-h-screen bg-linear-to-b from-slate-50 to-white lg:flex lg:flex-row">
       <div
         id="data"
-        className="flex w-full flex-col px-6 py-8 lg:w-1/2 lg:px-8"
+        className="flex w-full flex-col px-6 pt-8 mb-8 md:mb-0 md:h-full md:w-1/2 lg:px-8 gap-8 min-h-screen"
       >
         <div id="cards" className="grid grid-cols-1 gap-4 md:grid-cols-3">
           <div className="flex md:flex-col items-center md:items-start justify-between rounded-2xl border border-sky-100 bg-linear-to-br from-white to-sky-50 p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
@@ -234,7 +227,7 @@ export default function NormalUserDashboard() {
               />
             </div>
             {loading ? (
-              <CircularProgress color="inherit" size={30}/>
+              <CircularProgress color="inherit" size={30} />
             ) : (
               <div>
                 <p className="text-3xl font-bold text-slate-900 md:text-start text-end">
@@ -254,7 +247,7 @@ export default function NormalUserDashboard() {
               />
             </div>
             {loading ? (
-              <CircularProgress color="inherit" size={30}/>
+              <CircularProgress color="inherit" size={30} />
             ) : (
               <div>
                 <p className="text-3xl font-bold text-slate-900 md:text-start text-end">
@@ -274,7 +267,7 @@ export default function NormalUserDashboard() {
               />
             </div>
             {loading ? (
-              <CircularProgress color="inherit" size={30}/>
+              <CircularProgress color="inherit" size={30} />
             ) : (
               <div>
                 <p className="text-3xl font-bold text-slate-900 md:text-start text-end">
@@ -287,9 +280,9 @@ export default function NormalUserDashboard() {
             )}
           </div>
         </div>
-        <div id="bookings">
+        <div id="bookings" className="h-full md:h-99.5">
           {dashboardData?.recentBookings.length === 0 ? (
-            <div className="mt-8 flex h-full flex-col items-center justify-center gap-4 rounded-2xl border border-slate-200 bg-slate-50/80 px-6 py-23 text-center">
+            <div className="flex h-full flex-col items-center justify-center gap-4 rounded-2xl border border-slate-200 bg-slate-50/80 px-6 py-23 text-center">
               <div className="inline-flex items-center justify-center rounded-full bg-white p-3 text-slate-500 shadow-sm">
                 <NotListedLocation fontSize="large" />
               </div>
@@ -310,7 +303,7 @@ export default function NormalUserDashboard() {
               </div>
             </div>
           ) : (
-            <div className="mt-8 flex h-full md:h-100 flex-col gap-3 rounded-2xl border border-slate-200/90 bg-white/90 px-5 py-4 shadow-sm">
+            <div className="flex h-full flex-col gap-3 rounded-2xl border border-slate-200/90 bg-white/90 px-5 py-4 shadow-sm">
               <div className="flex justify-between">
                 <div className="flex flex-col gap-2">
                   <p className="text-sm font-medium uppercase tracking-wide text-slate-600">
@@ -402,7 +395,7 @@ export default function NormalUserDashboard() {
                   coordinates={coordinates}
                   color={isActive ? "#314158" : "#94a3b8"}
                   width={isActive ? 6 : 4}
-                  opacity={isActive ? 1 : 0.5}
+                  opacity={isActive ? 1 : 0.7}
                   onClick={() => setActiveIndex(r.index)}
                 ></MapRoute>
               );
