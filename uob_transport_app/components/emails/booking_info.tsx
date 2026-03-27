@@ -8,7 +8,7 @@ import {
   Section,
   Hr,
 } from "@react-email/components";
-import { location } from "@/model/models";
+import { Location } from "@/model/models";
 
 export default function BookingInfo({
   from,
@@ -22,18 +22,18 @@ export default function BookingInfo({
   passengerName,
   phoneNumber,
 }: {
-  from: location;
-  via: location[];
-  to: location;
-  airport: location | null;
+  from: Location;
+  via: Location[];
+  to: Location;
+  airport: Location | null;
   flightNum: string;
   pickUpTime: Date;
   returnTime?: Date;
-  returnTo?: location;
+  returnTo?: Location;
   passengerName: string;
   phoneNumber: string;
 }) {
-  const formatAddress = (loc: location) => {
+  const formatAddress = (loc: Location) => {
     return loc.short_name + ", " + loc.address.split(",").slice(-5)[0].trim();
   };
 

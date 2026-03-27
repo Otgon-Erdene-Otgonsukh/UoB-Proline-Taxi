@@ -20,7 +20,7 @@ import {
 } from "@mui/material";
 import NumberField from "@/components/NumberField";
 import { useSession } from "next-auth/react";
-import { BookingRecord, formLocation, location } from "@/model/models";
+import { BookingRecord, formLocation, Location } from "@/model/models";
 import {
   Map,
   MapMarker,
@@ -368,7 +368,7 @@ export default function BookingPage() {
       // Swtich between edit / create booking.
       let targetURL = "/api/create_booking";
       if (prefilledBooking != null) {
-        jsonBody.bookingId = prefilledBooking.booking_id;
+        jsonBody.booking_id = prefilledBooking.booking_id;
         targetURL = "/api/update_booking";
       }
 
@@ -515,7 +515,7 @@ export default function BookingPage() {
         AdditionalInfo: prefilledBooking["additional_info"],
       });
       
-      const convertToMapLocation = (location: location) => {
+      const convertToMapLocation = (location: Location) => {
         return ({
           name: location.short_name, 
           lat: location.lat,

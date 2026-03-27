@@ -13,16 +13,10 @@ import TableContainer from "@mui/material/TableContainer";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { BookingRecord, USER_ROLE } from "@/model/models";
+import { BookingRecord } from "@/model/models";
 import { cancelBooking, getUserBookingList } from "./requests";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogActions from "@mui/material/DialogActions";
 import IconButton from "@mui/material/IconButton";
-import CloseIcon from "@mui/icons-material/Close";
 import Typography from "@mui/material/Typography";
-import BookingPage from "../book/page";
 import CustomizedButton from "@/components/CustomizedButton";
 import { StyledTableCell } from "@/components/StyledTableCell";
 import { Snackbar, Alert } from "@mui/material";
@@ -39,7 +33,6 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { DateTimePicker } from "@/components/datetimePicker/DateTimePicker";
 import { enLocale } from "@/components/datetimePicker/locale";
-import ForbiddenPage from "@/components/ForbiddenPage";
 
 const Page = () => {
   // Get NextAuth Session.
