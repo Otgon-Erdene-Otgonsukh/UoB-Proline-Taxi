@@ -6,7 +6,12 @@ import userEvent from "@testing-library/user-event";
 
 // mock next-auth
 jest.mock("next-auth/react", () => ({
-  useSession: jest.fn().mockReturnValue({ status: "authenticated" }),
+  useSession: jest
+    .fn()
+    .mockReturnValue({
+      status: "authenticated",
+      data: { user: { account_type: "finance_staff" } },
+    }),
 }));
 
 // mock useRouter
@@ -262,9 +267,11 @@ describe("dashboard page renders correctly", () => {
     // Status filter
     await user.click(screen.getByTestId("statusCard"));
     expect(screen.getByText("All Bookings with Statuses")).toBeInTheDocument();
-    
+
     // Overdue filter
     await user.click(screen.getByTestId("overdueCard"));
-    expect(screen.getByTestId("filter_text")).toHaveTextContent("Overdue Bookings");
-  })
+    expect(screen.getByTestId("filter_text")).toHaveTextContent(
+      "Overdue Bookings",
+    );
+  });
 });

@@ -355,6 +355,7 @@ export default function BookingPage() {
               "AdditionalInfo",
               "Form failed to submit. Please try again or check inputs.",
             );
+            setLoadingBar(false);
           }
         })
         .catch((err) => {
