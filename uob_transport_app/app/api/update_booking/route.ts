@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { getBookingDetails } from "@/backend/access/booking_access";
 import { auth } from "@/auth";
 import { isAdmin } from "@/backend/access/user_access";
-import { Location } from "@/model/models";
+import { location } from "@/model/models";
 import { commonLocations } from "@/model/models";
 import { getUserFromID } from "@/backend/access/user_access";
 
@@ -40,18 +40,18 @@ export async function POST(req: Request) {
       }
 
     const user_id = session.user.user_id; // Use the user ID from the session.
-    const pickup_loc: Location = request_json["pickup_location"];
-    const dropoff_loc: Location = request_json["dropoff_location"];
+    const pickup_loc: location = request_json["pickup_location"];
+    const dropoff_loc: location = request_json["dropoff_location"];
     const passenger_name: string = request_json["passenger_name"].toString();
     const email: string = request_json["email"].toString();
     const tel_number: string = request_json["tel_number"].toString();
     const pickup_time = new Date(request_json["pickup_time"]);
     const additional_info: string = request_json["additional_info"].toString();
-    const via: Location[] = request_json["via"];
-    const returnTo: Location | undefined = request_json["returnTo"] ? request_json["returnTo"] : undefined;
+    const via: location[] = request_json["via"];
+    const returnTo: location | undefined = request_json["returnTo"] ? request_json["returnTo"] : undefined;
     const passenger_num: number = request_json["passengers"];
     const flight_num: string = request_json["flight_num"].toString();
-    const airport: Location | null = request_json["airport"];
+    const airport: location | null = request_json["airport"];
     const returnDT: Date | undefined = request_json["return_time"] ? new Date(request_json["return_time"]) : undefined;
     const isLeadPassengerMyself: boolean = request_json["isLeadPassengerMyself"];
 
@@ -104,7 +104,7 @@ export async function POST(req: Request) {
             if (data && data.length > 0) {
             for (const resloc of data) {
                 if (parseFloat(resloc.lat) === loc.lat && parseFloat(resloc.lon) === loc.lng && resloc.display_name.toLowerCase() === loc.address.toLowerCase()) {
-                const expected_loc: Location = { short_name: resloc.name, lat: parseFloat(resloc.lat), lng: parseFloat(resloc.lon), address: resloc.display_name };
+                const expected_loc: location = { short_name: resloc.name, lat: parseFloat(resloc.lat), lng: parseFloat(resloc.lon), address: resloc.display_name };
                 if (loc.lat != expected_loc.lat || loc.lng != expected_loc.lng || loc.short_name.toLowerCase() != expected_loc.short_name.toLowerCase()) {
                     return NextResponse.json(
                     { error: "Location address does not match its longitude, latitude, or short name." },

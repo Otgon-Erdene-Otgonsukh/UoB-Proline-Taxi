@@ -3,7 +3,7 @@ import {
   Close as CloseIcon,
   FindInPage as FindInPageIcon,
 } from "@mui/icons-material";
-import { BookingRecord, Location } from "@/model/models";
+import { BookingRecord, location } from "@/model/models";
 
 const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRecord, dialogOpen: boolean, handleDialogClose: () => void }) => {
   return (<Dialog
@@ -136,7 +136,7 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRe
                 ? "N/A"
                 : JSON.parse(viewData?.trip.via as unknown as string)
                     .map(
-                      (loc: Location) =>
+                      (loc: location) =>
                         loc.short_name +
                         ", " +
                         loc.address.split(",").slice(-5)[0].trim(),

@@ -8,7 +8,7 @@ import {
   Section,
   Hr,
 } from "@react-email/components";
-import { Location } from "@/model/models";
+import { location } from "@/model/models";
 
 export default function BookingAdminReject({
   from,
@@ -24,20 +24,20 @@ export default function BookingAdminReject({
   department,
   uniStaffRejection,
 }: {
-  from: Location;
-  via: Location[];
-  to: Location;
-  airport: Location | null;
+  from: location;
+  via: location[];
+  to: location;
+  airport: location | null;
   flightNum: string;
   pickUpTime: Date;
   returnTime?: Date;
-  returnTo?: Location;
+  returnTo?: location;
   passengerName: string;
   phoneNumber: string;
   department: string;
   uniStaffRejection: boolean;
 }) {
-  const formatAddress = (loc: Location) => {
+  const formatAddress = (loc: location) => {
     return loc.short_name + ", " + loc.address.split(",").slice(-5)[0].trim();
   };
 

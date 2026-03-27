@@ -15,12 +15,11 @@ import {
   FormControlLabel,
   CircularProgress,
   Autocomplete,
-  TextField,
-  Switch,
+  TextField
 } from "@mui/material";
 import NumberField from "@/components/NumberField";
 import { useSession } from "next-auth/react";
-import { BookingRecord, formLocation, Location } from "@/model/models";
+import { BookingRecord, formLocation, location } from "@/model/models";
 import {
   Map,
   MapMarker,
@@ -515,7 +514,7 @@ export default function BookingPage() {
         AdditionalInfo: prefilledBooking["additional_info"],
       });
       
-      const convertToMapLocation = (location: Location) => {
+      const convertToMapLocation = (location: location) => {
         return ({
           name: location.short_name, 
           lat: location.lat,

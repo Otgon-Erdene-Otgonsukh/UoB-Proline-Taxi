@@ -1,6 +1,6 @@
 import { department } from "@/generated/prisma/client";
 
-export type Location = {
+export type location = {
   short_name: string;
   address: string;
   lat: number;
@@ -14,17 +14,17 @@ export type BookingStatusStr = 'Approved' | 'Pending' | 'Rejected'
 export type Trip = {
   trip_id: number;
   icabbi_booking_id?: number;
-  pickup_location: Location;
-  dropoff_location: Location;
+  pickup_location: location;
+  dropoff_location: location;
   dropoff_latitude: number;
   dropoff_longitude: number;
   pickup_time?: string;
   return_pickup_time: string,
   passenger_num: number;
-  via: Location[];
-  return_drop_loc: Location;
+  via: location[];
+  return_drop_loc: location;
   PO: string;
-  airport: Location;
+  airport: location;
   flight_num: string;
   price: number;
 }
@@ -36,12 +36,12 @@ export type BookingRecord = {
   trip: Trip;
   trip_id: number;
   booking_status: 'Approved' | 'Pending' | 'Rejected' | 'Cancelled';
-  via: Location[];
+  via: location[];
   dep_id: number;
   passenger_name: string;
   tel_number: string;
   email: string;
-  airport: Location;
+  airport: location;
 }
 
 // Attach common locations as keys to hashmapped Lat/Lon for routing.
@@ -121,9 +121,9 @@ export const UNASSIGNED_DEPARTMENT_ID = 14;
 export type NormalBookings = {
   booking_status: string
   trip: {
-    pickup_location: Location,
-    via: Location[] | null,
-    dropoff_location: Location,
+    pickup_location: location,
+    via: location[] | null,
+    dropoff_location: location,
     pickup_time: Date,
   }
 }
