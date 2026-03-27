@@ -244,7 +244,7 @@ export default function DepDashboard() {
               : b,
           ),
         );
-        fetch("api/update_booking", {
+        fetch("api/approve_booking", {
           method: "POST",
           body: JSON.stringify({
             bookingId: pendingBookingId,
@@ -271,7 +271,7 @@ export default function DepDashboard() {
         b.booking_id === bookingId ? { ...b, booking_status: "Rejected" } : b,
       ),
     );
-    fetch("api/update_booking", {
+    fetch("api/approve_booking", {
       method: "POST",
       body: JSON.stringify({ bookingId: bookingId, newStatus: "Rejected" }),
     });
