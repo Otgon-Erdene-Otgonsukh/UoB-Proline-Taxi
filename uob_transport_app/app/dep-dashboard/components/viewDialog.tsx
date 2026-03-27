@@ -8,7 +8,7 @@ import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import FindInPageIcon from "@mui/icons-material/FindInPage";
 import { BookingWithTrip } from "@/app/dep-dashboard/constants";
-import { location } from "@/model/models";
+import { Location } from "@/model/models";
 
 export default function Page({
   open,
@@ -245,7 +245,7 @@ export default function Page({
                   ? "N/A"
                   : JSON.parse(viewData?.trip.via)
                       .map(
-                        (loc: location) =>
+                        (loc: Location) =>
                           loc.short_name +
                           ", " +
                           loc.address.split(",").slice(-5)[0].trim(),
