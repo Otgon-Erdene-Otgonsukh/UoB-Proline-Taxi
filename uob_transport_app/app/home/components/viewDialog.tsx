@@ -115,7 +115,7 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRe
           </Typography>
         </Stack>
       )}
-      {viewData?.trip.via && (viewData?.trip.via as unknown as string).includes("{") && (
+      {viewData?.trip.via && (
         <Stack
           direction="row"
           sx={{
@@ -131,8 +131,10 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRe
             Via:
           </Typography>
           <Typography gutterBottom align="right" sx={{ whiteSpace: "pre-line" }}>
-            {(viewData?.trip.via as unknown as string).includes("{")
-                ? JSON.parse(viewData?.trip.via as unknown as string)
+            {(viewData?.trip.via as unknown as string).includes("{") || (viewData.trip.via as unknown as string).includes("[")
+              ? JSON.parse(viewData?.trip.via as unknown as string).length === 0
+                ? "N/A"
+                : JSON.parse(viewData?.trip.via as unknown as string)
                     .map(
                       (loc: Location) =>
                         loc.short_name +
@@ -140,9 +142,7 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRe
                         loc.address.split(",").slice(-5)[0].trim(),
                     )
                     .join("\n")
-                : JSON.parse(viewData?.trip.via as unknown as string).length === 0
-                  ? "N/A"
-                  : viewData?.trip.via}
+              : viewData?.trip.via}
             </Typography>
         </Stack>
       )}
@@ -234,7 +234,7 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRe
         <Typography gutterBottom sx={{ fontWeight: "bold" }}>
           Pick Up Time:
         </Typography>
-        <Typography gutterBottom>
+        <Typography gutterBottom align="right">
           {viewData?.trip.pickup_time
             ? new Date(viewData?.trip.pickup_time).toLocaleString()
             : ""}
@@ -256,7 +256,7 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRe
             <Typography gutterBottom sx={{ fontWeight: "bold" }}>
               Return trip pick-up time:
             </Typography>
-            <Typography gutterBottom>
+            <Typography gutterBottom align="right">
               {viewData?.trip.return_pickup_time
                 ? new Date(
                   viewData?.trip.return_pickup_time
@@ -278,9 +278,16 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRe
             <Typography gutterBottom sx={{ fontWeight: "bold" }}>
               Return Drop-off Location:
             </Typography>
-            <Typography gutterBottom>
-              {viewData?.trip.return_drop_loc as unknown as string}
-            </Typography>
+            <Typography gutterBottom align="right">
+                {(viewData?.trip.return_drop_loc as unknown as string).includes("{")
+                  ? JSON.parse(viewData.trip.return_drop_loc as unknown as string).short_name +
+                    ", " +
+                    JSON.parse(viewData.trip.return_drop_loc as unknown as string).address
+                      .split(",")
+                      .slice(-5)[0]
+                      .trim()
+                  : viewData.trip.return_drop_loc as unknown as string}
+              </Typography>
           </Stack>
         </>
       )}

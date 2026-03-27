@@ -193,8 +193,8 @@ export async function POST(request: Request) {
         pickUpTime: pickup_time,
         returnTime: returnDT,
         returnTo: returnTo,
-        passengerName: passenger_name,
-        phoneNumber: tel_number,
+        passengerName: user?.full_name || passenger_name,
+        phoneNumber: user?.phone_number || tel_number,
       }),
     );
 
@@ -206,7 +206,7 @@ export async function POST(request: Request) {
             //userEmail.email === email
             //? [userEmail.email]
             //: [userEmail.email, email.trim()],
-            ["janedoe@ioanm.com"]
+            ["janedoe@ioanm"]
         },
         Content: {
           Simple: {

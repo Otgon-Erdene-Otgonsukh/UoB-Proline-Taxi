@@ -204,10 +204,14 @@ const Page = () => {
       page: 0,
       pageSize: paginationMeta.pageSize,
     });
-    _getBookingListData(0, paginationMeta.pageSize);
+    _getBookingListData(0, paginationMeta.pageSize, true);
   };
 
-  const _getBookingListData = (page: number, pageSize: number) => {
+  const _getBookingListData = (
+    page: number,
+    pageSize: number,
+    submittedSearch: boolean = isSearchSubmitted,
+  ) => {
     getUserBookingList(page, pageSize, {
       ...searchFormInput,
       pickUpTimeFrom: searchFormInput.pickUpTimeFrom
@@ -225,11 +229,7 @@ const Page = () => {
         res.json().then((data) => {
           setBookingListData(data.bookings);
           setBookingListCount(data.totalNum);
-          if (data.totalNum === 0) {
-            setNoFilterBooking(true);
-          } else {
-            setNoFilterBooking(false);
-          }
+          setNoFilterBooking(data.totalNum === 0 && submittedSearch);
           setIsLoading(false);
         });
       }

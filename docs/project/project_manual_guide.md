@@ -2,7 +2,7 @@
 
 ## Description
 
-This manual provides information on the tools used in the development of this project, including brief descriptions that explain the reasons for choosing these tools, as well as instructions on how to utilize them. The goal of this guide is to enable team members who are facing difficulties understanding certain architectural concepts of the tools involved to get up to speed with concise and clear documentation that addresses all these issues.
+This manual provides information on the tools used in the development of this project, including brief descriptions that explain the reasons for choosing these tools, as well as instructions on how to utilize them. The goal of this guide is to enable team members who are facing difficulties understanding certain architectural concepts of the tools involved to get up to speed or for new developers who are not familiar with the tools involved with concise and clear documentation that addresses all these issues.
 
 - [Next.js](#nextjs-javascript-framework)
 - [Neon](#postgresql-database-hosted-with-neon)
