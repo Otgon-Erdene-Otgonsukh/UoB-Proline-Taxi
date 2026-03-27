@@ -5,6 +5,9 @@ This document provides an overview of all AI tools utilized in the project, in a
 **AI Tool:** Gemini 2.5 pro  
 **Used from:** 28th September 2025
 
+**AI Tool:** Gemini 3.1 pro  
+**Used from:** 19th February 2026
+
 **Scope:** 
  - Looking up terminal commands related to NPM and Git 
  - Concept definitions about frameworks such as Next.js and Tailwind 
@@ -16,7 +19,8 @@ This document provides an overview of all AI tools utilized in the project, in a
  - "What is the difference between useState and useRef in React ?"
  - "How to use usePath to get the current active route in React ?"
  - "Responsive styling syntax in Tailwind ?"
- - What is the command syntax to co author a commit in git?
+ - "I stashed changes to my local branch, then my laptop ran out of charge and shut down, when I rebooted it and did git stash pop, it said "No stash entries found". How do I recover my changes?"
+ - "What is the command syntax to co author a commit in git?"
 
 **Used in the following files:**
  - `/components/Navbar.tsx`

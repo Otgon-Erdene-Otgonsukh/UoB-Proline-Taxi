@@ -31,6 +31,9 @@ export type Trip = {
 }
 
 export type BookingRecord = {
+  User: {
+    full_name: string;
+  }
   booking_id: number;
   additional_info: string;
   time_created: string;

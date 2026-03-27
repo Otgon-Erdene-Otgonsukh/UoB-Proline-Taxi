@@ -33,6 +33,7 @@ export const UserTable = ({ data, count, page, pageSize, onPageChange, onPageSiz
                 <Table
                     sx={{ minWidth: 500, borderCollapse: "collapse" }}
                     aria-label="user table"
+                    size="small"
                 >
                     <TableHead>
                         <TableRow>
@@ -48,7 +49,9 @@ export const UserTable = ({ data, count, page, pageSize, onPageChange, onPageSiz
                     </TableHead>
                     <TableBody>
                         {data &&
-                            data.map((row, index) => (
+                            data
+                            .filter (row => row.role !== 'super_admin') // dont show super admin (george) account
+                            .map((row, index) => (
                                 <TableRow
                                     key={index}
                                     sx={{
@@ -64,7 +67,7 @@ export const UserTable = ({ data, count, page, pageSize, onPageChange, onPageSiz
                                     <StyledTableCell>{roleReadableStrMap[row.role]}</StyledTableCell>
                                     <StyledTableCell>
                                         <span
-                                            className={`inline-block px-5 py-1 rounded-full text-xs font-medium ${row.user_status === userStatusToIntMap.approved
+                                            className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${row.user_status === userStatusToIntMap.approved
                                                 ? "bg-green-100 text-green-800 border border-green-800"
                                                 : row.user_status === userStatusToIntMap.rejected
                                                     ? "bg-red-100 text-red-800 border border-red-800"

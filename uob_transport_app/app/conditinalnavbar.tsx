@@ -9,7 +9,8 @@ export default function LayoutWrapper({
   children: React.ReactNode;
 }) {
   // Set the paths where you want to hide the navbar
-  const noNavbar = false;
+  const pathname = usePathname();
+  const noNavbar = pathname === "/super";
 
   return (
     <>
