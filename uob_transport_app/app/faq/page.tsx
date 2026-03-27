@@ -18,7 +18,7 @@ export default function FAQPage() {
     { q: "How can I book a taxi?", a: "You can book via our app or website." },
     {
       q: "How do I sign up?",
-      a: "Your head of school/faculty/team administrator will need to invite you in order to create an account.",
+      a: "You can navigate to the register page and select your account type out of three options and wait for admin approval",
     },
     {
       q: "How do bookings get approved?",
