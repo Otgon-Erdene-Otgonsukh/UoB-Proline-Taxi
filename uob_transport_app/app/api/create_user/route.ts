@@ -85,7 +85,7 @@ async function createUserHandler(req: Request) {
         },
       });
     }
-    await sendReq(firstName, mail)
+    await sendReq(firstName, mail, role)
     return NextResponse.json({
       status: 200,
       message: "User is created successfully.",

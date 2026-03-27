@@ -13,12 +13,14 @@ This document provides an overview of all AI tools utilized in the project, in a
  - Concept definitions about frameworks such as Next.js and Tailwind 
  - Basic styling baseground to build upon 
  - Understanding Jest/Next.js error messages
+ - Searching up how to co-author a git commit 
 
 **Example Prompts:**
  - "What is the difference between useState and useRef in React ?"
  - "How to use usePath to get the current active route in React ?"
  - "Responsive styling syntax in Tailwind ?"
  - "I stashed changes to my local branch, then my laptop ran out of charge and shut down, when I rebooted it and did git stash pop, it said "No stash entries found". How do I recover my changes?"
+ - "What is the command syntax to co author a commit in git?"
 
 **Used in the following files:**
  - `/components/Navbar.tsx`
@@ -71,6 +73,7 @@ This document provides an overview of all AI tools utilized in the project, in a
  - Quick concept explanation of the tools involved
  - Generating mock data for testing
  - Writing complex raw sql query
+ - Proofreading and fixing spelling or grammar mistakes in docs/md files
 
 **Example Prompts:**
  - Apply the same styling logic to other divs in the MUI component.
@@ -78,6 +81,7 @@ This document provides an overview of all AI tools utilized in the project, in a
  - What gradient background fits this page ? 
  - What is the difference between JWT Session and Token ?
  - How to group bookings by department and sum and count their amount and prices?
+ - Read through this file and identify and patch up the spelling or grammar mistakes.
 
 **Used in the following files:**
  - `jest.config.ts`
@@ -85,3 +89,4 @@ This document provides an overview of all AI tools utilized in the project, in a
  - `/docs/project/project_manual_guide.md`
  - `__test__/*`
  - `/app/api/super-data`
+ - `/docs/handover/handover.md`
