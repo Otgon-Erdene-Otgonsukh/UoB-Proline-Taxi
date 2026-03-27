@@ -7,7 +7,7 @@ export type location = {
   lng: number;
 }
 
-export type formLocation = Location | null;
+export type formLocation = location | null;
 
 export type BookingStatusStr = 'Approved' | 'Pending' | 'Rejected'
 
