@@ -80,19 +80,19 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRe
           From:
         </Typography>
         <Typography gutterBottom align="right">
-          {(viewData?.trip.pickup_location as unknown as string).includes("{")
-                ? JSON.parse(viewData.trip.pickup_location as unknown as string).address.includes(
-                    "University of Bristol",
-                  ) // Temporary check to see if this is an old style booking.
-                  ? JSON.parse(viewData?.trip.pickup_location as unknown as string).address
-                  : JSON.parse(viewData.trip.pickup_location as unknown as string).short_name +
-                    ", " +
-                    JSON.parse(viewData?.trip.pickup_location as unknown as string)
-                      .address.split(",")
-                      .slice(-5)[0]
-                      .trim()
-                : viewData?.trip.pickup_location
-              }
+          { viewData?.trip 
+            ? JSON.parse(viewData.trip.pickup_location as unknown as string).address.includes(
+                "University of Bristol",
+              ) // Temporary check to see if this is an old style booking.
+              ? JSON.parse(viewData?.trip.pickup_location as unknown as string).address
+              : JSON.parse(viewData?.trip.pickup_location as unknown as string).short_name +
+                ", " +
+                JSON.parse(viewData?.trip.pickup_location as unknown as string)
+                  .address.split(",")
+                  .slice(-5)[0]
+                  .trim()
+            : ""
+          }
         </Typography>
       </Stack>
       {viewData?.trip.flight_num && (
@@ -161,7 +161,7 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRe
           To:
         </Typography>
         <Typography gutterBottom align="right">
-          {(viewData?.trip.dropoff_location as unknown as string).includes("{") // Temporary check to see if this is an old style booking.
+          {viewData?.trip
               ? JSON.parse(viewData?.trip.dropoff_location as unknown as string).address.includes(
                   "University of Bristol",
                 ) // Temporary check to see if this is an old style booking.
