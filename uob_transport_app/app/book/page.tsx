@@ -524,7 +524,7 @@ export default function BookingPage() {
       }
 
       // Populate map information
-      let vias = []
+      const vias = []
       for (const via of prefilledBooking["trip"]["via"]) {
         vias.push(convertToMapLocation(via));
       }
