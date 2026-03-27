@@ -1,6 +1,12 @@
 "use client";
 
-import { Box, FormControl, IconButton, InputLabel, MenuItem, Select, TextField, Typography, useTheme } from "@mui/material";
+import {
+  Box, 
+  IconButton, 
+  TextField, 
+  Typography, 
+  useTheme 
+} from "@mui/material";
 import {
   FirstPage,
   KeyboardArrowLeft,
@@ -15,7 +21,6 @@ import ViewDepartmentDialog from "./viewDepartmentDialog";
 import ConfirmDialog from "@/components/confirmDIalog";
 import CustomizedButton from "@/components/CustomizedButton";
 import AddDepartmentDialog from "./newDepartmentDialog";
-import ApartmentIcon from '@mui/icons-material/Apartment';
 import { deleteDepartment, getDepartmentManageList } from "../request";
 
 const DepartmentManagePage = () => {
