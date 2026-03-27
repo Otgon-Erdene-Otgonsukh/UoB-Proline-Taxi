@@ -24,16 +24,28 @@ This document provides an overview of all AI tools utilized in the project, in a
 
 ## Ioan Moir
 **AI Tool:** Chat GPT 4.0
+**Used from:** 28 September 2025
 
 **Scope:** 
  - Fixing the Docker file issue with copying files from builder stage and environment arguments
  - Explanation of Jest error messages about mocking
 
 **Example Prompts:**
- - How to pass an argument to docker build command ?
- - What are the necessary files need to copied for next.js project to run ?
+ - How can I pass an argument like .env variables to the docker build command?
+ - What are the necessary files need to copied for next.js project to run?
  - Using React in TypeScript, is there an event that triggers when a user deselects or presses enter on a form field?
  - How can I ensure that an array in TypeScript is of a pre-defined type, such as "LngLatLike", to avoid compile errors?
+
+**AI Tool:** VSCode AI Suggestions (https://code.visualstudio.com/docs/copilot/ai-powered-suggestions)
+**Used from:** 16 January 2026
+
+**Scope:**
+ - Showing and completing suggested code.
+ - Faster copying/pasting of code snippets from other parts of the codebase or file.
+
+**Examples:**
+ - Typing 'Return ' and then using the suggestion it has pulled from another part of the code base for the return error message.
+ - Modifying the type of a variable 'const someLocation : Location' to ': formLocation' and using it to find other usages in that page.
 
 **Used in the following files:**
  - `Dockerfile`
