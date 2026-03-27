@@ -22,7 +22,7 @@ export async function POST(req: Request) {
   try {
     const request_json = await req.json();
     
-    const bookingId: number = request_json.bookingId;
+    const booking_id: number = request_json.booking_id;
     let booking = null;
 
     // Check if user is signed in.
@@ -164,9 +164,9 @@ export async function POST(req: Request) {
 
     // Check if the logged in user is an Admin or owns the booking
     if (await isAdmin(session.user.user_id)) {
-      booking = await getBookingDetails(-1, bookingId)
+      booking = await getBookingDetails(-1, booking_id)
     } else {
-      booking = await getBookingDetails(session.user.user_id, bookingId)
+      booking = await getBookingDetails(session.user.user_id, booking_id)
     }
 
     // Booking is null if booking does not exist or does not belong to user/admin.
@@ -181,7 +181,7 @@ export async function POST(req: Request) {
 
     // We have already checked if the booking belongs to them, so we can update it:
 
-    await updateBooking(bookingId,
+    await updateBooking(booking_id,
         request_json["pickup_location"],
         request_json["dropoff_location"],
         request_json["pickup_time"],

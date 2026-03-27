@@ -503,7 +503,8 @@ export default function BookingPage() {
         FlightNum: prefilledBooking["trip"]["flight_num"],
         Airport: prefilledBooking["trip"]["airport"],
         DropoffLoc: prefilledBooking["trip"]["dropoff_location"],
-        PickupDate: String(prefilledBooking["trip"]["pickup_time"]),
+        PickupDate: String(prefilledBooking["trip"]["pickup_time"]).split("T")[0],
+        PickupTime: String(prefilledBooking["trip"]["pickup_time"]).split("T")[1].substring(0,5),
         ReturnDate: returnDate,
         ReturnTime: returnTime,
         PassengerName: prefilledBooking["passenger_name"],
@@ -1433,7 +1434,7 @@ export default function BookingPage() {
                         ? "border-gray-800"
                         : "border-red-700"
                     }`}
-                    defaultValue={formData.PickupDate.split("T")[0] || ""}
+                    defaultValue={formData.PickupDate || ""}
                     onChange={(e) => {
                       setFormData({ ...formData, PickupDate: e.target.value });
                       if (e.target.value !== "") {
@@ -1449,7 +1450,7 @@ export default function BookingPage() {
                         ? "border-gray-800"
                         : "border-red-700"
                     }`}
-                    defaultValue={formData.PickupDate.split("T")[1]?.substring(0, 5) || ""}
+                    defaultValue={formData.PickupTime || ""}
                     onChange={(e) => {
                       setFormData({ ...formData, PickupTime: e.target.value });
                       if (e.target.value !== "") {
