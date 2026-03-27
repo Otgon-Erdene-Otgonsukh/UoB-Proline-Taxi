@@ -503,7 +503,7 @@ export default function BookingPage() {
         FlightNum: prefilledBooking["trip"]["flight_num"],
         Airport: prefilledBooking["trip"]["airport"],
         DropoffLoc: prefilledBooking["trip"]["dropoff_location"],
-        PickupDate: String(prefilledBooking["trip"]["return_pickup_time"]),
+        PickupDate: String(prefilledBooking["trip"]["pickup_time"]),
         ReturnDate: returnDate,
         ReturnTime: returnTime,
         PassengerName: prefilledBooking["passenger_name"],
