@@ -82,7 +82,7 @@ const Page = () => {
         >
           <MenuIcon fontSize="medium" />
         </Button>
-        <span className="font-aleo text-2xl sm:text-3xl font-semibold">User Management</span>
+        <span className="font-aleo text-2xl sm:text-3xl font-semibold">Management Panel</span>
       </header>
 
       <div className="w-full flex justify-center items-start p-4">

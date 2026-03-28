@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, IconButton, InputLabel, MenuItem, Select, Stack, TextField, Typography, useTheme } from "@mui/material";
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, IconButton, InputLabel, MenuItem, Select, Stack, TextField, Typography, useTheme, Snackbar, Alert } from "@mui/material";
 import {
   FirstPage,
   KeyboardArrowLeft,
@@ -392,6 +392,7 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
 export const BookingManagePage = () => {
 
   const [isLoading, setIsLoading] = useState(true);
+  const [snackBar, setSnackBar] = useState(false);
 
   useEffect(() => {
     _rerenderTable()
@@ -728,6 +729,13 @@ export const BookingManagePage = () => {
           onViewDetails={handleViewBooking}
           onEditBooking={handleEditBooking}
           onCancelBooking={handleCancelBooking}
+          onPriceAttached={() => {
+            setIsLoading(true);
+            _rerenderTable();
+          }}
+          openSnackBar={() => {
+            setSnackBar(true);
+          }}
           ActionsComponent={TablePaginationActions}
         />
       </div>
@@ -791,6 +799,25 @@ export const BookingManagePage = () => {
         </Button>
       </DialogActions>
     </Dialog>
+
+    <Snackbar
+      open={snackBar}
+      autoHideDuration={3000}
+      onClose={() => {
+        setSnackBar(false);
+      }}
+      anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+            onClose={() => {
+              setSnackBar(false);
+            }}
+            severity="success"
+            variant="filled"
+            >
+            Price has been successfully attached.
+          </Alert>
+    </Snackbar>
 
     <ConfirmDialog
       open={confirmCancelDialogOpen}
