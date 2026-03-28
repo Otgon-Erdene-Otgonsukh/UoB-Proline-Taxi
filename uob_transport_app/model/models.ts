@@ -25,6 +25,7 @@ export type Trip = {
   passenger_num: number;
   via: string;
   return_drop_loc: string;
+  price: null | string,
   PO: string;
   airport: string;
   flight_num: string;
@@ -40,6 +41,9 @@ export type BookingRecord = {
   trip: Trip;
   booking_status: 'Approved' | 'Pending' | 'Rejected' | 'Cancelled';
   via: location[];
+  department: {
+    dep_name: string
+  }
 }
 
 // Attach common locations as keys to hashmapped Lat/Lon for routing.
