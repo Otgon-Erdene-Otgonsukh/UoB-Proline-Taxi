@@ -70,6 +70,17 @@ jest.mock("@/components/NumberField", () => ({
   ),
 }));
 
+// Simulate nominatim address searching.
+jest.mock("@/components/NominatimSearch", () => ({
+  __esModule: true,
+  getLatLon: jest.fn(async (address: string) => {
+    if (address === "Temple Meads") { // A value to simulate a real resolvable location.
+      return { lat: "51.4490991", lon: "-2.5804029", name: "Temple Meads Bristol", full_address: "Temple Meads Bristol, Cattle Market Road, The Dings, St Philip's, Bristol, City of Bristol, West of England, England, BS1 6QF, United Kingdom" };
+    }
+    return null;
+  }),
+}));
+
 global.fetch = jest.fn();
 
 // ─── HELPERS ───
@@ -121,11 +132,13 @@ describe("Rendering", () => {
   test("renders all page structure, input fields, and correct attributes", async () => {
     render(<BookingPage />);
     await waitFor(() => screen.getByText("BOOKING DETAILS"));
+    await waitFor(() => screen.getByLabelText(/I am the lead passenger/i));
+    await userEvent.click(screen.getByLabelText(/I am the lead passenger/i));
 
     // Page structure
     expect(screen.getByText(/trip details/i)).toBeInTheDocument();
     expect(screen.getByText(/lead passenger details/i)).toBeInTheDocument();
-    expect(screen.getByTestId("map")).toBeInTheDocument();
+    expect(screen.getAllByTestId("map")).toHaveLength(2);
     expect(document.querySelector("form")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /confirm booking/i })).not.toBeDisabled();
 
@@ -236,6 +249,8 @@ describe("Toggle fields", () => {
 describe("Validation", () => {
   test("empty form submission shows all required errors and red borders, does not redirect", async () => {
     render(<BookingPage />);
+    await waitFor(() => screen.getByLabelText(/I am the lead passenger/i));
+    await userEvent.click(screen.getByLabelText(/I am the lead passenger/i));
     await waitFor(() => screen.getByRole("button", { name: /confirm booking/i }));
     await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
     await waitFor(() => {
@@ -252,28 +267,30 @@ describe("Validation", () => {
     });
   });
 
-  test("drop-off location: validates too short, too long, and clears error on valid input", async () => {
+  test("drop-off location: validates non-existent, and clears error on valid input", async () => {
     render(<BookingPage />);
     await waitFor(() => screen.getByLabelText(/drop-off location/i));
     const input = screen.getByLabelText(/drop-off location/i);
 
-    fireEvent.change(input, { target: { value: "AB" } });
+    // Non existent location
+    fireEvent.change(input, { target: { value: "hfgnuaijekgfhnbusjiyklgbfhnsuyikglhf" } });
     await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
     await waitFor(() =>
-      expect(screen.getByText(/drop-off location not detailed enough/i)).toBeInTheDocument()
+      expect(screen.getByText(/please enter a drop\-off location/i)).toBeInTheDocument()
     );
 
-    fireEvent.change(input, { target: { value: "A".repeat(101) } });
+    // Empty location
+    fireEvent.change(input, { target: { value: "" } });
     await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
     await waitFor(() =>
-      expect(screen.getByText(/drop-off location too long/i)).toBeInTheDocument()
+      expect(screen.getByText(/please enter a drop\-off location/i)).toBeInTheDocument()
     );
 
-    await userEvent.type(input, "Temple Meads Station");
+    await userEvent.type(input, "Real Place");
     await waitFor(() => expect(input).not.toHaveClass("border-red-700"));
   });
 
-  test("custom pick-up location: validates empty, too short, too long, and red border", async () => {
+  test("custom pick-up location: validates empty, non-existent, and red border", async () => {
     render(<BookingPage />);
     await waitFor(() => screen.getByLabelText(/manually enter/i));
     await userEvent.click(screen.getByLabelText(/manually enter/i));
@@ -284,18 +301,12 @@ describe("Validation", () => {
     await waitFor(() => {
       expect(screen.getByText(/please enter a pickup location/i)).toBeInTheDocument();
       expect(input).toHaveClass("border-red-700");
-    });
+    }); 
 
-    fireEvent.change(input, { target: { value: "Hi" } });
+    fireEvent.change(input, { target: { value: "hfgnuaijekgfhnbusjiyklgbfhnsuyikglhf" } });
     await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
     await waitFor(() =>
-      expect(screen.getByText(/pickup location not detailed enough/i)).toBeInTheDocument()
-    );
-
-    fireEvent.change(input, { target: { value: "A".repeat(101) } });
-    await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
-    await waitFor(() =>
-      expect(screen.getByText(/pickup location too long/i)).toBeInTheDocument()
+      expect(screen.getByText(/please enter a drop\-off location/i)).toBeInTheDocument()
     );
   });
 
@@ -332,13 +343,6 @@ describe("Validation", () => {
       expect(
         screen.queryByText(/please enter your flight number \(formatted AB1234\)/i)
       ).not.toBeInTheDocument()
-    );
-
-    // Airport too long
-    fireEvent.change(airportInput, { target: { value: "A".repeat(51) } });
-    await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
-    await waitFor(() =>
-      expect(screen.getByText(/airport name too long/i)).toBeInTheDocument()
     );
   });
 
@@ -425,6 +429,8 @@ describe("Validation", () => {
 
   test("phone number: validates empty, invalid, valid, and country code change", async () => {
     render(<BookingPage />);
+    await waitFor(() => screen.getByLabelText(/I am the lead passenger/i));
+    await userEvent.click(screen.getByLabelText(/I am the lead passenger/i));
     await waitFor(() => screen.getByLabelText(/phone number/i));
     const phoneInput = screen.getByLabelText(/phone number/i);
 
@@ -456,6 +462,8 @@ describe("Validation", () => {
 
   test("email: shows error and red border when empty, clears on valid input", async () => {
     render(<BookingPage />);
+    await waitFor(() => screen.getByLabelText(/I am the lead passenger/i));
+    await userEvent.click(screen.getByLabelText(/I am the lead passenger/i));
     await waitFor(() => screen.getByLabelText(/^email$/i));
     const emailInput = screen.getByLabelText(/^email$/i);
 
@@ -493,11 +501,14 @@ describe("Validation", () => {
 
   test("fixing one field preserves errors on others and re-validates correctly on resubmit", async () => {
     render(<BookingPage />);
+    await waitFor(() => screen.getByLabelText(/I am the lead passenger/i));
+    await userEvent.click(screen.getByLabelText(/I am the lead passenger/i));
     await waitFor(() => screen.getByRole("button", { name: /confirm booking/i }));
     await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
     await waitFor(() => screen.getByText(/please enter a drop-off location/i));
 
-    await userEvent.type(screen.getByLabelText(/drop-off location/i), "Temple Meads Station");
+    await userEvent.type(screen.getByLabelText(/drop-off location/i), "Temple Meads");
+    await userEvent.tab()
     expect(screen.getByText(/please enter a valid email address/i)).toBeInTheDocument();
 
     await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
@@ -511,6 +522,8 @@ describe("Validation", () => {
 
   test("past date blocks submission", async () => {
     render(<BookingPage />);
+    await waitFor(() => screen.getByLabelText(/I am the lead passenger/i));
+    await userEvent.click(screen.getByLabelText(/I am the lead passenger/i));
     await waitFor(() => screen.getByLabelText(/pick-up date and time/i));
     await userEvent.type(
       screen.getByLabelText(/drop-off location/i),
@@ -566,6 +579,8 @@ describe("Validation", () => {
 describe("Department autocomplete and interactivity", () => {
   test("department: shows error when missing, loads API options, selection clears error", async () => {
     render(<BookingPage />);
+    await waitFor(() => screen.getByLabelText(/I am the lead passenger/i));
+    await userEvent.click(screen.getByLabelText(/I am the lead passenger/i));
     await waitFor(() => screen.getByLabelText(/department/i));
     const deptInput = screen.getByLabelText(/department/i);
 
@@ -596,6 +611,9 @@ describe("Department autocomplete and interactivity", () => {
     render(<BookingPage />);
     await waitFor(() => screen.getByLabelText(/drop-off location/i));
 
+    await waitFor(() => screen.getByLabelText(/I am the lead passenger/i));
+    await userEvent.click(screen.getByLabelText(/I am the lead passenger/i));
+
     await userEvent.type(screen.getByLabelText(/drop-off location/i), "Clifton Village");
     expect(screen.getByLabelText(/drop-off location/i)).toHaveValue("Clifton Village");
 
@@ -620,7 +638,7 @@ describe("Department autocomplete and interactivity", () => {
       expect(screen.getByText("Richmond Building")).toBeInTheDocument();
       expect(screen.getByText("Victoria Rooms")).toBeInTheDocument();
       expect(screen.getByText("Wills Memorial Building")).toBeInTheDocument();
-      expect(screen.getByText("Physics Building")).toBeInTheDocument();
+      expect(screen.getByText("Physics Laboratory")).toBeInTheDocument();
     });
   });
 });

@@ -32,6 +32,7 @@ import { useSession } from "next-auth/react";
 import { getDepartments } from "@/app/requests/departments";
 import { department } from "@/generated/prisma/client";
 import { motion } from "framer-motion";
+import { UNASSIGNED_DEPARTMENT_ID } from "@/model/models";
 
 export default function Register() {
   const session = useSession();
@@ -45,12 +46,17 @@ export default function Register() {
   useEffect(() => {
     getDepartments().then((res) => {
       if (res.status === 200) {
-        res.json().then(data => {
-          setDepartmentList(data);
-        })
+        res.json().then((data) => {
+          // Unassigned Department is not shown in the department options for user.
+          setDepartmentList(
+            data.filter(
+              (e: department) => e.dep_id !== UNASSIGNED_DEPARTMENT_ID,
+            ),
+          );
+        });
       }
     });
-  }, [])
+  }, []);
 
   const [normalUser, setNormalUser] = useState(false);
   const [financeStaff, setFinanceStaff] = useState(false);
@@ -184,7 +190,7 @@ export default function Register() {
         password: password,
         firstName: firstName,
         lastName: lastName,
-        dep_id: depId,
+        department: departments.find((e) => e.dep_id === depId)?.dep_name,
         phoneNumber: phoneCode + " " + phoneNumber,
         role: financeStaff
           ? "finance_staff"
@@ -202,27 +208,32 @@ export default function Register() {
               redirect("/login");
             }, 3000);
           } else if (data.status === 200 && (financeStaff || proLineStaff)) {
-            redirect("/register/register-req")
+            redirect("/register/register-req");
           } else {
             setLoadingBar(false);
             setSnackState({ open: true, severity: "error" });
           }
-        })
+        });
     }
   };
 
   return (
     <div className="min-h-screen flex justify-center items-center">
-      <motion.div className="bg-white shadow-lg/40 max-w-3xl rounded-md border-4 border-[#2c2c2c] mt-20 mb-20" initial={{opacity: 0, y: 6, scale: 0.98}} animate={{opacity: 1, y: 0, scale: 1}} transition={{duration: 0.5, ease: "easeInOut"}}>
-        <div className="flex">
+      <motion.div
+        className="bg-white shadow-lg/40 max-w-3xl rounded-md border-4 border-[#2c2c2c] md:mt-20 md:mb-20 mb-10 mt-10 md:mx-0 mx-3"
+        initial={{ opacity: 0, y: 6, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 1, ease: "easeInOut" }}
+      >
+        <div className="flex md:flex-row flex-col">
           <div
             id="left"
-            className="bg-[#2c2c2c] w-1/2 flex flex-col justify-center items-center"
+            className="bg-[#2c2c2c] md:w-1/2 w-full flex flex-col justify-center items-center"
           >
             <Image
               src="/ownlogo.png"
               alt="location logo"
-              className=""
+              className="md:block hidden"
               width={320}
               height={150}
             ></Image>
@@ -252,7 +263,7 @@ export default function Register() {
           </div>
           <div
             id="right"
-            className="flex flex-col items-center gap-6 justify-center p-8 w-1/2"
+            className="flex flex-col items-center gap-6 justify-center p-8 md:w-1/2 w-full"
           >
             <h1 className="font-inter font-bold text-[22px] text-shadow-lg/5 mb-1">
               Create Account
@@ -315,6 +326,7 @@ export default function Register() {
                     type="tel"
                     data-testid="textfield"
                     onChange={(e) => {
+                      console.log(departments);
                       setPhoneNumber(e.target.value);
                       setPhoneNumberEmpty(false);
                     }}

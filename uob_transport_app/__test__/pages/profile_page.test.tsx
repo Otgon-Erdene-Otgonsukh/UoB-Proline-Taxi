@@ -377,6 +377,10 @@ describe("Profile page", () => {
       await waitFor(() => {
         expect(screen.getByText("Invalid password")).toBeInTheDocument();
       });
+    // Clicking Cancel should derender the buttons and edit textfield
+    await user.click(buttons[1]);
+    await waitFor(() => {
+      expect(screen.queryAllByRole("button").length).toBe(1);
     });
   });
 });

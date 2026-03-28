@@ -5,7 +5,7 @@ import { useEffect, useState, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { Button, TableHead } from "@mui/material";
 import CancelIcon from "@mui/icons-material/Cancel";
-import SummarizeIcon from '@mui/icons-material/Summarize';
+import SummarizeIcon from "@mui/icons-material/Summarize";
 import Box from "@mui/material/Box";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -13,7 +13,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { BookingRecord } from "@/model/models";
+import { BookingRecord, USER_ROLE } from "@/model/models";
 import { cancelBooking, getUserBookingList } from "./requests";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -39,6 +39,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { DateTimePicker } from "@/components/datetimePicker/DateTimePicker";
 import { enLocale } from "@/components/datetimePicker/locale";
+import ForbiddenPage from "@/components/ForbiddenPage";
 
 const Page = () => {
   // Get NextAuth Session.
@@ -56,7 +57,6 @@ const Page = () => {
       router.push("/login");
       return;
     }
-
     _getBookingListData(0, 10);
   }, [status, router]);
 
@@ -212,10 +212,14 @@ const Page = () => {
       page: 0,
       pageSize: paginationMeta.pageSize,
     });
-    _getBookingListData(0, paginationMeta.pageSize);
+    _getBookingListData(0, paginationMeta.pageSize, true);
   };
 
-  const _getBookingListData = (page: number, pageSize: number) => {
+  const _getBookingListData = (
+    page: number,
+    pageSize: number,
+    submittedSearch: boolean = isSearchSubmitted,
+  ) => {
     getUserBookingList(page, pageSize, {
       ...searchFormInput,
       pickUpTimeFrom: searchFormInput.pickUpTimeFrom
@@ -233,11 +237,7 @@ const Page = () => {
         res.json().then((data) => {
           setBookingListData(data.bookings);
           setBookingListCount(data.totalNum);
-          if (data.totalNum === 0) {
-            setNoFilterBooking(true);
-          } else {
-            setNoFilterBooking(false);
-          }
+          setNoFilterBooking(data.totalNum === 0 && submittedSearch);
           setIsLoading(false);
         });
       }
@@ -263,7 +263,7 @@ const Page = () => {
         </p>
       </motion.div>
       {data?.user.account_type === "finance_staff" ? (
-        <div className="flex mt-7 gap-10 text-sm max-w-6xl">
+        <div className="flex md:flex-row flex-col mt-7 gap-10 text-sm max-w-6xl">
           <motion.div
             className="bg-white flex flex-col items-center rounded-lg overflow-hidden px-4 text-gray-800 border-l-6 border-l-orange-500 drop-shadow-md/20 flex-1 cursor-pointer"
             initial={{ opacity: 0, y: 6, scale: 0.9 }}
@@ -347,7 +347,7 @@ const Page = () => {
           </motion.div>
         </div>
       ) : (
-        <div className="flex mt-7 gap-10 max-w-6xl">
+        <div className="flex md:flex-row flex-col mt-7 gap-10 max-w-6xl">
           <motion.div
             className="bg-white flex items-center rounded-lg overflow-hidden px-4 text-gray-800 border-l-6 border-l-yellow-500 drop-shadow-md/20"
             initial={{ opacity: 0, y: 6, scale: 0.9 }}
@@ -356,7 +356,7 @@ const Page = () => {
           >
             <Image
               src="/book.jpg"
-              width={150}
+              width={120}
               height={120}
               alt="person booking a taxi"
             ></Image>
@@ -412,7 +412,7 @@ const Page = () => {
         >
           <div className="flex flex-col items-center text-center max-w-md">
             <div className="mb-6 text-gray-300">
-              <SummarizeIcon sx={{fontSize: 100}}/>
+              <SummarizeIcon sx={{ fontSize: 100 }} />
             </div>
             <h2 className="text-2xl font-bold font-aleo text-gray-700 mb-3">
               No Bookings Yet
@@ -452,7 +452,7 @@ const Page = () => {
             sx={{
               display: "flex",
               flexDirection: { xs: "column", sm: "row" },
-            gap: 2.5,
+              gap: 2.5,
               marginBottom: 3,
             }}
           >
@@ -510,116 +510,125 @@ const Page = () => {
                 })}
               </Select>
             </FormControl>
-            <TextField
-            fullWidth
-            onClick={() => setDateTimePickerFromOpen(true)}
-            label="Pick Up Date From"
-            size="small"
-            sx={{ minWidth: 150 }}
-            ref={dateTimePickerFromAnchorRef}
-            defaultValue={searchFormInput.pickUpTimeFrom?.toDateString()}
-            slotProps={{
-              inputLabel: {
-                shrink: searchFormInput.pickUpTimeFrom !== undefined,
-              },
-            }}
-          />
-          {searchFormInput.pickUpTimeFrom && (
-            <IconButton
-              size="small"
-              sx={{ px: 1.3, mx: -2 }}
-              onClick={() => {
+            <div className="flex gap-5 md:w-4/5 w-full">
+              <TextField
+                fullWidth
+                onClick={() => setDateTimePickerFromOpen(true)}
+                label="Pick Up Date From"
+                size="small"
+                sx={{ minWidth: 150 }}
+                ref={dateTimePickerFromAnchorRef}
+                defaultValue={searchFormInput.pickUpTimeFrom?.toDateString()}
+                slotProps={{
+                  inputLabel: {
+                    shrink: searchFormInput.pickUpTimeFrom !== undefined,
+                  },
+                }}
+              />
+              {searchFormInput.pickUpTimeFrom && (
+                <IconButton
+                  size="small"
+                  sx={{ px: 1.3, mx: -2 }}
+                  onClick={() => {
+                    setSearchFormInput({
+                      ...searchFormInput,
+                      pickUpTimeFrom: undefined,
+                    });
+                    setIsSearchSubmitted(false);
+                  }}
+                >
+                  <CancelIcon fontSize="small" sx={{ color: "red" }} />
+                </IconButton>
+              )}
+            </div>
+
+            <div className="flex gap-5 md:w-4/5 w-full">
+              <TextField
+                fullWidth
+                onClick={() => setDateTimePickerToOpen(true)}
+                label="Pick Up Date To"
+                size="small"
+                sx={{ minWidth: 150 }}
+                ref={dateTimePickerToAnchorRef}
+                defaultValue={searchFormInput.pickUpTimeTo?.toDateString()}
+                slotProps={{
+                  inputLabel: {
+                    shrink: searchFormInput.pickUpTimeTo !== undefined,
+                  },
+                }}
+              />
+              {searchFormInput.pickUpTimeTo && (
+                <IconButton
+                  size="small"
+                  sx={{ px: 1.3, mx: -2 }}
+                  onClick={() => {
+                    setSearchFormInput({
+                      ...searchFormInput,
+                      pickUpTimeTo: undefined,
+                    });
+                    setIsSearchSubmitted(false);
+                  }}
+                >
+                  <CancelIcon fontSize="small" sx={{ color: "red" }} />
+                </IconButton>
+              )}
+            </div>
+
+            <DateTimePicker
+              open={dateTimePickerFromOpen}
+              onClose={() => setDateTimePickerFromOpen(false)}
+              anchorEl={dateTimePickerFromAnchorRef}
+              selectedDate={searchFormInput.pickUpTimeFrom || null}
+              onDateChange={(date) => {
                 setSearchFormInput({
                   ...searchFormInput,
-                  pickUpTimeFrom: undefined,
+                  pickUpTimeFrom: date,
                 });
                 setIsSearchSubmitted(false);
               }}
-            >
-              <CancelIcon fontSize="small" sx={{ color: "red" }} />
-            </IconButton>
-          )}
-          <TextField
-            fullWidth
-            onClick={() => setDateTimePickerToOpen(true)}
-            label="Pick Up Date To"
-            size="small"
-            sx={{ minWidth: 150 }}
-            ref={dateTimePickerToAnchorRef}
-            defaultValue={searchFormInput.pickUpTimeTo?.toDateString()}
-            slotProps={{
-              inputLabel: {
-                shrink: searchFormInput.pickUpTimeTo !== undefined,
-              },
-            }}
-          />
-          {searchFormInput.pickUpTimeTo && (
-            <IconButton
-              size="small"
-              sx={{ px: 1.3, mx: -2 }}
-              onClick={() => {
-                setSearchFormInput({
-                  ...searchFormInput,
-                  pickUpTimeTo: undefined,
-                });
+              locale={enLocale}
+            />
+            <DateTimePicker
+              open={dateTimePickerToOpen}
+              onClose={() => setDateTimePickerToOpen(false)}
+              anchorEl={dateTimePickerToAnchorRef}
+              selectedDate={searchFormInput.pickUpTimeTo || null}
+              onDateChange={(date) => {
+                setSearchFormInput({ ...searchFormInput, pickUpTimeTo: date });
                 setIsSearchSubmitted(false);
               }}
-            >
-              <CancelIcon fontSize="small" sx={{ color: "red" }} />
-            </IconButton>
-          )}
-          <DateTimePicker
-            open={dateTimePickerFromOpen}
-            onClose={() => setDateTimePickerFromOpen(false)}
-            anchorEl={dateTimePickerFromAnchorRef}
-            selectedDate={searchFormInput.pickUpTimeFrom || null}
-            onDateChange={(date) => {
-              setSearchFormInput({ ...searchFormInput, pickUpTimeFrom: date });
-              setIsSearchSubmitted(false);
-            }}
-            locale={enLocale}
-          />
-          <DateTimePicker
-            open={dateTimePickerToOpen}
-            onClose={() => setDateTimePickerToOpen(false)}
-            anchorEl={dateTimePickerToAnchorRef}
-            selectedDate={searchFormInput.pickUpTimeTo || null}
-            onDateChange={(date) => {
-              setSearchFormInput({ ...searchFormInput, pickUpTimeTo: date });
-              setIsSearchSubmitted(false);
-            }}
-            locale={enLocale}
-          />
-          <CustomizedButton title="Search" type="warning" click={() => {}} />
-        </Box>
-        {isSearchSubmitted &&
-          (searchFormInput.pickUpTimeFrom && searchFormInput.pickUpTimeTo ? (
-            <p className="font-aleo text-gray-700 mb-4 text-sm bg-blue-50 border-l-4 border-blue-400 py-2 px-4 rounded w-fit">
-              Showing Bookings from{" "}
-              <strong>
-                {searchFormInput.pickUpTimeFrom.toISOString().split("T")[0]}
-              </strong>{" "}
-              to{" "}
-              <strong>
-                {searchFormInput.pickUpTimeTo.toISOString().split("T")[0]}
-              </strong>
-            </p>
-          ) : searchFormInput.pickUpTimeFrom ? (
-            <p className="font-aleo text-gray-700 mb-4 text-sm bg-blue-50 border-l-4 border-blue-400 py-2 px-4 rounded w-fit">
-              Showing Bookings from{" "}
-              <strong>
-                {searchFormInput.pickUpTimeFrom.toISOString().split("T")[0]}
-              </strong>{" "}
-              to <strong>{new Date().toISOString().split("T")[0]}</strong>
-            </p>
-          ) : searchFormInput.pickUpTimeTo ? (
-            <p className="font-aleo text-gray-700 mb-4 text-sm bg-blue-50 border-l-4 border-blue-400 py-2 px-4 rounded w-fit">
-              Showing Bookings up to{" "}
-              <strong>
-                {searchFormInput.pickUpTimeTo.toISOString().split("T")[0]}
-              </strong>
-            </p>
-          ) : null)}
+              locale={enLocale}
+            />
+            <CustomizedButton title="Search" type="warning" click={() => { }} />
+          </Box>
+          {isSearchSubmitted &&
+            (searchFormInput.pickUpTimeFrom && searchFormInput.pickUpTimeTo ? (
+              <p className="font-aleo text-gray-700 mb-4 text-sm bg-blue-50 border-l-4 border-blue-400 py-2 px-4 rounded w-fit">
+                Showing Bookings from{" "}
+                <strong>
+                  {searchFormInput.pickUpTimeFrom.toISOString().split("T")[0]}
+                </strong>{" "}
+                to{" "}
+                <strong>
+                  {searchFormInput.pickUpTimeTo.toISOString().split("T")[0]}
+                </strong>
+              </p>
+            ) : searchFormInput.pickUpTimeFrom ? (
+              <p className="font-aleo text-gray-700 mb-4 text-sm bg-blue-50 border-l-4 border-blue-400 py-2 px-4 rounded w-fit">
+                Showing Bookings from{" "}
+                <strong>
+                  {searchFormInput.pickUpTimeFrom.toISOString().split("T")[0]}
+                </strong>{" "}
+                to <strong>{new Date().toISOString().split("T")[0]}</strong>
+              </p>
+            ) : searchFormInput.pickUpTimeTo ? (
+              <p className="font-aleo text-gray-700 mb-4 text-sm bg-blue-50 border-l-4 border-blue-400 py-2 px-4 rounded w-fit">
+                Showing Bookings up to{" "}
+                <strong>
+                  {searchFormInput.pickUpTimeTo.toISOString().split("T")[0]}
+                </strong>
+              </p>
+            ) : null)}
 
           {isLoading ? (
             <Typography
@@ -667,24 +676,46 @@ const Page = () => {
                             : "N/A"}
                         </StyledTableCell>
                         <StyledTableCell>
-                          {row.trip.airport === "" || row.trip.airport === null
-                            ? row.trip.pickup_location
-                            : row.trip.airport}
+                          {row.trip.pickup_location.includes("{") // Temporary check to see if this is an old style booking.
+                            ? // If it's a new booking style, use both the short name and the city name (last part of address - 5)
+                            JSON.parse(
+                              row.trip.pickup_location,
+                            ).short_name.includes("Airport")
+                              ? JSON.parse(row.trip.pickup_location).short_name
+                              : JSON.parse(row.trip.pickup_location)
+                                .short_name +
+                              ", " +
+                              JSON.parse(row.trip.pickup_location)
+                                .address.split(",")
+                                .slice(-5)[0]
+                                .trim()
+                            : row.trip.pickup_location}
                         </StyledTableCell>
                         <StyledTableCell>
-                          {row.trip.dropoff_location}
+                          {row.trip.dropoff_location.includes("{") // Temporary check to see if this is an old style booking.
+                            ? JSON.parse(
+                              row.trip.dropoff_location,
+                            ).short_name.includes("Airport")
+                              ? JSON.parse(row.trip.dropoff_location).short_name
+                              : JSON.parse(row.trip.dropoff_location)
+                                .short_name +
+                              ", " +
+                              JSON.parse(row.trip.dropoff_location)
+                                .address.split(",")
+                                .slice(-5)[0]
+                                .trim()
+                            : row.trip.dropoff_location}
                         </StyledTableCell>
                         <StyledTableCell>
                           <span
-                            className={`inline-block px-5 py-1 rounded-full text-xs font-medium ${
-                              row.booking_status === "Approved"
-                                ? "bg-green-100 text-green-800 border border-green-800"
-                                : row.booking_status === "Rejected"
-                                  ? "bg-red-100 text-red-800 border border-red-800"
-                                  : row.booking_status === "Cancelled"
-                                    ? "bg-gray-300 text-gray-900 border border-gray-900"
-                                    : "bg-yellow-100 text-yellow-800 border border-yellow-800"
-                            }`}
+                            className={`inline-block px-5 py-1 rounded-full text-xs font-medium ${row.booking_status === "Approved"
+                              ? "bg-green-100 text-green-800 border border-green-800"
+                              : row.booking_status === "Rejected"
+                                ? "bg-red-100 text-red-800 border border-red-800"
+                                : row.booking_status === "Cancelled"
+                                  ? "bg-gray-300 text-gray-900 border border-gray-900"
+                                  : "bg-yellow-100 text-yellow-800 border border-yellow-800"
+                              }`}
                           >
                             {row.booking_status}
                           </span>
@@ -767,7 +798,7 @@ const Page = () => {
                   mr: 1,
                   ":hover": { bgcolor: "#2c2c2c", color: "white" },
                 }}
-                onClick={handleCancelDialogClose}
+                onClick={handleEditDialogClose}
               >
                 Close
               </Button>
