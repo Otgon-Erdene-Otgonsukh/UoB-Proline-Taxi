@@ -116,31 +116,31 @@ export const BookingTable = ({ data, count, page, pageSize, onPageChange, onPage
                             : "N/A"}
                         </StyledTableCell>
                         <StyledTableCell>
-                          {row.trip.pickup_location.includes("{") // Temporary check to see if this is an old style booking.
+                          {(row.trip.pickup_location as unknown as string).includes("{") // Temporary check to see if this is an old style booking.
                             ? // If it's a new booking style, use both the short name and the city name (last part of address - 5)
                             JSON.parse(
-                              row.trip.pickup_location,
+                              row.trip.pickup_location as unknown as string,
                             ).short_name.includes("Airport")
-                              ? JSON.parse(row.trip.pickup_location).short_name
-                              : JSON.parse(row.trip.pickup_location)
+                              ? JSON.parse(row.trip.pickup_location as unknown as string).short_name
+                              : JSON.parse(row.trip.pickup_location as unknown as string)
                                 .short_name +
                               ", " +
-                              JSON.parse(row.trip.pickup_location)
+                              JSON.parse(row.trip.pickup_location as unknown as string)
                                 .address.split(",")
                                 .slice(-5)[0]
                                 .trim()
                             : row.trip.pickup_location}
                         </StyledTableCell>
                         <StyledTableCell>
-                          {row.trip.dropoff_location.includes("{") // Temporary check to see if this is an old style booking.
+                          {(row.trip.dropoff_location as unknown as string).includes("{") // Temporary check to see if this is an old style booking.
                             ? JSON.parse(
-                              row.trip.dropoff_location,
+                              row.trip.dropoff_location as unknown as string,
                             ).short_name.includes("Airport")
-                              ? JSON.parse(row.trip.dropoff_location).short_name
-                              : JSON.parse(row.trip.dropoff_location)
+                              ? JSON.parse(row.trip.dropoff_location as unknown as string).short_name
+                              : JSON.parse(row.trip.dropoff_location as unknown as string)
                                 .short_name +
                               ", " +
-                              JSON.parse(row.trip.dropoff_location)
+                              JSON.parse(row.trip.dropoff_location as unknown as string)
                                 .address.split(",")
                                 .slice(-5)[0]
                                 .trim()

@@ -216,7 +216,7 @@ function BookingViewDialog({ viewData, dialogOpen, handleDialogClose }: BookingV
             Pickup:
           </Typography>
           <Typography gutterBottom textAlign="right">
-            {formatLocation(viewData.trip.pickup_location)}
+            {formatLocation(viewData.trip.pickup_location as unknown as string)}
           </Typography>
         </Stack>
         <Stack
@@ -234,7 +234,7 @@ function BookingViewDialog({ viewData, dialogOpen, handleDialogClose }: BookingV
             Via:
           </Typography>
           <Typography gutterBottom textAlign="right" sx={{ whiteSpace: "pre-line" }}>
-            {formatVia(viewData.trip.via)}
+            {formatVia(viewData.trip.via as unknown as string)}
           </Typography>
         </Stack>
         <Stack
@@ -252,7 +252,7 @@ function BookingViewDialog({ viewData, dialogOpen, handleDialogClose }: BookingV
             Dropoff:
           </Typography>
           <Typography gutterBottom textAlign="right">
-            {formatLocation(viewData.trip.dropoff_location)}
+            {formatLocation(viewData.trip.dropoff_location as unknown as string)}
           </Typography>
         </Stack>
         <Stack
