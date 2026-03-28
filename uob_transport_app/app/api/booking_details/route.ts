@@ -1,6 +1,7 @@
 // Return all details about a booking.
 import { auth } from "@/auth";
 import { getBookingDetails, getTripDetails } from "@/backend/access/booking_access";
+import { isAdmin } from "@/backend/access/user_access";
 
 export async function GET(request: Request) {
     // Check if user is signed in.
@@ -45,7 +46,7 @@ export async function GET(request: Request) {
     }
 
     try {
-        const bookingDetails = await getBookingDetails(session.user.user_id, Number(bookingID));
+        const bookingDetails = await getBookingDetails(await isAdmin(session.user.user_id) ? -1 : session.user.user_id, Number(bookingID));
 
         // Booking does not exist or does not belong to user.
         if (bookingDetails == null) {

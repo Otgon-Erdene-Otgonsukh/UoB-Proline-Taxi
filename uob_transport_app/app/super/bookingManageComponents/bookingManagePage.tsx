@@ -20,6 +20,7 @@ import ConfirmDialog from "@/components/confirmDIalog";
 import CustomizedButton from "@/components/CustomizedButton";
 import BookingPage from "@/app/book/page";
 import { getBookingsList, cancelBooking } from "../requests";
+import { redirect } from "next/navigation";
 
 interface TablePaginationActionsProps {
   count: number;
@@ -475,16 +476,9 @@ export const BookingManagePage = () => {
     setBookDetailDialogOpen(true);
   };
 
-  const [editBookDialogOpen, setEditBookDialogOpen] = useState(false);
   const handleEditBooking = (data: BookingRecord) => {
-    setBookDetail(data);
-    setEditBookDialogOpen(true);
+    redirect(`/book?update=${data.booking_id}`);
   };
-  const handleEditDialogClose = () => {
-    setEditBookDialogOpen(false);
-    setIsLoading(true)
-    _rerenderTable()
-  }
 
   const [confirmCancelDialogOpen, setConfirmCancelDialogOpen] = useState(false);
   const [toCancelBookingId, setToCancelBookingId] = useState<number>();
@@ -748,57 +742,6 @@ export const BookingManagePage = () => {
         handleDialogClose={() => setBookDetailDialogOpen(false)}
       />
     )}
-
-    <Dialog
-      onClose={handleEditDialogClose}
-      aria-labelledby="customized-dialog-title"
-      open={editBookDialogOpen}
-      maxWidth="md"
-    >
-      <DialogTitle
-        sx={{
-          m: 0,
-          p: 2,
-          fontFamily: "inter",
-          fontWeight: "bold",
-          bgcolor: "#2c2c2c",
-          color: "white",
-          textAlign: "center",
-          fontSize: 28,
-        }}
-        id="customized-dialog-title"
-      >
-        Edit Booking
-      </DialogTitle>
-      <IconButton
-        aria-label="close"
-        onClick={handleEditDialogClose}
-        sx={(theme) => ({
-          position: "absolute",
-          right: 8,
-          top: 8,
-          color: theme.palette.grey[500],
-        })}
-      >
-        <CloseIcon />
-      </IconButton>
-      <DialogContent dividers>
-        <BookingPage />
-      </DialogContent>
-      <DialogActions>
-        <Button
-          sx={{
-            color: "#2c2c2c",
-            transition: "all 300ms",
-            mr: 1,
-            ":hover": { bgcolor: "#2c2c2c", color: "white" },
-          }}
-          onClick={handleEditDialogClose}
-        >
-          Close
-        </Button>
-      </DialogActions>
-    </Dialog>
 
     <Snackbar
       open={snackBar}
