@@ -289,7 +289,7 @@ export default function NormalUserDashboard() {
         </motion.div>
         <motion.div
           id="bookings"
-          className="h-full md:h-99.5"
+          className="h-full md:mb-8"
           initial={{ opacity: 0, y: 6, scale: 0.93 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 1, ease: "easeOut", delay: 0.35 }}
