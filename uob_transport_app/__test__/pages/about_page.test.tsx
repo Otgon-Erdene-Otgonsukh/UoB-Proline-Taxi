@@ -15,10 +15,15 @@ describe("Check whether the about page has the required elements", () => {
   });
 
   test("displays main heading with company name", () => {
-    // The heading text lives in a single <h1>, so querying each word separately
-    // is more reliable than a combined regex across elements.
-    expect(screen.getByText(/Proline Taxi/i)).toBeInTheDocument();
-    expect(screen.getByText(/University of Bristol/i)).toBeInTheDocument();
+    // Query all h1 elements and check that at least one contains both terms,
+    // avoiding the "multiple elements" error from repeated text elsewhere on the page.
+    const headings = screen.getAllByRole("heading", { level: 1 });
+    const mainHeading = headings.find(
+      (h) =>
+        /Proline Taxi/i.test(h.textContent ?? "") &&
+        /University of Bristol/i.test(h.textContent ?? "")
+    );
+    expect(mainHeading).toBeInTheDocument();
   });
 
   test("displays all 4 booking steps in order", () => {
