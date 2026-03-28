@@ -227,7 +227,7 @@ const DepartmentManagePage = () => {
 
     <ConfirmDialog
       open={confirmDeleteDialogOpen}
-      dialogTitle="Confirm delete department"
+      dialogTitle="Confirm Delete Department"
       confirmMessage="Are you sure you want to delete this department? If there are still users in this department, they will be moved to 'Unassigned' department."
       confirmCallBack={() => {
         handleDeleteDepartmentConfirm(departmentData!);
