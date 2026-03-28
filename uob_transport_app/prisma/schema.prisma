@@ -10,7 +10,7 @@ datasource db {
 
 model User {
   user_id      Int         @id @default(autoincrement())
-  dep_id       Int?
+  dep_id       Int          @default(14)
   email        String      @unique @db.VarChar(255)
   password     String      @db.VarChar(255)
   full_name    String      @db.VarChar(100)
@@ -18,7 +18,7 @@ model User {
   time_created DateTime    @default(now()) @db.Timestamp(6)
   role         String      @db.VarChar(255)
   user_status  Int         @default(0)
-  department   department? @relation(fields: [dep_id], references: [dep_id], onUpdate: NoAction)
+  department   department  @relation(fields: [dep_id], references: [dep_id], onUpdate: NoAction)
   booking      booking[]
 }
 
@@ -52,13 +52,8 @@ model department {
 
 model trip {
   trip_id            Int       @id @default(autoincrement())
-  icabbi_booking_id  Int?
   pickup_location    String
-  pickup_latitude    Int?
-  pickup_longitude   Int?
   dropoff_location   String
-  dropoff_latitude   Int?
-  dropoff_longitude  Int?
   pickup_time        DateTime  @db.Timestamp(6)
   via                String?
   passenger_num      Int
@@ -68,6 +63,7 @@ model trip {
   flight_num         String?
   return_pickup_time DateTime? @db.Timestamp(6)
   price              Int?
+  icabbi_booking_id  Int?
   booking            booking?
 }
 
