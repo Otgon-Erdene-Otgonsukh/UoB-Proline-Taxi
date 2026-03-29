@@ -4,7 +4,7 @@ import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import BookingPage from "@/app/book/page";
 
-// GLOBAL MOCKS
+// ─── GLOBAL MOCKS ────
 
 const mockPush = jest.fn();
 
@@ -83,12 +83,43 @@ jest.mock("@/components/NominatimSearch", () => ({
 
 global.fetch = jest.fn();
 
-// HELPERS
+// ─── HELPERS ───
 
 function futureDateString(daysFromNow = 3): string {
   const d = new Date();
   d.setDate(d.getDate() + daysFromNow);
   return d.toISOString().split("T")[0];
+}
+
+/** Fill every required field so the form can be submitted successfully. */
+async function fillValidForm() {
+  // MUI Select — fireEvent.mouseDown opens the list, then fireEvent.click picks
+  // the option. This matches the pattern used in the working interactivity tests
+  // and reliably fires the MUI onChange that updates formData.CommonLoc.
+  fireEvent.mouseDown(screen.getAllByRole("combobox")[0]);
+  await waitFor(() => screen.getByText("Queens Building"));
+  fireEvent.click(screen.getByText("Queens Building"));
+
+  // Plain inputs — userEvent.type fires synthetic onChange so formData is updated.
+  await userEvent.type(
+    screen.getByLabelText(/drop-off location/i),
+    "Temple Meads"
+  );
+  // Trigger blur driven lookup logic used by the page.
+  await userEvent.tab();
+  await userEvent.click(screen.getByText(/i am/i));
+  await waitFor(() => screen.getByLabelText(/passenger name/i));
+  await userEvent.type(screen.getByLabelText(/pick-up date and time/i), futureDateString());
+  await userEvent.type(document.querySelector('input[type="time"]') as HTMLElement, "10:00");
+  await userEvent.type(screen.getByLabelText(/passenger name/i), "Jane Doe");
+  await userEvent.type(screen.getByLabelText(/phone number/i), "07911123456");
+  await userEvent.type(screen.getByLabelText(/^email$/i), "jane@example.com");
+
+  // MUI Autocomplete — click to open, wait for options to load, then click option.
+  const deptInput = screen.getByLabelText(/department/i);
+  await userEvent.click(deptInput);
+  await waitFor(() => screen.getByText("Finance"));
+  await userEvent.click(screen.getByText("Finance"));
 }
 
 beforeEach(() => {
@@ -99,7 +130,7 @@ beforeEach(() => {
   });
 });
 
-// RENDERING
+// ─── RENDERING ────
 
 describe("Rendering", () => {
   test("renders all page structure, input fields, and correct attributes", async () => {
@@ -132,7 +163,10 @@ describe("Rendering", () => {
     expect(screen.getByLabelText(/phone number/i)).toHaveAttribute("type", "tel");
     expect(screen.getByLabelText(/^email$/i)).toHaveAttribute("type", "email");
     expect(screen.getByLabelText(/additional information/i)).toHaveAttribute("maxLength", "500");
-    expect(screen.getByLabelText(/additional information/i)).toHaveAttribute("placeholder", "Enter any additional information...");
+    expect(screen.getByLabelText(/additional information/i)).toHaveAttribute(
+      "placeholder",
+      "Enter any additional information..."
+    );
     expect(screen.getByLabelText(/drop-off location/i)).toHaveAttribute("placeholder");
     expect(screen.getByTestId("number-field") as HTMLInputElement).toHaveValue(1);
     expect(screen.getByDisplayValue("+44 (UK)")).toBeInTheDocument();
@@ -145,7 +179,7 @@ describe("Rendering", () => {
   });
 });
 
-// TOGGLE FIELDS
+// ─── TOGGLE FIELDS ───
 
 describe("Toggle fields", () => {
   test("all toggles show/hide their conditional fields correctly", async () => {
@@ -159,8 +193,8 @@ describe("Toggle fields", () => {
       expect(screen.getByLabelText(/custom pick-up location/i)).toBeInTheDocument();
       expect(
         document.querySelector('#commonLoc[aria-disabled="true"]') ??
-        document.querySelector('.Mui-disabled [role="combobox"]') ??
-        document.querySelector(".MuiSelect-root.Mui-disabled")
+          document.querySelector('.Mui-disabled [role="combobox"]') ??
+          document.querySelector(".MuiSelect-root.Mui-disabled")
       ).not.toBeNull();
     });
     await userEvent.click(screen.getByLabelText(/manually enter/i));
@@ -198,9 +232,23 @@ describe("Toggle fields", () => {
       expect(screen.getByLabelText(/return trip pick-up location/i)).toBeDisabled();
     });
   });
+
+  test("enabling flight toggle resets manual entry state", async () => {
+    render(<BookingPage />);
+    await waitFor(() => screen.getByLabelText(/manually enter/i));
+
+    await userEvent.click(screen.getByLabelText(/manually enter/i));
+    await waitFor(() => screen.getByLabelText(/custom pick-up location/i));
+
+    await userEvent.click(screen.getByLabelText(/^flight$/i));
+    await waitFor(() => {
+      expect(screen.queryByLabelText(/custom pick-up location/i)).not.toBeInTheDocument();
+      expect(screen.queryByLabelText(/manually enter/i)).not.toBeInTheDocument();
+    });
+  });
 });
 
-// VALIDATION
+// ─── VALIDATION ───
 
 describe("Validation", () => {
   test("empty form submission shows all required errors and red borders, does not redirect", async () => {
@@ -286,7 +334,9 @@ describe("Validation", () => {
     await userEvent.type(flightInput, "INVALID");
     await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
     await waitFor(() => {
-      expect(screen.getByText(/please enter your flight number \(formatted AB1234\)/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/please enter your flight number \(formatted AB1234\)/i)
+      ).toBeInTheDocument();
       expect(flightInput).toHaveClass("border-red-700");
     });
 
@@ -294,8 +344,30 @@ describe("Validation", () => {
     fireEvent.change(flightInput, { target: { value: "BA1234" } });
     await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
     await waitFor(() =>
-      expect(screen.queryByText(/please enter your flight number \(formatted AB1234\)/i)).not.toBeInTheDocument()
+      expect(
+        screen.queryByText(/please enter your flight number \(formatted AB1234\)/i)
+      ).not.toBeInTheDocument()
     );
+  });
+
+  test("flight number: accepts valid formats including easyJet-style (letter+alphanum+digits)", async () => {
+    render(<BookingPage />);
+    await waitFor(() => screen.getByLabelText(/^flight$/i));
+    await userEvent.click(screen.getByLabelText(/^flight$/i));
+    await waitFor(() => screen.getByLabelText(/flight number/i));
+    const flightInput = screen.getByLabelText(/flight number/i);
+
+    // Regex: ^[A-Za-z]{1}[A-Za-z0-9]{1}[0-9]{1,4}$ — two-char prefix then 1–4 digits.
+    // EZY (ICAO code, 3 letters) fails the regex; easyJet's IATA code U2 is used instead.
+    for (const valid of ["U21234", "BA123", "U29999"]) {
+      fireEvent.change(flightInput, { target: { value: valid } });
+      await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
+      await waitFor(() =>
+        expect(
+          screen.queryByText(/please enter your flight number \(formatted AB1234\)/i)
+        ).not.toBeInTheDocument()
+      );
+    }
   });
 
   test("pickup date/time: validates empty, missing time, past date, and accepts future date", async () => {
@@ -333,7 +405,9 @@ describe("Validation", () => {
     await userEvent.type(dateInput, futureDateString());
     await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
     await waitFor(() =>
-      expect(screen.queryByText(/booking cannot be made in the past/i)).not.toBeInTheDocument()
+      expect(
+        screen.queryByText(/booking cannot be made in the past/i)
+      ).not.toBeInTheDocument()
     );
   });
 
@@ -366,7 +440,9 @@ describe("Validation", () => {
 
     await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
     await waitFor(() =>
-      expect(screen.getByText(/please enter the passenger's phone number/i)).toBeInTheDocument()
+      expect(
+        screen.getByText(/please enter the passenger's phone number/i)
+      ).toBeInTheDocument()
     );
 
     await userEvent.type(phoneInput, "abc123");
@@ -379,7 +455,9 @@ describe("Validation", () => {
     fireEvent.change(phoneInput, { target: { value: "07123456789" } });
     await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
     await waitFor(() =>
-      expect(screen.queryByText(/please enter a valid phone number/i)).not.toBeInTheDocument()
+      expect(
+        screen.queryByText(/please enter a valid phone number/i)
+      ).not.toBeInTheDocument()
     );
 
     await userEvent.selectOptions(screen.getByDisplayValue("+44 (UK)"), "+1 (US/CA)");
@@ -402,8 +480,19 @@ describe("Validation", () => {
     await userEvent.type(emailInput, "valid@example.com");
     await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
     await waitFor(() =>
-      expect(screen.queryByText(/please enter a valid email address/i)).not.toBeInTheDocument()
+      expect(
+        screen.queryByText(/please enter a valid email address/i)
+      ).not.toBeInTheDocument()
     );
+  });
+
+  test("passenger name: empty name blocks submission, filling it allows other errors to show", async () => {
+    render(<BookingPage />);
+    await waitFor(() => screen.getByLabelText(/passenger/i));
+
+    // Empty name blocks submission — no redirect occurs.
+    await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
+    await waitFor(() => expect(mockPush).not.toHaveBeenCalled());
   });
 
   test("fixing one field preserves errors on others and re-validates correctly on resubmit", async () => {
@@ -420,32 +509,64 @@ describe("Validation", () => {
 
     await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
     await waitFor(() =>
-      expect(screen.queryByText(/please enter a drop-off location/i)).not.toBeInTheDocument()
+      expect(
+        screen.queryByText(/please enter a drop-off location/i)
+      ).not.toBeInTheDocument()
     );
     expect(screen.getByText(/please enter a valid email address/i)).toBeInTheDocument();
   });
 
-  test("past date and invalid flight number each block submission", async () => {
-    // Past date
+  test("past date blocks submission", async () => {
     render(<BookingPage />);
     await waitFor(() => screen.getByLabelText(/I am the lead passenger/i));
     await userEvent.click(screen.getByLabelText(/I am the lead passenger/i));
     await waitFor(() => screen.getByLabelText(/pick-up date and time/i));
-    await userEvent.type(screen.getByLabelText(/drop-off location/i), "Real Place");
+    await userEvent.type(
+      screen.getByLabelText(/drop-off location/i),
+      "Temple Meads Station, Bristol"
+    );
     await userEvent.type(screen.getByLabelText(/passenger name/i), "Jane Doe");
     await userEvent.type(screen.getByLabelText(/phone number/i), "07911123456");
     await userEvent.type(screen.getByLabelText(/^email$/i), "jane@example.com");
     await userEvent.type(screen.getByLabelText(/pick-up date and time/i), "2015-06-01");
-    await userEvent.type(document.querySelectorAll('input[type="time"]')[0] as HTMLElement, "09:00");
+    await userEvent.type(
+      document.querySelectorAll('input[type="time"]')[0] as HTMLElement,
+      "09:00"
+    );
     await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
     await waitFor(() => {
       expect(screen.getByText(/booking cannot be made in the past/i)).toBeInTheDocument();
       expect(mockPush).not.toHaveBeenCalled();
     });
   });
+
+  test("invalid flight number blocks submission", async () => {
+    render(<BookingPage />);
+    await waitFor(() => screen.getByLabelText(/^flight$/i));
+    await userEvent.click(screen.getByLabelText(/^flight$/i));
+    await waitFor(() => screen.getByLabelText(/flight number/i));
+
+    await userEvent.type(screen.getByLabelText(/flight number/i), "INVALID");
+    await userEvent.type(screen.getByLabelText(/airport/i), "Bristol Airport");
+    await userEvent.type(
+      screen.getByLabelText(/drop-off location/i),
+      "Temple Meads Station, Bristol"
+    );
+    await userEvent.type(
+      document.querySelectorAll('input[type="time"]')[0] as HTMLElement,
+      "09:00"
+    );
+    await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
+    await waitFor(() => {
+      expect(
+        screen.getByText(/please enter your flight number \(formatted AB1234\)/i)
+      ).toBeInTheDocument();
+      expect(mockPush).not.toHaveBeenCalled();
+    });
+  });
 });
 
-// DEPARTMENT AUTOCOMPLETE & INTERACTIVITY
+// ─── DEPARTMENT AUTOCOMPLETE & INTERACTIVITY ───
 
 describe("Department autocomplete and interactivity", () => {
   test("department: shows error when missing, loads API options, selection clears error", async () => {
@@ -494,8 +615,13 @@ describe("Department autocomplete and interactivity", () => {
     await userEvent.type(screen.getByLabelText(/phone number/i), "07911123456");
     expect(screen.getByLabelText(/phone number/i)).toHaveValue("07911123456");
 
-    await userEvent.type(screen.getByLabelText(/additional information/i), "Please call on arrival.");
-    expect(screen.getByLabelText(/additional information/i)).toHaveValue("Please call on arrival.");
+    await userEvent.type(
+      screen.getByLabelText(/additional information/i),
+      "Please call on arrival."
+    );
+    expect(screen.getByLabelText(/additional information/i)).toHaveValue(
+      "Please call on arrival."
+    );
 
     fireEvent.mouseDown(screen.getAllByRole("combobox")[0]);
     await waitFor(() => {
@@ -505,6 +631,103 @@ describe("Department autocomplete and interactivity", () => {
       expect(screen.getByText("Victoria Rooms")).toBeInTheDocument();
       expect(screen.getByText("Wills Memorial Building")).toBeInTheDocument();
       expect(screen.getByText("Physics Laboratory")).toBeInTheDocument();
+    });
+  });
+});
+
+// ─── SUCCESSFUL SUBMISSION ───
+
+describe("Successful submission", () => {
+  test("fully valid form submits, calls fetch with correct shape, and redirects to /book/confirmed", async () => {
+    render(<BookingPage />);
+    await waitFor(() => screen.getByLabelText(/drop-off location/i));
+
+    await fillValidForm();
+    await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
+
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalledWith(
+        "/api/create_booking",
+        expect.objectContaining({ method: "POST" })
+      );
+      const body = JSON.parse(
+        (global.fetch as jest.Mock).mock.calls.find(
+          ([url]: [string]) => url === "/api/create_booking"
+        )[1].body
+      );
+      expect(body).toMatchObject({
+        user_id: "1",
+        passenger_name: "Jane Doe",
+        email: "jane@example.com",
+        dep_id: 2,
+      });
+    });
+  });
+
+  test("shows loading spinner while fetch is in-flight and hides it after redirect", async () => {
+    // Hold the fetch open so we can inspect the loading state.
+    let resolveFetch!: (v: unknown) => void;
+    (global.fetch as jest.Mock).mockReturnValueOnce(
+      new Promise((res) => {
+        resolveFetch = res;
+      })
+    );
+
+    render(<BookingPage />);
+    await waitFor(() => screen.getByLabelText(/drop-off location/i));
+    await fillValidForm();
+    await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
+
+    // Spinner should be visible while fetch is pending
+    await waitFor(() =>
+      expect(document.querySelector('[role="progressbar"]')).toBeInTheDocument()
+    );
+
+    // Resolve the fetch and confirm redirect
+    resolveFetch({ status: 200, json: async () => ({}) });
+    await waitFor(() => expect(mockPush).toHaveBeenCalledWith("/book/confirmed"));
+  });
+
+  test("API error response shows inline error message and does not redirect", async () => {
+    (global.fetch as jest.Mock).mockImplementation((url: string) => {
+      if (url === "/api/create_booking") {
+        return Promise.resolve({ status: 500, json: async () => ({}) });
+      }
+      return Promise.resolve({ status: 200, json: async () => ({}) });
+    });
+
+    render(<BookingPage />);
+    await waitFor(() => screen.getByLabelText(/drop-off location/i));
+    await fillValidForm();
+    await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/form failed to submit\. please try again or check inputs/i)
+      ).toBeInTheDocument();
+      expect(mockPush).not.toHaveBeenCalled();
+    });
+  });
+
+  test("network failure shows connection error message and does not redirect", async () => {
+    (global.fetch as jest.Mock).mockImplementation((url: string) => {
+      if (url === "/api/create_booking") {
+        return Promise.reject(new Error("Network error"));
+      }
+      // Let any other fetches (geocoding, routing) resolve normally.
+      return Promise.resolve({ status: 200, json: async () => ({}) });
+    });
+
+    render(<BookingPage />);
+    await waitFor(() => screen.getByLabelText(/drop-off location/i));
+    await fillValidForm();
+    await userEvent.click(screen.getByRole("button", { name: /confirm booking/i }));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/form failed to submit\. please try again later or check your network/i)
+      ).toBeInTheDocument();
+      expect(mockPush).not.toHaveBeenCalled();
     });
   });
 });
