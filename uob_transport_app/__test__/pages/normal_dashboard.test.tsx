@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import NormalUserDashboard from "@/components/NormalUserDashboard";
 import { useSession } from "next-auth/react";
@@ -100,4 +100,27 @@ describe("NormalUserDashboard", () => {
     // 来自页面：CircularProgress（3个卡片）
     expect(screen.getAllByRole("progressbar").length).toBeGreaterThan(0);
   });
+
+  // ===== 2. cards values =====
+    test("renders card values after fetch", async () => {
+      (useSession as jest.Mock).mockReturnValue({
+        status: "authenticated",
+        data: mockSession,
+      });
+  
+      (easyGetRequest as jest.Mock).mockResolvedValue({
+        status: 200,
+        json: async () => baseResponse,
+      });
+  
+      render(<NormalUserDashboard />);
+  
+      await waitFor(() => {
+        expect(screen.getByText("Total Bookings")).toBeInTheDocument();
+      });
+  
+      expect(screen.getByText("3")).toBeInTheDocument();
+      expect(screen.getByText("£200")).toBeInTheDocument();
+      expect(screen.getByText("1")).toBeInTheDocument();
+    });
 });
