@@ -103,24 +103,49 @@ describe("NormalUserDashboard", () => {
 
   // ===== 2. cards values =====
     test("renders card values after fetch", async () => {
-      (useSession as jest.Mock).mockReturnValue({
-        status: "authenticated",
-        data: mockSession,
-      });
-  
-      (easyGetRequest as jest.Mock).mockResolvedValue({
-        status: 200,
-        json: async () => baseResponse,
-      });
-  
-      render(<NormalUserDashboard />);
-  
-      await waitFor(() => {
-        expect(screen.getByText("Total Bookings")).toBeInTheDocument();
-      });
-  
-      expect(screen.getByText("3")).toBeInTheDocument();
-      expect(screen.getByText("£200")).toBeInTheDocument();
-      expect(screen.getByText("1")).toBeInTheDocument();
+    (useSession as jest.Mock).mockReturnValue({
+    status: "authenticated",
+    data: mockSession,
     });
+
+    (easyGetRequest as jest.Mock).mockResolvedValue({
+    status: 200,
+    json: async () => baseResponse,
+    });
+
+    render(<NormalUserDashboard />);
+
+    await waitFor(() => {
+    expect(screen.getByText("Total Bookings")).toBeInTheDocument();
+    });
+
+    expect(screen.getByText("3")).toBeInTheDocument();
+    expect(screen.getByText("£200")).toBeInTheDocument();
+    expect(screen.getByText("1")).toBeInTheDocument();
+    });
+
+    // ===== 3. recent bookings list =====
+      test("renders recent bookings list correctly", async () => {
+        (useSession as jest.Mock).mockReturnValue({
+          status: "authenticated",
+          data: mockSession,
+        });
+    
+        (easyGetRequest as jest.Mock).mockResolvedValue({
+          status: 200,
+          json: async () => baseResponse,
+        });
+    
+        render(<NormalUserDashboard />);
+    
+        await waitFor(() => {
+          expect(screen.getByText("Recent bookings")).toBeInTheDocument();
+        });
+    
+        expect(screen.getByText("Start")).toBeInTheDocument();
+        expect(screen.getByText("End")).toBeInTheDocument();
+    
+        // 日期来自页面逻辑：toDateString()
+        expect(screen.getByText("Wed Jan 01 2025")).toBeInTheDocument();
+      });
 });
