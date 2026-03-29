@@ -67,7 +67,6 @@ async function openNameEdit(user: ReturnType<typeof userEvent.setup>) {
   return editButton;
 }
 
-
 describe("Profile page", () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -155,7 +154,9 @@ describe("Profile page", () => {
 
       fireEvent.mouseLeave(nameDiv);
       await waitFor(() => {
-        expect(screen.queryByTestId("name-edit-button")).not.toBeInTheDocument();
+        expect(
+          screen.queryByTestId("name-edit-button"),
+        ).not.toBeInTheDocument();
       });
     });
 
@@ -377,10 +378,13 @@ describe("Profile page", () => {
       await waitFor(() => {
         expect(screen.getByText("Invalid password")).toBeInTheDocument();
       });
-    // Clicking Cancel should derender the buttons and edit textfield
-    await user.click(buttons[1]);
-    await waitFor(() => {
-      expect(screen.queryAllByRole("button").length).toBe(1);
+      // Clicking Cancel should derender the buttons and edit textfield
+      const cancelButton = screen.getAllByText("Cancel")[0];
+      await user.click(cancelButton);
+      await waitFor(() => {
+        expect(screen.queryByTestId("nameTextField")).not.toBeInTheDocument();
+        expect(screen.queryByText("Save Changes")).not.toBeInTheDocument();
+      });
     });
   });
 });
