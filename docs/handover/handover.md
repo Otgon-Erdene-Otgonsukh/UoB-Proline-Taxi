@@ -281,4 +281,21 @@ The following section provides a visual guidance on how each user can interact w
 
 ### Super Admin
 
-...
+1. Login with the correct credentials.
+2. After successful login, you will be redirected to the super admin page.
+3. In the User Management table, you can manage all the users of the platform and respond to registration requests and update user details.
+
+  <img src="/docs/handover_pictures/superUser.png" width="1000"/>
+
+4. In the Bookings Table, you can view all bookings, filter them, attach a price, edit and cancel them.
+
+  <img src="/docs/handover_pictures/superBooking.png" width="1000"/>
+
+  <img src="/docs/handover_pictures/editBooking.png" width="1000"/>
+
+5. Informative Dashboard with statistical data about bookings, users and etc can be found in the drawer menu on the left hand side. 
+
+  <img src="/docs/handover_pictures/supDash.png" width="1000"/>
+
+6. All update functionality is paired with a mailing service and all the above pages can be found in the left hand side drawer menu.
+
