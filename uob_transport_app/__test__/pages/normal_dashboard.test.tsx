@@ -102,135 +102,131 @@ describe("NormalUserDashboard", () => {
   });
 
   // ===== 2. cards values =====
-    test("renders card values after fetch", async () => {
+  test("renders card values after fetch", async () => {
     (useSession as jest.Mock).mockReturnValue({
-    status: "authenticated",
-    data: mockSession,
+      status: "authenticated",
+      data: mockSession,
     });
 
     (easyGetRequest as jest.Mock).mockResolvedValue({
-    status: 200,
-    json: async () => baseResponse,
+      status: 200,
+      json: async () => baseResponse,
     });
 
     render(<NormalUserDashboard />);
 
     await waitFor(() => {
-    expect(screen.getByText("Total Bookings")).toBeInTheDocument();
+      expect(screen.getByText("Total Bookings")).toBeInTheDocument();
     });
 
     expect(screen.getByText("3")).toBeInTheDocument();
     expect(screen.getByText("£200")).toBeInTheDocument();
     expect(screen.getByText("1")).toBeInTheDocument();
+  });
+
+  // ===== 3. recent bookings list =====
+  test("renders recent bookings list correctly", async () => {
+    (useSession as jest.Mock).mockReturnValue({
+      status: "authenticated",
+      data: mockSession,
     });
 
-    // ===== 3. recent bookings list =====
-      test("renders recent bookings list correctly", async () => {
-        (useSession as jest.Mock).mockReturnValue({
-          status: "authenticated",
-          data: mockSession,
-        });
-    
-        (easyGetRequest as jest.Mock).mockResolvedValue({
-          status: 200,
-          json: async () => baseResponse,
-        });
-    
-        render(<NormalUserDashboard />);
-    
-        await waitFor(() => {
-          expect(screen.getByText("Recent bookings")).toBeInTheDocument();
-        });
-    
-        expect(screen.getByText("Start")).toBeInTheDocument();
-        expect(screen.getByText("End")).toBeInTheDocument();
-    
-        // 日期来自页面逻辑：toDateString()
-        expect(screen.getByText("Wed Jan 01 2025")).toBeInTheDocument();
-      });
+    (easyGetRequest as jest.Mock).mockResolvedValue({
+      status: 200,
+      json: async () => baseResponse,
+    });
 
-      // ===== 4. empty state =====
-        test("renders empty state when no bookings", async () => {
-          (useSession as jest.Mock).mockReturnValue({
-            status: "authenticated",
-            data: mockSession,
-          });
-      
-          (easyGetRequest as jest.Mock).mockResolvedValue({
-            status: 200,
-            json: async () => ({
-              ...baseResponse,
-              recentBookings: [],
-            }),
-          });
-      
-          render(<NormalUserDashboard />);
-      
-          await waitFor(() => {
-            expect(
-              screen.getByText("No bookings to display")
-            ).toBeInTheDocument();
-          });
-      
-          expect(
-            screen.getByText("Create your first booking to see trip history here.")
-          ).toBeInTheDocument();
-        });
+    render(<NormalUserDashboard />);
 
-        // ===== 5. create booking button =====
-          test("clicking create booking triggers redirect", async () => {
-            (useSession as jest.Mock).mockReturnValue({
-              status: "authenticated",
-              data: mockSession,
-            });
-        
-            (easyGetRequest as jest.Mock).mockResolvedValue({
-              status: 200,
-              json: async () => ({
-                ...baseResponse,
-                recentBookings: [],
-              }),
-            });
-        
-            render(<NormalUserDashboard />);
-        
-            const button = await screen.findByText("+ Create Your First Booking");
-            fireEvent.click(button);
-        
-            expect(redirectMock).toHaveBeenCalledWith("/book");
-          });
+    await waitFor(() => {
+      expect(screen.getByText("Recent bookings")).toBeInTheDocument();
+    });
 
-          // ===== 7. via path rendering =====
-            test("renders via location when exists", async () => {
-              const responseWithVia = {
-                ...baseResponse,
-                recentBookings: [
-                  {
-                    ...booking,
-                    trip: {
-                      ...booking.trip,
-                      via: JSON.stringify([
-                        { lat: 1.5, lng: 1.5, short_name: "Mid" },
-                      ]),
-                    },
-                  },
-                ],
-              };
-          
-              (useSession as jest.Mock).mockReturnValue({
-                status: "authenticated",
-                data: mockSession,
-              });
-          
-              (easyGetRequest as jest.Mock).mockResolvedValue({
-                status: 200,
-                json: async () => responseWithVia,
-              });
-          
-              render(<NormalUserDashboard />);
-          
-              await waitFor(() => {
-                expect(screen.getByText("Mid")).toBeInTheDocument();
-              });
-            });
+    expect(screen.getByText("Start")).toBeInTheDocument();
+    expect(screen.getByText("End")).toBeInTheDocument();
+
+    // 日期来自页面逻辑：toDateString()
+    expect(screen.getByText("Wed Jan 01 2025")).toBeInTheDocument();
+  });
+
+  // ===== 4. empty state =====
+  test("renders empty state when no bookings", async () => {
+    (useSession as jest.Mock).mockReturnValue({
+      status: "authenticated",
+      data: mockSession,
+    });
+
+    (easyGetRequest as jest.Mock).mockResolvedValue({
+      status: 200,
+      json: async () => ({
+        ...baseResponse,
+        recentBookings: [],
+      }),
+    });
+
+    render(<NormalUserDashboard />);
+
+    await waitFor(() => {
+      expect(screen.getByText("No bookings to display")).toBeInTheDocument();
+    });
+
+    expect(
+      screen.getByText("Create your first booking to see trip history here."),
+    ).toBeInTheDocument();
+  });
+
+  // ===== 5. create booking button =====
+  test("clicking create booking triggers redirect", async () => {
+    (useSession as jest.Mock).mockReturnValue({
+      status: "authenticated",
+      data: mockSession,
+    });
+
+    (easyGetRequest as jest.Mock).mockResolvedValue({
+      status: 200,
+      json: async () => ({
+        ...baseResponse,
+        recentBookings: [],
+      }),
+    });
+
+    render(<NormalUserDashboard />);
+
+    const button = await screen.findByText("+ Create Your First Booking");
+    fireEvent.click(button);
+
+    expect(redirectMock).toHaveBeenCalledWith("/book");
+  });
+
+  // ===== 7. via path rendering =====
+  test("renders via location when exists", async () => {
+    const responseWithVia = {
+      ...baseResponse,
+      recentBookings: [
+        {
+          ...booking,
+          trip: {
+            ...booking.trip,
+            via: JSON.stringify([{ lat: 1.5, lng: 1.5, short_name: "Mid" }]),
+          },
+        },
+      ],
+    };
+
+    (useSession as jest.Mock).mockReturnValue({
+      status: "authenticated",
+      data: mockSession,
+    });
+
+    (easyGetRequest as jest.Mock).mockResolvedValue({
+      status: 200,
+      json: async () => responseWithVia,
+    });
+
+    render(<NormalUserDashboard />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Mid")).toBeInTheDocument();
+    });
+  });
 });
