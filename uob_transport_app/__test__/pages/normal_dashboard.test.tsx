@@ -199,4 +199,38 @@ describe("NormalUserDashboard", () => {
         
             expect(redirectMock).toHaveBeenCalledWith("/book");
           });
+
+          // ===== 7. via path rendering =====
+            test("renders via location when exists", async () => {
+              const responseWithVia = {
+                ...baseResponse,
+                recentBookings: [
+                  {
+                    ...booking,
+                    trip: {
+                      ...booking.trip,
+                      via: JSON.stringify([
+                        { lat: 1.5, lng: 1.5, short_name: "Mid" },
+                      ]),
+                    },
+                  },
+                ],
+              };
+          
+              (useSession as jest.Mock).mockReturnValue({
+                status: "authenticated",
+                data: mockSession,
+              });
+          
+              (easyGetRequest as jest.Mock).mockResolvedValue({
+                status: 200,
+                json: async () => responseWithVia,
+              });
+          
+              render(<NormalUserDashboard />);
+          
+              await waitFor(() => {
+                expect(screen.getByText("Mid")).toBeInTheDocument();
+              });
+            });
 });
