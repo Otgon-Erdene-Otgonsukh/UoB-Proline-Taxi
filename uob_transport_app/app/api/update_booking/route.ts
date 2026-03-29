@@ -39,7 +39,6 @@ export async function POST(req: Request) {
         );
       }
 
-    const user_id = session.user.user_id; // Use the user ID from the session.
     const pickup_loc: location = request_json["pickup_location"];
     const dropoff_loc: location = request_json["dropoff_location"];
     const passenger_name: string = request_json["passenger_name"].toString();
@@ -157,16 +156,18 @@ export async function POST(req: Request) {
         );
     }
 
-    let user = null;
-    if (isLeadPassengerMyself) {
-        user = await getUserFromID(user_id);
-    }
-
     // Check if the logged in user is an Admin or owns the booking
     if (await isAdmin(session.user.user_id)) {
       booking = await getBookingDetails(-1, booking_id)
     } else {
       booking = await getBookingDetails(session.user.user_id, booking_id)
+    }
+
+    const user_id = booking?.user_id; // Use the user ID from the booking.
+
+    let user = null;
+    if (isLeadPassengerMyself && user_id) {
+        user = await getUserFromID(user_id);
     }
 
     // Booking is null if booking does not exist or does not belong to user/admin.
@@ -193,7 +194,8 @@ export async function POST(req: Request) {
         request_json["return_drop_loc"],
         request_json["passenger_num"],
         request_json["airport"],
-        request_json["flight_num"]
+        request_json["flight_num"],
+        request_json["dep_id"]
     );
 
     return NextResponse.json(

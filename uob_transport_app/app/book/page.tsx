@@ -1779,7 +1779,7 @@ export default function BookingPage() {
                         setFormData({ ...formData, dep_id: dep!.dep_id });
                         setDepartmentEmpty(false);
                       }}
-                      defaultValue={formData.dep_id ? departmentList.find((dep) => dep.dep_id === formData.dep_id) : null}
+                      value={formData.dep_id ? departmentList.find((dep) => dep.dep_id === formData.dep_id) : null}
                       options={departmentList}
                       getOptionKey={(department) => department.dep_id}
                       getOptionLabel={(department) => department.dep_name}
@@ -1849,7 +1849,7 @@ export default function BookingPage() {
                   <NumberField
                     min={1}
                     max={5}
-                    defaultValue={formData.Passengers || 1}
+                    value={formData.Passengers}
                     size="small"
                     onValueChange={(value) => {
                       setFormData({
