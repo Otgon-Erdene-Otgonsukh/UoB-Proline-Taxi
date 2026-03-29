@@ -148,4 +148,32 @@ describe("NormalUserDashboard", () => {
         // 日期来自页面逻辑：toDateString()
         expect(screen.getByText("Wed Jan 01 2025")).toBeInTheDocument();
       });
+
+      // ===== 4. empty state =====
+        test("renders empty state when no bookings", async () => {
+          (useSession as jest.Mock).mockReturnValue({
+            status: "authenticated",
+            data: mockSession,
+          });
+      
+          (easyGetRequest as jest.Mock).mockResolvedValue({
+            status: 200,
+            json: async () => ({
+              ...baseResponse,
+              recentBookings: [],
+            }),
+          });
+      
+          render(<NormalUserDashboard />);
+      
+          await waitFor(() => {
+            expect(
+              screen.getByText("No bookings to display")
+            ).toBeInTheDocument();
+          });
+      
+          expect(
+            screen.getByText("Create your first booking to see trip history here.")
+          ).toBeInTheDocument();
+        });
 });
