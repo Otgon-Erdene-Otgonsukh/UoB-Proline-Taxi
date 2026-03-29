@@ -40,6 +40,22 @@ jest.mock("@/components/ui/map", () => ({
   ),
 }));
 
+// mock fetch
+global.fetch = jest.fn().mockResolvedValue({
+  json: async () => ({
+    routes: [
+      {
+        geometry: {
+          coordinates: [
+            [1, 1],
+            [2, 2],
+          ],
+        },
+      },
+    ],
+  }),
+}) as unknown as typeof fetch;
+
 // ================= mock data =================
 
 const mockSession: Session = {
