@@ -52,4 +52,22 @@ describe("getNormalDashboardData", () => {
     });
   });
 
+  // ===== edge case: totalPrice = null =====
+  test("handles null price correctly (defaults to 0)", async () => {
+    const userId = 1;
+
+    (prisma.booking.findMany as jest.Mock).mockResolvedValue([]);
+    (prisma.booking.count as jest.Mock).mockResolvedValue(0);
+
+    (prisma.trip.aggregate as jest.Mock).mockResolvedValue({
+      _sum: { price: null },
+    });
+
+    (prisma.trip.count as jest.Mock).mockResolvedValue(0);
+
+    const result = await getNormalDashboardData(userId);
+
+    expect(result.totalPrice).toBe(0);
+  });
+
 });
