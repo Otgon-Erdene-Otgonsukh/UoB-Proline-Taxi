@@ -45,6 +45,9 @@ export type BookingRecord = {
   tel_number: string;
   email: string;
   airport: location;
+  department: {
+    dep_name: string
+  }
 }
 
 // Attach common locations as keys to hashmapped Lat/Lon for routing.

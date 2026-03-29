@@ -10,7 +10,7 @@ import {
 } from "@react-email/components";
 import { location } from "@/model/models";
 
-export default function BookingPoAttach({
+export default function BookingApproved({
   from,
   via,
   to,

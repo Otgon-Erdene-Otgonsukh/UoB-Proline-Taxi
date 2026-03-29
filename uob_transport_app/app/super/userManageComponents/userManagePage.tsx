@@ -27,7 +27,7 @@ export const UserManagePage = (
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    _rerenderTable()
+    _rerenderTable(paginationMeta.page, paginationMeta.pageSize)
   }, []);
 
   const [pendingUsersData, setPendingUsersData] = useState<UserRecord[]>([]);
@@ -37,22 +37,23 @@ export const UserManagePage = (
     pageSize: 10,
   });
   const handleChangePage = (_: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
-    setPaginationMeta({
-      ...paginationMeta,
-      page: newPage
-    })
+    setPaginationMeta((prev) => ({
+      ...prev,
+      page: newPage,
+    }));
     setIsLoading(true);
-    _rerenderTable()
+    _rerenderTable(newPage, paginationMeta.pageSize)
   };
   const handleChangePageSize = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
+    const newPageSize = parseInt(event.target.value, 10);
     setPaginationMeta({
-      page: 0,
-      pageSize: parseInt(event.target.value, 10),
+      page: paginationMeta.page,
+      pageSize: newPageSize,
     });
     setIsLoading(true)
-    _rerenderTable()
+    _rerenderTable(paginationMeta.page, newPageSize)
   };
 
   // search form
@@ -70,7 +71,7 @@ export const UserManagePage = (
     e.preventDefault()
     console.log('submit');
     setIsLoading(true)
-    _rerenderTable()
+    _rerenderTable(paginationMeta.page, paginationMeta.pageSize)
   }
 
   const [userDetail, setUserDetail] = useState<UserRecord>()
@@ -92,7 +93,7 @@ export const UserManagePage = (
     // after edit dialog closed, rerender table to get updated data
     if (isEdited) {
       setIsLoading(true)
-      _rerenderTable()
+      _rerenderTable(paginationMeta.page, paginationMeta.pageSize)
     }
   }
 
@@ -104,7 +105,7 @@ export const UserManagePage = (
     }).then(res => {
       if (res.status === 200) {
         setIsLoading(true)
-        _rerenderTable()
+        _rerenderTable(paginationMeta.page, paginationMeta.pageSize)
       }
     })
   };
@@ -117,19 +118,19 @@ export const UserManagePage = (
     }).then(res => {
       if (res.status === 200) {
         setIsLoading(true)
-        _rerenderTable()
+        _rerenderTable(paginationMeta.page, paginationMeta.pageSize)
       }
     })
   };
 
-  const _rerenderTable = () => {
+  const _rerenderTable = (page: number, pageSize: number) => {
     getUsersAsAdmin({
       name: undefined,
       ...searchFormInput,
       role: searchFormInput.role === "All" ? undefined : searchFormInput.role,
       user_status: searchFormInput.user_status === "All" ? undefined : (searchFormInput.user_status as number),
-      page: paginationMeta.page,
-      pageSize: paginationMeta.pageSize
+      page,
+      pageSize
     }).then(res => {
       if (res.status === 200) {
         res.json().then(data => {

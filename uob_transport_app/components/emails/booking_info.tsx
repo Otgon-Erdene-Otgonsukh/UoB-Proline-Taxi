@@ -11,45 +11,16 @@ import {
 import { location } from "@/model/models";
 
 export default function BookingInfo({
-  from = {
-    short_name: "UoB Campus",
-    address: "Bristol, UK, BS8 1UB",
-    lat: 51.4597,
-    lng: -2.6044,
-  },
-  via = [
-    {
-      short_name: "Old Market",
-      address: "Bristol, UK, BS2 0EJ",
-      lat: 51.4569,
-      lng: -2.5789,
-    },
-    {
-      short_name: "Bristol City Centre",
-      address: "Bristol, UK, BS1 5TR",
-      lat: 51.4545,
-      lng: -2.5879,
-    },
-    {
-      short_name: "St Paul's",
-      address: "Bristol, UK, BS2 9LJ",
-      lat: 51.4555,
-      lng: -2.5895,
-    },
-  ],
-  to = {
-    short_name: "Temple Quarter",
-    address: "Bristol, UK, BS1 6AZ",
-    lat: 51.4437,
-    lng: -2.5921,
-  },
-  airport = null,
-  flightNum = "BA1234",
-  pickUpTime = new Date("2024-03-25T09:00:00"),
-  returnTime = new Date("2024-03-25T17:00:00"),
+  from,
+  via,
+  to,
+  airport,
+  flightNum,
+  pickUpTime,
+  returnTime,
   returnTo,
-  passengerName = "John Doe",
-  phoneNumber = "+44 123 456 7890",
+  passengerName,
+  phoneNumber,
 }: {
   from: location;
   via: location[];

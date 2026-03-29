@@ -61,6 +61,7 @@ export const getUserBookingsAccess = async (userId: number, page: number, pageSi
     },
     include: {
       trip: true,
+      department: true,
       ...(userId === -1 ? { User: { select: { full_name: true } } } : {})
     },
     orderBy: {

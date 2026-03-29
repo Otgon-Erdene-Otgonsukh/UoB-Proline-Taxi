@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, IconButton, InputLabel, MenuItem, Select, TextField, Typography, useTheme } from "@mui/material";
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, IconButton, InputLabel, MenuItem, Select, Stack, TextField, Typography, useTheme, Snackbar, Alert } from "@mui/material";
 import {
   FirstPage,
   KeyboardArrowLeft,
@@ -8,6 +8,7 @@ import {
   LastPage,
   Cancel as CancelIcon,
   Close as CloseIcon,
+  FindInPage as FindInPageIcon,
 } from '@mui/icons-material';
 import React, { useState, useEffect, useRef } from "react";
 import { BookingRecord } from "@/model/models";
@@ -19,6 +20,7 @@ import ConfirmDialog from "@/components/confirmDIalog";
 import CustomizedButton from "@/components/CustomizedButton";
 import BookingPage from "@/app/book/page";
 import { getBookingsList, cancelBooking } from "../requests";
+import { redirect } from "next/navigation";
 
 interface TablePaginationActionsProps {
   count: number;
@@ -37,18 +39,273 @@ interface BookingViewDialogProps {
 }
 
 function BookingViewDialog({ viewData, dialogOpen, handleDialogClose }: BookingViewDialogProps) {
+  const formatLocation = (location: string) => {
+    if (!location?.includes("{")) {
+      return location || "N/A";
+    }
+
+    try {
+      const parsedLocation = JSON.parse(location);
+      if (parsedLocation?.short_name?.includes("Airport")) {
+        return parsedLocation.short_name;
+      }
+
+      const city = parsedLocation?.address?.split(",")?.slice(-5)?.[0]?.trim();
+      if (parsedLocation?.short_name && city) {
+        return `${parsedLocation.short_name}, ${city}`;
+      }
+
+      return parsedLocation?.short_name || location;
+    } catch { // old style booking
+      return location;
+    }
+  };
+
+  const formatVia = (via: string | null | undefined) => {
+    if (!via) {
+      return "N/A";
+    }
+
+    if (!via.includes("[") && !via.includes("{")) {
+      return via;
+    }
+
+    try {
+      const parsedVia = JSON.parse(via);
+      if (!Array.isArray(parsedVia) || parsedVia.length === 0) {
+        return "N/A";
+      }
+
+      return parsedVia
+        .map((stop) => {
+          if (stop.short_name.includes("Airport")) {
+            return stop.short_name;
+          }
+          const city = stop?.address?.split(",")?.slice(-5)?.[0]?.trim();
+          return `${stop.short_name}, ${city}`;
+        })
+        .join("\n");
+    } catch {
+      return via;
+    }
+  };
+
   return (
-    <Dialog open={dialogOpen} onClose={handleDialogClose}>
-      <DialogTitle>Booking Details</DialogTitle>
-      <DialogContent>
-        <p>Booking ID: {viewData.booking_id}</p>
-        <p>Additinal Info: {viewData.additional_info}</p>
-        <p>Time Created: {viewData.time_created}</p>
-        <p>Pickup: {viewData.trip.pickup_location.address}</p>
-        <p>Dropoff: {viewData.trip.dropoff_location.address}</p>
-        <p>Pickup Time: {viewData.trip.pickup_time}</p>
-        <p>Booking Status: {viewData.booking_status}</p>
+    <Dialog
+      open={dialogOpen}
+      onClose={handleDialogClose}
+      aria-labelledby="booking-detail-title"
+      aria-describedby="booking-detail-content"
+    >
+      <DialogTitle
+        id="booking-detail-title"
+        sx={{
+          color: "white",
+          textAlign: "center",
+          fontSize: {
+            md: 30,
+            xs: 25,
+          },
+          fontWeight: "bold",
+          bgcolor: "#2c2c2c",
+          fontFamily: "aleo",
+        }}
+      >
+        Booking Detail
+        <FindInPageIcon sx={{ fontSize: 35, mb: 1, ml: 1, mr: -1 }} />
+      </DialogTitle>
+      <DialogContent id="booking-detail-content" dividers>
+        <Stack
+          direction="row"
+          sx={{
+            justifyContent: "space-between",
+            alignItems: "center",
+            width: {
+              md: "400px",
+              xs: "280px",
+            },
+          }}
+        >
+          <Typography gutterBottom sx={{ fontWeight: "bold", fontSize: 20 }}>
+            Information about booking:
+          </Typography>
+        </Stack>
+        <Stack
+          direction="row"
+          sx={{
+            justifyContent: "space-between",
+            alignItems: "center",
+            width: {
+              md: "400px",
+              xs: "280px",
+            },
+          }}
+        >
+          <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+            Booking ID:
+          </Typography>
+          <Typography gutterBottom>{viewData.booking_id}</Typography>
+        </Stack>
+        <Stack
+          direction="row"
+          sx={{
+            justifyContent: "space-between",
+            alignItems: "center",
+            width: {
+              md: "400px",
+              xs: "280px",
+            },
+          }}
+        >
+          <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+            Additional Info:
+          </Typography>
+          <Typography gutterBottom textAlign="right">
+            {viewData.additional_info || "N/A"}
+          </Typography>
+        </Stack>
+        <Stack
+          direction="row"
+          sx={{
+            justifyContent: "space-between",
+            alignItems: "center",
+            width: {
+              md: "400px",
+              xs: "280px",
+            },
+          }}
+        >
+          <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+            Time Created:
+          </Typography>
+          <Typography gutterBottom textAlign="right">
+            {viewData.time_created
+              ? new Date(viewData.time_created).toLocaleString()
+              : "N/A"}
+          </Typography>
+        </Stack>
+        <Stack
+          direction="row"
+          sx={{
+            justifyContent: "space-between",
+            alignItems: "center",
+            width: {
+              md: "400px",
+              xs: "280px",
+            },
+          }}
+        >
+          <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+            Department:
+          </Typography>
+          <Typography gutterBottom textAlign="right">
+            {viewData.department.dep_name}
+          </Typography>
+        </Stack>
+        <Stack
+          direction="row"
+          sx={{
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+            width: {
+              md: "400px",
+              xs: "280px",
+            },
+          }}
+        >
+          <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+            Pickup:
+          </Typography>
+          <Typography gutterBottom textAlign="right">
+            {formatLocation(viewData.trip.pickup_location as unknown as string)}
+          </Typography>
+        </Stack>
+        <Stack
+          direction="row"
+          sx={{
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+            width: {
+              md: "400px",
+              xs: "280px",
+            },
+          }}
+        >
+          <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+            Via:
+          </Typography>
+          <Typography gutterBottom textAlign="right" sx={{ whiteSpace: "pre-line" }}>
+            {formatVia(viewData.trip.via as unknown as string)}
+          </Typography>
+        </Stack>
+        <Stack
+          direction="row"
+          sx={{
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+            width: {
+              md: "400px",
+              xs: "280px",
+            },
+          }}
+        >
+          <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+            Dropoff:
+          </Typography>
+          <Typography gutterBottom textAlign="right">
+            {formatLocation(viewData.trip.dropoff_location as unknown as string)}
+          </Typography>
+        </Stack>
+        <Stack
+          direction="row"
+          sx={{
+            justifyContent: "space-between",
+            alignItems: "center",
+            width: {
+              md: "400px",
+              xs: "280px",
+            },
+          }}
+        >
+          <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+            Pickup Time:
+          </Typography>
+          <Typography gutterBottom textAlign="right">
+            {viewData.trip.pickup_time
+              ? new Date(viewData.trip.pickup_time).toLocaleString()
+              : "N/A"}
+          </Typography>
+        </Stack>
+        <Stack
+          direction="row"
+          sx={{
+            justifyContent: "space-between",
+            alignItems: "center",
+            width: {
+              md: "400px",
+              xs: "280px",
+            },
+          }}
+        >
+          <Typography gutterBottom sx={{ fontWeight: "bold" }}>
+            Booking Status:
+          </Typography>
+          <Typography gutterBottom>{viewData.booking_status}</Typography>
+        </Stack>
       </DialogContent>
+      <DialogActions>
+        <Button
+          sx={{
+            color: "#2c2c2c",
+            transition: "all 300ms",
+            mr: 1,
+            ":hover": { bgcolor: "#2c2c2c", color: "white" },
+          }}
+          onClick={handleDialogClose}
+        >
+          Close
+        </Button>
+      </DialogActions>
     </Dialog>
   );
 }
@@ -136,6 +393,7 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
 export const BookingManagePage = () => {
 
   const [isLoading, setIsLoading] = useState(true);
+  const [snackBar, setSnackBar] = useState(false);
 
   useEffect(() => {
     _rerenderTable()
@@ -149,23 +407,24 @@ export const BookingManagePage = () => {
   });
 
   const handleChangePage = (_: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
-    setPaginationMeta({
-      ...paginationMeta,
-      page: newPage
-    })
+    setPaginationMeta((prev) => ({
+      ...prev,
+      page: newPage,
+    }));
     setIsLoading(true);
-    _rerenderTable()
+    _rerenderTable(newPage, paginationMeta.pageSize);
   };
 
   const handleChangePageSize = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
+    const newPageSize = parseInt(event.target.value, 10);
     setPaginationMeta({
       page: 0,
-      pageSize: parseInt(event.target.value, 10),
+      pageSize: newPageSize,
     });
     setIsLoading(true)
-    _rerenderTable()
+    _rerenderTable(0, newPageSize)
   };
 
   // search form
@@ -207,7 +466,7 @@ export const BookingManagePage = () => {
       pageSize: paginationMeta.pageSize,
     });
     setIsLoading(true)
-    _rerenderTable()
+    _rerenderTable(0, paginationMeta.pageSize)
   }
 
   const [bookDetail, setBookDetail] = useState<BookingRecord>();
@@ -217,16 +476,9 @@ export const BookingManagePage = () => {
     setBookDetailDialogOpen(true);
   };
 
-  const [editBookDialogOpen, setEditBookDialogOpen] = useState(false);
   const handleEditBooking = (data: BookingRecord) => {
-    setBookDetail(data);
-    setEditBookDialogOpen(true);
+    redirect(`/book?update=${data.booking_id}`);
   };
-  const handleEditDialogClose = () => {
-    setEditBookDialogOpen(false);
-    setIsLoading(true)
-    _rerenderTable()
-  }
 
   const [confirmCancelDialogOpen, setConfirmCancelDialogOpen] = useState(false);
   const [toCancelBookingId, setToCancelBookingId] = useState<number>();
@@ -246,8 +498,8 @@ export const BookingManagePage = () => {
     });
   };
 
-  const _rerenderTable = () => {
-    getBookingsList(paginationMeta.page, paginationMeta.pageSize, {
+  const _rerenderTable = (page: number = paginationMeta.page, pageSize: number = paginationMeta.pageSize) => {
+    getBookingsList(page, pageSize, {
       ...searchFormInput,
       pickUpTimeFrom: searchFormInput.pickUpTimeFrom
         ? searchFormInput.pickUpTimeFrom.toISOString()
@@ -272,7 +524,7 @@ export const BookingManagePage = () => {
 
   return (<>
     <div>
-      <div className="flex justify-between items-center mb-4 px-20">
+      <div className="flex justify-between items-center mb-4">
         <div className="flex items-center gap-2">
           <h1 className="text-xl font-aleo md:text-3xl font-semibold text-shadow-lg/20 py-2 pr-4">
             Bookings
@@ -418,16 +670,39 @@ export const BookingManagePage = () => {
             locale={enLocale}
           />
           <CustomizedButton title="Search" type="warning" click={() => { }} />
-            <CustomizedButton
-              title="+"
-              type="warning"
-              click={() => {
-                setEditBookDialogOpen(true);
-              }}
-            />
         </Box>
       </div>
     </div>
+
+    {isSearchSubmitted &&
+            (searchFormInput.pickUpTimeFrom && searchFormInput.pickUpTimeTo ? (
+              <p className="font-aleo text-gray-700 mb-4 text-sm bg-blue-50 border-l-4 border-blue-400 py-2 px-4 rounded w-fit">
+                Showing Bookings from{" "}
+                <strong>
+                  {searchFormInput.pickUpTimeFrom.toISOString().split("T")[0]}
+                </strong>{" "}
+                to{" "}
+                <strong>
+                  {searchFormInput.pickUpTimeTo.toISOString().split("T")[0]}
+                </strong>
+              </p>
+            ) : searchFormInput.pickUpTimeFrom ? (
+              <p className="font-aleo text-gray-700 mb-4 text-sm bg-blue-50 border-l-4 border-blue-400 py-2 px-4 rounded w-fit">
+                Showing Bookings from{" "}
+                <strong>
+                  {searchFormInput.pickUpTimeFrom.toISOString().split("T")[0]}
+                </strong>{" "}
+                to <strong>{new Date().toISOString().split("T")[0]}</strong>
+              </p>
+            ) : searchFormInput.pickUpTimeTo ? (
+              <p className="font-aleo text-gray-700 mb-4 text-sm bg-blue-50 border-l-4 border-blue-400 py-2 px-4 rounded w-fit">
+                Showing Bookings up to{" "}
+                <strong>
+                  {searchFormInput.pickUpTimeTo.toISOString().split("T")[0]}
+                </strong>
+              </p>
+            ) : null)}
+
     {isLoading ? (
       <Typography sx={{ color: "gray", fontSize: 16, textAlign: "center", my: 10 }}>
         Getting booking data...
@@ -448,6 +723,13 @@ export const BookingManagePage = () => {
           onViewDetails={handleViewBooking}
           onEditBooking={handleEditBooking}
           onCancelBooking={handleCancelBooking}
+          onPriceAttached={() => {
+            setIsLoading(true);
+            _rerenderTable();
+          }}
+          openSnackBar={() => {
+            setSnackBar(true);
+          }}
           ActionsComponent={TablePaginationActions}
         />
       </div>
@@ -461,56 +743,24 @@ export const BookingManagePage = () => {
       />
     )}
 
-    <Dialog
-      onClose={handleEditDialogClose}
-      aria-labelledby="customized-dialog-title"
-      open={editBookDialogOpen}
-      maxWidth="md"
-    >
-      <DialogTitle
-        sx={{
-          m: 0,
-          p: 2,
-          fontFamily: "inter",
-          fontWeight: "bold",
-          bgcolor: "#2c2c2c",
-          color: "white",
-          textAlign: "center",
-          fontSize: 28,
-        }}
-        id="customized-dialog-title"
+    <Snackbar
+      open={snackBar}
+      autoHideDuration={3000}
+      onClose={() => {
+        setSnackBar(false);
+      }}
+      anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
-        Edit Booking
-      </DialogTitle>
-      <IconButton
-        aria-label="close"
-        onClick={handleEditDialogClose}
-        sx={(theme) => ({
-          position: "absolute",
-          right: 8,
-          top: 8,
-          color: theme.palette.grey[500],
-        })}
-      >
-        <CloseIcon />
-      </IconButton>
-      <DialogContent dividers>
-        <BookingPage />
-      </DialogContent>
-      <DialogActions>
-        <Button
-          sx={{
-            color: "#2c2c2c",
-            transition: "all 300ms",
-            mr: 1,
-            ":hover": { bgcolor: "#2c2c2c", color: "white" },
-          }}
-          onClick={handleEditDialogClose}
-        >
-          Close
-        </Button>
-      </DialogActions>
-    </Dialog>
+        <Alert
+            onClose={() => {
+              setSnackBar(false);
+            }}
+            severity="success"
+            variant="filled"
+            >
+            Price has been successfully attached.
+          </Alert>
+    </Snackbar>
 
     <ConfirmDialog
       open={confirmCancelDialogOpen}

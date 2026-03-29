@@ -15,7 +15,8 @@ import {
   FormControlLabel,
   CircularProgress,
   Autocomplete,
-  TextField
+  TextField,
+  IconButton
 } from "@mui/material";
 import NumberField from "@/components/NumberField";
 import { useSession } from "next-auth/react";
@@ -35,6 +36,7 @@ import { department } from "@/generated/prisma/client";
 import { commonLocations } from "@/model/models";
 import { getLatLon } from "@/components/NominatimSearch";
 import { easyGetRequest } from "@/utils/easyRequest";
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 
 export default function BookingPage() {
   const [prefilledBooking, setPrefilledBooking] = useState<BookingRecord | null>(null);
@@ -683,7 +685,27 @@ export default function BookingPage() {
   }
 
   return (
-    <div className="flex min-h-screen justify-center items-center font-inter p-4">
+    <div className="min-h-screen font-inter bg-[#f5f5f5]">
+      {session.data?.user.account_type === "super_admin" && (
+        <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-[#2c2c2c] text-white shadow-lg">
+          <div className="ml-5 flex w-full max-w-7xl items-center gap-3 py-3">
+            <IconButton
+              onClick={() => router.push("/super")}
+              sx={{
+                color: "white",
+                minWidth: "40px"
+              }}
+            >
+              <ArrowBackIosIcon fontSize="medium"/>
+            </IconButton>
+            <span className="font-aleo text-xl sm:text-2xl font-semibold tracking-wide">
+              Edit Booking Panel
+            </span>
+          </div>
+        </header>
+      )}
+
+      <div className="mx-auto flex w-full justify-center px-4 pb-8 pt-6">
       <div className="border-3 border-[#2c2c2c] flex flex-col lg:flex-row bg-white shadow-lg rounded-lg my-8 w-full md:mx-30 max-w-10xl overflow-hidden">
         {/* Booking Form Section */}
         <div className="p-4 sm:p-6 md:p-8 w-full lg:w-1/2">
@@ -2018,6 +2040,7 @@ export default function BookingPage() {
             )}
           </Map>
         </div>
+      </div>
       </div>
     </div>
   );
