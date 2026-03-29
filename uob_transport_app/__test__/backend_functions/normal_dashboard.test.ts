@@ -70,4 +70,44 @@ describe("getNormalDashboardData", () => {
     expect(result.totalPrice).toBe(0);
   });
 
+  // ===== verify prisma queries =====
+  test("calls prisma with correct query conditions", async () => {
+    const userId = 42;
+
+    (prisma.booking.findMany as jest.Mock).mockResolvedValue([]);
+    (prisma.booking.count as jest.Mock).mockResolvedValue(0);
+    (prisma.trip.aggregate as jest.Mock).mockResolvedValue({
+      _sum: { price: 0 },
+    });
+    (prisma.trip.count as jest.Mock).mockResolvedValue(0);
+
+    await getNormalDashboardData(userId);
+
+    expect(prisma.booking.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          user_id: userId,
+        }),
+        take: 5,
+      })
+    );
+
+    expect(prisma.booking.count).toHaveBeenCalledWith({
+      where: { user_id: userId },
+    });
+
+    expect(prisma.trip.aggregate).toHaveBeenCalled();
+
+    expect(prisma.trip.count).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          booking: {
+            is: {
+              user_id: userId,
+            },
+          },
+        }),
+      })
+    );
+  });
 });
