@@ -44,8 +44,8 @@ function BookingViewDialog({ viewData, dialogOpen, handleDialogClose }: BookingV
         <p>Booking ID: {viewData.booking_id}</p>
         <p>Additinal Info: {viewData.additional_info}</p>
         <p>Time Created: {viewData.time_created}</p>
-        <p>Pickup: {viewData.trip.pickup_location}</p>
-        <p>Dropoff: {viewData.trip.dropoff_location}</p>
+        <p>Pickup: {viewData.trip.pickup_location.address}</p>
+        <p>Dropoff: {viewData.trip.dropoff_location.address}</p>
         <p>Pickup Time: {viewData.trip.pickup_time}</p>
         <p>Booking Status: {viewData.booking_status}</p>
       </DialogContent>
