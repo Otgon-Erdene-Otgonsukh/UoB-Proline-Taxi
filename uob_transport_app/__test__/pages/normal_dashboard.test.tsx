@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import NormalUserDashboard from "@/components/NormalUserDashboard";
 import { useSession } from "next-auth/react";
@@ -176,4 +176,27 @@ describe("NormalUserDashboard", () => {
             screen.getByText("Create your first booking to see trip history here.")
           ).toBeInTheDocument();
         });
+
+        // ===== 5. create booking button =====
+          test("clicking create booking triggers redirect", async () => {
+            (useSession as jest.Mock).mockReturnValue({
+              status: "authenticated",
+              data: mockSession,
+            });
+        
+            (easyGetRequest as jest.Mock).mockResolvedValue({
+              status: 200,
+              json: async () => ({
+                ...baseResponse,
+                recentBookings: [],
+              }),
+            });
+        
+            render(<NormalUserDashboard />);
+        
+            const button = await screen.findByText("+ Create Your First Booking");
+            fireEvent.click(button);
+        
+            expect(redirectMock).toHaveBeenCalledWith("/book");
+          });
 });
