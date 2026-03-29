@@ -5,11 +5,38 @@ import { SendEmailCommand } from "@aws-sdk/client-sesv2";
 import BookingPrice from "@/components/emails/booking_price";
 import { render } from "@react-email/components";
 import { location } from "@/model/models";
+import { auth } from "@/auth";
+import { USER_ROLE } from "@/model/models";
 
 export async function POST(req: Request) {
   const body = await req.json();
   const price = body.price;
   const booking_id = body.booking_id;
+
+  const session = await auth();
+  if (!session) {
+    return new Response(
+      JSON.stringify({
+        message: "login required",
+      }),
+      {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      },
+    );
+  }
+
+  if (session.user.account_type !== USER_ROLE.SUPER_ADMIN) {
+    return new Response(
+      JSON.stringify({
+        message: "Unauthorized",
+      }),
+      {
+        status: 403,
+        headers: { "Content-Type": "application/json" },
+      },
+    );
+  }
 
   try {
     await prisma.booking.update({
