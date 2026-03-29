@@ -1,15 +1,14 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useSession } from "next-auth/react";
-import { USER_ROLE, UserRecord } from "@/model/models";
-import { motion } from "framer-motion";
+import { UserRecord } from "@/model/models";
+import { USER_ROLE } from "@/model/models";
 import SuperDashboard from "@/components/SuperDashboard";
 import {
   Box,
   Typography,
-  IconButton,
   Drawer,
   List,
   ListItem,
@@ -17,6 +16,7 @@ import {
   ListItemText,
   ListItemIcon,
   Divider,
+  Button,
 } from "@mui/material";
 import PeopleIcon from '@mui/icons-material/People';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -25,9 +25,10 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import GroupsIcon from '@mui/icons-material/Groups';
-import { getDepartmentsList } from "./request";
-import { UserManagePage } from "./userManageComponents/userManagePage";
+import { getDepartmentsList } from "./requests";
 import DepartmentManagePage from "./departmentManageComponents/departmentManagePage";
+import { UserManagePage } from "./userManageComponents/userManagePage";
+import { BookingManagePage } from "./bookingManageComponents/bookingManagePage";
 import ForbiddenPage from "@/components/ForbiddenPage";
 
 const Page = () => {
@@ -73,98 +74,76 @@ const Page = () => {
   }
 
   return (
-    <div className={`min-h-screen ${tabValue === 3 ? "-pt-25 md:-mt-2 mt-0 md:mb-0" : "pt-15 flex flex-col items-center p-4"}`}>
-      <Drawer
-        anchor="left"
-        open={isDrawerOpen}
-        onClose={toggleDrawer(false)}
-      >
-        <Box
-          sx={{ width: 250 }}
-          role="presentation"
-          onClick={toggleDrawer(false)}
-          onKeyDown={toggleDrawer(false)}
+    <div className="flex-col font-inter">
+      <header className="w-full bg-[#2c2c2c] text-white p-3 shadow-lg items-center flex gap-4 sticky top-0 z-50">
+        <Button
+          onClick={toggleDrawer(true)}
+          sx={{ color: "white", minWidth: '40px' }}
         >
-          <Typography variant="h6" sx={{ p: 2, fontWeight: 'bold', fontFamily: "aleo", fontSize: 25 }}>
-            Admin Menu
-          </Typography>
-          <Divider />
-          <List>
-            {[
-              { text: 'Users', icon: <PeopleIcon />, index: 0 },
-              { text: 'Departments', icon: <GroupsIcon />, index: 1 },
-              { text: 'Bookings', icon: <LocalTaxiIcon />, index: 2 },
-              { text: 'Dashboard', icon: <DashboardIcon />, index: 3 },
-              { text: 'Export Bookings', icon: <FileDownloadIcon />, index: 4 },
-              { text: 'Admin Settings', icon: <SettingsIcon />, index: 5 },
-            ].map((item) => (
-              <ListItem key={item.text} disablePadding>
-                <ListItemButton onClick={() => setTabValue(item.index)}>
-                  <ListItemIcon>
-                    {item.icon}
-                  </ListItemIcon>
-                  <ListItemText primary={item.text} />
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
-        </Box>
-      </Drawer>
+          <MenuIcon fontSize="medium" />
+        </Button>
+        <span className="font-aleo text-2xl sm:text-3xl font-semibold">User Management</span>
+      </header>
 
-      <motion.div
-        className={`bg-white shadow-lg rounded-lg p-6 md:p-8 w-full max-w-6xl mb-8 h-fit ${tabValue === 3 && "hidden"}`}
-        initial={{ opacity: 0, y: 7, scale: 0.98 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 1, ease: "easeOut", delay: 0.24 }}
-      >
+      <div className="w-full flex justify-center items-start p-4">
+        <Drawer
+          anchor="left"
+          open={isDrawerOpen}
+          onClose={toggleDrawer(false)}
+        >
+          <Box
+            sx={{ width: 250 }}
+            role="presentation"
+            onClick={toggleDrawer(false)}
+            onKeyDown={toggleDrawer(false)}
+          >
+            <Typography variant="h6" sx={{ p: 2, fontWeight: 'bold', fontFamily: "aleo", fontSize: 25 }}>
+              Admin Menu
+            </Typography>
+            <Divider />
+            <List>
+              {[
+                { text: 'Users', icon: <PeopleIcon />, index: 0 },
+                { text: 'Departments', icon: <GroupsIcon />, index: 1 },
+                { text: 'Bookings', icon: <LocalTaxiIcon />, index: 2 },
+                { text: 'Dashboard', icon: <DashboardIcon />, index: 3},
+                { text: 'Export Bookings', icon: <FileDownloadIcon />, index: 4 },
+                { text: 'Admin Settings', icon: <SettingsIcon />, index: 5 },
+              ].map((item) => (
+                <ListItem key={item.text} disablePadding>
+                  <ListItemButton onClick={() => setTabValue(item.index)}>
+                    <ListItemIcon>
+                      {item.icon}
+                    </ListItemIcon>
+                    <ListItemText primary={item.text} />
+                  </ListItemButton>
+                </ListItem>
+              ))}
+            </List>
+          </Box>
+        </Drawer>
+      
+      <div className="w-full">
         {tabValue === 0 && (
           <div>
-            <div className="flex items-center gap-2 -ml-2">
-              <IconButton
-                onClick={toggleDrawer(true)}
-                sx={{
-                  color: '#2c2c2c',
-                  '&:hover': {
-                    bgcolor: '#f3f4f6',
-                  },
-                }}
-              >
-                <MenuIcon />
-              </IconButton>
-              <h1 className="text-xl font-aleo md:text-3xl font-semibold text-shadow-lg/20">
-                User Management
-              </h1>
-            </div>
             <UserManagePage departments={departments} />
           </div>
         )}
 
         {tabValue === 1 && (
           <div>
-            <div className="flex items-center gap-2 mb-4">
-              <IconButton
-                onClick={toggleDrawer(true)}
-                sx={{
-                  color: '#2c2c2c',
-                  '&:hover': {
-                    bgcolor: '#f3f4f6',
-                  },
-                }}
-              >
-                <MenuIcon />
-              </IconButton>
-              <h1 className="text-xl font-aleo md:text-3xl font-semibold text-shadow-lg/20">
-                Departments
-              </h1>
-            </div>
             <DepartmentManagePage />
           </div>
         )}
-      </motion.div>
-
-      {tabValue === 3 && <SuperDashboard />}
-
-    </div>
+        {tabValue === 2 && (
+          <div>
+            <BookingManagePage />
+          </div>
+        )}
+          {tabValue === 3 && <SuperDashboard/>}
+      </div>
+      </div>
+      </div>
   );
 };
 

@@ -92,11 +92,8 @@ export default function DepDashboard() {
     if (status === "unauthenticated") {
       router.push("/login");
       return;
-    } else if (data && data.user?.account_type !== USER_ROLE.FINANCE_STAFF && data.user?.account_type !== USER_ROLE.SUPER_ADMIN) {
-      // Staff and Admin can access this page
-      setIsForbidden(true);
-    } else if (data && (data.user?.account_type === USER_ROLE.FINANCE_STAFF || data.user?.account_type === USER_ROLE.SUPER_ADMIN)) {
-      setIsForbidden(false);
+    } else {
+      setIsForbidden(data?.user.account_type !== USER_ROLE.FINANCE_STAFF)
     }
   }, [status, data, router]);
 
@@ -237,10 +234,10 @@ export default function DepDashboard() {
           prev.map((b) =>
             b.booking_id === pendingBookingId
               ? {
-                ...b,
-                booking_status: "Approved",
-                trip: { ...b.trip, PO: poNumber },
-              }
+                  ...b,
+                  booking_status: "Approved",
+                  trip: { ...b.trip, PO: poNumber },
+                }
               : b,
           ),
         );
@@ -599,21 +596,22 @@ export default function DepDashboard() {
                 <MenuItem value="withoutPrice">Without Price</MenuItem>
               </Select>
             </FormControl>
-            <CustomizedButton title="Search" type="warning" click={() => { }} />
+            <CustomizedButton title="Search" type="warning" click={() => {}} />
           </Box>
         </div>
         <div data-testid="filter_text">
           <p
-            className={`text-lg font-semibold mt-3 ${totalApplied
-              ? "text-blue-600"
-              : statusApplied
-                ? "text-green-600"
-                : overdueApplied
-                  ? "text-red-600"
-                  : searchFormInput.isFlight
-                    ? "text-cyan-700"
-                    : "text-yellow-600"
-              }`}
+            className={`text-lg font-semibold mt-3 ${
+              totalApplied
+                ? "text-blue-600"
+                : statusApplied
+                  ? "text-green-600"
+                  : overdueApplied
+                    ? "text-red-600"
+                    : searchFormInput.isFlight
+                      ? "text-cyan-700"
+                      : "text-yellow-600"
+            }`}
           >
             {totalApplied
               ? "All Bookings"
@@ -675,19 +673,20 @@ export default function DepDashboard() {
                           >
                             {statusApplied && (
                               <div
-                                className={`md:h-4 md:w-4 h-2.5 w-4 rounded-full border-2 ${row.booking_status === "Pending"
-                                  ? "bg-yellow-300 border-yellow-500"
-                                  : row.booking_status === "Approved"
-                                    ? "bg-green-400 border-green-700"
-                                    : "bg-red-400 border-red-800"
-                                  }`}
+                                className={`md:h-4 md:w-4 h-2.5 w-4 rounded-full border-2 ${
+                                  row.booking_status === "Pending"
+                                    ? "bg-yellow-300 border-yellow-500"
+                                    : row.booking_status === "Approved"
+                                      ? "bg-green-400 border-green-700"
+                                      : "bg-red-400 border-red-800"
+                                }`}
                               ></div>
                             )}
                             <span>
                               {row.trip.pickup_time
                                 ? new Date(
-                                  row.trip.pickup_time,
-                                ).toLocaleString()
+                                    row.trip.pickup_time,
+                                  ).toLocaleString()
                                 : "N/A"}
                             </span>
                           </div>
@@ -695,40 +694,40 @@ export default function DepDashboard() {
                         <StyledTableCell>
                           {row.trip.pickup_location.includes("{") // Temporary check to see if this is an old style booking.
                             ? !JSON.parse(
-                              row.trip.pickup_location,
-                            ).address.includes("University of Bristol")
-                              ? JSON.parse(
                                 row.trip.pickup_location,
-                              ).short_name.includes("Airport")
+                              ).address.includes("University of Bristol")
+                              ? JSON.parse(
+                                  row.trip.pickup_location,
+                                ).short_name.includes("Airport")
                                 ? JSON.parse(row.trip.pickup_location)
-                                  .short_name
+                                    .short_name
                                 : JSON.parse(row.trip.pickup_location)
-                                  .short_name +
-                                ", " +
-                                JSON.parse(row.trip.pickup_location)
-                                  .address.split(",")
-                                  .slice(-5)[0]
-                                  .trim()
+                                    .short_name +
+                                  ", " +
+                                  JSON.parse(row.trip.pickup_location)
+                                    .address.split(",")
+                                    .slice(-5)[0]
+                                    .trim()
                               : JSON.parse(row.trip.pickup_location).address
                             : row.trip.pickup_location}
                         </StyledTableCell>
                         <StyledTableCell>
                           {row.trip.dropoff_location.includes("{") // Temporary check to see if this is an old style booking.
                             ? !JSON.parse(
-                              row.trip.dropoff_location,
-                            ).address.includes("University of Bristol")
-                              ? JSON.parse(
                                 row.trip.dropoff_location,
-                              ).short_name.includes("Airport")
+                              ).address.includes("University of Bristol")
+                              ? JSON.parse(
+                                  row.trip.dropoff_location,
+                                ).short_name.includes("Airport")
                                 ? JSON.parse(row.trip.dropoff_location)
-                                  .short_name
+                                    .short_name
                                 : JSON.parse(row.trip.dropoff_location)
-                                  .short_name +
-                                ", " +
-                                JSON.parse(row.trip.dropoff_location)
-                                  .address.split(",")
-                                  .slice(-5)[0]
-                                  .trim()
+                                    .short_name +
+                                  ", " +
+                                  JSON.parse(row.trip.dropoff_location)
+                                    .address.split(",")
+                                    .slice(-5)[0]
+                                    .trim()
                               : JSON.parse(row.trip.dropoff_location).address
                             : row.trip.dropoff_location}
                         </StyledTableCell>
@@ -746,8 +745,17 @@ export default function DepDashboard() {
                               title="View"
                             />
                             {!row.trip.price &&
-                              row.booking_status === "Rejected" ? null : !row.trip
-                                .price ? (
+                            row.booking_status === "Rejected" ? (
+                              <Chip
+                                label={row.booking_status}
+                                sx={{
+                                  bgcolor: "#fca5a5",
+                                  border: 2,
+                                  borderColor: "#dc2626",
+                                  px: 1,
+                                }}
+                              />
+                            ) : !row.trip.price ? (
                               <Chip
                                 label="Awaiting Price"
                                 sx={{

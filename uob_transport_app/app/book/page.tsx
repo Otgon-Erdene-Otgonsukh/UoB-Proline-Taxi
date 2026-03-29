@@ -384,6 +384,7 @@ export default function BookingPage() {
               "AdditionalInfo",
               "Form failed to submit: " + response.statusText,
             );
+            setLoadingBar(false);
           }
         })
         .catch((err) => {
