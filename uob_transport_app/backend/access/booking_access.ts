@@ -61,6 +61,7 @@ export const getUserBookingsAccess = async (userId: number, page: number, pageSi
     },
     include: {
       trip: true,
+      department: true,
       ...(userId === -1 ? { User: { select: { full_name: true } } } : {})
     },
     orderBy: {
@@ -90,6 +91,15 @@ export const getBookingDetails = async (userId: number, bookingId: number): Prom
     })
   }
 }
+
+export const getTripDetails = async (tripId: number) => {
+  return prisma.trip.findUnique({
+    where: {
+      trip_id: tripId
+    }
+  })
+}
+
 
 export const cancelBookingsAccess = async (bookingId: number): Promise<booking | null> => {
   return prisma.booking.update({

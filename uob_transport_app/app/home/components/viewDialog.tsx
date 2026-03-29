@@ -80,19 +80,19 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRe
           From:
         </Typography>
         <Typography gutterBottom align="right">
-          {viewData?.trip.pickup_location.includes("{")
-                ? JSON.parse(viewData.trip.pickup_location).address.includes(
-                    "University of Bristol",
-                  ) // Temporary check to see if this is an old style booking.
-                  ? JSON.parse(viewData?.trip.pickup_location).address
-                  : JSON.parse(viewData.trip.pickup_location).short_name +
-                    ", " +
-                    JSON.parse(viewData?.trip.pickup_location)
-                      .address.split(",")
-                      .slice(-5)[0]
-                      .trim()
-                : viewData?.trip.pickup_location
-              }
+          { viewData?.trip 
+            ? JSON.parse(viewData.trip.pickup_location as unknown as string).address.includes(
+                "University of Bristol",
+              ) // Temporary check to see if this is an old style booking.
+              ? JSON.parse(viewData?.trip.pickup_location as unknown as string).address
+              : JSON.parse(viewData?.trip.pickup_location as unknown as string).short_name +
+                ", " +
+                JSON.parse(viewData?.trip.pickup_location as unknown as string)
+                  .address.split(",")
+                  .slice(-5)[0]
+                  .trim()
+            : ""
+          }
         </Typography>
       </Stack>
       {viewData?.trip.flight_num && (
@@ -131,10 +131,10 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRe
             Via:
           </Typography>
           <Typography gutterBottom align="right" sx={{ whiteSpace: "pre-line" }}>
-            {viewData?.trip.via.includes("{") || viewData.trip.via.includes("[")
-              ? JSON.parse(viewData?.trip.via).length === 0
+            {(viewData?.trip.via as unknown as string).includes("{") || (viewData.trip.via as unknown as string).includes("[")
+              ? JSON.parse(viewData?.trip.via as unknown as string).length === 0
                 ? "N/A"
-                : JSON.parse(viewData?.trip.via)
+                : JSON.parse(viewData?.trip.via as unknown as string)
                     .map(
                       (loc: location) =>
                         loc.short_name +
@@ -161,14 +161,14 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRe
           To:
         </Typography>
         <Typography gutterBottom align="right">
-          {viewData?.trip.dropoff_location.includes("{") // Temporary check to see if this is an old style booking.
-              ? JSON.parse(viewData.trip.dropoff_location).address.includes(
+          {viewData?.trip
+              ? JSON.parse(viewData?.trip.dropoff_location as unknown as string).address.includes(
                   "University of Bristol",
                 ) // Temporary check to see if this is an old style booking.
-                ? JSON.parse(viewData?.trip.dropoff_location).address
-                : JSON.parse(viewData.trip.dropoff_location).short_name +
+                ? JSON.parse(viewData?.trip.dropoff_location as unknown as string).address
+                : JSON.parse(viewData?.trip.dropoff_location as unknown as string).short_name +
                   ", " +
-                  JSON.parse(viewData?.trip.dropoff_location)
+                  JSON.parse(viewData?.trip.dropoff_location as unknown as string)
                     .address.split(",")
                     .slice(-5)[0]
                     .trim()
@@ -279,14 +279,14 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: BookingRe
               Return Drop-off Location:
             </Typography>
             <Typography gutterBottom align="right">
-                {viewData?.trip.return_drop_loc.includes("{")
-                  ? JSON.parse(viewData.trip.return_drop_loc).short_name +
+                {(viewData?.trip.return_drop_loc as unknown as string).includes("{")
+                  ? JSON.parse(viewData.trip.return_drop_loc as unknown as string).short_name +
                     ", " +
-                    JSON.parse(viewData.trip.return_drop_loc).address
+                    JSON.parse(viewData.trip.return_drop_loc as unknown as string).address
                       .split(",")
                       .slice(-5)[0]
                       .trim()
-                  : viewData.trip.return_drop_loc}
+                  : viewData.trip.return_drop_loc as unknown as string}
               </Typography>
           </Stack>
         </>

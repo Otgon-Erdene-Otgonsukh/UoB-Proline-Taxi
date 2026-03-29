@@ -25,7 +25,7 @@ describe('booking_access', () => {
         booking_status: 'Confirmed',
         user_id: 10,
       },
-      include: { trip: true },
+      include: { trip: true, department: true },
       orderBy: { time_created: 'desc' },
       skip: 5,
       take: 5,

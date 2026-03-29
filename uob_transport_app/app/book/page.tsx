@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, use } from "react";
 import { useRouter, redirect } from "next/navigation";
 import {
   Button,
@@ -16,11 +16,11 @@ import {
   CircularProgress,
   Autocomplete,
   TextField,
-  Switch,
+  IconButton
 } from "@mui/material";
 import NumberField from "@/components/NumberField";
 import { useSession } from "next-auth/react";
-import { formLocation } from "@/model/models";
+import { BookingRecord, formLocation, location } from "@/model/models";
 import {
   Map,
   MapMarker,
@@ -35,8 +35,12 @@ import { getDepartments } from "@/app/requests/departments";
 import { department } from "@/generated/prisma/client";
 import { commonLocations } from "@/model/models";
 import { getLatLon } from "@/components/NominatimSearch";
+import { easyGetRequest } from "@/utils/easyRequest";
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 
 export default function BookingPage() {
+  const [prefilledBooking, setPrefilledBooking] = useState<BookingRecord | null>(null);
+
   const session = useSession();
 
   if (!session) {
@@ -52,6 +56,26 @@ export default function BookingPage() {
   const [phoneCode, setPhoneCode] = useState("+44");
   const [loadingBar, setLoadingBar] = useState(false);
   const [departmentEmpty, setDepartmentEmpty] = useState(false);
+
+  // Get the URL parameters and populate prefilledBooking if update is present.
+  if (typeof window != "undefined" && prefilledBooking == null) {
+    const windowURLParams = new URLSearchParams(window.location.search);
+    const prefilledBookingID = parseInt(windowURLParams.get("update") || "-1");
+
+    if (prefilledBookingID != -1) {
+      const getRequestParams : Record<string, string | number> = { id: prefilledBookingID }
+
+      easyGetRequest("booking_details", getRequestParams)
+          .then(async (response) => {
+            if (response.status == 200) {
+              setPrefilledBooking(await response.json());
+            }
+          })
+          .catch((err) => {
+              console.error("Error fetching booking details:", err);
+          });
+    }
+  }
 
   // Set error messages visible next to fields, default "" (empty) for hide.
   const [formFeedback, setFormFeedback] = useState({
@@ -106,7 +130,6 @@ export default function BookingPage() {
     Passengers: number;
     AdditionalInfo: string;
   };
-
   // Variables for storing the state of the values entered into the fields.
   const [formData, setFormData] = useState<FormData>({
     CommonLoc: "",
@@ -127,7 +150,7 @@ export default function BookingPage() {
     dep_id: 0,
     Passengers: 1,
     AdditionalInfo: "",
-  });
+});
 
   const router = useRouter();
 
@@ -322,6 +345,7 @@ export default function BookingPage() {
     if (fail == false) {
       setLoadingBar(true);
       const jsonBody = {
+        booking_id: prefilledBooking?.booking_id,
         user_id: session.data?.user.user_id,
         pickup_location: loc,
         dropoff_location: formData.DropoffLoc,
@@ -342,7 +366,14 @@ export default function BookingPage() {
       };
       console.log(jsonBody);
 
-      fetch("/api/create_booking", {
+      // Swtich between edit / create booking.
+      let targetURL = "/api/create_booking";
+      if (prefilledBooking != null) {
+        jsonBody.booking_id = prefilledBooking.booking_id;
+        targetURL = "/api/update_booking";
+      }
+
+      fetch(targetURL, {
         method: "POST",
         body: JSON.stringify(jsonBody),
       })
@@ -353,7 +384,7 @@ export default function BookingPage() {
             // Use additional info box to mark error. Will replace with specific errors in the future.
             addFormFeedback(
               "AdditionalInfo",
-              "Form failed to submit. Please try again or check inputs.",
+              "Form failed to submit: " + response.statusText,
             );
             setLoadingBar(false);
           }
@@ -448,6 +479,71 @@ export default function BookingPage() {
     lat: number;
     lng: number;
   } | null>(null);
+
+  useEffect(() => {
+    if (prefilledBooking != null && prefilledBooking != undefined && prefilledBooking["trip"] != null) {
+      let returnDate : string = ""
+      let returnTime : string = ""
+
+      // There is no way of differentiating this in the database so assume all are manual.
+      setIsManualChecked(true);
+
+      // Convert time for pickup and return to string.
+      if (prefilledBooking["trip"]["return_pickup_time"] != "" && prefilledBooking["trip"]["return_pickup_time"] != null) {
+        setIsReturnChecked(true);
+        returnDate = String(prefilledBooking["trip"]["return_pickup_time"]).split("T")[0];
+        returnTime = String(prefilledBooking["trip"]["return_pickup_time"]).split("T")[1].substring(0,5);
+      }
+
+      // Set the formData object to contain all booking information.
+      setFormData({
+        ...formData,
+        //CommonLoc: bookingData["commonLoc"],
+        CustomLoc: prefilledBooking["trip"]["pickup_location"],
+        PickupLoc: prefilledBooking["trip"]["pickup_location"],
+        Via: prefilledBooking["trip"]["via"],
+        ReturnTo: prefilledBooking["trip"]["return_drop_loc"],
+        FlightNum: prefilledBooking["trip"]["flight_num"],
+        Airport: prefilledBooking["trip"]["airport"],
+        DropoffLoc: prefilledBooking["trip"]["dropoff_location"],
+        PickupDate: String(prefilledBooking["trip"]["pickup_time"]).split("T")[0],
+        PickupTime: String(prefilledBooking["trip"]["pickup_time"]).split("T")[1].substring(0,5),
+        ReturnDate: returnDate,
+        ReturnTime: returnTime,
+        PassengerName: prefilledBooking["passenger_name"],
+        Number: prefilledBooking["tel_number"],
+        Email: prefilledBooking["email"],
+        dep_id: prefilledBooking["dep_id"],
+        Passengers: prefilledBooking["trip"]["passenger_num"],
+        AdditionalInfo: prefilledBooking["additional_info"],
+      });
+      
+      const convertToMapLocation = (location: location) => {
+        return ({
+          name: location.short_name, 
+          lat: location.lat,
+          lng: location.lng
+        });
+      }
+
+      // Populate map information
+      const vias = []
+      for (const via of prefilledBooking["trip"]["via"]) {
+        vias.push(convertToMapLocation(via));
+      }
+
+      // If vias are present set the form to have vias.
+      if (vias.length > 0) {
+        setIsViaChecked(true);
+      }
+
+      setVias(vias);
+      setEnd(convertToMapLocation(prefilledBooking["trip"]["dropoff_location"]));
+      setStart(convertToMapLocation(prefilledBooking["trip"]["pickup_location"]));
+    }
+  },
+  [prefilledBooking]);
+
 
   // Update the route when start or end changes.
   useEffect(() => {
@@ -567,7 +663,27 @@ export default function BookingPage() {
   }
 
   return (
-    <div className="flex min-h-screen justify-center items-center font-inter p-4">
+    <div className="min-h-screen font-inter bg-[#f5f5f5]">
+      {session.data?.user.account_type === "super_admin" && (
+        <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-[#2c2c2c] text-white shadow-lg">
+          <div className="ml-5 flex w-full max-w-7xl items-center gap-3 py-3">
+            <IconButton
+              onClick={() => router.push("/super")}
+              sx={{
+                color: "white",
+                minWidth: "40px"
+              }}
+            >
+              <ArrowBackIosIcon fontSize="medium"/>
+            </IconButton>
+            <span className="font-aleo text-xl sm:text-2xl font-semibold tracking-wide">
+              Edit Booking Panel
+            </span>
+          </div>
+        </header>
+      )}
+
+      <div className="mx-auto flex w-full justify-center px-4 pb-8 pt-6">
       <div className="border-3 border-[#2c2c2c] flex flex-col lg:flex-row bg-white shadow-lg rounded-lg my-8 w-full md:mx-30 max-w-10xl overflow-hidden">
         {/* Booking Form Section */}
         <div className="p-4 sm:p-6 md:p-8 w-full lg:w-1/2">
@@ -752,6 +868,7 @@ export default function BookingPage() {
                         ? "border-gray-800"
                         : "border-red-700"
                     }`}
+                    defaultValue={formData.PickupLoc?.address || ""}
                     onChange={(e) => {
                       if (e.target.value !== "") {
                         addFormFeedback("CustomLoc", "");
@@ -818,6 +935,12 @@ export default function BookingPage() {
                     id="via"
                     placeholder="Via..."
                     className={`border-2 rounded px-3 py-2 ${formFeedback.Via1 == "" ? "border-gray-800" : "border-red-700"}`}
+                    defaultValue={formData.Via?.[0]?.address || ""}
+                    onChange={(e) => {
+                      if (e.target.value !== "") {
+                      addFormFeedback("Via1", "");
+                      }
+                    }}
                     // Prevent Enter from submitting the booking form.
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
@@ -890,6 +1013,7 @@ export default function BookingPage() {
                     id="via2"
                     placeholder="Via..."
                     className={`border-2 rounded px-3 py-2 ${formFeedback.Via2 == "" ? "border-gray-800" : "border-red-700"}`}
+                    defaultValue={formData.Via?.[1]?.address || ""}
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
                         e.preventDefault();
@@ -964,6 +1088,7 @@ export default function BookingPage() {
                     id="via3"
                     placeholder="Via..."
                     className={`border-2 rounded px-3 py-2 ${formFeedback.Via3 == "" ? "border-gray-800" : "border-red-700"}`}
+                    defaultValue={formData.Via?.[2]?.address || ""}
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
                         e.preventDefault();
@@ -1130,6 +1255,7 @@ export default function BookingPage() {
                   type="dropLoc"
                   id="dropLoc"
                   placeholder="Temple Quarter Enterprise Campus, Bristol"
+                  defaultValue={formData.DropoffLoc?.address || ""}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       e.preventDefault();
@@ -1331,6 +1457,7 @@ export default function BookingPage() {
                         ? "border-gray-800"
                         : "border-red-700"
                     }`}
+                    defaultValue={formData.PickupDate || ""}
                     onChange={(e) => {
                       setFormData({ ...formData, PickupDate: e.target.value });
                       if (e.target.value !== "") {
@@ -1346,6 +1473,7 @@ export default function BookingPage() {
                         ? "border-gray-800"
                         : "border-red-700"
                     }`}
+                    defaultValue={formData.PickupTime || ""}
                     onChange={(e) => {
                       setFormData({ ...formData, PickupTime: e.target.value });
                       if (e.target.value !== "") {
@@ -1411,6 +1539,7 @@ export default function BookingPage() {
                     <input
                       id="returnDropOff"
                       placeholder="Enter"
+                      value={formData.ReturnTo?.address || ""}
                       className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0 ${formFeedback.ReturnTo == "" ? "border-gray-800" : "border-red-700"}`}
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
@@ -1750,7 +1879,11 @@ export default function BookingPage() {
                   {loadingBar ? (
                     <CircularProgress color="inherit" size="30px" />
                   ) : (
-                    "Confirm Booking"
+                    prefilledBooking ? (
+                      "Update Booking"
+                    ) : (
+                      "Confirm Booking"
+                    )
                   )}
                 </Button>
               </div>
@@ -1878,6 +2011,7 @@ export default function BookingPage() {
             )}
           </Map>
         </div>
+      </div>
       </div>
     </div>
   );
