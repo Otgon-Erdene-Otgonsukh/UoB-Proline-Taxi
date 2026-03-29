@@ -13,6 +13,9 @@ This document provides a concise overview of the project codebase, outlining the
 - [AWS Setup](#aws-setup)
 - [Further Resources](#further-resources)
 - [Detailed User Instruction](#detailed-user-instruction)
+  - [Normal User](#normal-user)
+  - [Finance Staff](#finance-staff-uob)
+  - [Super Admin](#super-admin)
 
 ## Setup and Prerequisites
 
