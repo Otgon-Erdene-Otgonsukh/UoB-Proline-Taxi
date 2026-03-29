@@ -16,7 +16,6 @@ import {
   CircularProgress,
   Autocomplete,
   TextField,
-  Switch,
 } from "@mui/material";
 import NumberField from "@/components/NumberField";
 import { useSession } from "next-auth/react";
@@ -35,6 +34,7 @@ import { getDepartments } from "@/app/requests/departments";
 import { department } from "@/generated/prisma/client";
 import { commonLocations } from "@/model/models";
 import { getLatLon } from "@/components/NominatimSearch";
+import BookingConfirmedPage from "./(components)/BookingConfirmed";
 
 export default function BookingPage() {
   const session = useSession();
@@ -130,6 +130,8 @@ export default function BookingPage() {
   });
 
   const router = useRouter();
+
+  const [isConfirmed, setIsConfirmed] = useState(false);
 
   // Client side validation.
   const handleSubmit = (e: React.FormEvent) => {
@@ -348,7 +350,7 @@ export default function BookingPage() {
       })
         .then((response) => {
           if (response.status == 200) {
-            router.push("/book/confirmed");
+            setIsConfirmed(true)
           } else {
             // Use additional info box to mark error. Will replace with specific errors in the future.
             addFormFeedback(
@@ -356,11 +358,13 @@ export default function BookingPage() {
               "Form failed to submit. Please try again or check inputs.",
             );
             setLoadingBar(false);
+            setIsConfirmed(false);
           }
         })
         .catch((err) => {
           console.error("Error:", err);
           setLoadingBar(false);
+          setIsConfirmed(false);
           addFormFeedback(
             "AdditionalInfo",
             "Form failed to submit. Please try again later or check your network connection.",
@@ -567,6 +571,7 @@ export default function BookingPage() {
   }
 
   return (
+    isConfirmed ? <BookingConfirmedPage /> :
     <div className="flex min-h-screen justify-center items-center font-inter p-4">
       <div className="border-3 border-[#2c2c2c] flex flex-col lg:flex-row bg-white shadow-lg rounded-lg my-8 w-full md:mx-30 max-w-10xl overflow-hidden">
         {/* Booking Form Section */}
