@@ -44,7 +44,7 @@ import { StyledTableCell } from "@/components/StyledTableCell";
 import CustomizedButton from "@/components/CustomizedButton";
 import { getPendingBookingList } from "./requests";
 import { TablePaginationActions } from "@/components/paginationActions";
-import ViewDialog from "./components/viewDialog";
+import ViewDialog from "./(components)/viewDialog";
 import CustomSwitch from "@/components/CustomSwitch";
 import type { BookingWithTrip, BookingData } from "./constants";
 import ForbiddenPage from "@/components/ForbiddenPage";
