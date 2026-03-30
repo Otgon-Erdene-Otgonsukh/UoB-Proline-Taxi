@@ -1,17 +1,5 @@
 import { getNormalDashboardData } from "@/backend/normal_dashboard_data/normal_dash_data";
-import prisma from "@/utils/client";
-
-// ===== mock prisma =====
-jest.mock("@/utils/client", () => ({
-  booking: {
-    findMany: jest.fn(),
-    count: jest.fn(),
-  },
-  trip: {
-    aggregate: jest.fn(),
-    count: jest.fn(),
-  },
-}));
+import { prismaMock } from "@/utils/singleton";
 
 describe("getNormalDashboardData", () => {
   beforeEach(() => {
@@ -33,14 +21,14 @@ describe("getNormalDashboardData", () => {
       },
     ];
 
-    (prisma.booking.findMany as jest.Mock).mockResolvedValue(mockBookings);
-    (prisma.booking.count as jest.Mock).mockResolvedValue(5);
+    (prismaMock.booking.findMany as jest.Mock).mockResolvedValue(mockBookings);
+    (prismaMock.booking.count as jest.Mock).mockResolvedValue(5);
 
-    (prisma.trip.aggregate as jest.Mock).mockResolvedValue({
+    (prismaMock.trip.aggregate as jest.Mock).mockResolvedValue({
       _sum: { price: 300 },
     });
 
-    (prisma.trip.count as jest.Mock).mockResolvedValue(2);
+    (prismaMock.trip.count as jest.Mock).mockResolvedValue(2);
 
     const result = await getNormalDashboardData(userId);
 
@@ -56,14 +44,14 @@ describe("getNormalDashboardData", () => {
   test("handles null price correctly (defaults to 0)", async () => {
     const userId = 1;
 
-    (prisma.booking.findMany as jest.Mock).mockResolvedValue([]);
-    (prisma.booking.count as jest.Mock).mockResolvedValue(0);
+    (prismaMock.booking.findMany as jest.Mock).mockResolvedValue([]);
+    (prismaMock.booking.count as jest.Mock).mockResolvedValue(0);
 
-    (prisma.trip.aggregate as jest.Mock).mockResolvedValue({
+    (prismaMock.trip.aggregate as jest.Mock).mockResolvedValue({
       _sum: { price: null },
     });
 
-    (prisma.trip.count as jest.Mock).mockResolvedValue(0);
+    (prismaMock.trip.count as jest.Mock).mockResolvedValue(0);
 
     const result = await getNormalDashboardData(userId);
 
@@ -74,16 +62,16 @@ describe("getNormalDashboardData", () => {
   test("calls prisma with correct query conditions", async () => {
     const userId = 42;
 
-    (prisma.booking.findMany as jest.Mock).mockResolvedValue([]);
-    (prisma.booking.count as jest.Mock).mockResolvedValue(0);
-    (prisma.trip.aggregate as jest.Mock).mockResolvedValue({
+    (prismaMock.booking.findMany as jest.Mock).mockResolvedValue([]);
+    (prismaMock.booking.count as jest.Mock).mockResolvedValue(0);
+    (prismaMock.trip.aggregate as jest.Mock).mockResolvedValue({
       _sum: { price: 0 },
     });
-    (prisma.trip.count as jest.Mock).mockResolvedValue(0);
+    (prismaMock.trip.count as jest.Mock).mockResolvedValue(0);
 
     await getNormalDashboardData(userId);
 
-    expect(prisma.booking.findMany).toHaveBeenCalledWith(
+    expect(prismaMock.booking.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
         where: expect.objectContaining({
           user_id: userId,
@@ -92,13 +80,13 @@ describe("getNormalDashboardData", () => {
       })
     );
 
-    expect(prisma.booking.count).toHaveBeenCalledWith({
+    expect(prismaMock.booking.count).toHaveBeenCalledWith({
       where: { user_id: userId },
     });
 
-    expect(prisma.trip.aggregate).toHaveBeenCalled();
+    expect(prismaMock.trip.aggregate).toHaveBeenCalled();
 
-    expect(prisma.trip.count).toHaveBeenCalledWith(
+    expect(prismaMock.trip.count).toHaveBeenCalledWith(
       expect.objectContaining({
         where: expect.objectContaining({
           booking: {
