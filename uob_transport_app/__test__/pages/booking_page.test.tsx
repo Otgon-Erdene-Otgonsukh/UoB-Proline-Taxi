@@ -703,7 +703,7 @@ describe("Successful submission", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText(/form failed to submit\. please try again or check inputs/i)
+        screen.getByText(/form failed to submit\:/i)
       ).toBeInTheDocument();
       expect(mockPush).not.toHaveBeenCalled();
     });
