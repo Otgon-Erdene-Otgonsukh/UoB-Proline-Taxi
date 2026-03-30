@@ -97,7 +97,7 @@ export async function POST(request: NextRequest) {
   if (updateResult) {
     // send approval/rejection email from the server side
     try {
-      await sendRes(userData.name!, userData.email, userData.user_status);
+      //await sendRes(userData.name!, userData.email, userData.user_status); //will be implemented in the rejection and approval mailing issue
     } catch (err) {
       console.error("Failed to send registration response email:", err);
     }

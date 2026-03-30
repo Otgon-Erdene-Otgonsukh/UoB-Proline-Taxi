@@ -64,7 +64,7 @@ describe('user_access', () => {
 
     expect(prismaMock.user.findMany).toHaveBeenCalledWith({
       where: {
-        name: { contains: 'Ali', mode: 'insensitive' },
+        full_name: { contains: 'Ali', mode: 'insensitive' },
         role: 'admin',
         user_status: 1,
       },
@@ -85,7 +85,7 @@ describe('user_access', () => {
 
     expect(prismaMock.user.count).toHaveBeenCalledWith({
       where: {
-        name: { contains: 'Bob', mode: 'insensitive' },
+        full_name: { contains: 'Bob', mode: 'insensitive' },
         role: 'staff',
         user_status: 0,
       },
