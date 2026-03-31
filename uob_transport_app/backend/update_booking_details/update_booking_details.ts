@@ -15,7 +15,8 @@ export default async function updateBooking(
     returnTo: formLocation | undefined,
     passenger_num: number,
     airport: formLocation,
-    flight_num: string
+    flight_num: string,
+    dep_id: number
 ) {
     // Check if booking exists.
     const booking = await prisma.booking.findUnique({
@@ -57,6 +58,7 @@ export default async function updateBooking(
             email: email ? email : booking.email,
             tel_number: tel_number ? tel_number : booking.tel_number,
             additional_info: additional_info ? additional_info : booking.additional_info,
+            dep_id: dep_id ? dep_id : booking.dep_id
         }
     });
 }
