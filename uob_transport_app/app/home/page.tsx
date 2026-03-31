@@ -13,21 +13,15 @@ import TableContainer from "@mui/material/TableContainer";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { BookingRecord, USER_ROLE } from "@/model/models";
+import { BookingRecord } from "@/model/models";
 import { cancelBooking, getUserBookingList } from "./requests";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogActions from "@mui/material/DialogActions";
 import IconButton from "@mui/material/IconButton";
-import CloseIcon from "@mui/icons-material/Close";
 import Typography from "@mui/material/Typography";
-import BookingPage from "../book/page";
 import CustomizedButton from "@/components/CustomizedButton";
 import { StyledTableCell } from "@/components/StyledTableCell";
 import { Snackbar, Alert } from "@mui/material";
 import ConfirmDialog from "@/components/confirmDIalog";
-import ViewDialog from "./components/viewDialog";
+import ViewDialog from "./(components)/viewDialog";
 import TextField from "@mui/material/TextField";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
@@ -39,7 +33,10 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { DateTimePicker } from "@/components/datetimePicker/DateTimePicker";
 import { enLocale } from "@/components/datetimePicker/locale";
-import ForbiddenPage from "@/components/ForbiddenPage";
+<<<<<<< HEAD
+
+=======
+>>>>>>> dev
 
 const Page = () => {
   // Get NextAuth Session.
@@ -159,11 +156,10 @@ const Page = () => {
 
   // Edit Dialog
   const [editBookDialogOpen, setEditBookDialogOpen] = useState(false);
-  const handleEditDialogOpen = (data: BookingRecord) => {
-    setBookDetail(data);
-    setEditBookDialogOpen(true);
+  const handleEditTrigger = (data: BookingRecord) => {
+    redirect(`/book?update=${data.booking_id}`);
   };
-  const handleEditDialogClose = () => {
+  const handleEditTriggerClose = () => {
     setEditBookDialogOpen(false);
   };
 
@@ -676,31 +672,31 @@ const Page = () => {
                             : "N/A"}
                         </StyledTableCell>
                         <StyledTableCell>
-                          {row.trip.pickup_location.includes("{") // Temporary check to see if this is an old style booking.
+                          {(row.trip.pickup_location as unknown as string).includes("{") // Temporary check to see if this is an old style booking.
                             ? // If it's a new booking style, use both the short name and the city name (last part of address - 5)
                             JSON.parse(
-                              row.trip.pickup_location,
+                              row.trip.pickup_location as unknown as string,
                             ).short_name.includes("Airport")
-                              ? JSON.parse(row.trip.pickup_location).short_name
-                              : JSON.parse(row.trip.pickup_location)
+                              ? JSON.parse(row.trip.pickup_location as unknown as string).short_name
+                              : JSON.parse(row.trip.pickup_location as unknown as string)
                                 .short_name +
                               ", " +
-                              JSON.parse(row.trip.pickup_location)
+                              JSON.parse(row.trip.pickup_location as unknown as string)
                                 .address.split(",")
                                 .slice(-5)[0]
                                 .trim()
                             : row.trip.pickup_location}
                         </StyledTableCell>
                         <StyledTableCell>
-                          {row.trip.dropoff_location.includes("{") // Temporary check to see if this is an old style booking.
+                          {(row.trip.dropoff_location as unknown as string).includes("{") // Temporary check to see if this is an old style booking.
                             ? JSON.parse(
-                              row.trip.dropoff_location,
+                              row.trip.dropoff_location as unknown as string,
                             ).short_name.includes("Airport")
-                              ? JSON.parse(row.trip.dropoff_location).short_name
-                              : JSON.parse(row.trip.dropoff_location)
+                              ? JSON.parse(row.trip.dropoff_location as unknown as string).short_name
+                              : JSON.parse(row.trip.dropoff_location as unknown as string)
                                 .short_name +
                               ", " +
-                              JSON.parse(row.trip.dropoff_location)
+                              JSON.parse(row.trip.dropoff_location as unknown as string)
                                 .address.split(",")
                                 .slice(-5)[0]
                                 .trim()
@@ -729,7 +725,7 @@ const Page = () => {
                             />
                             {row.booking_status === "Pending" && (
                               <CustomizedButton
-                                click={() => handleEditDialogOpen(row)}
+                                click={() => handleEditTrigger(row)}
                                 type="warning"
                                 title="Edit"
                               />
@@ -754,56 +750,6 @@ const Page = () => {
             dialogOpen={bookDetailDialogOpen}
             handleDialogClose={handleViewDialogClose}
           />
-          <Dialog
-            onClose={handleEditDialogClose}
-            aria-labelledby="customized-dialog-title"
-            open={editBookDialogOpen}
-            maxWidth="md"
-          >
-            <DialogTitle
-              sx={{
-                m: 0,
-                p: 2,
-                fontFamily: "inter",
-                fontWeight: "bold",
-                bgcolor: "#2c2c2c",
-                color: "white",
-                textAlign: "center",
-                fontSize: 28,
-              }}
-              id="customized-dialog-title"
-            >
-              Edit Booking
-            </DialogTitle>
-            <IconButton
-              aria-label="close"
-              onClick={handleEditDialogClose}
-              sx={(theme) => ({
-                position: "absolute",
-                right: 8,
-                top: 8,
-                color: theme.palette.grey[500],
-              })}
-            >
-              <CloseIcon />
-            </IconButton>
-            <DialogContent dividers>
-              <BookingPage />
-            </DialogContent>
-            <DialogActions>
-              <Button
-                sx={{
-                  color: "#2c2c2c",
-                  transition: "all 300ms",
-                  mr: 1,
-                  ":hover": { bgcolor: "#2c2c2c", color: "white" },
-                }}
-                onClick={handleEditDialogClose}
-              >
-                Close
-              </Button>
-            </DialogActions>
-          </Dialog>
           <ConfirmDialog
             open={cancelBookDialogOpen}
             dialogTitle="Cancel Booking"

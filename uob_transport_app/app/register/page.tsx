@@ -33,6 +33,7 @@ import { getDepartments } from "@/app/requests/departments";
 import { department } from "@/generated/prisma/client";
 import { motion } from "framer-motion";
 import { UNASSIGNED_DEPARTMENT_ID } from "@/model/models";
+import RegRequestSent from "./(components)/register-req"
 
 export default function Register() {
   const session = useSession();
@@ -114,6 +115,8 @@ export default function Register() {
       },
     },
   });
+
+  const [showRegRequestSent, setShowRegRequestSent] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -203,14 +206,16 @@ export default function Register() {
         .then((data) => {
           if (data.status === 200 && normalUser) {
             setSnackState({ open: true, severity: "success" });
+            setShowRegRequestSent(false);
             setTimeout(() => {
               // Giving time to display the success message to inform the user
               redirect("/login");
             }, 3000);
           } else if (data.status === 200 && (financeStaff || proLineStaff)) {
-            redirect("/register/register-req");
+            setShowRegRequestSent(true);
           } else {
             setLoadingBar(false);
+            setShowRegRequestSent(false);
             setSnackState({ open: true, severity: "error" });
           }
         });
@@ -218,6 +223,7 @@ export default function Register() {
   };
 
   return (
+    showRegRequestSent ? <RegRequestSent /> :
     <div className="min-h-screen flex justify-center items-center">
       <motion.div
         className="bg-white shadow-lg/40 max-w-3xl rounded-md border-4 border-[#2c2c2c] md:mt-20 md:mb-20 mb-10 mt-10 md:mx-0 mx-3"

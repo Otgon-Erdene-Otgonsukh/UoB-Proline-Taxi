@@ -6,7 +6,7 @@ import { sesClient } from "@/utils/ses_client";
 import { render } from "@react-email/components";
 import BookingInfo from "@/components/emails/booking_info";
 import { SendEmailCommand } from "@aws-sdk/client-sesv2";
-import { formLocation, location } from "@/model/models";
+import { location } from "@/model/models";
 import { commonLocations } from "@/model/models";
 import { getUserFromID } from "@/backend/access/user_access";
 

@@ -75,7 +75,7 @@ export const getUserByEmailAccess = async (
 export const getUserListAccess = async (page: number, pageSize: number, name?: string, role?: string, userStatus?: number): Promise<noPasswordUser[] | null> => {
   const query: { [key: string]: string | number | object } = {}
   if (name !== undefined) {
-    query['name'] = {
+    query['full_name'] = {
       contains: name,
       mode: "insensitive"
     }
@@ -105,7 +105,7 @@ export const getUserListAccess = async (page: number, pageSize: number, name?: s
 export const getUserCountAccess = async (name?: string, role?: string, userStatus?: number): Promise<number | null> => {
   const query: { [key: string]: string | number | object } = {}
   if (name) {
-    query['name'] = {
+    query['full_name'] = {
       contains: name,
       mode: "insensitive"
     }

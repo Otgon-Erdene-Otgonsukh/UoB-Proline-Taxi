@@ -50,7 +50,7 @@ export default function BookingAdminReject({
             {/* Header */}
             <Section className="text-center mb-6 bg-red-100 p-6 rounded-lg">
               <Text className="text-2xl font-bold text-red-600 mb-2">
-                Booking Rejection Notice
+                ✕ Booking Rejection Notice
               </Text>
               <Text className="text-lg text-gray-600">
                 Your booking has been rejected
@@ -224,7 +224,7 @@ export default function BookingAdminReject({
                 className="bg-blue-600 text-white font-semibold py-3 px-8 rounded-lg cursor-pointer"
                 href={
                   process.env.NODE_ENV === "development"
-                    ? "http://localhost:3000/dep-dashboard"
+                    ? "http://localhost:3000/home"
                     : "https://uobst.ilm.gg/home"
                 }
               >

@@ -14,20 +14,19 @@ export type BookingStatusStr = 'Approved' | 'Pending' | 'Rejected'
 export type Trip = {
   trip_id: number;
   icabbi_booking_id?: number;
-  pickup_location: string;
-  pickup_latitude: number;
-  pickup_longitude: number;
-  dropoff_location: string;
+  pickup_location: location;
+  dropoff_location: location;
   dropoff_latitude: number;
   dropoff_longitude: number;
   pickup_time?: string;
   return_pickup_time: string,
   passenger_num: number;
-  via: string;
-  return_drop_loc: string;
+  via: location[];
+  return_drop_loc: location;
   PO: string;
-  airport: string;
+  airport: location;
   flight_num: string;
+  price: number;
 }
 
 export type BookingRecord = {
@@ -38,8 +37,17 @@ export type BookingRecord = {
   additional_info: string;
   time_created: string;
   trip: Trip;
+  trip_id: number;
   booking_status: 'Approved' | 'Pending' | 'Rejected' | 'Cancelled';
   via: location[];
+  dep_id: number;
+  passenger_name: string;
+  tel_number: string;
+  email: string;
+  airport: location;
+  department: {
+    dep_name: string
+  }
 }
 
 // Attach common locations as keys to hashmapped Lat/Lon for routing.

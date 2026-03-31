@@ -44,7 +44,7 @@ import { StyledTableCell } from "@/components/StyledTableCell";
 import CustomizedButton from "@/components/CustomizedButton";
 import { getPendingBookingList } from "./requests";
 import { TablePaginationActions } from "@/components/paginationActions";
-import ViewDialog from "./components/viewDialog";
+import ViewDialog from "./(components)/viewDialog";
 import CustomSwitch from "@/components/CustomSwitch";
 import type { BookingWithTrip, BookingData } from "./constants";
 import ForbiddenPage from "@/components/ForbiddenPage";
@@ -241,7 +241,7 @@ export default function DepDashboard() {
               : b,
           ),
         );
-        fetch("api/update_booking", {
+        fetch("api/approve_booking", {
           method: "POST",
           body: JSON.stringify({
             bookingId: pendingBookingId,
@@ -268,7 +268,7 @@ export default function DepDashboard() {
         b.booking_id === bookingId ? { ...b, booking_status: "Rejected" } : b,
       ),
     );
-    fetch("api/update_booking", {
+    fetch("api/approve_booking", {
       method: "POST",
       body: JSON.stringify({ bookingId: bookingId, newStatus: "Rejected" }),
     });

@@ -113,7 +113,6 @@ describe("NormalUserDashboard", () => {
 
     render(<NormalUserDashboard />);
 
-    // 来自页面：CircularProgress（3个卡片）
     expect(screen.getAllByRole("progressbar").length).toBeGreaterThan(0);
   });
 
