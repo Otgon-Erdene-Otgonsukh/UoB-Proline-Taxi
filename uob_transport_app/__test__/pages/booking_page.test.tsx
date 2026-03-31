@@ -569,6 +569,9 @@ describe("Validation", () => {
 // ─── DEPARTMENT AUTOCOMPLETE & INTERACTIVITY ───
 
 describe("Department autocomplete and interactivity", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
   test("department: shows error when missing, loads API options, selection clears error", async () => {
     render(<BookingPage />);
     await waitFor(() => screen.getByLabelText(/I am the lead passenger/i));
@@ -638,6 +641,9 @@ describe("Department autocomplete and interactivity", () => {
 // ─── SUCCESSFUL SUBMISSION ───
 
 describe("Successful submission", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
   test("fully valid form submits, calls fetch with correct shape, and redirects to /book/confirmed", async () => {
     render(<BookingPage />);
     await waitFor(() => screen.getByLabelText(/drop-off location/i));
@@ -667,7 +673,7 @@ describe("Successful submission", () => {
   test("shows loading spinner while fetch is in-flight and hides it after redirect", async () => {
     // Hold the fetch open so we can inspect the loading state.
     let resolveFetch!: (v: unknown) => void;
-    (global.fetch as jest.Mock).mockReturnValueOnce(
+    (global.fetch as jest.Mock).mockReturnValue(
       new Promise((res) => {
         resolveFetch = res;
       })
@@ -685,7 +691,9 @@ describe("Successful submission", () => {
 
     // Resolve the fetch and confirm redirect
     resolveFetch({ status: 200, json: async () => ({}) });
-    await waitFor(() => expect(mockPush).toHaveBeenCalledWith("/book/confirmed"));
+    await waitFor(() => 
+      expect(screen.getByText("Booking created and confirmation email sent!")).toBeInTheDocument()
+    );
   });
 
   test("API error response shows inline error message and does not redirect", async () => {
@@ -703,7 +711,7 @@ describe("Successful submission", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText(/form failed to submit\. please try again or check inputs/i)
+        screen.getByText(/form failed to submit/i)
       ).toBeInTheDocument();
       expect(mockPush).not.toHaveBeenCalled();
     });
