@@ -33,10 +33,6 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { DateTimePicker } from "@/components/datetimePicker/DateTimePicker";
 import { enLocale } from "@/components/datetimePicker/locale";
-<<<<<<< HEAD
-
-=======
->>>>>>> dev
 
 const Page = () => {
   // Get NextAuth Session.
