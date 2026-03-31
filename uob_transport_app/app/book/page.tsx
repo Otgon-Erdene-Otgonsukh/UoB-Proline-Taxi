@@ -485,6 +485,8 @@ export default function BookingPage() {
     lng: number;
   } | null>(null);
 
+
+  // Handle prefilling form if update parameter is present.
   useEffect(() => {
     if (prefilledBooking != null && prefilledBooking != undefined && prefilledBooking["trip"] != null) {
       let returnDate : string = ""
@@ -509,19 +511,39 @@ export default function BookingPage() {
         Via: prefilledBooking["trip"]["via"],
         ReturnTo: prefilledBooking["trip"]["return_drop_loc"],
         FlightNum: prefilledBooking["trip"]["flight_num"],
-        Airport: prefilledBooking["trip"]["airport"],
+        Airport: prefilledBooking["trip"]["flight_num"]? prefilledBooking["trip"]["pickup_location"] : null,
         DropoffLoc: prefilledBooking["trip"]["dropoff_location"],
         PickupDate: String(prefilledBooking["trip"]["pickup_time"]).split("T")[0],
         PickupTime: String(prefilledBooking["trip"]["pickup_time"]).split("T")[1].substring(0,5),
         ReturnDate: returnDate,
         ReturnTime: returnTime,
         PassengerName: prefilledBooking["passenger_name"],
-        Number: prefilledBooking["tel_number"],
+        Number: prefilledBooking["tel_number"].split(" ").slice(1).join(" ").replace(",", ""),
         Email: prefilledBooking["email"],
         dep_id: prefilledBooking["dep_id"],
         Passengers: prefilledBooking["trip"]["passenger_num"],
         AdditionalInfo: prefilledBooking["additional_info"],
       });
+
+      if (formData.FlightNum != "") {
+        setIsFlightChecked(true);
+        setIsManualChecked(false);
+      }
+
+      if (session.data){
+        easyGetRequest("user-data", {}).then(async (response) => {
+        if (response.status === 200) {
+          const userData = await response.json();
+          if (formData.Email == userData.email) {
+            setIsLeadPassengerMyself(true);
+          } else {
+            setIsLeadPassengerMyself(false);
+          }
+        }
+      }).catch((err) => {
+        console.error("Error fetching user data:", err); 
+      }
+      )};
       
       const convertToMapLocation = (location: location) => {
         return ({
@@ -1171,6 +1193,7 @@ export default function BookingPage() {
                           ? "border-gray-800"
                           : "border-red-700"
                       }`}
+                      defaultValue={formData.FlightNum || ""}
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
                           e.preventDefault();
@@ -1205,6 +1228,7 @@ export default function BookingPage() {
                           ? "border-gray-800"
                           : "border-red-700"
                       }`}
+                      defaultValue={formData.CustomLoc?.address || ""}
                       onChange={(e) => {
                         setStart(null);
                         if (e.target.value !== "") {
@@ -1696,6 +1720,7 @@ export default function BookingPage() {
                           ? "border-gray-800"
                           : "border-red-700"
                       }`}
+                      defaultValue={formData.PassengerName || ""}
                       onChange={(e) => {
                         setFormData({
                           ...formData,
@@ -1739,6 +1764,7 @@ export default function BookingPage() {
                             ? "border-gray-800"
                             : "border-red-700"
                         }`}
+                        defaultValue={formData.Number || ""}
                         onChange={(e) => {
                           setFormData({ ...formData, Number: e.target.value });
                           addFormFeedback("Number", "");
@@ -1760,6 +1786,7 @@ export default function BookingPage() {
                         setFormData({ ...formData, dep_id: dep!.dep_id });
                         setDepartmentEmpty(false);
                       }}
+                      value={formData.dep_id ? departmentList.find((dep) => dep.dep_id === formData.dep_id) : null}
                       options={departmentList}
                       getOptionKey={(department) => department.dep_id}
                       getOptionLabel={(department) => department.dep_name}
@@ -1802,6 +1829,7 @@ export default function BookingPage() {
                     <input
                       id="mail"
                       type="email"
+                      defaultValue={formData.Email || ""}
                       className={`border-2 rounded px-3 py-2 ${
                         formFeedback.Email == ""
                           ? "border-gray-800"
@@ -1828,7 +1856,7 @@ export default function BookingPage() {
                   <NumberField
                     min={1}
                     max={5}
-                    defaultValue={1}
+                    value={formData.Passengers}
                     size="small"
                     onValueChange={(value) => {
                       setFormData({
@@ -1850,6 +1878,7 @@ export default function BookingPage() {
                       ? "border-gray-800"
                       : "border-red-700"
                   }`}
+                  defaultValue={formData.AdditionalInfo || ""}
                   onChange={(e) => {
                     setFormData({
                       ...formData,
