@@ -4,7 +4,7 @@ import Land from "@/components/Landing_page";
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 
-const page = () => {
+export default function MainPage() {
 
   const { data }  = useSession();
 
@@ -18,5 +18,3 @@ const page = () => {
     </div>
   );
 };
-
-export default page;
