@@ -143,8 +143,8 @@ export const UserManagePage = (
   }
 
   return (<>
-    <div>
-      <div className="flex justify-between items-center mb-4 px-20">
+    <div className="relative z-10">
+      <div className="mb-4 flex gap-4 px-8 flex-row items-center justify-between">
         <div className="flex items-center gap-2">
           <h1 className="text-xl font-aleo md:text-3xl font-semibold text-shadow-lg/20 py-2 pr-4">
             Users
@@ -156,7 +156,10 @@ export const UserManagePage = (
           onSubmit={handleSubmitSearchForm}
           sx={{
             display: "flex",
-            gap: 2.5,
+            flexDirection: "row",
+            flexWrap: "nowrap",
+            alignItems: "center",
+            gap: 2,
           }}
         >
           <TextField
