@@ -182,7 +182,7 @@ export default function SuperDashboard() {
         <div className="bg-white rounded-lg shadow-md p-5">
           <div className="flex justify-between items-start mb-8">
             <div className="text-shadow-md/10">
-              <h2 className="md:text-2xl text-md font-bold text-gray-800 mb-2">
+              <h2 className="md:text-xl text-md font-bold text-gray-800 mb-2">
                 Department Spending Activity
               </h2>
               <p className="md:text-sm text-[10px] text-gray-600">
