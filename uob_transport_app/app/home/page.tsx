@@ -21,7 +21,7 @@ import CustomizedButton from "@/components/CustomizedButton";
 import { StyledTableCell } from "@/components/StyledTableCell";
 import { Snackbar, Alert } from "@mui/material";
 import ConfirmDialog from "@/components/confirmDIalog";
-import ViewDialog from "./components/viewDialog";
+import ViewDialog from "./(components)/viewDialog";
 import TextField from "@mui/material/TextField";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";

@@ -4,7 +4,7 @@ import { CheckCircle, CheckCircleOutline } from "@mui/icons-material";
 import HomeIcon from "@mui/icons-material/Home";
 import { Button } from "@mui/material";
 
-export default function ConfirmedPage() {
+export default function BookingConfirmedPage() {
   return (
     <div className="min-h-screen flex justify-center items-center bg-gradient-to-br from-gray-100 to-gray-300">
       <div className="bg-white flex flex-col justify-center gap-3 border-2 border-green-400 items-center max-w-md rounded-xl md:mx-auto mx-3 shadow-2xl pt-7 pb-2">

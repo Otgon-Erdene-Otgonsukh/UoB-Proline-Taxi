@@ -35,6 +35,7 @@ import { getDepartments } from "@/app/requests/departments";
 import { department } from "@/generated/prisma/client";
 import { commonLocations } from "@/model/models";
 import { getLatLon } from "@/components/NominatimSearch";
+import BookingConfirmedPage from "./(components)/BookingConfirmed";
 import { easyGetRequest } from "@/utils/easyRequest";
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 
@@ -153,6 +154,8 @@ export default function BookingPage() {
 });
 
   const router = useRouter();
+
+  const [isConfirmed, setIsConfirmed] = useState(false);
 
   // Client side validation.
   const handleSubmit = (e: React.FormEvent) => {
@@ -379,7 +382,7 @@ export default function BookingPage() {
       })
         .then((response) => {
           if (response.status == 200) {
-            router.push("/book/confirmed");
+            setIsConfirmed(true)
           } else {
             // Use additional info box to mark error. Will replace with specific errors in the future.
             addFormFeedback(
@@ -387,11 +390,13 @@ export default function BookingPage() {
               "Form failed to submit: " + response.statusText,
             );
             setLoadingBar(false);
+            setIsConfirmed(false);
           }
         })
         .catch((err) => {
           console.error("Error:", err);
           setLoadingBar(false);
+          setIsConfirmed(false);
           addFormFeedback(
             "AdditionalInfo",
             "Form failed to submit. Please try again later or check your network connection.",
@@ -685,6 +690,8 @@ export default function BookingPage() {
   }
 
   return (
+    isConfirmed ? <BookingConfirmedPage /> :
+    // <div className="flex min-h-screen justify-center items-center font-inter p-4">
     <div className="min-h-screen font-inter bg-[#f5f5f5]">
       {session.data?.user.account_type === "super_admin" && (
         <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-[#2c2c2c] text-white shadow-lg">
