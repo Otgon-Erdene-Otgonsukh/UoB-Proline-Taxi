@@ -626,11 +626,17 @@ export default function BookingPage() {
         route.push({ name: vias[i].name, lat: vias[i].lat, lng: vias[i].lng });
       }
       route.push({ name: end.name, lat: end.lat, lng: end.lng });
-      fetchRoutes(route);
 
+      // "Sequentially" fetching routes if return trip is being updated to avoid wrong route ordering
+      const outboundRoutes = await fetchRoutes(route);
+
+      let combinedRoutes = outboundRoutes;
       if (returnloc != null) {
-        fetchRoutes([end, returnloc], true);
+        const returnRoutes = await fetchRoutes([end, returnloc]);
+        combinedRoutes = [...outboundRoutes, ...returnRoutes];
       }
+
+      setRoutes(combinedRoutes);
 
       function getRouteProperties(route: Loc[]) {
         return {
@@ -680,8 +686,8 @@ export default function BookingPage() {
     }
   }
 
-  async function fetchRoutes(locations: Loc[], returnJourney = false) {
-    const osrmRoutes = [];
+  async function fetchRoutes(locations: Loc[]) {
+    const osrmRoutes: RouteData[] = [];
     try {
       const response = await fetch("/api/route", {
         method: "POST",
@@ -698,13 +704,10 @@ export default function BookingPage() {
           distance: data.routes[0].distance,
         });
       }
-      if (returnJourney) {
-        setRoutes(routes.length > 0 ? [routes[0], ...osrmRoutes] : osrmRoutes);
-      } else {
-        setRoutes(osrmRoutes);
-      }
+      return osrmRoutes;
     } catch (error) {
       console.error("Failed to fetch routes:", error);
+      return [];
     }
   }
 
