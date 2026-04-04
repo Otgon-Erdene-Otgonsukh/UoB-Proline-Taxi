@@ -74,6 +74,18 @@ export const UserManagePage = (
     _rerenderTable(paginationMeta.page, paginationMeta.pageSize)
   }
 
+  const handleClear = () => {
+    setSearchFormInput({
+      name: "",
+      user_status: "All",
+      role: "All"
+    })
+  }
+
+  useEffect(() => {
+    _rerenderTable(paginationMeta.page, paginationMeta.pageSize);
+  }, [searchFormInput.role, searchFormInput.user_status])
+
   const [userDetail, setUserDetail] = useState<UserRecord>()
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
   const handleViewDialogOpen = (row: UserRecord) => {
@@ -158,7 +170,6 @@ export const UserManagePage = (
             display: "flex",
             flexDirection: "row",
             flexWrap: "nowrap",
-            alignItems: "center",
             gap: 2,
           }}
         >
@@ -205,6 +216,21 @@ export const UserManagePage = (
               <MenuItem value={userStatusToIntMap.rejected}>{userStatusToStrMap[userStatusToIntMap.rejected]}</MenuItem>
             </Select>
           </FormControl>
+          <Button sx={{
+            textTransform: "none",
+            bgcolor: "white",
+            border: "2px solid #2c2c2c",
+            borderRadius: 2,
+            color: "#2c2c2c",
+            "&:hover": {
+              scale: 1.04
+            },
+            transition: "all ease 0.2s"
+          }}
+          onClick={handleClear}
+          >
+            Clear
+          </Button>
           <CustomizedButton title="Search" type="warning" click={() => { }} />
         </Box>
       </div>
