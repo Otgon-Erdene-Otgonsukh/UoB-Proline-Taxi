@@ -1,7 +1,7 @@
 import { booking } from '@/generated/prisma/client'
 import prisma from '@/utils/client'
 
-export const getUserBookingsAccess = async (userId: number, page: number, pageSize: number, searchParams: { from?: string, to?: string, bookingStatus?: string, pickUpTimeFrom?: string, pickUpTimeTo?: string, isExport: boolean }): Promise<booking[]> => {
+export const getUserBookingsAccess = async (userId: number, page: number, pageSize: number, searchParams: { from?: string, to?: string, bookingStatus?: string, pickUpTimeFrom?: string, pickUpTimeTo?: string, isExport: boolean, department?: string }): Promise<booking[]> => {
   const query: { [key: string]: string | number | object } = {}
   if (searchParams.from !== undefined) {
     query['trip'] = {
@@ -22,6 +22,16 @@ export const getUserBookingsAccess = async (userId: number, page: number, pageSi
       }
     }
   }
+
+  if (searchParams.department !== undefined) {
+    query['department'] = {
+      dep_name: {
+        contains: searchParams.department.trim(),
+        mode: "insensitive"
+      }
+    }
+  }
+
   if (searchParams.isExport) {  
     if (searchParams.bookingStatus === undefined) {
       query['booking_status'] = {in : ["Approved", "Pending"]};
@@ -118,7 +128,7 @@ export const cancelBookingsAccess = async (bookingId: number): Promise<booking |
   })
 }
 
-export const getUserBookingsCountAccess = async (userId: number, searchParams: { from?: string, to?: string, bookingStatus?: string, pickUpTimeFrom?: string, pickUpTimeTo?: string, isExport: boolean }): Promise<number> => {
+export const getUserBookingsCountAccess = async (userId: number, searchParams: { from?: string, to?: string, bookingStatus?: string, pickUpTimeFrom?: string, pickUpTimeTo?: string, isExport: boolean, department?: string }): Promise<number> => {
   const query: { [key: string]: string | number | object } = {}
   if (searchParams.from !== undefined) {
     query['trip'] = {
@@ -139,6 +149,16 @@ export const getUserBookingsCountAccess = async (userId: number, searchParams: {
       }
     }
   }
+
+  if (searchParams.department !== undefined) {
+    query['department'] = {
+      dep_name: {
+        contains: searchParams.department.trim(),
+        mode: "insensitive"
+      }
+    }
+  }
+
   if (searchParams.isExport) {  
     if (searchParams.bookingStatus === undefined) {
       query['booking_status'] = {in : ["Approved", "Pending"]};
