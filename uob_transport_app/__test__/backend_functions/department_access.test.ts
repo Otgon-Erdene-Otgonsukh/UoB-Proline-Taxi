@@ -2,7 +2,8 @@ import { prismaMock } from "@/utils/singleton";
 import { 
   getDepartmentsListAccess, 
   createNewDepartmentAccess,
-  getDepartmentListIncludeManagerIdAccess
+  getDepartmentListIncludeManagerIdAccess,
+  updateDepartmentNameAccess
 } from '@/backend/access/departments_access';
 
 describe('getDepartmentsListAccess', () => {
@@ -113,4 +114,22 @@ describe('getDepartmentsListAccess', () => {
     expect(result).toEqual(mockResult);
   });
 
+  test('updateDepartmentNameAccess updates department name', async () => {
+    const mockDep = { dep_id: 2, dep_name: 'Physics' };
+
+    (prismaMock.department.update as jest.Mock).mockResolvedValue(mockDep);
+
+    const result = await updateDepartmentNameAccess(2, 'Physics');
+
+    expect(prismaMock.department.update).toHaveBeenCalledWith({
+      where: {
+        dep_id: 2,
+      },
+      data: {
+        dep_name: 'Physics',
+      },
+    });
+
+    expect(result).toBe(mockDep);
+  });
 });
