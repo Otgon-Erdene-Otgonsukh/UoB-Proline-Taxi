@@ -395,4 +395,30 @@ describe("The tests for the 2 functions for fetching bookings/count for dep-dash
     );
   });
 
+  test("count handles price filter", async () => {
+    await getPendingBookingsCount({
+      from: undefined,
+      to: undefined,
+      passengerName: undefined,
+      pickUpTimeFrom: undefined,
+      pickUpTimeTo: undefined,
+      isFlight: false,
+      total: false,
+      status: false,
+      overdue: false,
+      price: true,
+      withoutPrice: false,
+    });
+
+    expect(prismaMock.booking.count).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          trip: expect.objectContaining({
+            price: { not: null },
+          }),
+        }),
+      })
+    );
+  });
+
 });
