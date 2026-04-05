@@ -232,8 +232,14 @@ describe("Update booking status backend test", () => {
       tel_number: "1",
       department: { dep_name: "CS" },
       trip: {
-        pickup_location: JSON.stringify({}),
-        dropoff_location: JSON.stringify({}),
+        pickup_location: JSON.stringify({ 
+          short_name: "A",
+          address: "B Street",
+        }),
+        dropoff_location: JSON.stringify({
+          short_name: "B",
+          address: "A Street",
+        }),
         via: null,
         airport: null,
         return_drop_loc: null,

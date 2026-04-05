@@ -7,12 +7,13 @@ import createBooking from "@/backend/create_booking/create_booking";
 import { auth } from "@/auth";
 import { render } from "@react-email/components";
 import { sesClient } from "@/utils/ses_client";
+import { prismaMock } from "@/utils/singleton";
+import { getUserFromID } from "@/backend/access/user_access";
 
 jest.mock("../../backend/create_booking/create_booking.ts");
 jest.mock("../../auth", () => ({
   auth: jest.fn(),
 }));
-jest.mock("../../generated/prisma/client.ts");
 
 jest.mock("@react-email/components", () => ({
   render: jest.fn(),
@@ -28,21 +29,11 @@ jest.mock("@aws-sdk/client-sesv2", () => ({
   SendEmailCommand: jest.fn(),
 }));
 
-jest.mock("../../generated/prisma/client.ts", () => {
-  const MockPrismaClient = jest.fn(() => ({
-    user: {
-      findUnique: jest.fn(),
-    },
-    booking: {
-      create: jest.fn(),
-    },
-  }));
+global.fetch = jest.fn()
 
-  // Return both the class and the mock methods
-  return {
-    PrismaClient: MockPrismaClient,
-  };
-});
+jest.mock("@/backend/access/user_access", () => ({
+  getUserFromID: jest.fn(),
+}));
 
 describe("create booking api route tests", () => {
   afterEach(() => {
@@ -56,7 +47,8 @@ describe("create booking api route tests", () => {
       },
     });
 
-    (createBooking as jest.Mock).mockResolvedValue(undefined);
+    prismaMock.booking.create.mockResolvedValue(undefined);
+    prismaMock.trip.create.mockResolvedValue({ trip_id: 1 });
     (render as jest.Mock).mockResolvedValue("<div>Mocked Booking Info</div>");
 
     (sesClient.send as jest.Mock).mockResolvedValue(undefined);
@@ -123,7 +115,7 @@ describe("create booking api route tests", () => {
 
   test("when no session exists, the request is denied", async () => {
     (auth as jest.Mock).mockResolvedValue(null);
-    (createBooking as jest.Mock).mockResolvedValue(undefined);
+    prismaMock.booking.create.mockResolvedValue(undefined);
     const jsonBody = {
       user_id: 3,
       pickup_location: "Test",
@@ -147,6 +139,43 @@ describe("create booking api route tests", () => {
 
     const res = await POST(req);
     expect(res.status).toBe(401);
+  });
+
+  test("returns 400 when location is invalid", async () => {
+    (auth as jest.Mock).mockResolvedValue({ user: { user_id: 1 } });
+    (global.fetch as jest.Mock).mockResolvedValue({
+      ok: true,
+      json: async () => [
+        {
+          lat: "1",
+          lon: "1",
+          display_name: "same",
+          name: "same",
+        },
+      ],
+    });
+
+    const req = new Request("http://test", {
+      method: "POST",
+      body: JSON.stringify({
+        pickup_location: { address: "", short_name: "", lat: 1, lng: 1 },
+        dropoff_location: { address: "A", short_name: "A", lat: 1, lng: 1 },
+        pickup_time: new Date().toISOString(),
+        passenger_name: "A",
+        email: "a",
+        tel_number: "1",
+        additional_info: "",
+        via: [],
+        passengers: 1,
+        airport: null,
+        flight_num: "",
+        dep_id: 1,
+      }),
+    });
+
+    const res = await POST(req);
+
+    expect(res.status).toBe(400);
   });
 });
 
