@@ -118,4 +118,25 @@ test('getUserBookingsAccess handles "from" filter', async () => {
   );
 });
 
+test('getUserBookingsAccess handles "to" filter', async () => {
+  (prismaMock.booking.findMany as jest.Mock).mockResolvedValue([]);
+
+  await getUserBookingsAccess(1, 0, 10, {
+    to: 'XYZ',
+  });
+
+  expect(prismaMock.booking.findMany).toHaveBeenCalledWith(
+    expect.objectContaining({
+      where: expect.objectContaining({
+        trip: {
+          dropoff_location: {
+            contains: 'xyz',
+            mode: 'insensitive',
+          },
+        },
+      }),
+    })
+  );
+});
+
 })
