@@ -330,6 +330,76 @@ describe("create booking api route tests", () => {
 
     expect(res.status).toBe(500);
   });
+
+  test("uses user info when isLeadPassengerMyself is true", async () => {
+    (auth as jest.Mock).mockResolvedValue({ user: { user_id: 1 } });
+
+    (global.fetch as jest.Mock).mockResolvedValue({
+      ok: true,
+      json: async () => [
+        {
+          lat: "1",
+          lon: "1",
+          display_name: "same",
+          name: "same",
+        },
+      ],
+    });
+
+    (getUserFromID as jest.Mock).mockResolvedValue({
+      full_name: "UserName",
+      email: "user@test.com",
+      phone_number: "123",
+      dep_id: 5,
+    });
+
+    const loc = {
+      address: "A",
+      short_name: "A",
+      lat: 1,
+      lng: 1,
+    };
+
+    const req = new Request("http://test", {
+      method: "POST",
+      body: JSON.stringify({
+        pickup_location: loc,
+        dropoff_location: { ...loc, address: "B" },
+        pickup_time: new Date().toISOString(),
+        passenger_name: "X",
+        email: "X",
+        tel_number: "X",
+        additional_info: "",
+        via: [],
+        passengers: 1,
+        airport: null,
+        flight_num: "",
+        dep_id: 1,
+        isLeadPassengerMyself: true,
+      }),
+    });
+
+    await POST(req);
+
+    expect(getUserFromID).toHaveBeenCalledTimes(1);
+    expect(createBooking).toHaveBeenCalledWith(
+      1,
+      expect.anything(),
+      expect.anything(),
+      expect.any(Date),
+      undefined,
+      "UserName",
+      "user@test.com",
+      "123",
+      expect.anything(),
+      [],
+      undefined,
+      1,
+      null,
+      "",
+      5
+    );
+  });
 });
 
 jest.clearAllMocks();
