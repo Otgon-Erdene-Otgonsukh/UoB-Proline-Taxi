@@ -201,4 +201,31 @@ test('getUserBookingsAccess handles only pickUpTimeTo', async () => {
   );
 });
 
+test('getUserBookingsAccess includes User when userId = -1', async () => {
+  (prismaMock.booking.findMany as jest.Mock).mockResolvedValue([]);
+
+  await getUserBookingsAccess(-1, 0, 10, {});
+
+  expect(prismaMock.booking.findMany).toHaveBeenCalledWith(
+    expect.objectContaining({
+      include: expect.objectContaining({
+        User: { select: { full_name: true } },
+      }),
+    })
+  );
+});
+
+test('getUserBookingsAccess handles pagination correctly', async () => {
+  (prismaMock.booking.findMany as jest.Mock).mockResolvedValue([]);
+
+  await getUserBookingsAccess(1, 2, 10, {});
+
+  expect(prismaMock.booking.findMany).toHaveBeenCalledWith(
+    expect.objectContaining({
+      skip: 20,
+      take: 10,
+    })
+  );
+});
+
 })
