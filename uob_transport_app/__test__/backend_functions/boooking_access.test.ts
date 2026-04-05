@@ -371,4 +371,40 @@ test('getUserBookingsCountAccess handles from + to together', async () => {
   );
 });
 
+test('getUserBookingsCountAccess handles bookingStatus + time', async () => {
+  (prismaMock.booking.count as jest.Mock).mockResolvedValue(1);
+
+  await getUserBookingsCountAccess(1, {
+    bookingStatus: 'Pending',
+    pickUpTimeFrom: '2025-01-01',
+  });
+
+  expect(prismaMock.booking.count).toHaveBeenCalledWith(
+    expect.objectContaining({
+      where: expect.objectContaining({
+        booking_status: 'Pending',
+        trip: expect.objectContaining({
+          pickup_time: {
+            gte: new Date('2025-01-01'),
+          },
+        }),
+      }),
+    })
+  );
+});
+
+test('getTripDetails calls prisma.trip.findUnique correctly', async () => {
+  const mockTrip = { trip_id: 5 };
+
+  (prismaMock.trip.findUnique as jest.Mock).mockResolvedValue(mockTrip);
+
+  const result = await getTripDetails(5);
+
+  expect(prismaMock.trip.findUnique).toHaveBeenCalledWith({
+    where: { trip_id: 5 },
+  });
+
+  expect(result).toBe(mockTrip);
+});
+
 })
