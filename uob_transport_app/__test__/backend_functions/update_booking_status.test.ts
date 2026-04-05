@@ -113,4 +113,43 @@ describe("Update booking status backend test", () => {
 
     expect(sesClient.send).toHaveBeenCalledTimes(2);
   });
+
+  test("returns error when booking not found", async () => {
+    prismaMock.booking.update.mockResolvedValue({});
+    prismaMock.booking.findUnique.mockResolvedValue(null);
+
+    const result = await updateBookingStatus(1, "Approved", "PO");
+
+    expect(result).toBeInstanceOf(Error);
+  });
+
+  test("returns error when super admin not found", async () => {
+    prismaMock.booking.update.mockResolvedValue({});
+    prismaMock.booking.findUnique.mockResolvedValue({
+      user_id: 1,
+      email: "a",
+      passenger_name: "x",
+      tel_number: "1",
+      department: { dep_name: "CS" },
+      trip: {
+        pickup_location: JSON.stringify({}),
+        dropoff_location: JSON.stringify({}),
+        via: null,
+        airport: null,
+        return_drop_loc: null,
+        flight_num: null,
+        pickup_time: new Date(),
+        return_pickup_time: null,
+        price: 1,
+      },
+    });
+
+    prismaMock.user.findUnique.mockResolvedValue({ email: "user@test.com" });
+    prismaMock.user.findFirst.mockResolvedValue(null);
+
+    const result = await updateBookingStatus(1, "Approved", "PO");
+
+    expect(result).toBeInstanceOf(Error);
+  });
+
 });
