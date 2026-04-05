@@ -181,4 +181,24 @@ test('getUserBookingsAccess handles only pickUpTimeFrom', async () => {
   );
 });
 
+test('getUserBookingsAccess handles only pickUpTimeTo', async () => {
+  (prismaMock.booking.findMany as jest.Mock).mockResolvedValue([]);
+
+  await getUserBookingsAccess(1, 0, 10, {
+    pickUpTimeTo: '2025-01-02',
+  });
+
+  expect(prismaMock.booking.findMany).toHaveBeenCalledWith(
+    expect.objectContaining({
+      where: expect.objectContaining({
+        trip: expect.objectContaining({
+          pickup_time: expect.objectContaining({
+            lte: expect.any(Date),
+          }),
+        }),
+      }),
+    })
+  );
+});
+
 })
