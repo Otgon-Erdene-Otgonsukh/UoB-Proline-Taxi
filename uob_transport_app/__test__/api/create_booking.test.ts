@@ -400,6 +400,41 @@ describe("create booking api route tests", () => {
       5
     );
   });
+  
+  test("returns 500 when exception is thrown", async () => {
+    (auth as jest.Mock).mockResolvedValue({ user: { user_id: 1 } });
+
+    (global.fetch as jest.Mock).mockRejectedValue(new Error("fail"));
+
+    const loc = {
+      address: "A",
+      short_name: "A",
+      lat: 1,
+      lng: 1,
+    };
+
+    const req = new Request("http://test", {
+      method: "POST",
+      body: JSON.stringify({
+        pickup_location: loc,
+        dropoff_location: { ...loc, address: "B" },
+        pickup_time: new Date().toISOString(),
+        passenger_name: "A",
+        email: "a",
+        tel_number: "1",
+        additional_info: "",
+        via: [],
+        passengers: 1,
+        airport: null,
+        flight_num: "",
+        dep_id: 1,
+      }),
+    });
+
+    const res = await POST(req);
+
+    expect(res.status).toBe(500);
+  });
 });
 
 jest.clearAllMocks();
