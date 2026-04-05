@@ -228,4 +228,24 @@ test('getUserBookingsAccess handles pagination correctly', async () => {
   );
 });
 
+test('getUserBookingsCountAccess handles time filters', async () => {
+  (prismaMock.booking.count as jest.Mock).mockResolvedValue(5);
+
+  await getUserBookingsCountAccess(1, {
+    pickUpTimeFrom: '2025-01-01',
+  });
+
+  expect(prismaMock.booking.count).toHaveBeenCalledWith(
+    expect.objectContaining({
+      where: expect.objectContaining({
+        trip: {
+          pickup_time: {
+            gte: new Date('2025-01-01'),
+          },
+        },
+      }),
+    })
+  );
+});
+
 })
