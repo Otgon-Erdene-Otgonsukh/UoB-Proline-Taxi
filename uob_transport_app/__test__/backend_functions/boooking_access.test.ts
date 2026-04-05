@@ -334,4 +334,41 @@ test('getUserBookingsAccess handles bookingStatus with trip filters', async () =
   );
 });
 
+test('getUserBookingsAccess userId = -1 with filters removes user_id', async () => {
+  (prismaMock.booking.findMany as jest.Mock).mockResolvedValue([]);
+
+  await getUserBookingsAccess(-1, 0, 10, {
+    bookingStatus: 'Confirmed',
+  });
+
+  expect(prismaMock.booking.findMany).toHaveBeenCalledWith(
+    expect.objectContaining({
+      where: expect.objectContaining({
+        booking_status: 'Confirmed',
+        user_id: undefined,
+      }),
+    })
+  );
+});
+
+test('getUserBookingsCountAccess handles from + to together', async () => {
+  (prismaMock.booking.count as jest.Mock).mockResolvedValue(1);
+
+  await getUserBookingsCountAccess(1, {
+    from: 'AAA',
+    to: 'BBB',
+  });
+
+  expect(prismaMock.booking.count).toHaveBeenCalledWith(
+    expect.objectContaining({
+      where: expect.objectContaining({
+        trip: {
+          pickup_location: expect.any(Object),
+          dropoff_location: expect.any(Object),
+        },
+      }),
+    })
+  );
+});
+
 })
