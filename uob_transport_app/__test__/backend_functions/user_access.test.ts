@@ -182,4 +182,26 @@ describe('user_access', () => {
     expect(result).toEqual(mockUsers);
   });
 
+  test('getUsersByDepIdAccess queries correctly', async () => {
+    const mockUsers = [{ user_id: 1 }];
+    (prismaMock.user.findMany as jest.Mock).mockResolvedValue(mockUsers);
+
+    const result = await getUsersByDepIdAccess(5);
+
+    expect(prismaMock.user.findMany).toHaveBeenCalledWith({
+      where: { dep_id: 5 },
+      select: {
+        time_created: true,
+        user_id: true,
+        full_name: true,
+        email: true,
+        phone_number: true,
+        role: true,
+        user_status: true,
+      },
+    });
+
+    expect(result).toEqual(mockUsers);
+  });
+
 });
