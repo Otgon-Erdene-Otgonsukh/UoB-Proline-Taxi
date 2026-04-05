@@ -371,4 +371,28 @@ describe("The tests for the 2 functions for fetching bookings/count for dep-dash
     );
   });
 
+  test("count total branch uses not Cancelled", async () => {
+    await getPendingBookingsCount({
+      from: undefined,
+      to: undefined,
+      passengerName: undefined,
+      pickUpTimeFrom: undefined,
+      pickUpTimeTo: undefined,
+      isFlight: false,
+      total: true,
+      status: false,
+      overdue: false,
+      price: false,
+      withoutPrice: false,
+    });
+
+    expect(prismaMock.booking.count).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          booking_status: { not: "Cancelled" },
+        }),
+      })
+    );
+  });
+
 });
