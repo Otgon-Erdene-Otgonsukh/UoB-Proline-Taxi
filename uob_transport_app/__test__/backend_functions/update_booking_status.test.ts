@@ -222,4 +222,32 @@ describe("Update booking status backend test", () => {
 
     expect(call.Destination.ToAddresses.length).toBe(1);
   });
+
+  test("Rejected branch sends rejection email", async () => {
+    prismaMock.booking.update.mockResolvedValue({});
+    prismaMock.booking.findUnique.mockResolvedValue({
+      user_id: 1,
+      email: "a",
+      passenger_name: "x",
+      tel_number: "1",
+      department: { dep_name: "CS" },
+      trip: {
+        pickup_location: JSON.stringify({}),
+        dropoff_location: JSON.stringify({}),
+        via: null,
+        airport: null,
+        return_drop_loc: null,
+        flight_num: null,
+        pickup_time: new Date(),
+        return_pickup_time: null,
+      },
+    });
+
+    prismaMock.user.findUnique.mockResolvedValue({ email: "u@test.com" });
+    prismaMock.user.findFirst.mockResolvedValue({ email: "admin@test.com" });
+
+    await updateBookingStatus(1, "Rejected", "");
+
+    expect(sesClient.send).toHaveBeenCalledTimes(1);
+  });
 });
