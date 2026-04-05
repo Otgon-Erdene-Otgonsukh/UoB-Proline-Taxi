@@ -181,7 +181,7 @@ describe('user_access', () => {
 
     expect(result).toEqual(mockUsers);
   });
-
+  
   test('getUsersByDepIdAccess queries correctly', async () => {
     const mockUsers = [{ user_id: 1 }];
     (prismaMock.user.findMany as jest.Mock).mockResolvedValue(mockUsers);
@@ -202,6 +202,26 @@ describe('user_access', () => {
     });
 
     expect(result).toEqual(mockUsers);
+  });
+
+  test('changeDepartmentForUsersAccess updates users correctly', async () => {
+    const mockResult = { count: 2 };
+    (prismaMock.user.updateMany as jest.Mock).mockResolvedValue(mockResult);
+
+    const result = await changeDepartmentForUsersAccess([1, 2], 9);
+
+    expect(prismaMock.user.updateMany).toHaveBeenCalledWith({
+      where: {
+        user_id: {
+          in: [1, 2],
+        },
+      },
+      data: {
+        dep_id: 9,
+      },
+    });
+
+    expect(result).toBe(mockResult);
   });
 
 });
