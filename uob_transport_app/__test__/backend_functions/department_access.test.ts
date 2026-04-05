@@ -1,5 +1,9 @@
 import { prismaMock } from "@/utils/singleton";
-import { getDepartmentsListAccess, createNewDepartmentAccess } from '@/backend/access/departments_access';
+import { 
+  getDepartmentsListAccess, 
+  createNewDepartmentAccess,
+  getDepartmentListIncludeManagerIdAccess
+} from '@/backend/access/departments_access';
 
 describe('getDepartmentsListAccess', () => {
 
@@ -69,6 +73,44 @@ describe('getDepartmentsListAccess', () => {
     });
 
     expect(result).toBe(mockDep);
+  });
+
+  test('getDepartmentListIncludeManagerIdAccess returns data with manager and count', async () => {
+    const mockResult = [
+      {
+        dep_id: 1,
+        dep_name: 'CS',
+        manager_id: 10,
+        _count: { User: 5 },
+      },
+    ];
+
+    (prismaMock.department.findMany as jest.Mock).mockResolvedValue(mockResult);
+
+    const result = await getDepartmentListIncludeManagerIdAccess('CS');
+
+    expect(prismaMock.department.findMany).toHaveBeenCalledWith({
+      select: {
+        dep_id: true,
+        dep_name: true,
+        manager_id: true,
+        _count: {
+          select: {
+            User: true,
+          },
+        },
+      },
+      where: {
+        dep_name: {
+          contains: 'CS',
+        },
+      },
+      orderBy: {
+        dep_name: 'asc',
+      },
+    });
+
+    expect(result).toEqual(mockResult);
   });
 
 });
