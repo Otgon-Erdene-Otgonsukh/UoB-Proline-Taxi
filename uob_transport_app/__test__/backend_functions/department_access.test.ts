@@ -1,5 +1,5 @@
 import { prismaMock } from "@/utils/singleton";
-import { getDepartmentsListAccess } from '@/backend/access/departments_access';
+import { getDepartmentsListAccess, createNewDepartmentAccess } from '@/backend/access/departments_access';
 
 describe('getDepartmentsListAccess', () => {
 
@@ -52,6 +52,23 @@ describe('getDepartmentsListAccess', () => {
     });
 
     expect(result).toEqual(mockResult);
+  });
+
+
+  test('createNewDepartmentAccess creates department correctly', async () => {
+    const mockDep = { dep_id: 1, dep_name: 'Math' };
+
+    (prismaMock.department.create as jest.Mock).mockResolvedValue(mockDep);
+
+    const result = await createNewDepartmentAccess('Math');
+
+    expect(prismaMock.department.create).toHaveBeenCalledWith({
+      data: {
+        dep_name: 'Math',
+      },
+    });
+
+    expect(result).toBe(mockDep);
   });
 
 });
