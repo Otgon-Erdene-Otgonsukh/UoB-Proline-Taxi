@@ -4,7 +4,8 @@ import {
   createNewDepartmentAccess,
   getDepartmentListIncludeManagerIdAccess,
   updateDepartmentNameAccess,
-  deleteDepartmentAccess
+  deleteDepartmentAccess,
+  getDepartmentByIdAccess
 } from '@/backend/access/departments_access';
 
 describe('getDepartmentsListAccess', () => {
@@ -148,5 +149,42 @@ describe('getDepartmentsListAccess', () => {
     });
 
     expect(result).toBe(mockDep);
+  });
+
+  test('getDepartmentByIdAccess returns department when exists', async () => {
+    const mockDep = {
+      dep_id: 1,
+      dep_name: 'CS',
+      _count: { User: 10 },
+    };
+
+    (prismaMock.department.findUnique as jest.Mock).mockResolvedValue(mockDep);
+
+    const result = await getDepartmentByIdAccess(1);
+
+    expect(prismaMock.department.findUnique).toHaveBeenCalledWith({
+      select: {
+        dep_id: true,
+        dep_name: true,
+        _count: {
+          select: {
+            User: true,
+          },
+        },
+      },
+      where: {
+        dep_id: 1,
+      },
+    });
+
+    expect(result).toBe(mockDep);
+  });
+
+  test('getDepartmentByIdAccess returns null when not found', async () => {
+    (prismaMock.department.findUnique as jest.Mock).mockResolvedValue(null);
+
+    const result = await getDepartmentByIdAccess(999);
+
+    expect(result).toBeNull();
   });
 });
