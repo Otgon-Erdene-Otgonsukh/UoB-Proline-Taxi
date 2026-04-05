@@ -180,4 +180,46 @@ describe("Update booking status backend test", () => {
 
     expect(result).toBeInstanceOf(Error);
   });
+
+  test("email recipient logic when booking.email === user.email", async () => {
+    prismaMock.booking.update.mockResolvedValue({});
+    prismaMock.booking.findUnique.mockResolvedValue({
+      user_id: 1,
+      email: "same@test.com",
+      passenger_name: "x",
+      tel_number: "1",
+      department: { dep_name: "CS" },
+      trip: {
+        pickup_location: JSON.stringify({ 
+          short_name: "A",
+          address: "B Street",
+        }),
+        dropoff_location: JSON.stringify({
+          short_name: "B",
+          address: "A Street",
+        }),
+        via: null,
+        airport: null,
+        return_drop_loc: null,
+        flight_num: null,
+        pickup_time: new Date(),
+        return_pickup_time: null,
+        price: 1,
+      },
+    });
+
+    prismaMock.user.findUnique.mockResolvedValue({
+      email: "same@test.com",
+    });
+
+    prismaMock.user.findFirst.mockResolvedValue({
+      email: "admin@test.com",
+    });
+
+    await updateBookingStatus(1, "Approved", "PO");
+
+    const call = (sesClient.send as jest.Mock).mock.calls[1][0];
+
+    expect(call.Destination.ToAddresses.length).toBe(1);
+  });
 });
