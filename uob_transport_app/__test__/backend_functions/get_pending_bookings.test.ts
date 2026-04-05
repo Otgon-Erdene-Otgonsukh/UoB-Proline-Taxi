@@ -319,4 +319,30 @@ describe("The tests for the 2 functions for fetching bookings/count for dep-dash
     );
   });
 
+  test("withoutPrice filter builds query correctly", async () => {
+    await getPendingBookings(0, 10, {
+      from: undefined,
+      to: undefined,
+      passengerName: undefined,
+      pickUpTimeFrom: undefined,
+      pickUpTimeTo: undefined,
+      isFlight: false,
+      total: false,
+      status: false,
+      overdue: false,
+      price: false,
+      withoutPrice: true,
+    });
+
+    expect(prismaMock.booking.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          trip: expect.objectContaining({
+            price: null,
+          }),
+        }),
+      })
+    );
+  });
+
 });
