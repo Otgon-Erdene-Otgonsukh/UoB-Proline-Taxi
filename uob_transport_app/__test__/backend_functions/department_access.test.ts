@@ -5,7 +5,8 @@ import {
   getDepartmentListIncludeManagerIdAccess,
   updateDepartmentNameAccess,
   deleteDepartmentAccess,
-  getDepartmentByIdAccess
+  getDepartmentByIdAccess,
+  getDepartmentIdfromUserId
 } from '@/backend/access/departments_access';
 
 describe('getDepartmentsListAccess', () => {
@@ -186,5 +187,24 @@ describe('getDepartmentsListAccess', () => {
     const result = await getDepartmentByIdAccess(999);
 
     expect(result).toBeNull();
+  });
+
+  test('getDepartmentIdfromUserId returns dep_id', async () => {
+    const mockResult = { dep_id: 5 };
+
+    (prismaMock.user.findUnique as jest.Mock).mockResolvedValue(mockResult);
+
+    const result = await getDepartmentIdfromUserId(10);
+
+    expect(prismaMock.user.findUnique).toHaveBeenCalledWith({
+      where: {
+        user_id: 10,
+      },
+      select: {
+        dep_id: true,
+      },
+    });
+
+    expect(result).toBe(mockResult);
   });
 });
