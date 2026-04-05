@@ -4,6 +4,7 @@ import {
   getBookingDetails,
   cancelBookingsAccess,
   getUserBookingsCountAccess,
+  getTripDetails
 } from '@/backend/access/booking_access'
 
 describe('booking_access', () => {
@@ -93,5 +94,28 @@ describe('booking_access', () => {
 
     expect(result).toBe(42);
   })
+
+  // ===== additional coverage tests =====
+
+test('getUserBookingsAccess handles "from" filter', async () => {
+  (prismaMock.booking.findMany as jest.Mock).mockResolvedValue([]);
+
+  await getUserBookingsAccess(1, 0, 10, {
+    from: 'ABC',
+  });
+
+  expect(prismaMock.booking.findMany).toHaveBeenCalledWith(
+    expect.objectContaining({
+      where: expect.objectContaining({
+        trip: {
+          pickup_location: {
+            contains: 'abc',
+            mode: 'insensitive',
+          },
+        },
+      }),
+    })
+  );
+});
 
 })
