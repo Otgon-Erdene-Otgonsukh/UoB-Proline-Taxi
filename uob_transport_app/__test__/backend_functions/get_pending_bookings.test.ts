@@ -236,4 +236,59 @@ describe("The tests for the 2 functions for fetching bookings/count for dep-dash
     });
     expect(prismaMock.booking.count).toHaveBeenCalledTimes(1);
   });
+
+  test("total branch sorts and paginates correctly", async () => {
+    prismaMock.booking.findMany.mockResolvedValue([
+      { booking_status: "Approved" },
+      { booking_status: "Pending" },
+      { booking_status: "Rejected" },
+    ]);
+
+    const params = {
+      from: undefined,
+      to: undefined,
+      passengerName: undefined,
+      pickUpTimeFrom: undefined,
+      pickUpTimeTo: undefined,
+      isFlight: false,
+      total: true, // 🔥 核心
+      status: false,
+      overdue: false,
+      price: false,
+      withoutPrice: false,
+    };
+
+    const result = await getPendingBookings(0, 2, params);
+
+    // 排序后：Pending → Approved → Rejected
+    expect(result).toEqual([
+      { booking_status: "Pending" },
+      { booking_status: "Approved" },
+    ]);
+  });
+
+  test("status branch triggers same logic as total", async () => {
+    prismaMock.booking.findMany.mockResolvedValue([
+      { booking_status: "Rejected" },
+      { booking_status: "Pending" },
+    ]);
+
+    const params = {
+      from: undefined,
+      to: undefined,
+      passengerName: undefined,
+      pickUpTimeFrom: undefined,
+      pickUpTimeTo: undefined,
+      isFlight: false,
+      total: false,
+      status: true, // 🔥
+      overdue: false,
+      price: false,
+      withoutPrice: false,
+    };
+
+    const result = await getPendingBookings(0, 10, params);
+
+    expect(result[0].booking_status).toBe("Pending");
+  });
 });
