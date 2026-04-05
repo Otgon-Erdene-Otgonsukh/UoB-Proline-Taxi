@@ -3,7 +3,8 @@ import {
   getDepartmentsListAccess, 
   createNewDepartmentAccess,
   getDepartmentListIncludeManagerIdAccess,
-  updateDepartmentNameAccess
+  updateDepartmentNameAccess,
+  deleteDepartmentAccess
 } from '@/backend/access/departments_access';
 
 describe('getDepartmentsListAccess', () => {
@@ -127,6 +128,22 @@ describe('getDepartmentsListAccess', () => {
       },
       data: {
         dep_name: 'Physics',
+      },
+    });
+
+    expect(result).toBe(mockDep);
+  });
+
+  test('deleteDepartmentAccess deletes department', async () => {
+    const mockDep = { dep_id: 3, dep_name: 'Chemistry' };
+
+    (prismaMock.department.delete as jest.Mock).mockResolvedValue(mockDep);
+
+    const result = await deleteDepartmentAccess(3);
+
+    expect(prismaMock.department.delete).toHaveBeenCalledWith({
+      where: {
+        dep_id: 3,
       },
     });
 
