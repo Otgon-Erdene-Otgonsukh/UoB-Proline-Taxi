@@ -47,6 +47,18 @@ describe("create booking api route tests", () => {
       },
     });
 
+    (global.fetch as jest.Mock).mockResolvedValue({
+      ok: true,
+      json: async () => [
+        {
+          lat: "1",
+          lon: "1",
+          display_name: "same",
+          name: "same",
+        },
+      ],
+    });
+
     prismaMock.booking.create.mockResolvedValue(undefined);
     prismaMock.trip.create.mockResolvedValue({ trip_id: 1 });
     (render as jest.Mock).mockResolvedValue("<div>Mocked Booking Info</div>");
