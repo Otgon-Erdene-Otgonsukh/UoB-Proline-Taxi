@@ -1,7 +1,20 @@
 import prisma from "@/utils/client";
 import { NextResponse } from "next/server";
+import { auth } from "@/auth";
+import { isAdmin } from "@/backend/access/user_access";
 
 export async function POST(req: Request) {
+  // IDOR Check
+  const session = await auth();
+
+  if (!session) {
+    return NextResponse.json({ message: "Login Required" }, { status: 401 });
+  }
+
+  if (!(await isAdmin(session.user.user_id))) {
+    return NextResponse.json({ message: "Permission Denied" }, { status: 403 });
+  }
+
   const data = await req.json();
   const from = data.from ? data.from : undefined;
   const to = data.to ? data.to : undefined;
