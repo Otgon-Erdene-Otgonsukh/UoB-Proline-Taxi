@@ -128,7 +128,7 @@ const DepartmentManagePage = () => {
 
   return (<>
     <div>
-      <div className="flex justify-between items-center mb-4 px-20">
+      <div className="mb-4 flex gap-4 px-8 flex-row items-center justify-between">
         <div className="flex items-center gap-2">
           <h1 className="text-xl font-aleo md:text-3xl font-semibold text-shadow-lg/20 py-2 pr-4">
             Departments
@@ -227,7 +227,7 @@ const DepartmentManagePage = () => {
 
     <ConfirmDialog
       open={confirmDeleteDialogOpen}
-      dialogTitle="Confirm delete department"
+      dialogTitle="Confirm Delete Department"
       confirmMessage="Are you sure you want to delete this department? If there are still users in this department, they will be moved to 'Unassigned' department."
       confirmCallBack={() => {
         handleDeleteDepartmentConfirm(departmentData!);

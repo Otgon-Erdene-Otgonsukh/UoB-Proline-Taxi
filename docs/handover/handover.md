@@ -13,6 +13,9 @@ This document provides a concise overview of the project codebase, outlining the
 - [AWS Setup](#aws-setup)
 - [Further Resources](#further-resources)
 - [Detailed User Instruction](#detailed-user-instruction)
+  - [Normal User](#normal-user)
+  - [Finance Staff](#finance-staff-uob)
+  - [Super Admin](#super-admin)
 
 ## Setup and Prerequisites
 
@@ -233,52 +236,69 @@ The following section provides a visual guidance on how each user can interact w
 1. Navigate to the website using the appropriate domain.
 2. Click login on the landing page.
 
-<img src="/docs/handover_pictures/landpage.png" width="1000"/>
+<img src="/docs/handover_pictures/landpage.png" width="700"/>
 
 3. Click on the sign up link in the login page.
 4. Enter your details and pick normal user as the account type.
 
-<img src="/docs/handover_pictures/normal.png" width="1000"/>
+<img src="/docs/handover_pictures/normal.png" width="700"/>
 
 5. Click sign up and enter your details in the login page and sign in.
 6. In the home page, you can view your recent bookings, edit them and cancel them.
 7. Click on the new bookings button in the home page bookings table.
 
-<img src="/docs/handover_pictures/normalhome.png" width="1000"/>
+<img src="/docs/handover_pictures/normalhome.png" width="700"/>
 
 8. In the bookings page, enter your trip and passenger details and click confirm.
 
-<img src="/docs/handover_pictures/book.png" width="1000"/>
+<img src="/docs/handover_pictures/book.png" width="700"/>
 
 9. When successful, a success window appears and navigate back to the home page and check the status of your booking.
 
 10. Navigate to the Dashboard tab to see recent bookings and their route in the interactive map and some statistics.
 
-<img src="/docs/handover_pictures/normaldash.png" width="1000"/>
+<img src="/docs/handover_pictures/normaldash.png" width="700"/>
 
 ### Finance Staff (UoB)
 
 1. Navigate to the sign up page and enter details using an official university email.
 2. Select "Register as Finance Staff" option.
 
-  <img src="/docs/handover_pictures/finance.png" width="1000"/>
+  <img src="/docs/handover_pictures/finance.png" width="700"/>
 
 3. Click register and wait for account approval by the corresponding department manager.
 
-  <img src="/docs/handover_pictures/inprogress.png" width="1000"/>
+  <img src="/docs/handover_pictures/inprogress.png" width="700"/>
 
 4. An email is sent when the staff registration request is responded.
 5. When approved, enter the credentials in to the login fields.
 6. After logging in, navigate to the "Dashboard" tab.
 
-  <img src="/docs/handover_pictures/dashboard.png" width="1000"/>
+  <img src="/docs/handover_pictures/dashboard.png" width="700"/>
 
 7. The table contains the bookings made under the specific department you are registered in.
 8. The bookings can be Rejected, Approved and Viewed.
 9. When approving, attach the PO number to the booking using the pop-up dialog window.
 
-  <img src="/docs/handover_pictures/attachPO.png" width="1000"/>
+  <img src="/docs/handover_pictures/attachPO.png" width="700"/>
 
 ### Super Admin
 
-...
+1. Login with the correct credentials.
+2. After successful login, you will be redirected to the super admin page.
+3. In the User Management table, you can manage all the users of the platform and respond to registration requests and update user details.
+
+  <img src="/docs/handover_pictures/superUser.png" width="700"/>
+
+4. In the Bookings Table, you can view all bookings, filter them, attach a price, edit and cancel them.
+
+  <img src="/docs/handover_pictures/superBooking.png" width="700"/>
+
+  <img src="/docs/handover_pictures/editBooking.png" width="700"/>
+
+5. Informative Dashboard with statistical data about bookings, users and etc can be found in the drawer menu on the left hand side. 
+
+  <img src="/docs/handover_pictures/supDash.png" width="700"/>
+
+6. All update functionality is paired with a mailing service and all the above pages can be found in the left hand side drawer menu.
+
