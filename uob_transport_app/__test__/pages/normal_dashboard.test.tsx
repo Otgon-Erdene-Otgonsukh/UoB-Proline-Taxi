@@ -40,6 +40,22 @@ jest.mock("@/components/ui/map", () => ({
   ),
 }));
 
+// mock fetch
+global.fetch = jest.fn().mockResolvedValue({
+  json: async () => ({
+    routes: [
+      {
+        geometry: {
+          coordinates: [
+            [1, 1],
+            [2, 2],
+          ],
+        },
+      },
+    ],
+  }),
+}) as unknown as typeof fetch;
+
 // ================= mock data =================
 
 const mockSession: Session = {
@@ -112,11 +128,6 @@ describe("NormalUserDashboard", () => {
       json: async () => baseResponse,
     });
 
-    (global.fetch as jest.Mock) = jest.fn().mockResolvedValue({
-      status: 200,
-      json: async () => baseResponse,
-    });
-
     render(<NormalUserDashboard />);
 
     await waitFor(() => {
@@ -135,11 +146,6 @@ describe("NormalUserDashboard", () => {
       data: mockSession,
     });
 
-    (global.fetch as jest.Mock) = jest.fn().mockResolvedValue({
-      status: 200,
-      json: async () => baseResponse,
-    });
-
     (easyGetRequest as jest.Mock).mockResolvedValue({
       status: 200,
       json: async () => baseResponse,
@@ -150,6 +156,12 @@ describe("NormalUserDashboard", () => {
     await waitFor(() => {
       expect(screen.getByText("Recent bookings")).toBeInTheDocument();
     });
+
+    expect(screen.getByText("Start")).toBeInTheDocument();
+    expect(screen.getByText("End")).toBeInTheDocument();
+
+    // 日期来自页面逻辑：toDateString()
+    expect(screen.getByText("Wed Jan 01 2025")).toBeInTheDocument();
   });
 
   // ===== 4. empty state =====
