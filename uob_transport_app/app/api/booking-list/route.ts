@@ -24,6 +24,7 @@ export async function GET(
   const bookingStatus = (searchParams.get('bookingStatus') !== null && searchParams.get('bookingStatus') !== "") ? searchParams.get('bookingStatus')! : undefined;
   const pickUpTimeFrom = (searchParams.get('pickUpTimeFrom') !== null && searchParams.get('pickUpTimeFrom') !== "") ? searchParams.get('pickUpTimeFrom')! : undefined;
   const pickUpTimeTo = (searchParams.get('pickUpTimeTo') !== null && searchParams.get('pickUpTimeTo') !== "") ? searchParams.get('pickUpTimeTo')! : undefined;
+  const isExport = searchParams.get('isExport') === 'true';
   if (page && pageSize) {
     const bookings = await getUserBookingsAccess(await isAdmin(session.user.user_id) ? -1 : session.user.user_id, parseInt(page), parseInt(pageSize), {
       from,
@@ -31,6 +32,7 @@ export async function GET(
       bookingStatus,
       pickUpTimeFrom,
       pickUpTimeTo,
+      isExport
     })
 
     const totalNum = await getUserBookingsCountAccess(await isAdmin(session.user.user_id) ? -1 : session.user.user_id, {
@@ -39,6 +41,7 @@ export async function GET(
       bookingStatus,
       pickUpTimeFrom,
       pickUpTimeTo,
+      isExport
     })
 
     return new Response(JSON.stringify({
