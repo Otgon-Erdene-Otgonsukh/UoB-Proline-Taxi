@@ -7,6 +7,8 @@ export default function manifest(): MetadataRoute.Manifest {
         description: 'University of Bristol Taxi and Chauffeur Booking System',
         start_url: '/',
         display: 'standalone',
+        background_color: '#000000',
+        theme_color: '#2c2c2c',
         icons: [
             {
                 src: '/weelv1.png',
