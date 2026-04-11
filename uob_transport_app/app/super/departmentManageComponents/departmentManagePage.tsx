@@ -28,7 +28,7 @@ const DepartmentManagePage = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    _rerenderTable()
+    _rerenderTable(paginationMeta.page, paginationMeta.pageSize)
   }, []);
 
   const [departments, setDepartments] = useState<DepartmentRecord[]>([]);
@@ -39,23 +39,24 @@ const DepartmentManagePage = () => {
   });
 
   const handleChangePage = (_: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
-    setPaginationMeta({
-      ...paginationMeta,
-      page: newPage
-    })
+    setPaginationMeta((prev) => ({
+      ...prev,
+      page: newPage,
+    }));
     setIsLoading(true);
-    _rerenderTable()
+    _rerenderTable(newPage, paginationMeta.pageSize)
   };
 
   const handleChangePageSize = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
+    const newPageSize = parseInt(event.target.value, 10);
     setPaginationMeta({
       page: 0,
-      pageSize: parseInt(event.target.value, 10),
+      pageSize: newPageSize,
     });
-    setIsLoading(true)
-    _rerenderTable()
+    setIsLoading(true);
+    _rerenderTable(0, newPageSize)
   };
 
   // search form
@@ -72,7 +73,7 @@ const DepartmentManagePage = () => {
       pageSize: paginationMeta.pageSize,
     })
     setIsLoading(true)
-    _rerenderTable()
+    _rerenderTable(0, paginationMeta.pageSize)
   }
 
   const [managerData, setManagerData] = useState<DepartmentRecord["manager"]>();
@@ -94,7 +95,7 @@ const DepartmentManagePage = () => {
     deleteDepartment(department.depId).then(async (res) => {
       if (res.status === 200) {
         setIsLoading(true)
-        _rerenderTable()
+        _rerenderTable(paginationMeta.page, paginationMeta.pageSize)
       }
     });
   };
@@ -104,7 +105,7 @@ const DepartmentManagePage = () => {
     setNewDepartmentDialogOpen(true)
   }
 
-  const _rerenderTable = () => {
+  const _rerenderTable = (page: number, pageSize: number) => {
     getDepartmentManageList().then(async (res) => {
       if (res.status === 200) {
         const data = await res.json()
@@ -115,8 +116,8 @@ const DepartmentManagePage = () => {
           )
         }
 
-        const startIndex = paginationMeta.page * paginationMeta.pageSize;
-        const endIndex = startIndex + paginationMeta.pageSize;
+        const startIndex = page * pageSize;
+        const endIndex = startIndex + pageSize;
         const paginatedData = filteredData.slice(startIndex, endIndex);
 
         setDepartments(paginatedData)
@@ -191,7 +192,7 @@ const DepartmentManagePage = () => {
       handleDialogClose={() => {
         setNewDepartmentDialogOpen(false);
         setIsLoading(true);
-        _rerenderTable();
+        _rerenderTable(paginationMeta.page, paginationMeta.pageSize);
       }}
     />
 
@@ -212,15 +213,15 @@ const DepartmentManagePage = () => {
           setDepartmentDialogOpen(false);
           setDepartmentData(undefined);
           setIsLoading(true);
-          _rerenderTable();
+          _rerenderTable(paginationMeta.page, paginationMeta.pageSize);
         }}
         notifyUserCountChange={() => {
           setIsLoading(true);
-          _rerenderTable();
+          _rerenderTable(paginationMeta.page, paginationMeta.pageSize);
         }}
         notifyDepartmentNameChange={() => {
           setIsLoading(true);
-          _rerenderTable();
+          _rerenderTable(paginationMeta.page, paginationMeta.pageSize);
         }}
       />
     )}
