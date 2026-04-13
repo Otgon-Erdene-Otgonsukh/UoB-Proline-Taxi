@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, IconButton, InputLabel, MenuItem, Select, Stack, TextField, Typography, useTheme, Snackbar, Alert } from "@mui/material";
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, IconButton, InputLabel, MenuItem, Select, Stack, TextField, Typography, useTheme, Snackbar, Alert, Chip } from "@mui/material";
 import {
   FirstPage,
   KeyboardArrowLeft,
@@ -18,7 +18,6 @@ import { enLocale } from "@/components/datetimePicker/locale";
 import { bookingStatus } from "@/app/home/constants";
 import ConfirmDialog from "@/components/confirmDIalog";
 import CustomizedButton from "@/components/CustomizedButton";
-import BookingPage from "@/app/book/page";
 import { getBookingsList, cancelBooking } from "../requests";
 import { redirect } from "next/navigation";
 
@@ -290,7 +289,15 @@ function BookingViewDialog({ viewData, dialogOpen, handleDialogClose }: BookingV
           <Typography gutterBottom sx={{ fontWeight: "bold" }}>
             Booking Status:
           </Typography>
-          <Typography gutterBottom>{viewData.booking_status}</Typography>
+          <Chip
+            size="small"
+            label={viewData.booking_status}
+            color={
+              viewData.booking_status === "Approved" ? "success" : viewData.booking_status === "Pending" ? "warning" : viewData.booking_status === "Rejected" ? "error" : "default" 
+            }
+            variant="filled"
+            sx={{ textTransform: "capitalize", fontWeight: 600 }}
+          />
         </Stack>
       </DialogContent>
       <DialogActions>
@@ -434,6 +441,7 @@ export const BookingManagePage = () => {
     from?: string;
     to?: string;
     bookingStatus?: string;
+    department?: string
   };
   const [searchFormInput, setSearchFormInput] = useState<SearchFormProps>({
     pickUpTimeFrom: undefined,
@@ -441,8 +449,24 @@ export const BookingManagePage = () => {
     from: "",
     to: "",
     bookingStatus: "All",
+    department: ""
   });
   const [isSearchSubmitted, setIsSearchSubmitted] = useState(false);
+
+  const handleClear = () => {
+    setSearchFormInput({
+      pickUpTimeFrom: undefined,
+      pickUpTimeTo: undefined,
+      from: "",
+      to: "",
+      bookingStatus: "All",
+      department: ""
+    })
+  }
+
+  useEffect(() => { // auto re-render the table on selections
+    _rerenderTable(paginationMeta.page, paginationMeta.pageSize)
+  }, [searchFormInput.bookingStatus]);
 
   const dateTimePickerFromAnchorRef = useRef<HTMLDivElement>(null);
   const dateTimePickerToAnchorRef = useRef<HTMLDivElement>(null);
@@ -499,7 +523,7 @@ export const BookingManagePage = () => {
   };
 
   const _rerenderTable = (page: number = paginationMeta.page, pageSize: number = paginationMeta.pageSize) => {
-    getBookingsList(page, pageSize, {
+    getBookingsList(page, pageSize, false, {
       ...searchFormInput,
       pickUpTimeFrom: searchFormInput.pickUpTimeFrom
         ? searchFormInput.pickUpTimeFrom.toISOString()
@@ -539,6 +563,19 @@ export const BookingManagePage = () => {
             gap: 1,
           }}
         >
+          <TextField 
+            label="Department" 
+            size="small" 
+            id="searchFormInput"
+            sx={{ minWidth: 140 }}
+            value={searchFormInput.department}
+            onChange={(e) => {
+              setSearchFormInput({
+                ...searchFormInput,
+                department: e.target.value}
+              )
+            }}>
+          </TextField>
           <TextField
             label="From"
             id="searchFromInput"
@@ -669,6 +706,21 @@ export const BookingManagePage = () => {
             }}
             locale={enLocale}
           />
+          <Button sx={{
+            textTransform: "none",
+            bgcolor: "white",
+            border: "2px solid #2c2c2c",
+            borderRadius: 2,
+            color: "#2c2c2c",
+            "&:hover": {
+              scale: 1.04
+            },
+            transition: "all ease 0.2s"
+          }}
+          onClick={handleClear}
+          >
+            Clear
+          </Button>
           <CustomizedButton title="Search" type="warning" click={() => { }} />
         </Box>
       </div>
@@ -731,6 +783,11 @@ export const BookingManagePage = () => {
             setSnackBar(true);
           }}
           ActionsComponent={TablePaginationActions}
+          isExport={false}
+          handleCheckAll={() => {}}
+          handleCheck={() => {}}
+          selectedBookingIds={[]}
+          allChecked={false}
         />
       </div>
     )}

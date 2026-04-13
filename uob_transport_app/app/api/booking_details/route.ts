@@ -79,6 +79,7 @@ export async function GET(request: Request) {
         tripDetails.pickup_location = JSON.parse(tripDetails?.pickup_location || "null");
         tripDetails.dropoff_location = JSON.parse(tripDetails?.dropoff_location || "null");
         tripDetails.via = tripDetails?.via ? JSON.parse(tripDetails.via) : [];
+        tripDetails.return_drop_loc = JSON.parse(tripDetails?.return_drop_loc || "null");
         const response = {...bookingDetails, trip: tripDetails};
         return new Response(
             JSON.stringify(response),

@@ -47,11 +47,13 @@ export async function POST(req: Request) {
     const pickup_time = new Date(request_json["pickup_time"]);
     const additional_info: string = request_json["additional_info"].toString();
     const via: location[] = request_json["via"];
-    const returnTo: location | undefined = request_json["returnTo"] ? request_json["returnTo"] : undefined;
+    const returnTo: location | undefined = request_json["returnTo"]
+      ? request_json["returnTo"] : undefined;
     const passenger_num: number = request_json["passengers"];
     const flight_num: string = request_json["flight_num"].toString();
     const airport: location | null = request_json["airport"];
-    const returnDT: Date | undefined = request_json["return_time"] ? new Date(request_json["return_time"]) : undefined;
+    const returnDT: Date | undefined = request_json["return_time"]
+      ? new Date(request_json["return_time"]) : undefined;
     const isLeadPassengerMyself: boolean = request_json["isLeadPassengerMyself"];
 
     // Validation (same as create booking API endpoint)
@@ -186,12 +188,12 @@ export async function POST(req: Request) {
         request_json["pickup_location"],
         request_json["dropoff_location"],
         request_json["pickup_time"],
-        request_json["return_pickup_time"],
+        returnDT,
         request_json["passenger_name"],
         request_json["email"], request_json["tel_number"],
         request_json["additional_info"],
         request_json["via"],
-        request_json["return_drop_loc"],
+        returnTo,
         request_json["passenger_num"],
         request_json["airport"],
         request_json["flight_num"],

@@ -74,6 +74,18 @@ export const UserManagePage = (
     _rerenderTable(paginationMeta.page, paginationMeta.pageSize)
   }
 
+  const handleClear = () => {
+    setSearchFormInput({
+      name: "",
+      user_status: "All",
+      role: "All"
+    })
+  }
+
+  useEffect(() => {
+    _rerenderTable(paginationMeta.page, paginationMeta.pageSize);
+  }, [searchFormInput.role, searchFormInput.user_status])
+
   const [userDetail, setUserDetail] = useState<UserRecord>()
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
   const handleViewDialogOpen = (row: UserRecord) => {
@@ -143,8 +155,8 @@ export const UserManagePage = (
   }
 
   return (<>
-    <div>
-      <div className="flex justify-between items-center mb-4 px-20">
+    <div className="relative z-10">
+      <div className="mb-4 flex gap-4 px-8 flex-row items-center justify-between">
         <div className="flex items-center gap-2">
           <h1 className="text-xl font-aleo md:text-3xl font-semibold text-shadow-lg/20 py-2 pr-4">
             Users
@@ -156,7 +168,9 @@ export const UserManagePage = (
           onSubmit={handleSubmitSearchForm}
           sx={{
             display: "flex",
-            gap: 2.5,
+            flexDirection: "row",
+            flexWrap: "nowrap",
+            gap: 2,
           }}
         >
           <TextField
@@ -202,6 +216,21 @@ export const UserManagePage = (
               <MenuItem value={userStatusToIntMap.rejected}>{userStatusToStrMap[userStatusToIntMap.rejected]}</MenuItem>
             </Select>
           </FormControl>
+          <Button sx={{
+            textTransform: "none",
+            bgcolor: "white",
+            border: "2px solid #2c2c2c",
+            borderRadius: 2,
+            color: "#2c2c2c",
+            "&:hover": {
+              scale: 1.04
+            },
+            transition: "all ease 0.2s"
+          }}
+          onClick={handleClear}
+          >
+            Clear
+          </Button>
           <CustomizedButton title="Search" type="warning" click={() => { }} />
         </Box>
       </div>

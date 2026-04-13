@@ -64,7 +64,7 @@ export default function RegisterResponseMail({
                   href={
                     process.env.NODE_ENV === "development"
                       ? "http://localhost:3000/login"
-                      : "http://uob-transport-alb-848507222.eu-west-2.elb.amazonaws.com/login"
+                      : "https://uobst.ilm.gg/login"
                   }
                 >
                   Log In
