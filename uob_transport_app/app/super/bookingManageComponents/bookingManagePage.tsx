@@ -18,7 +18,6 @@ import { enLocale } from "@/components/datetimePicker/locale";
 import { bookingStatus } from "@/app/home/constants";
 import ConfirmDialog from "@/components/confirmDIalog";
 import CustomizedButton from "@/components/CustomizedButton";
-import BookingPage from "@/app/book/page";
 import { getBookingsList, cancelBooking } from "../requests";
 import { redirect } from "next/navigation";
 
@@ -499,7 +498,7 @@ export const BookingManagePage = () => {
   };
 
   const _rerenderTable = (page: number = paginationMeta.page, pageSize: number = paginationMeta.pageSize) => {
-    getBookingsList(page, pageSize, {
+    getBookingsList(page, pageSize, false, {
       ...searchFormInput,
       pickUpTimeFrom: searchFormInput.pickUpTimeFrom
         ? searchFormInput.pickUpTimeFrom.toISOString()
@@ -731,6 +730,11 @@ export const BookingManagePage = () => {
             setSnackBar(true);
           }}
           ActionsComponent={TablePaginationActions}
+          isExport={false}
+          handleCheckAll={() => {}}
+          handleCheck={() => {}}
+          selectedBookingIds={[]}
+          allChecked={false}
         />
       </div>
     )}

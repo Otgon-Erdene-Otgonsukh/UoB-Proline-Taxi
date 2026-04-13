@@ -10,7 +10,7 @@ import { motion } from "framer-motion";
 
 export default function RegRequestSent() {
   return (
-    <div className="flex min-h-screen items-center justify-center p-4">
+    <div className="flex min-h-screen justify-center md:mt-0 -mt-10 p-4">
       <div className="bg-white flex flex-col md:flex-row shadow-2xl rounded-2xl max-w-2xl w-full mt-20 mb-20">
         <motion.div
           className="flex flex-col items-center md:gap-15 p-6 md:w-1/2"
@@ -18,7 +18,7 @@ export default function RegRequestSent() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, ease: "easeOut" }}
         >
-          <div className="w-full relative min-h-[250px] md:min-h-[300px] mt-16">
+          <div className="w-full relative min-h-62.5 md:min-h-75 mt-16">
             <Image
               src="/wait.png"
               fill

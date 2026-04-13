@@ -11,7 +11,8 @@ import {
     TextField,
     Typography,
     InputAdornment,
-    Button
+    Button,
+    Checkbox,
 } from "@mui/material";
 import { StyledTableCell } from "@/components/StyledTableCell";
 import CustomizedButton from "@/components/CustomizedButton";
@@ -33,9 +34,14 @@ interface BookingTableViewProps {
     onCancelBooking: (booking: BookingRecord) => void;
     onPriceAttached: () => void;
     openSnackBar: () => void;
+    isExport: boolean;
+    handleCheckAll: (e: boolean) => void;
+    handleCheck: (id: number) => void;
+    selectedBookingIds: number[];
+    allChecked: boolean
 }
 
-export const BookingTable = ({ data, count, page, pageSize, onPageChange, onPageSizeChange, ActionsComponent, onViewDetails, onEditBooking, onCancelBooking, onPriceAttached, openSnackBar }: BookingTableViewProps) => {
+export const BookingTable = ({ data, count, page, pageSize, onPageChange, onPageSizeChange, ActionsComponent, onViewDetails, onEditBooking, onCancelBooking, onPriceAttached, openSnackBar, isExport, handleCheckAll, handleCheck, selectedBookingIds, allChecked }: BookingTableViewProps) => {
 
     const [priceOpen, setPriceOpen] = useState(false);
     const [price, setPrice] = useState("");
@@ -92,6 +98,7 @@ export const BookingTable = ({ data, count, page, pageSize, onPageChange, onPage
                 >
                     <TableHead>
                         <TableRow>
+                            {isExport && <StyledTableCell><Checkbox onChange={e => {handleCheckAll(e.target.checked)}} checked={allChecked}/></StyledTableCell>}
                             <StyledTableCell>Name</StyledTableCell>
                             <StyledTableCell>Pick-up Time</StyledTableCell>
                             <StyledTableCell>From</StyledTableCell>
@@ -102,13 +109,14 @@ export const BookingTable = ({ data, count, page, pageSize, onPageChange, onPage
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {data.map((row, index) => (
+                        {data.map((row, index) => (                       
                             <TableRow
                                 key={index}
                                 sx={{
                                     "&:hover": { bgcolor: "#f9fafb" },
                                     transition: "background-color 0.3s"
                                 }}>
+                                {isExport && <StyledTableCell><Checkbox checked={selectedBookingIds.includes(row.booking_id)} onChange={() => {handleCheck(row.booking_id)}}/></StyledTableCell>}
                                 <StyledTableCell>{row.User.full_name}</StyledTableCell>
                                 <StyledTableCell>
                           {row.trip.pickup_time

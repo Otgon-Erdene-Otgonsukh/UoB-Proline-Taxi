@@ -44,7 +44,7 @@ export default function BookingPage() {
 
   const session = useSession();
 
-  if (!session) {
+  if (!session.data) {
     // protected page
     redirect("/login");
   }
@@ -152,6 +152,9 @@ export default function BookingPage() {
     Passengers: 1,
     AdditionalInfo: "",
 });
+
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isUpdate, setIsUpdate] = useState(false); 
 
   const router = useRouter();
 
@@ -382,6 +385,16 @@ export default function BookingPage() {
       })
         .then((response) => {
           if (response.status == 200) {
+            if (prefilledBooking !== null && session.data?.user.account_type === "super_admin") {
+              setIsAdmin(true);
+              setIsUpdate(true);
+            } else if (prefilledBooking !== null && session.data.user.account_type !== "super_admin") {
+              setIsAdmin(false);
+              setIsUpdate(true);
+            } else {
+              setIsAdmin(false);
+              setIsUpdate(false);
+            }
             setIsConfirmed(true)
           } else {
             // Use additional info box to mark error. Will replace with specific errors in the future.
@@ -567,6 +580,12 @@ export default function BookingPage() {
       setVias(vias);
       setEnd(convertToMapLocation(prefilledBooking["trip"]["dropoff_location"]));
       setStart(convertToMapLocation(prefilledBooking["trip"]["pickup_location"]));
+      if (prefilledBooking["trip"]["return_drop_loc"]) {
+        setReturnLoc(convertToMapLocation(prefilledBooking["trip"]["return_drop_loc"]))
+      } else {
+        setReturnLoc(null);
+      }
+      
     }
   },
   [prefilledBooking]);
@@ -607,11 +626,17 @@ export default function BookingPage() {
         route.push({ name: vias[i].name, lat: vias[i].lat, lng: vias[i].lng });
       }
       route.push({ name: end.name, lat: end.lat, lng: end.lng });
-      fetchRoutes(route);
 
+      // "Sequentially" fetching routes if return trip is being updated to avoid wrong route ordering
+      const outboundRoutes = await fetchRoutes(route);
+
+      let combinedRoutes = outboundRoutes;
       if (returnloc != null) {
-        fetchRoutes([end, returnloc], true);
+        const returnRoutes = await fetchRoutes([end, returnloc]);
+        combinedRoutes = [...outboundRoutes, ...returnRoutes];
       }
+
+      setRoutes(combinedRoutes);
 
       function getRouteProperties(route: Loc[]) {
         return {
@@ -661,8 +686,8 @@ export default function BookingPage() {
     }
   }
 
-  async function fetchRoutes(locations: Loc[], returnJourney = false) {
-    const osrmRoutes = [];
+  async function fetchRoutes(locations: Loc[]) {
+    const osrmRoutes: RouteData[] = [];
     try {
       const response = await fetch("/api/route", {
         method: "POST",
@@ -679,18 +704,15 @@ export default function BookingPage() {
           distance: data.routes[0].distance,
         });
       }
-      if (returnJourney) {
-        setRoutes([routes[0], ...osrmRoutes]);
-      } else {
-        setRoutes(osrmRoutes);
-      }
+      return osrmRoutes;
     } catch (error) {
       console.error("Failed to fetch routes:", error);
+      return [];
     }
   }
 
   return (
-    isConfirmed ? <BookingConfirmedPage /> :
+    isConfirmed ? <BookingConfirmedPage update={isUpdate} admin={isAdmin}/> :
     // <div className="flex min-h-screen justify-center items-center font-inter p-4">
     <div className="min-h-screen font-inter bg-[#f5f5f5]">
       {session.data?.user.account_type === "super_admin" && (
@@ -1570,7 +1592,7 @@ export default function BookingPage() {
                     <input
                       id="returnDropOff"
                       placeholder="Enter"
-                      value={formData.ReturnTo?.address || ""}
+                      defaultValue={formData.ReturnTo?.address || ""}
                       className={`border-2 rounded px-3 sm:px-3 py-2 flex-1 min-w-0 ${formFeedback.ReturnTo == "" ? "border-gray-800" : "border-red-700"}`}
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
@@ -1632,6 +1654,7 @@ export default function BookingPage() {
                       <input
                         id="returnDate"
                         type="date"
+                        defaultValue={formData.ReturnDate}
                         className={`border-2 rounded px-3 sm:px-3 py-2 md:w-1/2 w-full ${
                           formFeedback.ReturnDate == ""
                             ? "border-gray-800"
@@ -1648,6 +1671,7 @@ export default function BookingPage() {
                       <input
                         id="returnTime"
                         type="time"
+                        defaultValue={formData.ReturnTime}
                         className={`border-2 rounded px-3 sm:px-3 py-2 md:w-1/2 w-full ${
                           formFeedback.ReturnTime == ""
                             ? "border-gray-800"

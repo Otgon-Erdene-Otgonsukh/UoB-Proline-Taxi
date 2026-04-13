@@ -29,6 +29,7 @@ import { getDepartmentsList } from "./requests";
 import DepartmentManagePage from "./departmentManageComponents/departmentManagePage";
 import { UserManagePage } from "./userManageComponents/userManagePage";
 import { BookingManagePage } from "./bookingManageComponents/bookingManagePage";
+import ExportPage from "./exportManageComponents/export";
 import ForbiddenPage from "@/components/ForbiddenPage";
 
 const Page = () => {
@@ -140,7 +141,8 @@ const Page = () => {
             <BookingManagePage />
           </div>
         )}
-          {tabValue === 3 && <SuperDashboard/>}
+        {tabValue === 3 && <SuperDashboard/>}
+        {tabValue === 4 && <ExportPage/>}
       </div>
       </div>
       </div>
