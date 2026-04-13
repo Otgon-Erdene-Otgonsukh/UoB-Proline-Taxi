@@ -17,6 +17,7 @@ import React, { useState, useEffect } from "react";
 import { DepartmentRecord } from "@/model/models";
 import { DepartmentTable } from "@/components/SuperDepartmentsTable";
 import ViewManagerDialog from "./viewManagerDialog";
+import AssignManagerDialog from "./assignManagers";
 import ViewDepartmentDialog from "./viewDepartmentDialog";
 import ConfirmDialog from "@/components/confirmDIalog";
 import CustomizedButton from "@/components/CustomizedButton";
@@ -82,6 +83,14 @@ const DepartmentManagePage = () => {
     setManagerData(manager);
     setManagerDialogOpen(true);
   };
+
+
+  const [managerAssignDepartment, setManagerAssignDepartment] = useState<DepartmentRecord>();
+  const [managerAssignDialogOpen, setManagerAssignDialogOpen] = useState(false)
+  const handleAssignManager = (department: DepartmentRecord) => {
+    setManagerAssignDepartment(department);
+    setManagerAssignDialogOpen(true);
+  }
 
   const [departmentData, setDepartmentData] = useState<DepartmentRecord>();
   const [departmentDialogOpen, setDepartmentDialogOpen] = useState(false)
@@ -182,6 +191,7 @@ const DepartmentManagePage = () => {
           onViewDetails={handleViewDepartment}
           onViewManager={handleViewManager}
           onDeleteDepartment={(d) => { setDepartmentData(d); setConfirmDeleteDialogOpen(true); }}
+          onAssignManager={handleAssignManager}
           ActionsComponent={TablePaginationActions}
         />
       </div>
@@ -194,6 +204,12 @@ const DepartmentManagePage = () => {
         setIsLoading(true);
         _rerenderTable(paginationMeta.page, paginationMeta.pageSize);
       }}
+    />
+
+    <AssignManagerDialog
+      dialogOpen={managerAssignDialogOpen}
+      handleDialogClose={() => setManagerAssignDialogOpen(false)}
+      viewData={managerAssignDepartment!}
     />
 
     {managerData && (
