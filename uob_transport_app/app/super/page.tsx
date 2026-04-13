@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { UserRecord } from "@/model/models";
 import { USER_ROLE } from "@/model/models";
@@ -17,29 +17,43 @@ import {
   ListItemIcon,
   Divider,
   Button,
+  IconButton,
+  Tooltip,
 } from "@mui/material";
-import PeopleIcon from '@mui/icons-material/People';
-import MenuIcon from '@mui/icons-material/Menu';
-import LocalTaxiIcon from '@mui/icons-material/LocalTaxi';
-import SettingsIcon from '@mui/icons-material/Settings';
-import FileDownloadIcon from '@mui/icons-material/FileDownload';
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import GroupsIcon from '@mui/icons-material/Groups';
+import PeopleIcon from "@mui/icons-material/People";
+import MenuIcon from "@mui/icons-material/Menu";
+import LocalTaxiIcon from "@mui/icons-material/LocalTaxi";
+import SettingsIcon from "@mui/icons-material/Settings";
+import FileDownloadIcon from "@mui/icons-material/FileDownload";
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import GroupsIcon from "@mui/icons-material/Groups";
 import { getDepartmentsList } from "./requests";
 import DepartmentManagePage from "./departmentManageComponents/departmentManagePage";
 import { UserManagePage } from "./userManageComponents/userManagePage";
 import { BookingManagePage } from "./bookingManageComponents/bookingManagePage";
 import ExportPage from "./exportManageComponents/export";
 import ForbiddenPage from "@/components/ForbiddenPage";
+import LogoutIcon from "@mui/icons-material/Logout";
+import { signOut } from "next-auth/react";
+import ConfirmDialog from "@/components/confirmDIalog";
 
 const Page = () => {
   // Get NextAuth Session.
   const { status, data } = useSession();
   const [isForbidden, setIsForbidden] = useState(false);
+  const [signOutDialogOpen, setSignOutDialogOpen] = useState(false);
 
   const router = useRouter();
 
-  const [departments, setDepartments] = useState<UserRecord["department"][]>([])
+  const [departments, setDepartments] = useState<UserRecord["department"][]>(
+    [],
+  );
+
+  const handleSignOut = () => {
+    signOut({
+      callbackUrl: "/",
+    });
+  };
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -50,7 +64,7 @@ const Page = () => {
       setIsForbidden(true);
     } else if (data && data.user?.account_type === USER_ROLE.SUPER_ADMIN) {
       setIsForbidden(false);
-      getDepartmentsList().then(async res => {
+      getDepartmentsList().then(async (res) => {
         if (res.status === 200) {
           const data = await res.json();
           setDepartments(data);
@@ -61,12 +75,17 @@ const Page = () => {
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
-    if (event.type === 'keydown' && ((event as React.KeyboardEvent).key === 'Tab' || (event as React.KeyboardEvent).key === 'Shift')) {
-      return;
-    }
-    setIsDrawerOpen(open);
-  };
+  const toggleDrawer =
+    (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
+      if (
+        event.type === "keydown" &&
+        ((event as React.KeyboardEvent).key === "Tab" ||
+          (event as React.KeyboardEvent).key === "Shift")
+      ) {
+        return;
+      }
+      setIsDrawerOpen(open);
+    };
 
   const [tabValue, setTabValue] = useState(0);
 
@@ -76,46 +95,64 @@ const Page = () => {
 
   return (
     <div className="flex-col font-inter">
-      <header className="w-full bg-[#2c2c2c] text-white p-3 shadow-lg items-center flex gap-4 sticky top-0 z-50">
-        <Button
-          onClick={toggleDrawer(true)}
-          sx={{ color: "white", minWidth: '40px' }}
-        >
-          <MenuIcon fontSize="medium" />
-        </Button>
-        <span className="font-aleo text-2xl sm:text-3xl font-semibold">Management Panel</span>
+      <header className="w-full bg-[#2c2c2c] text-white p-3 shadow-lg justify-between items-center flex gap-4 sticky top-0 z-50 px-5">
+        <div className="flex items-center gap-4">
+          <Tooltip title="Open Menu">
+            <Button
+              onClick={toggleDrawer(true)}
+              sx={{ color: "white", minWidth: "40px" }}
+            >
+              <MenuIcon fontSize="medium" />
+            </Button>
+          </Tooltip>
+
+          <span className="font-aleo text-2xl sm:text-3xl font-semibold">
+            Management Panel
+          </span>
+        </div>
+        <Tooltip title="Log Out">
+          <IconButton onClick={() => setSignOutDialogOpen(true)}>
+            <LogoutIcon sx={{ color: "red", fontSize: 32 }} />
+          </IconButton>
+        </Tooltip>
       </header>
 
       <div className="w-full flex justify-center items-start p-4">
-        <Drawer
-          anchor="left"
-          open={isDrawerOpen}
-          onClose={toggleDrawer(false)}
-        >
+        <Drawer anchor="left" open={isDrawerOpen} onClose={toggleDrawer(false)}>
           <Box
             sx={{ width: 250 }}
             role="presentation"
             onClick={toggleDrawer(false)}
             onKeyDown={toggleDrawer(false)}
           >
-            <Typography variant="h6" sx={{ p: 2, fontWeight: 'bold', fontFamily: "aleo", fontSize: 25 }}>
+            <Typography
+              variant="h6"
+              sx={{
+                p: 2,
+                fontWeight: "bold",
+                fontFamily: "aleo",
+                fontSize: 25,
+              }}
+            >
               Admin Menu
             </Typography>
             <Divider />
             <List>
               {[
-                { text: 'Users', icon: <PeopleIcon />, index: 0 },
-                { text: 'Departments', icon: <GroupsIcon />, index: 1 },
-                { text: 'Bookings', icon: <LocalTaxiIcon />, index: 2 },
-                { text: 'Dashboard', icon: <DashboardIcon />, index: 3},
-                { text: 'Export Bookings', icon: <FileDownloadIcon />, index: 4 },
-                { text: 'Admin Settings', icon: <SettingsIcon />, index: 5 },
+                { text: "Users", icon: <PeopleIcon />, index: 0 },
+                { text: "Departments", icon: <GroupsIcon />, index: 1 },
+                { text: "Bookings", icon: <LocalTaxiIcon />, index: 2 },
+                { text: "Dashboard", icon: <DashboardIcon />, index: 3 },
+                {
+                  text: "Export Bookings",
+                  icon: <FileDownloadIcon />,
+                  index: 4,
+                },
+                { text: "Admin Settings", icon: <SettingsIcon />, index: 5 },
               ].map((item) => (
                 <ListItem key={item.text} disablePadding>
                   <ListItemButton onClick={() => setTabValue(item.index)}>
-                    <ListItemIcon>
-                      {item.icon}
-                    </ListItemIcon>
+                    <ListItemIcon>{item.icon}</ListItemIcon>
                     <ListItemText primary={item.text} />
                   </ListItemButton>
                 </ListItem>
@@ -123,29 +160,41 @@ const Page = () => {
             </List>
           </Box>
         </Drawer>
-      
-      <div className="w-full">
-        {tabValue === 0 && (
-          <div>
-            <UserManagePage departments={departments} />
-          </div>
-        )}
 
-        {tabValue === 1 && (
-          <div>
-            <DepartmentManagePage />
-          </div>
-        )}
-        {tabValue === 2 && (
-          <div>
-            <BookingManagePage />
-          </div>
-        )}
-        {tabValue === 3 && <SuperDashboard/>}
-        {tabValue === 4 && <ExportPage/>}
+        <div className="w-full">
+          {tabValue === 0 && (
+            <div>
+              <UserManagePage departments={departments} />
+            </div>
+          )}
+
+          {tabValue === 1 && (
+            <div>
+              <DepartmentManagePage />
+            </div>
+          )}
+          {tabValue === 2 && (
+            <div>
+              <BookingManagePage />
+            </div>
+          )}
+          {tabValue === 3 && <SuperDashboard />}
+          {tabValue === 4 && <ExportPage />}
+        </div>
       </div>
-      </div>
-      </div>
+
+      {signOutDialogOpen && (
+        <ConfirmDialog
+          open={signOutDialogOpen}
+          dialogTitle="Sign out confirmation"
+          confirmMessage="Are you sure you want to sign out ?"
+          confirmButtonText="Yes"
+          cancelButtonText="No, cancel"
+          confirmCallBack={handleSignOut}
+          cancelCallBack={() => setSignOutDialogOpen(false)}
+        />
+      )}
+    </div>
   );
 };
 

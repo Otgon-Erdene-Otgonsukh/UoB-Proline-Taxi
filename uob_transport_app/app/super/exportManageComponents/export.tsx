@@ -15,6 +15,7 @@ import {
   Stack,
   TextField,
   Typography,
+  Chip,
   useTheme,
   Snackbar,
   Alert,
@@ -40,7 +41,6 @@ import CustomizedButton from "@/components/CustomizedButton";
 import { getBookingsList, cancelBooking } from "../requests";
 import { redirect } from "next/navigation";
 import { easyGetRequest } from "@/utils/easyRequest";
-import { number } from "framer-motion";
 
 interface DepCount {
   dep_id: number;
@@ -327,7 +327,15 @@ function BookingViewDialog({
           <Typography gutterBottom sx={{ fontWeight: "bold" }}>
             Booking Status:
           </Typography>
-          <Typography gutterBottom>{viewData.booking_status}</Typography>
+          <Chip
+            size="small"
+            label={viewData.booking_status}
+            color={
+              viewData.booking_status === "Approved" ? "success" : "warning" 
+            }
+            variant="filled"
+            sx={{ textTransform: "capitalize", fontWeight: 600 }}
+          />
         </Stack>
       </DialogContent>
       <DialogActions>
@@ -486,18 +494,16 @@ export default function ExportPage() {
     setSelectedCount(selectedBookingIds.length);
   }, [selectedBookingIds]);
 
-
   // For Ioan, export button handlers
   const handleDepartmentExport = async () => {
     // selectedDepartment variable contains the currently selected DepCount typed object
-  }
+  };
 
   const handleSelectedExport = async () => {
     // selectedBookingIds variable is an array containing all the selected booking ids
-  }
+  };
 
   // Hope the above variables make it a bit easier to handle the backend export logic
-
 
   useEffect(() => {
     _rerenderTable();
@@ -551,6 +557,7 @@ export default function ExportPage() {
     from?: string;
     to?: string;
     bookingStatus?: string;
+    department?: string;
   };
   const [searchFormInput, setSearchFormInput] = useState<SearchFormProps>({
     pickUpTimeFrom: undefined,
@@ -558,8 +565,26 @@ export default function ExportPage() {
     from: "",
     to: "",
     bookingStatus: "All",
+    department: "",
   });
+
+  const handleClear = () => {
+    setSearchFormInput({
+      pickUpTimeFrom: undefined,
+      pickUpTimeTo: undefined,
+      from: "",
+      to: "",
+      bookingStatus: "All",
+      department: "",
+    });
+  };
+
   const [isSearchSubmitted, setIsSearchSubmitted] = useState(false);
+
+  useEffect(() => {
+    // auto re-render the table on selections
+    _rerenderTable(paginationMeta.page, paginationMeta.pageSize);
+  }, [searchFormInput.bookingStatus]);
 
   const dateTimePickerFromAnchorRef = useRef<HTMLDivElement>(null);
   const dateTimePickerToAnchorRef = useRef<HTMLDivElement>(null);
@@ -654,10 +679,7 @@ export default function ExportPage() {
       <div>
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center gap-2">
-            <h1
-              className="text-xl font-aleo md:text-2xl font-semibold text-shadow-lg/20 py-2 pr-4"
-              onClick={() => console.log(selectedBookingIds)}
-            >
+            <h1 className="font-aleo text-2xl font-semibold text-shadow-lg/20 py-2 pr-4">
               Export Bookings
             </h1>
           </div>
@@ -670,6 +692,19 @@ export default function ExportPage() {
               gap: 1,
             }}
           >
+            <TextField
+              label="Department"
+              size="small"
+              id="searchFormInput"
+              sx={{ minWidth: 140 }}
+              value={searchFormInput.department}
+              onChange={(e) => {
+                setSearchFormInput({
+                  ...searchFormInput,
+                  department: e.target.value,
+                });
+              }}
+            ></TextField>
             <TextField
               label="From"
               id="searchFromInput"
@@ -803,6 +838,22 @@ export default function ExportPage() {
               }}
               locale={enLocale}
             />
+            <Button
+              sx={{
+                textTransform: "none",
+                bgcolor: "white",
+                border: "2px solid #2c2c2c",
+                borderRadius: 2,
+                color: "#2c2c2c",
+                "&:hover": {
+                  scale: 1.04,
+                },
+                transition: "all ease 0.2s",
+              }}
+              onClick={handleClear}
+            >
+              Clear
+            </Button>
             <CustomizedButton title="Search" type="warning" click={() => {}} />
           </Box>
         </div>
