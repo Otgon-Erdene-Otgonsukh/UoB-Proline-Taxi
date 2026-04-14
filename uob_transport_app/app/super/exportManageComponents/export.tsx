@@ -498,6 +498,7 @@ export default function ExportPage() {
   const downloadCSV = (res : Response, title: string) => {
     res.blob().then((blob) => {
       // From https://mojoauth.com/parse-and-generate-formats/parse-and-generate-csv-with-nextjs/#client-side-csv-generation-and-download
+      // Create a URL for the blob data and trigger the download.
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.setAttribute('href', url);
@@ -508,7 +509,7 @@ export default function ExportPage() {
     });
 };
 
-  // For Ioan, export button handlers
+  // Export button handlers
   const handleDepartmentExport = async () => {
     await fetch("/api/export_bookings", {
       method: "POST",
@@ -603,20 +604,25 @@ export default function ExportPage() {
   });
 
   const handleClear = () => {
-    setSearchFormInput({
+    const searchInput = {
       pickUpTimeFrom: undefined,
       pickUpTimeTo: undefined,
       from: "",
       to: "",
       bookingStatus: "All",
       department: "",
-    });
+    }
+    setSearchFormInput(searchInput);
+
+    setIsLoading(true);
+    setIsSearchSubmitted(false);
+    _rerenderTable(0, paginationMeta.pageSize, searchInput);
   };
 
   const [isSearchSubmitted, setIsSearchSubmitted] = useState(false);
 
   useEffect(() => {
-    // auto re-render the table on selections
+    // auto re-render the table on selections and clearing
     _rerenderTable(paginationMeta.page, paginationMeta.pageSize);
   }, [searchFormInput.bookingStatus]);
 
@@ -649,7 +655,7 @@ export default function ExportPage() {
   const [bookDetailDialogOpen, setBookDetailDialogOpen] = useState(false);
 
   // selected export department id and name
-  const [exportDepId, setExportDepId] = useState(-1); // For Ioan
+  const [exportDepId, setExportDepId] = useState(-1);
   const [selectedDepartment, setSelectedDepartment] = useState<DepCount | null>(
     null,
   );
@@ -684,19 +690,21 @@ export default function ExportPage() {
   const _rerenderTable = (
     page: number = paginationMeta.page,
     pageSize: number = paginationMeta.pageSize,
+    updatedData: SearchFormProps | null = null,
   ) => {
+    const searchInput = updatedData || searchFormInput;
     getBookingsList(page, pageSize, true, {
-      ...searchFormInput,
-      pickUpTimeFrom: searchFormInput.pickUpTimeFrom
-        ? searchFormInput.pickUpTimeFrom.toISOString()
+      ...searchInput,
+      pickUpTimeFrom: searchInput.pickUpTimeFrom
+        ? searchInput.pickUpTimeFrom.toISOString()
         : "",
-      pickUpTimeTo: searchFormInput.pickUpTimeTo
-        ? searchFormInput.pickUpTimeTo.toISOString()
+      pickUpTimeTo: searchInput.pickUpTimeTo
+        ? searchInput.pickUpTimeTo.toISOString()
         : "",
       bookingStatus:
-        searchFormInput?.bookingStatus === "All"
+        searchInput?.bookingStatus === "All"
           ? ""
-          : searchFormInput?.bookingStatus,
+          : searchInput?.bookingStatus,
     }).then((res) => {
       if (res.status === 200) {
         res.json().then((data) => {
