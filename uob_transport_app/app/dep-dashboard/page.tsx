@@ -760,8 +760,8 @@ export default function DepDashboard() {
                         <StyledTableCell>
                           <span>{row.passenger_name}</span>
                         </StyledTableCell>
-                        <StyledTableCell>
-                          {row.trip.price ? `${row.trip.price} £` : "N/A"}
+                        <StyledTableCell sx={{ fontWeight: "bold", color: row.trip.price? "green" : "gray" }}>
+                          {row.trip.price ? `£${row.trip.price}` : "N/A"}
                         </StyledTableCell>
                         <StyledTableCell>
                           <div className="flex gap-2 justify-center">
