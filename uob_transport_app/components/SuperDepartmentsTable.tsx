@@ -39,7 +39,7 @@ export const DepartmentTable = ({ data, count, page, pageSize, onPageChange, onP
                     <TableHead>
                         <TableRow>
                             <StyledTableCell>Name</StyledTableCell>
-                            <StyledTableCell>Managers</StyledTableCell>
+                            <StyledTableCell>Manager</StyledTableCell>
                             <StyledTableCell>User Count</StyledTableCell>
                             <StyledTableCell>Operation</StyledTableCell>
                         </TableRow>
@@ -58,11 +58,18 @@ export const DepartmentTable = ({ data, count, page, pageSize, onPageChange, onP
                                     <StyledTableCell>
                                         <div className="flex gap-2 justify-center">
                                         {row.manager ?
-                                            (<CustomizedButton
-                                                click={() => onViewManager(row.manager!)}
-                                                type="warning"
-                                                title="View"
-                                            />
+                                            (<Button
+                                                onClick={() => onViewManager(row.manager)}
+                                                sx={{
+                                                    color: "#000000",
+                                                    outline: "1px solid #2c2c2c",
+                                                    px: 1,
+                                                    textTransform: "none",
+                                                    ":hover": { bgcolor: "#2c2c2c", color: "white" },
+                                                }}
+                                            >
+                                                {row.manager.full_name}
+                                            </Button>
                                             ) :
                                             (<CustomizedButton
                                                 click={() => onAssignManager(row)}
