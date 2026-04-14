@@ -211,19 +211,21 @@ const Page = () => {
     page: number,
     pageSize: number,
     submittedSearch: boolean = isSearchSubmitted,
+    searchInput: SearchFormProps = searchFormInput,
   ) => {
+    const search = searchInput || searchFormInput;
     getUserBookingList(page, pageSize, {
-      ...searchFormInput,
-      pickUpTimeFrom: searchFormInput.pickUpTimeFrom
-        ? searchFormInput.pickUpTimeFrom.toISOString()
+      ...search,
+      pickUpTimeFrom: search.pickUpTimeFrom
+        ? search.pickUpTimeFrom.toISOString()
         : "",
-      pickUpTimeTo: searchFormInput.pickUpTimeTo
-        ? searchFormInput.pickUpTimeTo.toISOString()
+      pickUpTimeTo: search.pickUpTimeTo
+        ? search.pickUpTimeTo.toISOString()
         : "",
       bookingStatus:
-        searchFormInput?.bookingStatus === "All"
+        search?.bookingStatus === "All"
           ? ""
-          : searchFormInput?.bookingStatus,
+          : search?.bookingStatus,
     }).then((res) => {
       if (res.status === 200) {
         res.json().then((data) => {
@@ -237,13 +239,16 @@ const Page = () => {
   };
 
   const handleClear = () => {
-    setSearchFormInput({
+    const search = {
       pickUpTimeFrom: undefined,
       pickUpTimeTo: undefined,
       from: "",
       to: "",
       bookingStatus: "All"
-    })
+    }
+    setSearchFormInput(search);
+    setIsLoading(true);
+    _getBookingListData(0, paginationMeta.pageSize, true, search);
   };
   
   useEffect(() => {

@@ -454,14 +454,17 @@ export const BookingManagePage = () => {
   const [isSearchSubmitted, setIsSearchSubmitted] = useState(false);
 
   const handleClear = () => {
-    setSearchFormInput({
+    const searchInput = {
       pickUpTimeFrom: undefined,
       pickUpTimeTo: undefined,
       from: "",
       to: "",
       bookingStatus: "All",
       department: ""
-    })
+    }
+    setSearchFormInput(searchFormInput)
+    setIsLoading(true)
+    _rerenderTable(0, paginationMeta.pageSize, searchInput)
   }
 
   useEffect(() => { // auto re-render the table on selections
@@ -522,19 +525,20 @@ export const BookingManagePage = () => {
     });
   };
 
-  const _rerenderTable = (page: number = paginationMeta.page, pageSize: number = paginationMeta.pageSize) => {
+  const _rerenderTable = (page: number = paginationMeta.page, pageSize: number = paginationMeta.pageSize, searchInput?: SearchFormProps) => {
+    const search = searchInput || searchFormInput;
     getBookingsList(page, pageSize, false, {
-      ...searchFormInput,
-      pickUpTimeFrom: searchFormInput.pickUpTimeFrom
-        ? searchFormInput.pickUpTimeFrom.toISOString()
+      ...search,
+      pickUpTimeFrom: search.pickUpTimeFrom
+        ? search.pickUpTimeFrom.toISOString()
         : "",
-      pickUpTimeTo: searchFormInput.pickUpTimeTo
-        ? searchFormInput.pickUpTimeTo.toISOString()
+      pickUpTimeTo: search.pickUpTimeTo
+        ? search.pickUpTimeTo.toISOString()
         : "",
       bookingStatus:
-        searchFormInput?.bookingStatus === "All"
+        search?.bookingStatus === "All"
           ? ""
-          : searchFormInput?.bookingStatus,
+          : search?.bookingStatus,
     }).then((res) => {
       if (res.status === 200) {
         res.json().then((data) => {
