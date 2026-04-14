@@ -51,6 +51,13 @@ export async function POST(
     } else if (depId) {
         // If it's depId instead, fetch all of the bookings belonging to that department and put their IDs into that array.
         bookingIdArray = (await getBookingIDsByDepartment(depId));
+    } else {
+        return new Response(JSON.stringify({
+            message: 'Missing parameters'
+        }), {
+            status: 400,
+            headers: { 'Content-Type': 'application/json' },
+        })
     }
 
     // Convert each booking entry into a row in CSV.
