@@ -3,6 +3,7 @@ import { getBookingIDsByDepartment, getBookingTrip } from "@/backend/access/book
 import { auth } from "@/auth";
 import { isAdmin } from "@/backend/access/user_access";
 import { location } from "@/model/models";
+import { getDepartmentByIdAccess } from "@/backend/access/departments_access";
 
 export async function POST(
     request: NextRequest,
@@ -35,11 +36,12 @@ export async function POST(
     const depId = jsonBody["depId"] as number;
 
     const csvHeaders = [
-        "uob_booking_id", "date", "name", "phone", "address/lat", "address/lng", "address/formatted",
+        "uob_booking_id", "pickup_date", "department_name", "name", "phone", "address/lat", "address/lng", "address/formatted",
         "destination/lat", "destination/lng", "destination/formatted",
         "vias/via1/lat", "vias/via1/lng", "vias/via1/formatted",
         "vias/via2/lat", "vias/via2/lng", "vias/via2/formatted",
         "vias/via3/lat", "vias/via3/lng", "vias/via3/formatted",
+        "return/lat", "return/lng", "return/formatted", "return/pickup_date",
         "booking_status", "po_number", "num_passengers", "additional_info"
     ]
     const resArray = [];
@@ -62,17 +64,24 @@ export async function POST(
 
     // Convert each booking entry into a row in CSV.
     for (const id of bookingIdArray) {
-        console.log(id)
         const booking = await getBookingTrip(id)
         if (booking != null) {
             const pickupLoc = JSON.parse(booking?.trip?.pickup_location) as location
             const dropoffLoc = JSON.parse(booking?.trip?.dropoff_location) as location
             const vias = booking?.trip?.via ? JSON.parse(booking?.trip?.via) as location[] : []
+            const return_loc = booking?.trip?.return_drop_loc ? JSON.parse(booking?.trip?.return_drop_loc) as location : null
+
+            const department = await getDepartmentByIdAccess(booking.dep_id);
+
+            let depname = "";
+            if (department !== null) {
+                depname = department.dep_name
+            }
 
             // Construct the CSV row as an array.
             resArray.push([
                 booking?.booking_id, booking?.trip?.pickup_time,
-                booking?.passenger_name, booking?.tel_number,
+                booking?.passenger_name, depname, booking?.tel_number,
 
                 pickupLoc.lat, pickupLoc.lng, pickupLoc.address,
                 dropoffLoc.lat, dropoffLoc.lng, dropoffLoc.address,
@@ -82,6 +91,8 @@ export async function POST(
                 vias[1]?.lat || "", vias[1]?.lng || "", vias[1]?.address || "",
                 
                 vias[2]?.lat || "", vias[2]?.lng || "", vias[2]?.address || "",
+
+                return_loc?.lat || "", return_loc?.lng || "", return_loc?.address || "", booking?.trip.return_pickup_time || "",
                 
                 booking?.booking_status, booking?.trip?.PO, booking?.trip?.passenger_num, booking?.additional_info
             ])
