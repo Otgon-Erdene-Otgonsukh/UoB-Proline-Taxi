@@ -181,13 +181,14 @@ export default function DepDashboard() {
     priceFilter,
   ]);
 
-  const _getBookingListData = (page: number, pageSize: number) => {
+  const _getBookingListData = (page: number, pageSize: number, searchInput?: SearchFormProps) => {
     // fetch data with current paginationMeta and searchParams
+    const search = searchInput || searchFormInput;
     getPendingBookingList(page, pageSize, {
-      from: searchFormInput.from,
-      to: searchFormInput.to,
-      passengerName: searchFormInput.passengerName,
-      isFlight: searchFormInput.isFlight,
+      from: search.from,
+      to: search.to,
+      passengerName: search.passengerName,
+      isFlight: search.isFlight,
       total: totalApplied,
       status: statusApplied,
       overdue: overdueApplied,
@@ -205,13 +206,17 @@ export default function DepDashboard() {
   };
 
   const handleClear = () => {
-    setSearchFormInput({
+    const search = {
       passengerName: "",
       from: "",
       to: "",
       isFlight: false
-    });
+    }
+    setSearchFormInput(search);
     setPriceFilter("all");
+
+    setIsLoading(true);
+    _getBookingListData(0, paginationMeta.pageSize, search);
   }
 
   const handleViewOpen = (booking: BookingWithTrip) => {
@@ -760,8 +765,8 @@ export default function DepDashboard() {
                         <StyledTableCell>
                           <span>{row.passenger_name}</span>
                         </StyledTableCell>
-                        <StyledTableCell>
-                          {row.trip.price ? `${row.trip.price} £` : "N/A"}
+                        <StyledTableCell sx={{ fontWeight: "bold", color: row.trip.price? "green" : "gray" }}>
+                          {row.trip.price ? `£${row.trip.price}` : "N/A"}
                         </StyledTableCell>
                         <StyledTableCell>
                           <div className="flex gap-2 justify-center">

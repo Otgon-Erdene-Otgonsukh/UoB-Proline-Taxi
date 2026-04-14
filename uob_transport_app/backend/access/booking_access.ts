@@ -116,6 +116,38 @@ export const getTripDetails = async (tripId: number) => {
   })
 }
 
+export const getBookingTrip = async (bookingId: number) => {
+  const booking = await prisma.booking.findUnique({
+    where: {
+      booking_id: bookingId
+    },
+    include: {
+      trip: true
+    }
+  })
+
+  return booking;
+}
+
+export const getBookingIDsByDepartment = async (depId: number) => {
+  const prismaBooking = await prisma.booking.findMany({
+    select: {
+      booking_id: true,
+    },
+    where: {
+      dep_id: depId
+    }
+  })
+
+  const returnBookings: number[] = [];
+
+  for (const booking of prismaBooking) {
+    returnBookings.push(booking.booking_id);
+  }
+  
+  return returnBookings;
+}
+
 
 export const cancelBookingsAccess = async (bookingId: number): Promise<booking | null> => {
   return prisma.booking.update({

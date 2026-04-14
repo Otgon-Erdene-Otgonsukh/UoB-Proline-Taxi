@@ -69,17 +69,20 @@ export const UserManagePage = (
   })
   const handleSubmitSearchForm = (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('submit');
     setIsLoading(true)
     _rerenderTable(paginationMeta.page, paginationMeta.pageSize)
   }
 
   const handleClear = () => {
-    setSearchFormInput({
+    const searchInput = {
       name: "",
       user_status: "All",
       role: "All"
-    })
+    }
+
+    setSearchFormInput(searchInput)
+    setIsLoading(true)
+    _rerenderTable(0, paginationMeta.pageSize, searchInput)
   }
 
   useEffect(() => {
@@ -135,12 +138,13 @@ export const UserManagePage = (
     })
   };
 
-  const _rerenderTable = (page: number, pageSize: number) => {
+  const _rerenderTable = (page: number, pageSize: number, searchInput?: SearchFormProps) => {
+    const search = searchInput || searchFormInput;
     getUsersAsAdmin({
       name: undefined,
-      ...searchFormInput,
-      role: searchFormInput.role === "All" ? undefined : searchFormInput.role,
-      user_status: searchFormInput.user_status === "All" ? undefined : (searchFormInput.user_status as number),
+      ...search,
+      role: search.role === "All" ? undefined : search.role,
+      user_status: search.user_status === "All" ? undefined : (search.user_status as number),
       page,
       pageSize
     }).then(res => {
