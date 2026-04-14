@@ -21,9 +21,10 @@ interface DepartmentTableViewProps {
     onViewDetails: (department: DepartmentRecord) => void;
     onViewManager: (manager: DepartmentRecord["manager"]) => void;
     onDeleteDepartment: (department: DepartmentRecord) => void;
+    onAssignManager: (department: DepartmentRecord) => void;
 }
 
-export const DepartmentTable = ({ data, count, page, pageSize, onPageChange, onPageSizeChange, ActionsComponent, onViewDetails, onViewManager, onDeleteDepartment }: DepartmentTableViewProps) => {
+export const DepartmentTable = ({ data, count, page, pageSize, onPageChange, onPageSizeChange, ActionsComponent, onViewDetails, onViewManager, onDeleteDepartment, onAssignManager }: DepartmentTableViewProps) => {
     return (
         <Box>
             <TableContainer
@@ -38,7 +39,7 @@ export const DepartmentTable = ({ data, count, page, pageSize, onPageChange, onP
                     <TableHead>
                         <TableRow>
                             <StyledTableCell>Name</StyledTableCell>
-                            <StyledTableCell>Manager</StyledTableCell>
+                            <StyledTableCell>Managers</StyledTableCell>
                             <StyledTableCell>User Count</StyledTableCell>
                             <StyledTableCell>Operation</StyledTableCell>
                         </TableRow>
@@ -55,16 +56,22 @@ export const DepartmentTable = ({ data, count, page, pageSize, onPageChange, onP
                                 >
                                     <StyledTableCell>{row.depName}</StyledTableCell>
                                     <StyledTableCell>
+                                        <div className="flex gap-2 justify-center">
                                         {row.manager ?
-                                            (<Button onClick={() => onViewManager(row.manager)}>
-                                                {row.manager.full_name}
-                                            </Button>) :
-                                            (<Chip
-                                                size="small"
-                                                color='default'
-                                                label="To be assigned"
-                                                sx={{ border: 2, borderColor: "gray" }}
-                                            />)}
+                                            (<CustomizedButton
+                                                click={() => onViewManager(row.manager!)}
+                                                type="warning"
+                                                title="View"
+                                            />
+                                            ) :
+                                            (<CustomizedButton
+                                                click={() => onAssignManager(row)}
+                                                type="primary"
+                                                title="Assign"
+                                            />
+                                            )
+                                        }
+                                        </div>
                                     </StyledTableCell>
                                     <StyledTableCell>{row.userCount}</StyledTableCell>
                                     <StyledTableCell>
