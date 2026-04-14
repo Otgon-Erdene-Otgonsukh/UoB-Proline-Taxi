@@ -236,6 +236,20 @@ const Page = () => {
     });
   };
 
+  const handleClear = () => {
+    setSearchFormInput({
+      pickUpTimeFrom: undefined,
+      pickUpTimeTo: undefined,
+      from: "",
+      to: "",
+      bookingStatus: "All"
+    })
+  };
+  
+  useEffect(() => {
+    _getBookingListData(paginationMeta.page, paginationMeta.pageSize, false);
+  }, [searchFormInput.bookingStatus])
+
   // Do nothing if we get a status. Await for this check to be carried out in useEffect.
   if (status === "loading" || status === "unauthenticated") {
     return null;
@@ -591,6 +605,22 @@ const Page = () => {
               }}
               locale={enLocale}
             />
+            <Button sx={{
+              textTransform: "none",
+              bgcolor: "white",
+              border: "2px solid #2c2c2c",
+              borderRadius: 2,
+              color: "#2c2c2c",
+              "&:hover": {
+                scale: 1.04
+              },
+              transition: "all ease 0.2s",
+              height: { xs: 35, md: "100%"}
+            }}
+            onClick={handleClear}
+            >
+              Clear
+            </Button>
             <CustomizedButton title="Search" type="warning" click={() => { }} />
           </Box>
           {isSearchSubmitted &&

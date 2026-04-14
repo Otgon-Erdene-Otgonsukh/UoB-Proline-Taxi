@@ -204,6 +204,16 @@ export default function DepDashboard() {
     });
   };
 
+  const handleClear = () => {
+    setSearchFormInput({
+      passengerName: "",
+      from: "",
+      to: "",
+      isFlight: false
+    });
+    setPriceFilter("all");
+  }
+
   const handleViewOpen = (booking: BookingWithTrip) => {
     setSelectedBooking(booking);
   };
@@ -518,7 +528,7 @@ export default function DepDashboard() {
       >
         <div className="flex md:flex-row flex-col justify-between items-center">
           <div className="flex">
-            <h1 className="text-2xl font-aleo md:text-3xl font-semibold text-shadow-lg/20">
+            <h1 className="text-2xl font-aleo md:text-2xl font-semibold text-shadow-lg/20">
               Department Bookings
             </h1>
             <div className="md:mr-4 md:mt-5 mr-0 mt-0 md:ml-0 ml-6">
@@ -596,6 +606,22 @@ export default function DepDashboard() {
                 <MenuItem value="withoutPrice">Without Price</MenuItem>
               </Select>
             </FormControl>
+            <Button sx={{
+              textTransform: "none",
+              bgcolor: "white",
+              border: "2px solid #2c2c2c",
+              borderRadius: 2,
+              color: "#2c2c2c",
+              "&:hover": {
+                scale: 1.04
+              },
+              transition: "all ease 0.2s",
+              height: { xs: 35, md: "100%" }
+            }}
+            onClick={handleClear}
+            >
+              Clear
+            </Button>
             <CustomizedButton title="Search" type="warning" click={() => {}} />
           </Box>
         </div>
