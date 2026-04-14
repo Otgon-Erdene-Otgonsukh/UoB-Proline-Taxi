@@ -53,6 +53,9 @@ const AssignManagerDialog = ({ viewData, dialogOpen, handleDialogClose }: { view
         setSelected(selected === userId ? null : userId);
     };
 
+    const selectedMember = selected !== null ? members.find(m => m.user_id === selected) : null;
+    const isFinanceStaff = selectedMember?.role === 'FINANCE_STAFF' || selectedMember?.role === 'finance_staff';
+
     return (<div>
         <Dialog
             onClose={handleDialogClose}
@@ -155,20 +158,22 @@ const AssignManagerDialog = ({ viewData, dialogOpen, handleDialogClose }: { view
                     }
                 </Box>
             </DialogContent>
-            <DialogActions>
-                
-                <Button>
-                    Assign as Manager
-                </Button>
+            <DialogActions sx={{ display: "flex", justifyContent: "space-between" }}>
+                <Box sx={{ display: "flex", gap: 1 }}>
+                    <Button>
+                        Assign as Manager
+                    </Button>
 
-                <Button>
-                    Assign as Finance Manager
-                </Button>
+                    {isFinanceStaff && (
+                        <Button>
+                            Assign as Finance Manager
+                        </Button>
+                    )}
+                </Box>
 
                 <Button
                     sx={{
                         color: "#2c2c2c",
-                        mr: 1,
                         transition: "all 250ms",
                         ":hover": { bgcolor: "#2c2c2c", color: "white" },
                     }}
