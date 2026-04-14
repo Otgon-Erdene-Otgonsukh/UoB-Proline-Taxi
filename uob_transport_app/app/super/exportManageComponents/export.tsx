@@ -41,6 +41,8 @@ import { getBookingsList, cancelBooking } from "../requests";
 import { redirect } from "next/navigation";
 import { easyGetRequest } from "@/utils/easyRequest";
 import { number } from "framer-motion";
+import { Blob } from "node:buffer";
+import { Result } from "maplibre-gl";
 
 interface DepCount {
   dep_id: number;
@@ -487,16 +489,49 @@ export default function ExportPage() {
   }, [selectedBookingIds]);
 
 
+  const downloadCSV = (res : Response, title: string) => {
+    res.blob().then((blob) => {
+      // From https://mojoauth.com/parse-and-generate-formats/parse-and-generate-csv-with-nextjs/#client-side-csv-generation-and-download
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `${title}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    });
+};
+
   // For Ioan, export button handlers
   const handleDepartmentExport = async () => {
-    // selectedDepartment variable contains the currently selected DepCount typed object
+    await fetch("/api/export_bookings", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ depId: exportDepId }),
+    }).then((res) => {
+      if (res.status === 200) {
+        const title = selectedDepartment ? selectedDepartment.dep_name + "_Department" : "Department_Bookings"
+        downloadCSV(res, title);
+      }
+    });
   }
 
   const handleSelectedExport = async () => {
     // selectedBookingIds variable is an array containing all the selected booking ids
-  }
-
-  // Hope the above variables make it a bit easier to handle the backend export logic
+    await fetch("/api/export_bookings", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ bookingIds: selectedBookingIds }),
+    }).then((res) => {
+      if (res.status === 200) {
+        downloadCSV(res, "Selected_Bookings");
+      }
+    });
+  };
 
 
   useEffect(() => {
