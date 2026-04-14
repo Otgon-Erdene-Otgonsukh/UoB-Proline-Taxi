@@ -41,9 +41,6 @@ import CustomizedButton from "@/components/CustomizedButton";
 import { getBookingsList, cancelBooking } from "../requests";
 import { redirect } from "next/navigation";
 import { easyGetRequest } from "@/utils/easyRequest";
-import { number } from "framer-motion";
-import { Blob } from "node:buffer";
-import { Result } from "maplibre-gl";
 
 interface DepCount {
   dep_id: number;
