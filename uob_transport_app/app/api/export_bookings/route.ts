@@ -42,7 +42,7 @@ export async function POST(
         "vias/via3/lat", "vias/via3/lng", "vias/via3/formatted",
         "booking_status", "po_number", "num_passengers", "additional_info"
     ]
-    let resArray = [];
+    const resArray = [];
     let bookingIdArray : number[] = [];
 
     // If the parameter is bookingIds, use the list of booking IDs in the POST request.

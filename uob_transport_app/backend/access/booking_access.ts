@@ -139,7 +139,7 @@ export const getBookingIDsByDepartment = async (depId: number) => {
     }
   })
 
-  let returnBookings: number[] = [];
+  const returnBookings: number[] = [];
 
   for (const booking of prismaBooking) {
     returnBookings.push(booking.booking_id);
