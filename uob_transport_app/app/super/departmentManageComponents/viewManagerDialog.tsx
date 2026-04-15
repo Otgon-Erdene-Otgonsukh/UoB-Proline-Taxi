@@ -17,6 +17,19 @@ import { roleReadableStrMap, userStatusToIntMap, userStatusToStrMap } from "../c
 
 const ViewDepartmentDialog = ({ viewData, dialogOpen, handleDialogClose }: { viewData: DepartmentRecord['manager'], dialogOpen: boolean, handleDialogClose: () => void }) => {
 
+  const handleUnassignManager = (event: React.MouseEvent<HTMLButtonElement>) => {
+
+        fetch("/api/manager_assignment", {
+            method: "POST",
+            body: JSON.stringify({
+                user_id: viewData?.user_id,
+                isAssign: false
+            })
+        })
+
+        handleDialogClose();
+  };
+
   return (<div>
     <Dialog
       onClose={handleDialogClose}
@@ -117,7 +130,18 @@ const ViewDepartmentDialog = ({ viewData, dialogOpen, handleDialogClose }: { vie
           />
         </Stack>
       </DialogContent>
-      <DialogActions>
+      <DialogActions sx={{ display: "flex", justifyContent: "space-between" }}>
+        <Button
+          sx={{
+            color: "#2c2c2c",
+            mr: 1,
+            transition: "all 250ms",
+            ":hover": { bgcolor: "#dc2626", color: "white" },
+          }}
+          onClick={handleUnassignManager}
+        >
+          Unassign Manager
+        </Button>
         <Button
           sx={{
             color: "#2c2c2c",
