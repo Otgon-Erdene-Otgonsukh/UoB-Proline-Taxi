@@ -12,7 +12,9 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 // The website is automatically zoomed out a bit to avoid browser default zooms making UI feel off
 export const viewport: Viewport = { 
   width: "device-width",
-  initialScale: 0.93
+  initialScale: 0.93,
+  userScalable: false,
+  maximumScale: 0.93
 };
 
 export const metadata: Metadata = {

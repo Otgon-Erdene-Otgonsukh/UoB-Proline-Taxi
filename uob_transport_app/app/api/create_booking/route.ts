@@ -183,6 +183,20 @@ export async function POST(request: Request) {
       },
     });
 
+    // Get super admin email to send the booking info 
+    const superEmail = await prisma.user.findFirst({
+      where: {
+        role: "super_admin"
+      }, 
+      select: {
+        email: true
+      }
+    });
+
+    if (!superEmail) {
+      return NextResponse.json({ message: "Super admin is not present" }, { status: 400 });
+    }
+
     const emailHtml = await render(
       BookingInfo({
         from: pickup_loc,
@@ -203,9 +217,7 @@ export async function POST(request: Request) {
         FromEmailAddress: `UoB Taxi & Chauffeur <${process.env.SES_FROM_EMAIL!}>`,
         Destination: {
           ToAddresses:
-            userEmail.email === email
-            ? [userEmail.email]
-            : [userEmail.email, email.trim()],
+            isLeadPassengerMyself ? [userEmail.email, superEmail.email] : [userEmail.email, email, superEmail.email],
         },
         Content: {
           Simple: {
