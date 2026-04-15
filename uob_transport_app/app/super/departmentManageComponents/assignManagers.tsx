@@ -31,8 +31,8 @@ const AssignManagerDialog = ({ viewData, dialogOpen, handleDialogClose }: { view
 
     const [members, setMembers] = useState<{ user_id: number, full_name: string, email: string, phone_number: string, role: string }[]>([]);
     const [isLoading, setIsLoading] = useState(true)
-    const [departmentData, setDepartmentData] = useState<DepartmentRecord>(viewData);
     const [selected, setSelected] = useState<number | null>(null);
+    const [selectedStaff, setSelectedMember] = useState<{ user_id: number, full_name: string, email: string, phone_number: string, role: string } | null>(null);
 
     useEffect(() => {
         if (!viewData?.depId) return;
@@ -56,12 +56,32 @@ const AssignManagerDialog = ({ viewData, dialogOpen, handleDialogClose }: { view
     const selectedMember = selected !== null ? members.find(m => m.user_id === selected) : null;
     const isFinanceStaff = selectedMember?.role === 'FINANCE_STAFF' || selectedMember?.role === 'finance_staff';
 
+    const handleAssignManager = async () => {
+        if (!selectedStaff) {
+            alert("Please select a finance staff member to assign as manager.");
+            return;
+        }
+
+        fetch("api/manager_assignment", {
+            method: "POST",
+            body: JSON.stringify({
+                user_id: selectedStaff.user_id,
+                isAssign: true
+            })
+        }).then(res => {
+            if (res.ok) {
+                handleDialogClose();
+            }
+        })
+    };
+
     return (<div>
         <Dialog
             onClose={handleDialogClose}
             aria-labelledby="customized-dialog-title"
             open={dialogOpen}
             maxWidth="md"
+            fullWidth={true}
             sx={{
                 "& .MuiStack-root": {
                     flexDirection: "row",
@@ -108,10 +128,10 @@ const AssignManagerDialog = ({ viewData, dialogOpen, handleDialogClose }: { view
                     </Typography>
                 </div>
                 <Typography gutterBottom sx={{ fontWeight: "bold", fontSize: 18, mt: 2 }}>
-                    Members (Total {members.length}):
+                    Finance Staff (Total {members.filter(m => m.role === 'finance_staff').length}):
                 </Typography>
                 <Box sx={{ marginTop: 2 }}>
-                    {isLoading ? <Typography sx={{ textAlign: "center", color: "gray" }}>Loading members...</Typography> : members.length === 0 ? <Typography sx={{ textAlign: "center", color: "gray" }}><PersonOffIcon sx={{ mb: 0.5 }} /> No users to show.</Typography> :
+                    {isLoading ? <Typography sx={{ textAlign: "center", color: "gray" }}>Loading members...</Typography> : members.filter(m => m.role === 'finance_staff').length === 0 ? <Typography sx={{ textAlign: "center", color: "gray" }}><PersonOffIcon sx={{ mb: 0.5 }} /> No finance staff to show.</Typography> :
                         (<TableContainer component={Paper} sx={{ boxShadow: "none", border: "none", maxHeight: 600 }}>
                             <Table stickyHeader sx={{ minWidth: 500 }} aria-label="department members table" size="small">
                                 <TableHead>
@@ -126,7 +146,7 @@ const AssignManagerDialog = ({ viewData, dialogOpen, handleDialogClose }: { view
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {members.map((member) => {
+                                    {members.filter(m => m.role === 'finance_staff').map((member) => {
                                         const isItemSelected = selected === member.user_id;
                                         return (
                                             <TableRow
@@ -143,6 +163,13 @@ const AssignManagerDialog = ({ viewData, dialogOpen, handleDialogClose }: { view
                                                     <Checkbox
                                                         color="primary"
                                                         checked={isItemSelected}
+                                                        onChange={(e) => {
+                                                            if (e.target.checked) {
+                                                                setSelectedMember(member);
+                                                            } else {
+                                                                setSelectedMember(null);
+                                                            }
+                                                        }}
                                                     />
                                                 </StyledStickyTableCell>
                                                 <StyledStickyTableCell>{member.full_name}</StyledStickyTableCell>
@@ -160,15 +187,11 @@ const AssignManagerDialog = ({ viewData, dialogOpen, handleDialogClose }: { view
             </DialogContent>
             <DialogActions sx={{ display: "flex", justifyContent: "space-between" }}>
                 <Box sx={{ display: "flex", gap: 1 }}>
-                    <Button>
-                        Assign as Manager
-                    </Button>
-
-                    {isFinanceStaff && (
-                        <Button>
-                            Assign as Finance Manager
+                        <Button
+                                onClick={handleAssignManager}
+                                >
+                            Assign as Manager
                         </Button>
-                    )}
                 </Box>
 
                 <Button
