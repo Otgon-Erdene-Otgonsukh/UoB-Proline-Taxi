@@ -61,11 +61,7 @@ export const DepartmentTable = ({ data, count, page, pageSize, onPageChange, onP
                                             (<Button
                                                 onClick={() => onViewManager(row.manager)}
                                                 sx={{
-                                                    color: "#000000",
-                                                    outline: "1px solid #2c2c2c",
-                                                    px: 1,
                                                     textTransform: "none",
-                                                    ":hover": { bgcolor: "#2c2c2c", color: "white" },
                                                 }}
                                             >
                                                 {row.manager.full_name}
@@ -73,7 +69,7 @@ export const DepartmentTable = ({ data, count, page, pageSize, onPageChange, onP
                                             ) :
                                             (<CustomizedButton
                                                 click={() => onAssignManager(row)}
-                                                type="primary"
+                                                type="warning"
                                                 title="Assign"
                                             />
                                             )
