@@ -77,6 +77,9 @@ This document provides an overview of all AI tools utilized in the project, in a
 **AI Tool:** Claude Sonnet 4.5  
 **Used from:** 5th November 2025
 
+**AI Tool:** ImgUpscaler.AI </br>
+**Used from** 23rd February 2026
+
 **Scope:**
  - Applying repetitive styling with agentic coding
  - Formatting markdown files to be more structured 
@@ -86,6 +89,7 @@ This document provides an overview of all AI tools utilized in the project, in a
  - Generating mock data for testing
  - Writing complex raw sql query
  - Proofreading and fixing spelling or grammar mistakes in docs/md files
+ - Enhancing  the quality of certain public assets like images.
 
 **Example Prompts:**
  - Apply the same styling logic to other divs in the MUI component.
@@ -94,6 +98,7 @@ This document provides an overview of all AI tools utilized in the project, in a
  - What is the difference between JWT Session and Token ?
  - How to group bookings by department and sum and count their amount and prices?
  - Read through this file and identify and patch up the spelling or grammar mistakes.
+ - Sharpen and enhance the following icons.
 
 **Used in the following files:**
  - `jest.config.ts`
@@ -102,3 +107,4 @@ This document provides an overview of all AI tools utilized in the project, in a
  - `__test__/*`
  - `/app/api/super-data`
  - `/docs/handover/handover.md`
+ - `/public`

@@ -75,6 +75,15 @@ npx prisma generate
 
 This creates the database in your Neon project by following the schema defined in `prisma/schema.prisma`. The second command creates a new Prisma Client to be used to query the database.
 
+#### Short guide on database table fields and values
+Certain columns in the database tables such as the `booking_status` in the bookings table and `role` in the user table are set to values determined by the team. 
+
+ - `booking_status`
+   - `Pending, Approved, Rejected or Cancelled`
+ - `role`
+   - `finance_staff, normal_user, proline_staff or super_admin`
+
+Furhter information on what type of preset values and custom types that had been used in the code base and the database columns can be found in the [`uob_transport_app/model`](/uob_transport_app/model/models.ts) directory.
 #### `AUTH_SECRET`
 
 This is a key used by Auth.js for signing and validating the JWT for authentication and session management. This key variable is created by running:
