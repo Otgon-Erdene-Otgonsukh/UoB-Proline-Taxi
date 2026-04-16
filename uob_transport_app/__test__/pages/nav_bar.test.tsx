@@ -232,3 +232,27 @@ describe("Navbar – authenticated state – present elements", () => {
     expect(screen.getByTestId("ArrowDropDownIcon")).toBeInTheDocument();
   });
 });
+
+//first name extraction
+describe("Navbar – greeting: first-name extraction", () => {
+  afterEach(() => jest.clearAllMocks());
+ 
+  test("only the first word of a two-part name is shown", () => {
+    withSession("Alice Smith");
+    render(<Navbar />);
+    expect(screen.getByText("Hi, Alice!")).toBeInTheDocument();
+    expect(screen.queryByText("Hi, Alice Smith!")).not.toBeInTheDocument();
+  });
+ 
+  test("full name is shown when it contains no spaces", () => {
+    withSession("Bob");
+    render(<Navbar />);
+    expect(screen.getByText("Hi, Bob!")).toBeInTheDocument();
+  });
+ 
+  test("only the first word of a three-part name is shown", () => {
+    withSession("Jean-Paul Dupont III");
+    render(<Navbar />);
+    expect(screen.getByText("Hi, Jean-Paul!")).toBeInTheDocument();
+  });
+});
