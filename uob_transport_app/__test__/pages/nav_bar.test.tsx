@@ -337,3 +337,26 @@ describe("Navbar – sign-out dialog: Cancel", () => {
     ).toBeInTheDocument();
   });
 });
+
+describe("Navbar – sign-out dialog: confirm", () => {
+  afterEach(() => jest.clearAllMocks());
+  beforeEach(() => withSession());
+ 
+  const clickYes = async () => {
+    render(<Navbar />);
+    fireEvent.click(screen.getByText("Hi, Alice!"));
+    fireEvent.click(await screen.findByText("Logout"));
+    await screen.findByText("Sign out confirmation");
+    fireEvent.click(screen.getByRole("button", { name: "Yes" }));
+  };
+ 
+  test("signOut is called exactly once", async () => {
+    await clickYes();
+    expect(signOutMock).toHaveBeenCalledTimes(1);
+  });
+ 
+  test("signOut is called with callbackUrl: '/'", async () => {
+    await clickYes();
+    expect(signOutMock).toHaveBeenCalledWith({ callbackUrl: "/" });
+  });
+});
