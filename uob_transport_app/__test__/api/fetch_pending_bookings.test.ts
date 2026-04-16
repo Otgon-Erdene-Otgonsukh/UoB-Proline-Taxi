@@ -4,10 +4,11 @@
 import { NextRequest } from "next/server";
 import { GET } from "../../app/api/get_pending_bookings/route";
 import { getPendingBookings, getPendingBookingsCount } from "@/backend/pending_bookings/get_pending_bookings";
+import { isAdmin, isFinanceStaff } from "@/backend/access/user_access";
 import { auth } from "@/auth";
 
-// Mock the database function
 jest.mock("../../backend/pending_bookings/get_pending_bookings");
+jest.mock("../../backend/access/user_access");
 
 jest.mock("../../auth", () => ({
   auth: jest.fn().mockResolvedValue({
@@ -15,8 +16,14 @@ jest.mock("../../auth", () => ({
   })
 }));
 
+beforeEach(() => {
+  jest.clearAllMocks();
+  // Default: user is admin so existing tests still pass
+  (isAdmin as jest.Mock).mockResolvedValue(true);
+  (isFinanceStaff as jest.Mock).mockResolvedValue(false);
+});
+
 test("check if the res status is success", async () => {
-  // Mock return value - fake booking data
   const mockBookings = [
     {
       booking_id: 1,
@@ -50,7 +57,7 @@ test("check if the res status is success", async () => {
   expect(getPendingBookings).toHaveBeenCalledTimes(1);
 });
 
-test("check res status is fail when the api fails", async () => {  
+test("check res status is fail when the api fails", async () => {
   (getPendingBookings as jest.Mock).mockRejectedValue(new Error("fail"));
   const req = new NextRequest("http://localhost:3000/api/get_pending_bookings?page=1&pageSize=10", {
     method: "GET",
@@ -58,28 +65,54 @@ test("check res status is fail when the api fails", async () => {
 
   const res = await GET(req);
   expect(res.status).toBe(500);
-})
+});
 
 test("the api responds with a fail status when session does not exist", async () => {
   (auth as jest.Mock).mockResolvedValue(null);
   const req = new NextRequest("http://localhost:3000/api/get_pending_bookings?page=1&pageSize=10", {
     method: "GET",
   });
-  
+
   const res = await GET(req);
-  expect(res.status).toBe(401)
-})
+  expect(res.status).toBe(401);
+});
 
 test("the api responds with fail status when page or pagesize query params are missing", async () => {
   (auth as jest.Mock).mockResolvedValue({
-    user_id: 3
+    user: { user_id: 3 }
   });
   const req = new NextRequest("http://localhost:3000/api/get_pending_bookings", {
     method: "GET",
   });
-  
+
   const res = await GET(req);
   expect(res.status).toBe(201);
-})
+});
 
-jest.clearAllMocks();
+test("finance staff can view pending bookings", async () => {
+  (auth as jest.Mock).mockResolvedValue({ user: { user_id: 5 } });
+  (isAdmin as jest.Mock).mockResolvedValue(false);
+  (isFinanceStaff as jest.Mock).mockResolvedValue(true);
+  (getPendingBookings as jest.Mock).mockResolvedValue([]);
+  (getPendingBookingsCount as jest.Mock).mockResolvedValue(0);
+
+  const req = new NextRequest("http://localhost:3000/api/get_pending_bookings?page=1&pageSize=10", {
+    method: "GET",
+  });
+
+  const res = await GET(req);
+  expect(res.status).toBe(200);
+});
+
+test("non-admin non-finance user gets 403", async () => {
+  (auth as jest.Mock).mockResolvedValue({ user: { user_id: 9 } });
+  (isAdmin as jest.Mock).mockResolvedValue(false);
+  (isFinanceStaff as jest.Mock).mockResolvedValue(false);
+
+  const req = new NextRequest("http://localhost:3000/api/get_pending_bookings?page=1&pageSize=10", {
+    method: "GET",
+  });
+
+  const res = await GET(req);
+  expect(res.status).toBe(403);
+});
