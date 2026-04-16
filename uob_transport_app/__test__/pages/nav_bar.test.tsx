@@ -70,7 +70,7 @@ describe("Navbar", () => {
     (useSession as jest.Mock).mockReturnValue({
       data: {
         user: {
-          name: "Alice",
+          name: "Alice",role:"finance_stuff"
         },
       },
     });
@@ -84,7 +84,7 @@ describe("Navbar", () => {
     (useSession as jest.Mock).mockReturnValue({
       data: {
         user: {
-          name: "Alice",
+          name: "Alice",role: "finance_stuff"
         },
       },
     });
@@ -103,7 +103,7 @@ describe("Navbar", () => {
     (useSession as jest.Mock).mockReturnValue({
       data: {
         user: {
-          name: "Alice",
+          name: "Alice",role: "finance_stuff"
         },
       },
     });
@@ -128,7 +128,7 @@ describe("Navbar", () => {
     (useSession as jest.Mock).mockReturnValue({
       data: {
         user: {
-          name: "Alice",
+          name: "Alice", role:"finance_stuff"
         },
       },
     });
@@ -145,7 +145,7 @@ describe("Navbar", () => {
 
 //helper functions
 const withSession = (name = "Alice") =>
-  (useSession as jest.Mock).mockReturnValue({ data: { user: { name } } });
+  (useSession as jest.Mock).mockReturnValue({ data: { user: { name, role : "finance_stuff"} } });
  
 const withoutSession = () =>
   (useSession as jest.Mock).mockReturnValue({ data: null });
