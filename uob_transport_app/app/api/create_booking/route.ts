@@ -161,9 +161,9 @@ export async function POST(request: Request) {
       dropoff_loc,
       pickup_time,
       returnDT,
-      user?.full_name || passenger_name,
-      user?.email || email,
-      user?.phone_number || tel_number,
+      user?.full_name || passenger_name.trim(),
+      user?.email || email.trim(),
+      user?.phone_number || tel_number.trim(),
       additional_info,
       via,
       returnTo,
@@ -217,7 +217,7 @@ export async function POST(request: Request) {
         FromEmailAddress: `UoB Taxi & Chauffeur <${process.env.SES_FROM_EMAIL!}>`,
         Destination: {
           ToAddresses:
-            isLeadPassengerMyself ? [userEmail.email, superEmail.email] : [userEmail.email, email, superEmail.email],
+            isLeadPassengerMyself ? [userEmail.email, superEmail.email.trim()] : [userEmail.email, email.trim(), superEmail.email.trim()],
         },
         Content: {
           Simple: {
