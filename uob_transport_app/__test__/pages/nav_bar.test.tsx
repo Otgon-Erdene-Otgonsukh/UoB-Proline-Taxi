@@ -4,7 +4,6 @@ import { render, screen, fireEvent, waitFor, within } from "@testing-library/rea
 import { useSession } from "next-auth/react";
 import type { ReactNode } from "react";
 import type { SignOutParams } from "next-auth/react";
-import { usePathname } from "next/navigation";
 
 // ---- mocks ----
 // mock next/link
@@ -18,9 +17,10 @@ jest.mock("next/link", () => ({
 
 // mock next/navigation
 const pushMock = jest.fn();
+let mockPathname = "/";
 jest.mock("next/navigation", () => ({
   useRouter: () => ({ push: pushMock }),
-  usePathname: jest.fn(),              // the import IS the mock
+  usePathname: () => mockPathname,
 }));
 
 // mock next-auth
@@ -457,13 +457,13 @@ describe("Navbar – hamburger menu: Logout item", () => {
 //active link underline class
 describe("Navbar – active link underline", () => {
   beforeEach(() => {
-    (usePathname as jest.Mock).mockReturnValue("/");
+    mockPathname = "/";
   });
 
   afterEach(() => jest.clearAllMocks());
 
   test("active page link span has the w-full class", () => {
-    (usePathname as jest.Mock).mockReturnValue("/home");
+    mockPathname = "/home";
     withSession();
     render(<Navbar />);
     const span = screen.getByText("Home").closest("a")!.querySelector("span");
@@ -471,7 +471,7 @@ describe("Navbar – active link underline", () => {
   });
 
   test("inactive page link span has the w-0 class", () => {
-    (usePathname as jest.Mock).mockReturnValue("/home");
+    mockPathname = "/home";
     withSession();
     render(<Navbar />);
     const span = screen.getByText("Dashboard").closest("a")!.querySelector("span");
@@ -480,7 +480,7 @@ describe("Navbar – active link underline", () => {
   });
 
   test("no link is marked active when the path matches none of the pages", () => {
-    (usePathname as jest.Mock).mockReturnValue("/some-unknown-page");
+    mockPathname = "/some-unknown-page";
     withSession();
     render(<Navbar />);
     ["Home", "Dashboard", "About", "Help"].forEach((label) => {
@@ -496,7 +496,7 @@ describe("Navbar – active link underline", () => {
     ["/about",         "About"    ],
     ["/faq",           "Help"     ],
   ])("path %s marks only the %s link as active", (path, activeLabel) => {
-    (usePathname as jest.Mock).mockReturnValue(path);
+    mockPathname = path;
     withSession();
     const { unmount } = render(<Navbar />);
 
