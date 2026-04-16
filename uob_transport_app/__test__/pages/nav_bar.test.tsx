@@ -150,3 +150,20 @@ const withSession = (name = "Alice") =>
  
 const withoutSession = () =>
   (useSession as jest.Mock).mockReturnValue({ data: null });
+
+//assert correct href on every nav link
+describe("Navbar – nav link href targets", () => {
+  afterEach(() => jest.clearAllMocks());
+ 
+  test.each([
+    ["Home",      "/home"],
+    ["Dashboard", "/dep-dashboard"],
+    ["About",     "/about"],
+    ["Help",      "/faq"],
+  ])('"%s" link href is "%s"', (label, expectedHref) => {
+    withoutSession();
+    render(<Navbar />);
+    const link = screen.getByText(label).closest("a");
+    expect(link).toHaveAttribute("href", expectedHref);
+  });
+});
