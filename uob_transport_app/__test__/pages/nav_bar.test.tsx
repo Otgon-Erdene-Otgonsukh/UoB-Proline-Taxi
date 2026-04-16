@@ -360,3 +360,33 @@ describe("Navbar – sign-out dialog: confirm", () => {
     expect(signOutMock).toHaveBeenCalledWith({ callbackUrl: "/" });
   });
 });
+
+//hamburger menu
+describe("Navbar – hamburger menu: item rendering", () => {
+  afterEach(() => jest.clearAllMocks());
+  beforeEach(() => withSession());
+ 
+  const openHamburger = async () => {
+    render(<Navbar />);
+    fireEvent.click(screen.getByTestId("MenuIcon").closest("button")!);
+    return screen.findByRole("menu");
+  };
+ 
+  test("all four page items appear in the hamburger menu", async () => {
+    const menu = await openHamburger();
+    expect(within(menu).getByText("Home"     )).toBeInTheDocument();
+    expect(within(menu).getByText("Dashboard")).toBeInTheDocument();
+    expect(within(menu).getByText("About"    )).toBeInTheDocument();
+    expect(within(menu).getByText("Help"     )).toBeInTheDocument();
+  });
+ 
+  test("Profile item appears in the hamburger menu for authenticated users", async () => {
+    const menu = await openHamburger();
+    expect(within(menu).getByText("Profile")).toBeInTheDocument();
+  });
+ 
+  test("Logout item appears in the hamburger menu for authenticated users", async () => {
+    const menu = await openHamburger();
+    expect(within(menu).getByText("Logout")).toBeInTheDocument();
+  });
+});
