@@ -70,7 +70,8 @@ describe("Navbar", () => {
     (useSession as jest.Mock).mockReturnValue({
       data: {
         user: {
-          name: "Alice",role:"finance_stuff"
+          name: "Alice",
+          role: "finance_staff",
         },
       },
     });
@@ -84,7 +85,8 @@ describe("Navbar", () => {
     (useSession as jest.Mock).mockReturnValue({
       data: {
         user: {
-          name: "Alice",role: "finance_stuff"
+          name: "Alice",
+          role: "finance_staff",
         },
       },
     });
@@ -103,7 +105,8 @@ describe("Navbar", () => {
     (useSession as jest.Mock).mockReturnValue({
       data: {
         user: {
-          name: "Alice",role: "finance_stuff"
+          name: "Alice",
+          role: "finance_staff",
         },
       },
     });
@@ -128,7 +131,8 @@ describe("Navbar", () => {
     (useSession as jest.Mock).mockReturnValue({
       data: {
         user: {
-          name: "Alice", role:"finance_stuff"
+          name: "Alice",
+          role: "finance_staff",
         },
       },
     });
@@ -145,7 +149,7 @@ describe("Navbar", () => {
 
 //helper functions
 const withSession = (name = "Alice") =>
-  (useSession as jest.Mock).mockReturnValue({ data: { user: { name, role : "finance_stuff"} } });
+  (useSession as jest.Mock).mockReturnValue({ data: { user: { name, role: "finance_staff" } } });
  
 const withoutSession = () =>
   (useSession as jest.Mock).mockReturnValue({ data: null });
@@ -160,7 +164,7 @@ describe("Navbar – nav link href targets", () => {
     ["About",     "/about"],
     ["Help",      "/faq"],
   ])('"%s" link href is "%s"', (label, expectedHref) => {
-    withoutSession();
+    withSession();
     render(<Navbar />);
     const link = screen.getByText(label).closest("a");
     expect(link).toHaveAttribute("href", expectedHref);
@@ -460,7 +464,7 @@ describe("Navbar – active link underline", () => {
 
   test("active page link span has the w-full class", () => {
     (usePathname as jest.Mock).mockReturnValue("/home");
-    withoutSession();
+    withSession();
     render(<Navbar />);
     const span = screen.getByText("Home").closest("a")!.querySelector("span");
     expect(span).toHaveClass("w-full");
@@ -468,7 +472,7 @@ describe("Navbar – active link underline", () => {
 
   test("inactive page link span has the w-0 class", () => {
     (usePathname as jest.Mock).mockReturnValue("/home");
-    withoutSession();
+    withSession();
     render(<Navbar />);
     const span = screen.getByText("Dashboard").closest("a")!.querySelector("span");
     expect(span).toHaveClass("w-0");
@@ -477,7 +481,7 @@ describe("Navbar – active link underline", () => {
 
   test("no link is marked active when the path matches none of the pages", () => {
     (usePathname as jest.Mock).mockReturnValue("/some-unknown-page");
-    withoutSession();
+    withSession();
     render(<Navbar />);
     ["Home", "Dashboard", "About", "Help"].forEach((label) => {
       const span = screen.getByText(label).closest("a")!.querySelector("span");
@@ -493,7 +497,7 @@ describe("Navbar – active link underline", () => {
     ["/faq",           "Help"     ],
   ])("path %s marks only the %s link as active", (path, activeLabel) => {
     (usePathname as jest.Mock).mockReturnValue(path);
-    withoutSession();
+    withSession();
     const { unmount } = render(<Navbar />);
 
     const activeSpan = screen.getByText(activeLabel).closest("a")!.querySelector("span");
