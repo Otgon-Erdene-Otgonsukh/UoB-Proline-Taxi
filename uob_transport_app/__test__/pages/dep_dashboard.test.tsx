@@ -43,7 +43,7 @@ const mockPendingBooking = {
     airport: null,
     flight_num: null,
   },
-};
+} as unknown as BookingWithTrip;
 
 const mockApprovedBooking = {
   ...mockPendingBooking,
@@ -86,9 +86,8 @@ beforeEach(() => {
   jest.clearAllMocks();
 });
 
-// ─────────────────────────────────────────────
 // RENDERING
-// ─────────────────────────────────────────────
+
 describe("Rendering", () => {
   test("renders the page title", async () => {
     setupFetchMock();
@@ -136,9 +135,8 @@ describe("Rendering", () => {
   });
 });
 
-// ─────────────────────────────────────────────
 // BOOKING DATA DISPLAY
-// ─────────────────────────────────────────────
+
 describe("Booking data display", () => {
   test("displays fetched booking destination", async () => {
     setupFetchMock();
@@ -186,7 +184,7 @@ describe("Booking data display", () => {
     const bookingWithAirport = {
       ...mockPendingBooking,
       trip: { ...mockPendingBooking.trip, airport: "Bristol Airport" },
-    };
+    } as unknown as BookingWithTrip;
     setupFetchMock([bookingWithAirport]);
     render(<Dashboard />);
     await waitFor(() =>
@@ -210,9 +208,9 @@ describe("Booking data display", () => {
   });
 });
 
-// ─────────────────────────────────────────────
+
 // APPROVE / REJECT ACTIONS
-// ─────────────────────────────────────────────
+
 describe("Approve and Reject actions", () => {
   test("pending booking shows Approve and Reject buttons", async () => {
     setupFetchMock();
@@ -315,9 +313,9 @@ describe("Approve and Reject actions", () => {
   });
 });
 
-// ─────────────────────────────────────────────
+
 // VIEW DIALOG
-// ─────────────────────────────────────────────
+
 describe("View dialog", () => {
   test("View button is rendered for each booking", async () => {
     setupFetchMock();
@@ -337,9 +335,9 @@ describe("View dialog", () => {
   });
 });
 
-// ─────────────────────────────────────────────
+
 // AUTHENTICATION
-// ─────────────────────────────────────────────
+
 describe("Authentication", () => {
   test("redirects to /login when unauthenticated", async () => {
     const { useSession } = require("next-auth/react");
@@ -359,9 +357,8 @@ describe("Authentication", () => {
   });
 });
 
-// ─────────────────────────────────────────────
 // SEARCH
-// ─────────────────────────────────────────────
+
 describe("Search form", () => {
   test("typing in Passenger Name updates the input", async () => {
     setupFetchMock();
@@ -399,9 +396,8 @@ describe("Search form", () => {
   });
 });
 
-// ─────────────────────────────────────────────
 // CARD FILTERS
-// ─────────────────────────────────────────────
+
 describe("Card filter labels", () => {
   test("default label shows Pending Bookings", async () => {
     setupFetchMock();
