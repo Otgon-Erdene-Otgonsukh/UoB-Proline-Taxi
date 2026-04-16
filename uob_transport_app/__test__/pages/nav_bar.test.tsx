@@ -143,3 +143,10 @@ describe("Navbar", () => {
     expect(signOutMock).toHaveBeenCalledWith({ callbackUrl: "/" });
   });
 });
+
+//helper functions
+const withSession = (name = "Alice") =>
+  (useSession as jest.Mock).mockReturnValue({ data: { user: { name } } });
+ 
+const withoutSession = () =>
+  (useSession as jest.Mock).mockReturnValue({ data: null });
