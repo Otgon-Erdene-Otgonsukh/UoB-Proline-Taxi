@@ -390,3 +390,31 @@ describe("Navbar – hamburger menu: item rendering", () => {
     expect(within(menu).getByText("Logout")).toBeInTheDocument();
   });
 });
+
+describe("Navbar – hamburger menu: navigation", () => {
+  afterEach(() => jest.clearAllMocks());
+  beforeEach(() => withSession());
+ 
+  test.each([
+    ["Home",      "/home"          ],
+    ["Dashboard", "/dep-dashboard" ],
+    ["About",     "/about"         ],
+    ["Help",      "/faq"           ],
+  ])("clicking %s navigates to %s", async (label, expectedPath) => {
+    render(<Navbar />);
+    fireEvent.click(screen.getByTestId("MenuIcon").closest("button")!);
+    const menu = await screen.findByRole("menu");
+    fireEvent.click(within(menu).getByText(label));
+    expect(pushMock).toHaveBeenCalledWith(expectedPath);
+  });
+ 
+  test("clicking a page item closes the hamburger menu", async () => {
+    render(<Navbar />);
+    fireEvent.click(screen.getByTestId("MenuIcon").closest("button")!);
+    const menu = await screen.findByRole("menu");
+    fireEvent.click(within(menu).getByText("Home"));
+    await waitFor(() => {
+      expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+    });
+  });
+});
