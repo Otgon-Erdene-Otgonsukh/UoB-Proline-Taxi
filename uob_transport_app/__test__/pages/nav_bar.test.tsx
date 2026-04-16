@@ -1,6 +1,6 @@
 import { Navbar } from "@/components/Navbar";
 import "@testing-library/jest-dom";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor, within } from "@testing-library/react";
 import { useSession } from "next-auth/react";
 import type { ReactNode } from "react";
 import type { SignOutParams } from "next-auth/react";
@@ -254,5 +254,45 @@ describe("Navbar – greeting: first-name extraction", () => {
     withSession("Jean-Paul Dupont III");
     render(<Navbar />);
     expect(screen.getByText("Hi, Jean-Paul!")).toBeInTheDocument();
+  });
+});
+
+//desktop--profile
+describe("Navbar – desktop dropdown: Profile item", () => {
+  afterEach(() => jest.clearAllMocks());
+  beforeEach(() => withSession());
+ 
+  test("clicking Profile navigates to /profile", async () => {
+    render(<Navbar />);
+    fireEvent.click(screen.getByText("Hi, Alice!"));
+    fireEvent.click(await screen.findByText("Profile"));
+    expect(pushMock).toHaveBeenCalledWith("/profile");
+  });
+ 
+  test("clicking Profile closes the dropdown menu", async () => {
+    render(<Navbar />);
+    fireEvent.click(screen.getByText("Hi, Alice!"));
+    await screen.findByText("Profile");
+    fireEvent.click(screen.getByText("Profile"));
+    await waitFor(() => {
+      expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+    });
+  });
+ 
+  test("dropdown menu contains both Profile and Logout items", async () => {
+    render(<Navbar />);
+    fireEvent.click(screen.getByText("Hi, Alice!"));
+    const menu = await screen.findByRole("menu");
+    expect(within(menu).getByText("Profile")).toBeInTheDocument();
+    expect(within(menu).getByText("Logout")).toBeInTheDocument();
+  });
+ 
+  test("avatar inside the dropdown shows the uppercased first letter of the user name", async () => {
+    withSession("Charlie");
+    render(<Navbar />);
+    fireEvent.click(screen.getByText("Hi, Charlie!"));
+    await screen.findByRole("menu");
+    // The MUI Avatar renders session.user.name.charAt(0).toUpperCase()
+    expect(screen.getByText("C")).toBeInTheDocument();
   });
 });
