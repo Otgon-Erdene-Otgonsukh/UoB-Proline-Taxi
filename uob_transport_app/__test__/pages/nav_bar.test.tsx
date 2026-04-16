@@ -181,3 +181,31 @@ describe("Navbar – logo link", () => {
   });
 });
 
+//unauthnticated state
+describe("Navbar – unauthenticated state", () => {
+  afterEach(() => jest.clearAllMocks());
+ 
+  test("no greeting text is rendered when there is no session", () => {
+    withoutSession();
+    render(<Navbar />);
+    expect(screen.queryByText(/hi,/i)).not.toBeInTheDocument();
+  });
+ 
+  test("hamburger menu icon is absent when unauthenticated", () => {
+    withoutSession();
+    render(<Navbar />);
+    expect(screen.queryByTestId("MenuIcon")).not.toBeInTheDocument();
+  });
+ 
+  test("ArrowDropDown icon is absent when unauthenticated", () => {
+    withoutSession();
+    render(<Navbar />);
+    expect(screen.queryByTestId("ArrowDropDownIcon")).not.toBeInTheDocument();
+  });
+ 
+  test("login button is visible when unauthenticated", () => {
+    withoutSession();
+    render(<Navbar />);
+    expect(screen.getByRole("button", { name: /login/i })).toBeVisible();
+  });
+});
