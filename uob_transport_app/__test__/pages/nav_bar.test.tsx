@@ -296,3 +296,44 @@ describe("Navbar – desktop dropdown: Profile item", () => {
     expect(screen.getByText("C")).toBeInTheDocument();
   });
 });
+
+//sign-out dialog
+describe("Navbar – sign-out dialog: Cancel", () => {
+  afterEach(() => jest.clearAllMocks());
+  beforeEach(() => withSession());
+ 
+  /** Opens the dialog and returns after it is visible. */
+  const openDialog = async () => {
+    render(<Navbar />);
+    fireEvent.click(screen.getByText("Hi, Alice!"));
+    fireEvent.click(await screen.findByText("Logout"));
+    await screen.findByText("Sign out confirmation");
+  };
+ 
+  test("Cancel button closes the dialog", async () => {
+    await openDialog();
+    fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+    await waitFor(() => {
+      expect(screen.queryByText("Sign out confirmation")).not.toBeInTheDocument();
+    });
+  });
+ 
+  test("signOut is NOT called when Cancel is clicked", async () => {
+    await openDialog();
+    fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+    expect(signOutMock).not.toHaveBeenCalled();
+  });
+ 
+  test("both Cancel and Yes buttons are present in the dialog", async () => {
+    await openDialog();
+    expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Yes"    })).toBeInTheDocument();
+  });
+ 
+  test("dialog body contains the correct confirmation question", async () => {
+    await openDialog();
+    expect(
+      screen.getByText("Are you sure you want to sign out?")
+    ).toBeInTheDocument();
+  });
+});
