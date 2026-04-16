@@ -2,11 +2,9 @@ import updateStatus from "@/backend/update_booking_status/update_status";
 import { NextResponse } from "next/server";
 import { getBookingDetails } from "@/backend/access/booking_access";
 import { auth } from "@/auth";
-import { isAdmin } from "@/backend/access/user_access";
-import { USER_ROLE } from "@/model/models";
+import { isAdmin, isFinanceStaff } from "@/backend/access/user_access";
 
 export async function POST(req: Request) {
-  // Check if user is signed in.
   const session = await auth();
   if (!session) {
     return new Response(JSON.stringify({
@@ -19,17 +17,14 @@ export async function POST(req: Request) {
 
   try {
     const body = await req.json();
-
-    
     const bookingId: number = body.bookingId;
     let booking = null;
 
     // Check if the logged in user is an Admin or Finance staff
-    if (await isAdmin(session.user.user_id) || session.user.account_type === USER_ROLE.FINANCE_STAFF) {
+    if (await isAdmin(session.user.user_id) || await isFinanceStaff(session.user.user_id)) {
       booking = await getBookingDetails(-1, bookingId)
     }
 
-    // Booking is null if booking does not exist or does not belong to user/admin.
     if (booking === null) {
       return new Response(JSON.stringify({
         success: false, message: 'Booking not found'
