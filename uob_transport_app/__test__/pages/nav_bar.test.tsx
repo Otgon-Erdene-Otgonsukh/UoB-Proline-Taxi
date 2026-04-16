@@ -418,3 +418,35 @@ describe("Navbar – hamburger menu: navigation", () => {
     });
   });
 });
+
+describe("Navbar – hamburger menu: Logout item", () => {
+  afterEach(() => jest.clearAllMocks());
+  beforeEach(() => withSession());
+ 
+  test("clicking Logout in the hamburger menu opens the sign-out dialog", async () => {
+    render(<Navbar />);
+    fireEvent.click(screen.getByTestId("MenuIcon").closest("button")!);
+    const menu = await screen.findByRole("menu");
+    fireEvent.click(within(menu).getByText("Logout"));
+    expect(await screen.findByText("Sign out confirmation")).toBeInTheDocument();
+  });
+ 
+  test("clicking Logout in the hamburger menu closes the hamburger menu", async () => {
+    render(<Navbar />);
+    fireEvent.click(screen.getByTestId("MenuIcon").closest("button")!);
+    const menu = await screen.findByRole("menu");
+    fireEvent.click(within(menu).getByText("Logout"));
+    await screen.findByText("Sign out confirmation");
+    expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+  });
+ 
+  test("confirming from hamburger-triggered dialog calls signOut", async () => {
+    render(<Navbar />);
+    fireEvent.click(screen.getByTestId("MenuIcon").closest("button")!);
+    const menu = await screen.findByRole("menu");
+    fireEvent.click(within(menu).getByText("Logout"));
+    await screen.findByText("Sign out confirmation");
+    fireEvent.click(screen.getByRole("button", { name: "Yes" }));
+    expect(signOutMock).toHaveBeenCalledWith({ callbackUrl: "/" });
+  });
+});
