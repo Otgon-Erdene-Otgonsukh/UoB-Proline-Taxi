@@ -209,3 +209,26 @@ describe("Navbar – unauthenticated state", () => {
     expect(screen.getByRole("button", { name: /login/i })).toBeVisible();
   });
 });
+
+//authenticated state
+describe("Navbar – authenticated state – present elements", () => {
+  afterEach(() => jest.clearAllMocks());
+ 
+  test("login button is NOT rendered when a session exists", () => {
+    withSession();
+    render(<Navbar />);
+    expect(screen.queryByRole("button", { name: /login/i })).not.toBeInTheDocument();
+  });
+ 
+  test("hamburger menu icon is present when authenticated", () => {
+    withSession();
+    render(<Navbar />);
+    expect(screen.getByTestId("MenuIcon")).toBeInTheDocument();
+  });
+ 
+  test("ArrowDropDown icon is present inside the greeting button", () => {
+    withSession();
+    render(<Navbar />);
+    expect(screen.getByTestId("ArrowDropDownIcon")).toBeInTheDocument();
+  });
+});
