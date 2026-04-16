@@ -17,6 +17,7 @@ jest.mock("next/link", () => ({
 
 // mock next/navigation
 const pushMock = jest.fn();
+const mockPathname = jest.fn() as jest.Mock;
 jest.mock("next/navigation", () => ({
   useRouter: () => ({
     push: pushMock,
@@ -448,5 +449,65 @@ describe("Navbar – hamburger menu: Logout item", () => {
     await screen.findByText("Sign out confirmation");
     fireEvent.click(screen.getByRole("button", { name: "Yes" }));
     expect(signOutMock).toHaveBeenCalledWith({ callbackUrl: "/" });
+  });
+});
+
+//active link underline class
+describe("Navbar – active link underline", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+    mockPathname.mockReturnValue("/");
+  });
+ 
+  test("active page link span has the w-full class", () => {
+    mockPathname.mockReturnValue("/home");
+    withoutSession();
+    render(<Navbar />);
+    const span = screen.getByText("Home").closest("a")!.querySelector("span");
+    expect(span).toHaveClass("w-full");
+  });
+ 
+  test("inactive page link span has the w-0 class", () => {
+    mockPathname.mockReturnValue("/home");
+    withoutSession();
+    render(<Navbar />);
+    const span = screen.getByText("Dashboard").closest("a")!.querySelector("span");
+    expect(span).toHaveClass("w-0");
+    expect(span).not.toHaveClass("w-full");
+  });
+ 
+  test("no link is marked active when the path matches none of the pages", () => {
+    mockPathname.mockReturnValue("/some-unknown-page");
+    withoutSession();
+    render(<Navbar />);
+    ["Home", "Dashboard", "About", "Help"].forEach((label) => {
+      const span = screen.getByText(label).closest("a")!.querySelector("span");
+      expect(span).toHaveClass("w-0");
+      expect(span).not.toHaveClass("w-full");
+    });
+  });
+ 
+  test.each([
+    ["/home",          "Home"     ],
+    ["/dep-dashboard", "Dashboard"],
+    ["/about",         "About"    ],
+    ["/faq",           "Help"     ],
+  ])("path %s marks only the %s link as active", (path, activeLabel) => {
+    mockPathname.mockReturnValue(path);
+    withoutSession();
+    const { unmount } = render(<Navbar />);
+ 
+    const activeSpan = screen.getByText(activeLabel).closest("a")!.querySelector("span");
+    expect(activeSpan).toHaveClass("w-full");
+ 
+    ["Home", "Dashboard", "About", "Help"]
+      .filter((l) => l !== activeLabel)
+      .forEach((label) => {
+        const span = screen.getByText(label).closest("a")!.querySelector("span");
+        expect(span).toHaveClass("w-0");
+      });
+ 
+    unmount();
+    jest.clearAllMocks();
   });
 });
