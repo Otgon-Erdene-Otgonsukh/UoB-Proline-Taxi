@@ -167,3 +167,17 @@ describe("Navbar – nav link href targets", () => {
     expect(link).toHaveAttribute("href", expectedHref);
   });
 });
+
+//company logo links to the root path
+describe("Navbar – logo link", () => {
+  afterEach(() => jest.clearAllMocks());
+ 
+  test('the main company logo is wrapped in a link to "/"', () => {
+    withoutSession();
+    render(<Navbar />);
+    // getAllByAltText because secondary partner logos share the same alt
+    const [mainLogo] = screen.getAllByAltText("Company Logo");
+    expect(mainLogo.closest("a")).toHaveAttribute("href", "/");
+  });
+});
+
