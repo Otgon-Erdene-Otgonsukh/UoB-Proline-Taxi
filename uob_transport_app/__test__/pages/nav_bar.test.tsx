@@ -233,7 +233,7 @@ describe("Navbar – authenticated state – present elements", () => {
   });
 });
 
-//first name extraction
+//first-name extractions
 describe("Navbar – greeting: first-name extraction", () => {
   afterEach(() => jest.clearAllMocks());
  
