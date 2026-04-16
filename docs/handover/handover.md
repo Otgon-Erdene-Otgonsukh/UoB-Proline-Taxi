@@ -84,6 +84,10 @@ Certain columns in the database tables such as the `booking_status` in the booki
    - `finance_staff, normal_user, proline_staff or super_admin`
 
 Furhter information on what type of preset values and custom types that had been used in the code base and the database columns can be found in the [`uob_transport_app/model`](/uob_transport_app/model/models.ts) directory.
+
+#### Creating a Super Admin Account in the Database
+The application does not allow super admin registration in the register flow, thus to create a super admin account, a normal user must be created using the register page and changing the `role` column in the database from `normal_user` to `super_admin` and set the `dep_id` column to have value `null`. All this columns are part of the `User` table.
+
 #### `AUTH_SECRET`
 
 This is a key used by Auth.js for signing and validating the JWT for authentication and session management. This key variable is created by running:
