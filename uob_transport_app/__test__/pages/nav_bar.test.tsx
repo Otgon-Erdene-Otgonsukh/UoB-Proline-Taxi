@@ -71,7 +71,7 @@ describe("Navbar", () => {
       data: {
         user: {
           name: "Alice",
-          role: "finance_staff",
+          account_type: "finance_staff",
         },
       },
     });
@@ -86,7 +86,7 @@ describe("Navbar", () => {
       data: {
         user: {
           name: "Alice",
-          role: "finance_staff",
+          account_type: "finance_staff",
         },
       },
     });
@@ -106,7 +106,7 @@ describe("Navbar", () => {
       data: {
         user: {
           name: "Alice",
-          role: "finance_staff",
+          account_type: "finance_staff",
         },
       },
     });
@@ -132,7 +132,7 @@ describe("Navbar", () => {
       data: {
         user: {
           name: "Alice",
-          role: "finance_staff",
+          account_type: "finance_staff",
         },
       },
     });
@@ -149,7 +149,7 @@ describe("Navbar", () => {
 
 //helper functions
 const withSession = (name = "Alice") =>
-  (useSession as jest.Mock).mockReturnValue({ data: { user: { name, role: "finance_staff" } } });
+  (useSession as jest.Mock).mockReturnValue({ data: { user: { name, account_type: "finance_staff" } } });
  
 const withoutSession = () =>
   (useSession as jest.Mock).mockReturnValue({ data: null });
@@ -463,7 +463,7 @@ describe("Navbar – active link underline", () => {
  
   test("active page link span has the w-full class", () => {
     mockPathname.mockReturnValue("/home");
-    withoutSession();
+    withSession();
     render(<Navbar />);
     const span = screen.getByText("Home").closest("a")!.querySelector("span");
     expect(span).toHaveClass("w-full");
@@ -471,7 +471,7 @@ describe("Navbar – active link underline", () => {
  
   test("inactive page link span has the w-0 class", () => {
     mockPathname.mockReturnValue("/home");
-    withoutSession();
+    withSession();
     render(<Navbar />);
     const span = screen.getByText("Dashboard").closest("a")!.querySelector("span");
     expect(span).toHaveClass("w-0");
@@ -480,7 +480,7 @@ describe("Navbar – active link underline", () => {
  
   test("no link is marked active when the path matches none of the pages", () => {
     mockPathname.mockReturnValue("/some-unknown-page");
-    withoutSession();
+    withSession();
     render(<Navbar />);
     ["Home", "Dashboard", "About", "Help"].forEach((label) => {
       const span = screen.getByText(label).closest("a")!.querySelector("span");
@@ -496,7 +496,7 @@ describe("Navbar – active link underline", () => {
     ["/faq",           "Help"     ],
   ])("path %s marks only the %s link as active", (path, activeLabel) => {
     mockPathname.mockReturnValue(path);
-    withoutSession();
+    withSession();
     const { unmount } = render(<Navbar />);
  
     const activeSpan = screen.getByText(activeLabel).closest("a")!.querySelector("span");
