@@ -24,9 +24,6 @@ export async function POST(req: Request) {
  
     const isAssign : boolean = JSON.parse(data.isAssign);
 
-    console.log(isAssign)
-    console.log(depId, userId)
-
     if (!session) {
         return NextResponse.json({ message: "Unauthenticated access" }, {
             status: 401
