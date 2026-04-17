@@ -208,7 +208,11 @@ const DepartmentManagePage = () => {
 
     <AssignManagerDialog
       dialogOpen={managerAssignDialogOpen}
-      handleDialogClose={() => setManagerAssignDialogOpen(false)}
+      handleDialogClose={() => {
+        setManagerAssignDialogOpen(false);
+        setIsLoading(true);
+        _rerenderTable(paginationMeta.page, paginationMeta.pageSize);
+      }}
       viewData={managerAssignDepartment!}
     />
 
@@ -216,7 +220,11 @@ const DepartmentManagePage = () => {
       <ViewManagerDialog
         viewData={managerData}
         dialogOpen={managerDialogOpen}
-        handleDialogClose={() => setManagerDialogOpen(false)}
+        handleDialogClose={() => {
+        setManagerDialogOpen(false);
+        setIsLoading(true);
+        _rerenderTable(paginationMeta.page, paginationMeta.pageSize);
+      }}
       />
     )}
 
