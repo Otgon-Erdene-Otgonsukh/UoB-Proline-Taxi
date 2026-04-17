@@ -211,19 +211,21 @@ const Page = () => {
     page: number,
     pageSize: number,
     submittedSearch: boolean = isSearchSubmitted,
+    searchInput: SearchFormProps = searchFormInput,
   ) => {
+    const search = searchInput || searchFormInput;
     getUserBookingList(page, pageSize, {
-      ...searchFormInput,
-      pickUpTimeFrom: searchFormInput.pickUpTimeFrom
-        ? searchFormInput.pickUpTimeFrom.toISOString()
+      ...search,
+      pickUpTimeFrom: search.pickUpTimeFrom
+        ? search.pickUpTimeFrom.toISOString()
         : "",
-      pickUpTimeTo: searchFormInput.pickUpTimeTo
-        ? searchFormInput.pickUpTimeTo.toISOString()
+      pickUpTimeTo: search.pickUpTimeTo
+        ? search.pickUpTimeTo.toISOString()
         : "",
       bookingStatus:
-        searchFormInput?.bookingStatus === "All"
+        search?.bookingStatus === "All"
           ? ""
-          : searchFormInput?.bookingStatus,
+          : search?.bookingStatus,
     }).then((res) => {
       if (res.status === 200) {
         res.json().then((data) => {
@@ -235,6 +237,23 @@ const Page = () => {
       }
     });
   };
+
+  const handleClear = () => {
+    const search = {
+      pickUpTimeFrom: undefined,
+      pickUpTimeTo: undefined,
+      from: "",
+      to: "",
+      bookingStatus: "All"
+    }
+    setSearchFormInput(search);
+    setIsLoading(true);
+    _getBookingListData(0, paginationMeta.pageSize, true, search);
+  };
+  
+  useEffect(() => {
+    _getBookingListData(paginationMeta.page, paginationMeta.pageSize, false);
+  }, [searchFormInput.bookingStatus])
 
   // Do nothing if we get a status. Await for this check to be carried out in useEffect.
   if (status === "loading" || status === "unauthenticated") {
@@ -591,6 +610,22 @@ const Page = () => {
               }}
               locale={enLocale}
             />
+            <Button sx={{
+              textTransform: "none",
+              bgcolor: "white",
+              border: "2px solid #2c2c2c",
+              borderRadius: 2,
+              color: "#2c2c2c",
+              "&:hover": {
+                scale: 1.04
+              },
+              transition: "all ease 0.2s",
+              height: { xs: 35, md: "100%"}
+            }}
+            onClick={handleClear}
+            >
+              Clear
+            </Button>
             <CustomizedButton title="Search" type="warning" click={() => { }} />
           </Box>
           {isSearchSubmitted &&

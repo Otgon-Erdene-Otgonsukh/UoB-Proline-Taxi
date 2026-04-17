@@ -69,10 +69,25 @@ export const UserManagePage = (
   })
   const handleSubmitSearchForm = (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('submit');
     setIsLoading(true)
     _rerenderTable(paginationMeta.page, paginationMeta.pageSize)
   }
+
+  const handleClear = () => {
+    const searchInput = {
+      name: "",
+      user_status: "All",
+      role: "All"
+    }
+
+    setSearchFormInput(searchInput)
+    setIsLoading(true)
+    _rerenderTable(0, paginationMeta.pageSize, searchInput)
+  }
+
+  useEffect(() => {
+    _rerenderTable(paginationMeta.page, paginationMeta.pageSize);
+  }, [searchFormInput.role, searchFormInput.user_status])
 
   const [userDetail, setUserDetail] = useState<UserRecord>()
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
@@ -123,12 +138,13 @@ export const UserManagePage = (
     })
   };
 
-  const _rerenderTable = (page: number, pageSize: number) => {
+  const _rerenderTable = (page: number, pageSize: number, searchInput?: SearchFormProps) => {
+    const search = searchInput || searchFormInput;
     getUsersAsAdmin({
       name: undefined,
-      ...searchFormInput,
-      role: searchFormInput.role === "All" ? undefined : searchFormInput.role,
-      user_status: searchFormInput.user_status === "All" ? undefined : (searchFormInput.user_status as number),
+      ...search,
+      role: search.role === "All" ? undefined : search.role,
+      user_status: search.user_status === "All" ? undefined : (search.user_status as number),
       page,
       pageSize
     }).then(res => {
@@ -158,7 +174,6 @@ export const UserManagePage = (
             display: "flex",
             flexDirection: "row",
             flexWrap: "nowrap",
-            alignItems: "center",
             gap: 2,
           }}
         >
@@ -205,6 +220,21 @@ export const UserManagePage = (
               <MenuItem value={userStatusToIntMap.rejected}>{userStatusToStrMap[userStatusToIntMap.rejected]}</MenuItem>
             </Select>
           </FormControl>
+          <Button sx={{
+            textTransform: "none",
+            bgcolor: "white",
+            border: "2px solid #2c2c2c",
+            borderRadius: 2,
+            color: "#2c2c2c",
+            "&:hover": {
+              scale: 1.04
+            },
+            transition: "all ease 0.2s"
+          }}
+          onClick={handleClear}
+          >
+            Clear
+          </Button>
           <CustomizedButton title="Search" type="warning" click={() => { }} />
         </Box>
       </div>
