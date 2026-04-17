@@ -139,16 +139,11 @@ const Page = () => {
             <Divider />
             <List>
               {[
-                { text: "Users", icon: <PeopleIcon />, index: 0 },
-                { text: "Departments", icon: <GroupsIcon />, index: 1 },
-                { text: "Bookings", icon: <LocalTaxiIcon />, index: 2 },
-                { text: "Dashboard", icon: <DashboardIcon />, index: 3 },
-                {
-                  text: "Export Bookings",
-                  icon: <FileDownloadIcon />,
-                  index: 4,
-                },
-                { text: "Admin Settings", icon: <SettingsIcon />, index: 5 },
+                { text: 'Users', icon: <PeopleIcon />, index: 0 },
+                { text: 'Departments', icon: <GroupsIcon />, index: 1 },
+                { text: 'Bookings', icon: <LocalTaxiIcon />, index: 2 },
+                { text: 'Dashboard', icon: <DashboardIcon />, index: 3},
+                { text: 'Export Bookings', icon: <FileDownloadIcon />, index: 4 },
               ].map((item) => (
                 <ListItem key={item.text} disablePadding>
                   <ListItemButton onClick={() => setTabValue(item.index)}>

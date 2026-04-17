@@ -15,11 +15,32 @@ import {
 import { DepartmentRecord } from "@/model/models";
 import { roleReadableStrMap, userStatusToIntMap, userStatusToStrMap } from "../constants";
 
-const ViewDepartmentDialog = ({ viewData, dialogOpen, handleDialogClose }: { viewData: DepartmentRecord['manager'], dialogOpen: boolean, handleDialogClose: () => void }) => {
+const ViewDepartmentDialog = ({ viewData, dialogOpen, handleDialogClose, unassignSnackOpen, normalClose }: { viewData: DepartmentRecord['manager'], dialogOpen: boolean, handleDialogClose: () => void, unassignSnackOpen: () => void, normalClose: () => void }) => {
+
+  const handleUnassignManager = async () => {
+        try {
+            const res = await fetch("/api/manager_assignment", {
+                method: "POST",
+                body: JSON.stringify({
+                    user_id: viewData?.user_id,
+                    isAssign: false
+                })
+            });
+
+            if (res.ok) {
+                handleDialogClose();
+                unassignSnackOpen();
+            } else {
+                alert("Failed to unassign manager. Please try again.");
+            }
+        } catch (error) {
+            alert("Error unassigning manager. Please try again.");
+        }
+  };
 
   return (<div>
     <Dialog
-      onClose={handleDialogClose}
+      onClose={normalClose}
       aria-labelledby="customized-dialog-title"
       open={dialogOpen}
       sx={{
@@ -117,7 +138,18 @@ const ViewDepartmentDialog = ({ viewData, dialogOpen, handleDialogClose }: { vie
           />
         </Stack>
       </DialogContent>
-      <DialogActions>
+      <DialogActions sx={{ display: "flex", justifyContent: "space-between" }}>
+        <Button
+          sx={{
+            color: "#2c2c2c",
+            mr: 1,
+            transition: "all 250ms",
+            ":hover": { bgcolor: "#dc2626", color: "white" },
+          }}
+          onClick={handleUnassignManager}
+        >
+          Unassign Manager
+        </Button>
         <Button
           sx={{
             color: "#2c2c2c",
@@ -125,7 +157,7 @@ const ViewDepartmentDialog = ({ viewData, dialogOpen, handleDialogClose }: { vie
             transition: "all 250ms",
             ":hover": { bgcolor: "#2c2c2c", color: "white" },
           }}
-          onClick={handleDialogClose}
+          onClick={normalClose}
         >
           Close
         </Button>
