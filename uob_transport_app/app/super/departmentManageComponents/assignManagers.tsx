@@ -50,14 +50,28 @@ const AssignManagerDialog = ({ viewData, dialogOpen, handleDialogClose }: { view
     }, [viewData])
 
     const handleClickRow = (userId: number) => {
-        setSelected(selected === userId ? null : userId);
+        const newSelected = selected === userId ? null : userId;
+        setSelected(newSelected);
+
+        if (newSelected === null) {
+            setSelectedMember(null);
+        } else {
+            const member = members.find(m => m.user_id === newSelected);
+            if (member) {
+                setSelectedMember(member);
+            }
+        }
     };
-
-    const selectedMember = selected !== null ? members.find(m => m.user_id === selected) : null;
-    const isFinanceStaff = selectedMember?.role === 'FINANCE_STAFF' || selectedMember?.role === 'finance_staff';
-
+ 
     const handleAssignManager = async () => {
-        if (!selectedStaff) {
+        if (selected === null) {
+            alert("Please select a finance staff member to assign as manager.");
+            return;
+        }
+
+        const memberToAssign = members.find(m => m.user_id === selected);
+
+        if (!memberToAssign) {
             alert("Please select a finance staff member to assign as manager.");
             return;
         }
@@ -65,7 +79,7 @@ const AssignManagerDialog = ({ viewData, dialogOpen, handleDialogClose }: { view
         fetch("api/manager_assignment", {
             method: "POST",
             body: JSON.stringify({
-                user_id: selectedStaff.user_id,
+                user_id: memberToAssign.user_id,
                 isAssign: true
             })
         }).then(res => {
