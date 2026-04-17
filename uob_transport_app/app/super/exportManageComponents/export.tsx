@@ -15,6 +15,7 @@ import {
   Stack,
   TextField,
   Typography,
+  Chip,
   useTheme,
   Snackbar,
   Alert,
@@ -40,7 +41,6 @@ import CustomizedButton from "@/components/CustomizedButton";
 import { getBookingsList, cancelBooking } from "../requests";
 import { redirect } from "next/navigation";
 import { easyGetRequest } from "@/utils/easyRequest";
-import { number } from "framer-motion";
 
 interface DepCount {
   dep_id: number;
@@ -327,7 +327,15 @@ function BookingViewDialog({
           <Typography gutterBottom sx={{ fontWeight: "bold" }}>
             Booking Status:
           </Typography>
-          <Typography gutterBottom>{viewData.booking_status}</Typography>
+          <Chip
+            size="small"
+            label={viewData.booking_status}
+            color={
+              viewData.booking_status === "Approved" ? "success" : "warning" 
+            }
+            variant="filled"
+            sx={{ textTransform: "capitalize", fontWeight: 600 }}
+          />
         </Stack>
       </DialogContent>
       <DialogActions>
@@ -487,18 +495,51 @@ export default function ExportPage() {
   }, [selectedBookingIds]);
 
 
-  // For Ioan, export button handlers
+  const downloadCSV = (res : Response, title: string) => {
+    res.blob().then((blob) => {
+      // From https://mojoauth.com/parse-and-generate-formats/parse-and-generate-csv-with-nextjs/#client-side-csv-generation-and-download
+      // Create a URL for the blob data and trigger the download.
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `${title}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    });
+};
+
+  // Export button handlers
   const handleDepartmentExport = async () => {
-    // selectedDepartment variable contains the currently selected DepCount typed object
+    await fetch("/api/export_bookings", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ depId: exportDepId }),
+    }).then((res) => {
+      if (res.status === 200) {
+        const title = selectedDepartment ? selectedDepartment.dep_name + "_Department" : "Department_Bookings"
+        downloadCSV(res, title);
+      }
+    });
   }
 
   const handleSelectedExport = async () => {
     // selectedBookingIds variable is an array containing all the selected booking ids
-  }
-
-  // Hope the above variables make it a bit easier to handle the backend export logic
-
-
+    await fetch("/api/export_bookings", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ bookingIds: selectedBookingIds }),
+    }).then((res) => {
+      if (res.status === 200) {
+        downloadCSV(res, "Selected_Bookings");
+      }
+    });
+  };
+  
   useEffect(() => {
     _rerenderTable();
   }, []);
@@ -551,6 +592,7 @@ export default function ExportPage() {
     from?: string;
     to?: string;
     bookingStatus?: string;
+    department?: string;
   };
   const [searchFormInput, setSearchFormInput] = useState<SearchFormProps>({
     pickUpTimeFrom: undefined,
@@ -558,8 +600,31 @@ export default function ExportPage() {
     from: "",
     to: "",
     bookingStatus: "All",
+    department: "",
   });
+
+  const handleClear = () => {
+    const searchInput = {
+      pickUpTimeFrom: undefined,
+      pickUpTimeTo: undefined,
+      from: "",
+      to: "",
+      bookingStatus: "All",
+      department: "",
+    }
+    setSearchFormInput(searchInput);
+
+    setIsLoading(true);
+    setIsSearchSubmitted(false);
+    _rerenderTable(0, paginationMeta.pageSize, searchInput);
+  };
+
   const [isSearchSubmitted, setIsSearchSubmitted] = useState(false);
+
+  useEffect(() => {
+    // auto re-render the table on selections and clearing
+    _rerenderTable(paginationMeta.page, paginationMeta.pageSize);
+  }, [searchFormInput.bookingStatus]);
 
   const dateTimePickerFromAnchorRef = useRef<HTMLDivElement>(null);
   const dateTimePickerToAnchorRef = useRef<HTMLDivElement>(null);
@@ -590,7 +655,7 @@ export default function ExportPage() {
   const [bookDetailDialogOpen, setBookDetailDialogOpen] = useState(false);
 
   // selected export department id and name
-  const [exportDepId, setExportDepId] = useState(-1); // For Ioan
+  const [exportDepId, setExportDepId] = useState(-1);
   const [selectedDepartment, setSelectedDepartment] = useState<DepCount | null>(
     null,
   );
@@ -625,19 +690,21 @@ export default function ExportPage() {
   const _rerenderTable = (
     page: number = paginationMeta.page,
     pageSize: number = paginationMeta.pageSize,
+    updatedData: SearchFormProps | null = null,
   ) => {
+    const searchInput = updatedData || searchFormInput;
     getBookingsList(page, pageSize, true, {
-      ...searchFormInput,
-      pickUpTimeFrom: searchFormInput.pickUpTimeFrom
-        ? searchFormInput.pickUpTimeFrom.toISOString()
+      ...searchInput,
+      pickUpTimeFrom: searchInput.pickUpTimeFrom
+        ? searchInput.pickUpTimeFrom.toISOString()
         : "",
-      pickUpTimeTo: searchFormInput.pickUpTimeTo
-        ? searchFormInput.pickUpTimeTo.toISOString()
+      pickUpTimeTo: searchInput.pickUpTimeTo
+        ? searchInput.pickUpTimeTo.toISOString()
         : "",
       bookingStatus:
-        searchFormInput?.bookingStatus === "All"
+        searchInput?.bookingStatus === "All"
           ? ""
-          : searchFormInput?.bookingStatus,
+          : searchInput?.bookingStatus,
     }).then((res) => {
       if (res.status === 200) {
         res.json().then((data) => {
@@ -654,10 +721,7 @@ export default function ExportPage() {
       <div>
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center gap-2">
-            <h1
-              className="text-xl font-aleo md:text-2xl font-semibold text-shadow-lg/20 py-2 pr-4"
-              onClick={() => console.log(selectedBookingIds)}
-            >
+            <h1 className="font-aleo text-2xl font-semibold text-shadow-lg/20 py-2 pr-4">
               Export Bookings
             </h1>
           </div>
@@ -670,6 +734,19 @@ export default function ExportPage() {
               gap: 1,
             }}
           >
+            <TextField
+              label="Department"
+              size="small"
+              id="searchFormInput"
+              sx={{ minWidth: 140 }}
+              value={searchFormInput.department}
+              onChange={(e) => {
+                setSearchFormInput({
+                  ...searchFormInput,
+                  department: e.target.value,
+                });
+              }}
+            ></TextField>
             <TextField
               label="From"
               id="searchFromInput"
@@ -803,6 +880,22 @@ export default function ExportPage() {
               }}
               locale={enLocale}
             />
+            <Button
+              sx={{
+                textTransform: "none",
+                bgcolor: "white",
+                border: "2px solid #2c2c2c",
+                borderRadius: 2,
+                color: "#2c2c2c",
+                "&:hover": {
+                  scale: 1.04,
+                },
+                transition: "all ease 0.2s",
+              }}
+              onClick={handleClear}
+            >
+              Clear
+            </Button>
             <CustomizedButton title="Search" type="warning" click={() => {}} />
           </Box>
         </div>

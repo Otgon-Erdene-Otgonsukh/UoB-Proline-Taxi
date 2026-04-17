@@ -4,7 +4,10 @@ import {
   getBookingDetails,
   cancelBookingsAccess,
   getUserBookingsCountAccess,
-} from "@/backend/access/booking_access";
+
+  getTripDetails
+} from '@/backend/access/booking_access'
+
 
 describe("booking_access", () => {
   afterEach(() => {
@@ -93,5 +96,318 @@ describe("booking_access", () => {
     });
 
     expect(result).toBe(42);
+  })
+
+  // ===== additional coverage tests =====
+
+test('getUserBookingsAccess handles "from" filter', async () => {
+  (prismaMock.booking.findMany as jest.Mock).mockResolvedValue([]);
+
+  await getUserBookingsAccess(1, 0, 10, {
+    from: 'ABC',
   });
+
+  expect(prismaMock.booking.findMany).toHaveBeenCalledWith(
+    expect.objectContaining({
+      where: expect.objectContaining({
+        trip: {
+          pickup_location: {
+            contains: 'abc',
+            mode: 'insensitive',
+          },
+        },
+      }),
+    })
+  );
 });
+
+test('getUserBookingsAccess handles "to" filter', async () => {
+  (prismaMock.booking.findMany as jest.Mock).mockResolvedValue([]);
+
+  await getUserBookingsAccess(1, 0, 10, {
+    to: 'XYZ',
+  });
+
+  expect(prismaMock.booking.findMany).toHaveBeenCalledWith(
+    expect.objectContaining({
+      where: expect.objectContaining({
+        trip: {
+          dropoff_location: {
+            contains: 'xyz',
+            mode: 'insensitive',
+          },
+        },
+      }),
+    })
+  );
+});
+
+test('getUserBookingsAccess handles time range (from + to)', async () => {
+  (prismaMock.booking.findMany as jest.Mock).mockResolvedValue([]);
+
+  await getUserBookingsAccess(1, 0, 10, {
+    pickUpTimeFrom: '2025-01-01',
+    pickUpTimeTo: '2025-01-02',
+  });
+
+  expect(prismaMock.booking.findMany).toHaveBeenCalledWith(
+    expect.objectContaining({
+      where: expect.objectContaining({
+        trip: expect.objectContaining({
+          pickup_time: expect.objectContaining({
+            gte: new Date('2025-01-01'),
+            lte: expect.any(Date),
+          }),
+        }),
+      }),
+    })
+  );
+});
+
+test('getUserBookingsAccess handles only pickUpTimeFrom', async () => {
+  (prismaMock.booking.findMany as jest.Mock).mockResolvedValue([]);
+
+  await getUserBookingsAccess(1, 0, 10, {
+    pickUpTimeFrom: '2025-01-01',
+  });
+
+  expect(prismaMock.booking.findMany).toHaveBeenCalledWith(
+    expect.objectContaining({
+      where: expect.objectContaining({
+        trip: {
+          pickup_time: {
+            gte: new Date('2025-01-01'),
+          },
+        },
+      }),
+    })
+  );
+});
+
+test('getUserBookingsAccess handles only pickUpTimeTo', async () => {
+  (prismaMock.booking.findMany as jest.Mock).mockResolvedValue([]);
+
+  await getUserBookingsAccess(1, 0, 10, {
+    pickUpTimeTo: '2025-01-02',
+  });
+
+  expect(prismaMock.booking.findMany).toHaveBeenCalledWith(
+    expect.objectContaining({
+      where: expect.objectContaining({
+        trip: expect.objectContaining({
+          pickup_time: expect.objectContaining({
+            lte: expect.any(Date),
+          }),
+        }),
+      }),
+    })
+  );
+});
+
+test('getUserBookingsAccess includes User when userId = -1', async () => {
+  (prismaMock.booking.findMany as jest.Mock).mockResolvedValue([]);
+
+  await getUserBookingsAccess(-1, 0, 10, {});
+
+  expect(prismaMock.booking.findMany).toHaveBeenCalledWith(
+    expect.objectContaining({
+      include: expect.objectContaining({
+        User: { select: { full_name: true } },
+      }),
+    })
+  );
+});
+
+test('getUserBookingsAccess handles pagination correctly', async () => {
+  (prismaMock.booking.findMany as jest.Mock).mockResolvedValue([]);
+
+  await getUserBookingsAccess(1, 2, 10, {});
+
+  expect(prismaMock.booking.findMany).toHaveBeenCalledWith(
+    expect.objectContaining({
+      skip: 20,
+      take: 10,
+    })
+  );
+});
+
+test('getUserBookingsCountAccess handles time filters', async () => {
+  (prismaMock.booking.count as jest.Mock).mockResolvedValue(5);
+
+  await getUserBookingsCountAccess(1, {
+    pickUpTimeFrom: '2025-01-01',
+  });
+
+  expect(prismaMock.booking.count).toHaveBeenCalledWith(
+    expect.objectContaining({
+      where: expect.objectContaining({
+        trip: {
+          pickup_time: {
+            gte: new Date('2025-01-01'),
+          },
+        },
+      }),
+    })
+  );
+});
+
+test('getUserBookingsCountAccess userId = -1 removes user filter', async () => {
+  (prismaMock.booking.count as jest.Mock).mockResolvedValue(5);
+
+  await getUserBookingsCountAccess(-1, {});
+
+  expect(prismaMock.booking.count).toHaveBeenCalledWith(
+    expect.objectContaining({
+      where: expect.objectContaining({
+        user_id: undefined,
+      }),
+    })
+  );
+});
+
+test('getUserBookingsAccess handles from + to together', async () => {
+  (prismaMock.booking.findMany as jest.Mock).mockResolvedValue([]);
+
+  await getUserBookingsAccess(1, 0, 10, {
+    from: 'AAA',
+    to: 'BBB',
+  });
+
+  expect(prismaMock.booking.findMany).toHaveBeenCalledWith(
+    expect.objectContaining({
+      where: expect.objectContaining({
+        trip: {
+          pickup_location: {
+            contains: 'aaa',
+            mode: 'insensitive',
+          },
+          dropoff_location: {
+            contains: 'bbb',
+            mode: 'insensitive',
+          },
+        },
+      }),
+    })
+  );
+});
+
+test('getUserBookingsAccess merges from + to + time filters correctly', async () => {
+  (prismaMock.booking.findMany as jest.Mock).mockResolvedValue([]);
+
+  await getUserBookingsAccess(1, 0, 10, {
+    from: 'AAA',
+    to: 'BBB',
+    pickUpTimeFrom: '2025-01-01',
+    pickUpTimeTo: '2025-01-02',
+  });
+
+  expect(prismaMock.booking.findMany).toHaveBeenCalledWith(
+    expect.objectContaining({
+      where: expect.objectContaining({
+        trip: expect.objectContaining({
+          pickup_location: expect.any(Object),
+          dropoff_location: expect.any(Object),
+          pickup_time: expect.objectContaining({
+            gte: new Date('2025-01-01'),
+            lte: expect.any(Date),
+          }),
+        }),
+      }),
+    })
+  );
+});
+
+test('getUserBookingsAccess handles bookingStatus with trip filters', async () => {
+  (prismaMock.booking.findMany as jest.Mock).mockResolvedValue([]);
+
+  await getUserBookingsAccess(1, 0, 10, {
+    bookingStatus: 'Pending',
+    from: 'ABC',
+  });
+
+  expect(prismaMock.booking.findMany).toHaveBeenCalledWith(
+    expect.objectContaining({
+      where: expect.objectContaining({
+        booking_status: 'Pending',
+        trip: expect.objectContaining({
+          pickup_location: expect.any(Object),
+        }),
+      }),
+    })
+  );
+});
+
+test('getUserBookingsAccess userId = -1 with filters removes user_id', async () => {
+  (prismaMock.booking.findMany as jest.Mock).mockResolvedValue([]);
+
+  await getUserBookingsAccess(-1, 0, 10, {
+    bookingStatus: 'Confirmed',
+  });
+
+  expect(prismaMock.booking.findMany).toHaveBeenCalledWith(
+    expect.objectContaining({
+      where: expect.objectContaining({
+        booking_status: 'Confirmed',
+        user_id: undefined,
+      }),
+    })
+  );
+});
+
+test('getUserBookingsCountAccess handles from + to together', async () => {
+  (prismaMock.booking.count as jest.Mock).mockResolvedValue(1);
+
+  await getUserBookingsCountAccess(1, {
+    from: 'AAA',
+    to: 'BBB',
+  });
+
+  expect(prismaMock.booking.count).toHaveBeenCalledWith(
+    expect.objectContaining({
+      where: expect.objectContaining({
+        trip: {
+          pickup_location: expect.any(Object),
+          dropoff_location: expect.any(Object),
+        },
+      }),
+    })
+  );
+});
+
+test('getUserBookingsCountAccess handles bookingStatus + time', async () => {
+  (prismaMock.booking.count as jest.Mock).mockResolvedValue(1);
+
+  await getUserBookingsCountAccess(1, {
+    bookingStatus: 'Pending',
+    pickUpTimeFrom: '2025-01-01',
+  });
+
+  expect(prismaMock.booking.count).toHaveBeenCalledWith(
+    expect.objectContaining({
+      where: expect.objectContaining({
+        booking_status: 'Pending',
+        trip: expect.objectContaining({
+          pickup_time: {
+            gte: new Date('2025-01-01'),
+          },
+        }),
+      }),
+    })
+  );
+});
+
+test('getTripDetails calls prisma.trip.findUnique correctly', async () => {
+  const mockTrip = { trip_id: 5 };
+
+  (prismaMock.trip.findUnique as jest.Mock).mockResolvedValue(mockTrip);
+
+  const result = await getTripDetails(5);
+
+  expect(prismaMock.trip.findUnique).toHaveBeenCalledWith({
+    where: { trip_id: 5 },
+  });
+
+  expect(result).toBe(mockTrip);
+});
+
+})
