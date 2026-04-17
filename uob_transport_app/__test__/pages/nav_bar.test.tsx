@@ -456,7 +456,7 @@ describe("Navbar – hamburger menu: Logout item", () => {
 
 //active link underline class
 describe("Navbar – active link underline", () => {
-  afterEach(() => {
+  beforeEach(() => {
     jest.clearAllMocks();
     mockPathname.mockReturnValue("/");
   });
@@ -510,6 +510,5 @@ describe("Navbar – active link underline", () => {
       });
  
     unmount();
-    jest.clearAllMocks();
   });
 });
