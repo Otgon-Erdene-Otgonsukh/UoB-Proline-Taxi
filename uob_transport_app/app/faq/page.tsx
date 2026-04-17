@@ -5,6 +5,7 @@ import { useState } from "react";
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PhoneIcon from '@mui/icons-material/Phone';
 import EmailIcon from '@mui/icons-material/Email';
+import { motion } from "framer-motion";
 
 export default function FAQPage() {
   const [open, setOpen] = useState<number | null>(null);
@@ -17,7 +18,7 @@ export default function FAQPage() {
     { q: "How can I book a taxi?", a: "You can book via our app or website." },
     {
       q: "How do I sign up?",
-      a: "Your head of school/faculty/team administrator will need to invite you in order to create an account.",
+      a: "You can navigate to the register page and select your account type out of three options and wait for admin approval",
     },
     {
       q: "How do bookings get approved?",
@@ -26,9 +27,12 @@ export default function FAQPage() {
   ];
 
   return (
-    <main className="flex flex-col lg:flex-row h-screen overflow-hidden">
-      <div className="lg:w-1/2 flex flex-col justify-center mx-auto w-full px-20 py-6">
-        <h1 className="text-3xl font-bold mb-4 text-center text-shadow-lg text-gray-900 font-aleo">
+    <main className="flex flex-col lg:flex-row min-h-screen overflow-hidden">
+      <motion.div className="lg:w-1/2 flex flex-col justify-center mx-auto w-full md:px-20 px-10 py-6 md:mt-0 mt-5"
+          initial={{ opacity: 0, y: 6, scale: 0.98 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 1, ease: "easeOut" }}>
+        <h1 className="md:text-3xl text-2xl font-bold mb-4 text-center text-shadow-lg text-gray-900 font-aleo">
           Frequently Asked Questions
         </h1>
         <div className="w-full pt-4">
@@ -42,17 +46,20 @@ export default function FAQPage() {
             />
           ))}
         </div>
-      </div>
+      </motion.div>
 
-      <div className="lg:w-1/2 flex items-center justify-center lg:border-l border-black py-6 px-20">
-        <div className="flex flex-col items-center justify-center text-center">
-          <h1 className="text-3xl font-bold mb-13 text-center text-shadow-lg text-gray-900 font-aleo">
+      <motion.div className="lg:w-1/2 flex items-center justify-center lg:border-l border-black py-6 px-20"
+          initial={{ opacity: 0, y: 6, scale: 0.98 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 1, ease: "easeOut", delay: 0.2 }}>
+        <div className="flex flex-col items-center justify-center text-center md:border-t-0 border-t border-black">
+          <h1 className="md:text-3xl text-2xl font-bold md:mt-0 mt-10 mb-13 text-center text-shadow-lg text-gray-900 font-aleo">
             Contact Proline Taxi
           </h1>
 
           <div className="mt-4 mb-6 flex flex-row gap-15 items-center w-full">
             <div
-              className="flex-shrink-0 flex items-center justify-center rounded-full"
+              className="shrink-0 flex items-center justify-center rounded-full"
               style={{ width: 75, height: 75, backgroundColor: '#FED7D7' }}
             >
               <LocationOnIcon data-testid="logos" sx={{ fontSize: 40, color: '#E53E3E' }} />
@@ -64,7 +71,7 @@ export default function FAQPage() {
 
           <div className="mb-6 flex flex-row gap-15 items-center w-full">
             <div
-              className="flex-shrink-0 flex items-center justify-center rounded-full"
+              className="shrink-0 flex items-center justify-center rounded-full"
               style={{ width: 75, height: 75, backgroundColor: '#B2F5EA' }}
             >
               <PhoneIcon data-testid="logos" sx={{ fontSize: 40, color: '#2AB0A8' }} />
@@ -79,7 +86,7 @@ export default function FAQPage() {
 
           <div className="flex flex-row gap-15 items-center w-full">
             <div
-              className="flex-shrink-0 flex items-center justify-center rounded-full"
+              className="shrink-0 flex items-center justify-center rounded-full"
               style={{ width: 75, height: 75, backgroundColor: '#EDE9FE' }}
             >
               <EmailIcon data-testid="logos" sx={{ fontSize: 40, color: '#7C3AED' }} />
@@ -89,7 +96,7 @@ export default function FAQPage() {
             </h2>
           </div>
         </div>
-      </div>
+      </motion.div>
     </main>
   );
 }

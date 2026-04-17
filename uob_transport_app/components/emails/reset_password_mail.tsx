@@ -11,7 +11,7 @@ import {
 
 export default function ResetEmail({
   uuid,
-  expiry,
+  expiry=new Date("2020-10-28"),
 }: {
   uuid: string;
   expiry: Date;
@@ -26,7 +26,7 @@ export default function ResetEmail({
       <Tailwind>
         <Head />
         <Container className="mx-auto bg-gray-100 rounded-lg p-2">
-          <Section className="bg-orange-300 text-white rounded-t-lg py-6 px-4">
+          <Section className="bg-gray-800 text-white rounded-t-lg py-8 px-4">
             <Text className="font-bold text-center text-2xl m-0">
               UoB Taxi & Chauffeur
             </Text>
@@ -45,8 +45,8 @@ export default function ResetEmail({
 
             <Section className="text-center my-8">
               <Button
-                href={`${process.env.NODE_ENV === "development" ? `http://localhost:3000/reset-password?uuid=${uuid}` : `http://uob-transport-alb-848507222.eu-west-2.elb.amazonaws.com/reset-password?uuid=${uuid}`}`} //the base url used is only for dev testing, in production change it to the ALB dns name or the domain when we get access to one
-                className="bg-blue-600 text-white font-semibold py-4 px-8 rounded-lg inline-block text-center no-underline"
+                href={`${process.env.NODE_ENV === "development" ? `http://localhost:3000/reset-password?uuid=${uuid}` : `https://uobst.ilm.gg/home/reset-password?uuid=${uuid}`}`} //the base url used is only for dev testing, in production change it to the ALB dns name or the domain when we get access to one
+                className="bg-gray-800 text-white font-semibold py-4 px-8 rounded-lg inline-block text-center no-underline"
               >
                 Reset Your Password
               </Button>

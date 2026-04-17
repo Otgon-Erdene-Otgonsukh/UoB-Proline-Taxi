@@ -2,10 +2,16 @@ import { screen, render, waitFor, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import Dashboard from "@/app/dep-dashboard/page";
 import type { BookingWithTrip } from "@/app/dep-dashboard/constants";
+import { getPendingBookingList } from "@/app/dep-dashboard/requests";
+import userEvent from "@testing-library/user-event";
+import { useSession } from "next-auth/react";
 
 // mock next-auth
 jest.mock("next-auth/react", () => ({
-  useSession: jest.fn().mockReturnValue({ status: "authenticated" }),
+  useSession: jest.fn().mockReturnValue({
+    status: "authenticated",
+    data: { user: { account_type: "finance_staff" } },
+  }),
 }));
 
 // mock useRouter
@@ -42,6 +48,7 @@ const mockPendingBooking = {
     PO: null,
     airport: null,
     flight_num: null,
+    price: 12,
   },
 } as unknown as BookingWithTrip;
 
@@ -65,7 +72,10 @@ jest.mock("@/app/dep-dashboard/requests", () => ({
     mockGetPendingBookingList(...args),
 }));
 
-const setupFetchMock = (bookings: BookingWithTrip[] = [mockPendingBooking as unknown as BookingWithTrip], totalNum = 1) => {
+const setupFetchMock = (
+  bookings: unknown[] = [mockPendingBooking],
+  totalNum = 1,
+) => {
   mockGetPendingBookingList.mockResolvedValue({
     status: 200,
     json: async () => ({ pendingBookings: bookings, totalNum }),
@@ -93,7 +103,7 @@ describe("Rendering", () => {
     setupFetchMock();
     render(<Dashboard />);
     await waitFor(() =>
-      expect(screen.getByText("Department Bookings")).toBeInTheDocument()
+      expect(screen.getByText("Department Bookings")).toBeInTheDocument(),
     );
   });
 
@@ -120,7 +130,9 @@ describe("Rendering", () => {
     setupFetchMock();
     render(<Dashboard />);
     // Wait for booking data to load first (table only renders after data arrives)
-    await waitFor(() => expect(screen.getByText("Chew Magna")).toBeInTheDocument());
+    await waitFor(() =>
+      expect(screen.getByText("Chew Magna")).toBeInTheDocument(),
+    );
     expect(screen.getByText("Pick-up Time")).toBeInTheDocument();
     expect(screen.getAllByText("From").length).toBeGreaterThan(0);
     expect(screen.getAllByText("To").length).toBeGreaterThan(0);
@@ -142,7 +154,7 @@ describe("Booking data display", () => {
     setupFetchMock();
     render(<Dashboard />);
     await waitFor(() =>
-      expect(screen.getByText("Chew Magna")).toBeInTheDocument()
+      expect(screen.getByText("Chew Magna")).toBeInTheDocument(),
     );
   });
 
@@ -151,8 +163,8 @@ describe("Booking data display", () => {
     render(<Dashboard />);
     await waitFor(() =>
       expect(
-        screen.getByText("Merchant Venturers Building")
-      ).toBeInTheDocument()
+        screen.getByText("Merchant Venturers Building"),
+      ).toBeInTheDocument(),
     );
   });
 
@@ -160,7 +172,7 @@ describe("Booking data display", () => {
     setupFetchMock();
     render(<Dashboard />);
     await waitFor(() =>
-      expect(screen.getByText("John Doe")).toBeInTheDocument()
+      expect(screen.getByText("John Doe")).toBeInTheDocument(),
     );
   });
 
@@ -168,27 +180,31 @@ describe("Booking data display", () => {
     setupFetchMock([], 0);
     render(<Dashboard />);
     await waitFor(() =>
-      expect(screen.getByText("No bookings to show.")).toBeInTheDocument()
+      expect(screen.getByText("No bookings to show.")).toBeInTheDocument(),
     );
   });
 
   test("renders the table when bookings exist", async () => {
     setupFetchMock();
     render(<Dashboard />);
-    await waitFor(() =>
-      expect(screen.getByRole("table")).toBeInTheDocument()
-    );
+    await waitFor(() => expect(screen.getByRole("table")).toBeInTheDocument());
   });
 
   test("uses airport field when available instead of pickup location", async () => {
     const bookingWithAirport = {
       ...mockPendingBooking,
-      trip: { ...mockPendingBooking.trip, airport: "Bristol Airport" },
-    } as unknown as BookingWithTrip;
+      trip: {
+        ...mockPendingBooking.trip,
+        pickup_location: JSON.stringify({
+          short_name: "Bristol Airport",
+          address: "Bristol Airport, Bristol, UK",
+        }),
+      },
+    };
     setupFetchMock([bookingWithAirport]);
     render(<Dashboard />);
     await waitFor(() =>
-      expect(screen.getByText("Bristol Airport")).toBeInTheDocument()
+      expect(screen.getByText("Bristol Airport")).toBeInTheDocument(),
     );
   });
 
@@ -196,9 +212,13 @@ describe("Booking data display", () => {
     setupFetchMock(
       [
         mockPendingBooking,
-        { ...mockPendingBooking, booking_id: 99, trip: { ...mockPendingBooking.trip, dropoff_location: "Bath Spa" } },
+        {
+          ...mockPendingBooking,
+          booking_id: 99,
+          trip: { ...mockPendingBooking.trip, dropoff_location: "Bath Spa" },
+        },
       ],
-      2
+      2,
     );
     render(<Dashboard />);
     await waitFor(() => {
@@ -227,7 +247,7 @@ describe("Approve and Reject actions", () => {
     await waitFor(() => screen.getByText("Approve"));
     fireEvent.click(screen.getByText("Approve"));
     await waitFor(() =>
-      expect(screen.getByText("Attach PO number")).toBeInTheDocument()
+      expect(screen.getByText("Attach PO number")).toBeInTheDocument(),
     );
   });
 
@@ -237,7 +257,7 @@ describe("Approve and Reject actions", () => {
     await waitFor(() => screen.getByText("Approve"));
     fireEvent.click(screen.getByText("Approve"));
     await waitFor(() =>
-      expect(screen.getByLabelText("PO number")).toBeInTheDocument()
+      expect(screen.getByLabelText("PO number")).toBeInTheDocument(),
     );
   });
 
@@ -249,7 +269,7 @@ describe("Approve and Reject actions", () => {
     await waitFor(() => screen.getByText("Attach"));
     fireEvent.click(screen.getByText("Attach"));
     await waitFor(() =>
-      expect(screen.getByText("Enter a PO number")).toBeInTheDocument()
+      expect(screen.getByText("Enter a PO number")).toBeInTheDocument(),
     );
   });
 
@@ -259,7 +279,7 @@ describe("Approve and Reject actions", () => {
     await waitFor(() => screen.getByText("Reject"));
     fireEvent.click(screen.getByText("Reject"));
     await waitFor(() =>
-      expect(screen.getByText("Confirm Rejection")).toBeInTheDocument()
+      expect(screen.getByText("Confirm Rejection")).toBeInTheDocument(),
     );
   });
 
@@ -282,7 +302,7 @@ describe("Approve and Reject actions", () => {
     await waitFor(() => screen.getByText("Cancel"));
     fireEvent.click(screen.getByText("Cancel"));
     await waitFor(() =>
-      expect(screen.queryByText("Confirm Rejection")).not.toBeInTheDocument()
+      expect(screen.queryByText("Confirm Rejection")).not.toBeInTheDocument(),
     );
   });
 
@@ -299,7 +319,7 @@ describe("Approve and Reject actions", () => {
     setupFetchMock([mockApprovedBooking]);
     render(<Dashboard />);
     await waitFor(() =>
-      expect(screen.getByText("PO-001")).toBeInTheDocument()
+      expect(screen.getByText("PO: PO-001")).toBeInTheDocument(),
     );
   });
 
@@ -320,9 +340,7 @@ describe("View dialog", () => {
   test("View button is rendered for each booking", async () => {
     setupFetchMock();
     render(<Dashboard />);
-    await waitFor(() =>
-      expect(screen.getByText("View")).toBeInTheDocument()
-    );
+    await waitFor(() => expect(screen.getByText("View")).toBeInTheDocument());
   });
 
   test("clicking View button opens the view dialog", async () => {
@@ -340,8 +358,9 @@ describe("View dialog", () => {
 
 describe("Authentication", () => {
   test("redirects to /login when unauthenticated", async () => {
-    const { useSession } = require("next-auth/react");
-    useSession.mockReturnValueOnce({ status: "unauthenticated" });
+    (useSession as jest.Mock).mockReturnValueOnce({
+      status: "unauthenticated",
+    });
     setupFetchMock();
     render(<Dashboard />);
     await waitFor(() => expect(pushMock).toHaveBeenCalledWith("/login"));
@@ -351,7 +370,7 @@ describe("Authentication", () => {
     setupFetchMock();
     render(<Dashboard />);
     await waitFor(() =>
-      expect(screen.getByText("Department Bookings")).toBeInTheDocument()
+      expect(screen.getByText("Department Bookings")).toBeInTheDocument(),
     );
     expect(pushMock).not.toHaveBeenCalled();
   });
@@ -390,8 +409,182 @@ describe("Search form", () => {
   test("Search button is present", async () => {
     setupFetchMock();
     render(<Dashboard />);
-    await waitFor(() =>
-      expect(screen.getByText("Search")).toBeInTheDocument()
+    await waitFor(() => expect(screen.getByText("Search")).toBeInTheDocument());
+  });
+
+  test("Bookings without price have only view button and a chip as operations", async () => {
+    (global.fetch as jest.Mock).mockResolvedValue({
+      json: jest.fn(),
+    });
+
+    mockGetPendingBookingList.mockResolvedValue({
+      status: 200,
+      json: async () => ({
+        pendingBookings: [
+          {
+            booking_id: 38,
+            user_id: 1,
+            trip_id: 35,
+            booking_status: "Pending",
+            time_created: "2025-12-02T15:34:26.951Z",
+            first_name: "John",
+            tel_number: "07700 123 456",
+            email: "yes@example.com",
+            additional_info: "",
+            department: "Cybersecurity",
+            trip: {
+              trip_id: 35,
+              icabbi_booking_id: null,
+              pickup_location: "Merchant Venturers Building",
+              dropoff_location: "Chew Magna",
+              pickup_time: "2025-12-06T11:11:00.000Z",
+              via: "",
+              passenger_num: 1,
+              return_drop_loc: "",
+              PO: null,
+              airport: null,
+              flight_num: null,
+              price: null,
+            },
+          },
+        ],
+        totalNum: 1,
+      }),
+    });
+
+    render(<Dashboard />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Chew Magna")).toBeInTheDocument();
+    });
+
+    // Get the entire row
+    const row = screen.getByText("Chew Magna").closest("tr");
+    expect(row!.querySelectorAll("button")).toHaveLength(1);
+    expect(screen.getByText("Awaiting Price")).toBeInTheDocument();
+  });
+
+  test("Cards are displayed with the correct numbers", async () => {
+    (global.fetch as jest.Mock).mockResolvedValue({
+      json: jest.fn().mockResolvedValue({
+        total: 100,
+        pending: 50,
+        approved: 40,
+        rejected: 10,
+        overdue: 12,
+      }),
+    });
+
+    mockGetPendingBookingList.mockResolvedValue({
+      status: 200,
+      json: async () => ({
+        pendingBookings: [
+          {
+            booking_id: 38,
+            user_id: 1,
+            trip_id: 35,
+            booking_status: "Pending",
+            time_created: "2025-12-02T15:34:26.951Z",
+            first_name: "John",
+            tel_number: "07700 123 456",
+            email: "yes@example.com",
+            additional_info: "",
+            department: "Cybersecurity",
+            trip: {
+              trip_id: 35,
+              icabbi_booking_id: null,
+              pickup_location: "Merchant Venturers Building",
+              dropoff_location: "Chew Magna",
+              pickup_time: "2025-12-06T11:11:00.000Z",
+              via: "",
+              passenger_num: 1,
+              return_drop_loc: "",
+              PO: null,
+              airport: null,
+              flight_num: null,
+              price: null,
+            },
+          },
+        ],
+        totalNum: 1,
+      }),
+    });
+
+    render(<Dashboard />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Chew Magna")).toBeInTheDocument();
+    });
+
+    const totalCard = screen.getByTestId("totalCard");
+    const statusCard = screen.getByTestId("statusCard");
+    const overdueCard = screen.getByTestId("overdueCard");
+
+    expect(totalCard).toHaveTextContent("100");
+    expect(statusCard).toHaveTextContent("Pending: 50Approved: 40Rejected: 10");
+    expect(overdueCard).toHaveTextContent("12");
+  });
+
+  test("Card filters are applied and bookings description is changed when clicked", async () => {
+    (global.fetch as jest.Mock).mockResolvedValue({
+      json: jest.fn(),
+    });
+
+    mockGetPendingBookingList.mockResolvedValue({
+      status: 200,
+      json: async () => ({
+        pendingBookings: [
+          {
+            booking_id: 38,
+            user_id: 1,
+            trip_id: 35,
+            booking_status: "Pending",
+            time_created: "2025-12-02T15:34:26.951Z",
+            first_name: "John",
+            tel_number: "07700 123 456",
+            email: "yes@example.com",
+            additional_info: "",
+            department: "Cybersecurity",
+            trip: {
+              trip_id: 35,
+              icabbi_booking_id: null,
+              pickup_location: "Merchant Venturers Building",
+              dropoff_location: "Chew Magna",
+              pickup_time: "2025-12-06T11:11:00.000Z",
+              via: "",
+              passenger_num: 1,
+              return_drop_loc: "",
+              PO: null,
+              airport: null,
+              flight_num: null,
+              price: null,
+            },
+          },
+        ],
+        totalNum: 1,
+      }),
+    });
+
+    render(<Dashboard />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Chew Magna")).toBeInTheDocument();
+    });
+
+    const user = userEvent.setup();
+
+    // Total filter
+    await user.click(screen.getByTestId("totalCard"));
+    expect(screen.getByText("All Bookings")).toBeInTheDocument();
+
+    // Status filter
+    await user.click(screen.getByTestId("statusCard"));
+    expect(screen.getByText("All Bookings with Statuses")).toBeInTheDocument();
+
+    // Overdue filter
+    await user.click(screen.getByTestId("overdueCard"));
+    expect(screen.getByTestId("filter_text")).toHaveTextContent(
+      "Overdue Bookings",
     );
   });
 });
@@ -403,7 +596,7 @@ describe("Card filter labels", () => {
     setupFetchMock();
     render(<Dashboard />);
     await waitFor(() =>
-      expect(screen.getByText("Pending Bookings")).toBeInTheDocument()
+      expect(screen.getByText("Pending Bookings")).toBeInTheDocument(),
     );
   });
 
@@ -413,7 +606,7 @@ describe("Card filter labels", () => {
     await waitFor(() => screen.getByText("Total Bookings"));
     fireEvent.click(screen.getByText("Total Bookings"));
     await waitFor(() =>
-      expect(screen.getByText("All Bookings")).toBeInTheDocument()
+      expect(screen.getByText("All Bookings")).toBeInTheDocument(),
     );
   });
 
@@ -425,7 +618,7 @@ describe("Card filter labels", () => {
     const overdueCard = screen.getAllByText("Overdue Bookings")[0];
     fireEvent.click(overdueCard);
     await waitFor(() =>
-      expect(screen.queryByText("Pending Bookings")).not.toBeInTheDocument()
+      expect(screen.queryByText("Pending Bookings")).not.toBeInTheDocument(),
     );
   });
 });

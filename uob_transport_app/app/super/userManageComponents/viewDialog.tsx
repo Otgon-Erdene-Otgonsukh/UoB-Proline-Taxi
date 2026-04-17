@@ -116,8 +116,8 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: UserRecor
               : viewData?.user_status === userStatusToIntMap.pending
                 ? "warning"
                 : viewData?.user_status === userStatusToIntMap.rejected
-                  ? "default"
-                  : "error"
+                  ? "error"
+                  : "default"
               }`}
             label={userStatusToStrMap[viewData?.user_status]}
           />
@@ -129,31 +129,6 @@ const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: UserRecor
           </Typography>
           <Typography gutterBottom>
             {viewData?.department.dep_name}
-          </Typography>
-        </Stack>
-        <Divider sx={{ my: 2 }} />
-        <Stack>
-          <Typography gutterBottom sx={{ fontWeight: "bold" }}>
-            Bookings:
-          </Typography>
-          <Typography gutterBottom>
-            <CustomizedButton
-              click={handleViewBookings}
-              type="primary"
-              title="View"
-            />
-          </Typography>
-        </Stack>
-        <Stack>
-          <Typography gutterBottom sx={{ fontWeight: "bold" }}>
-            Saved Addresses:
-          </Typography>
-          <Typography gutterBottom>
-            <CustomizedButton
-              click={handleViewBookings}
-              type="primary"
-              title="View"
-            />
           </Typography>
         </Stack>
       </DialogContent>

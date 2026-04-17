@@ -12,7 +12,7 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
  * This component is a placeholder for FormControl to correctly set the shrink label state on SSR.
  */
 function SSRInitialFilled(a: BaseNumberField.Root.Props) {
-  console.log(a);
+  // console.log(a);
   // console.clear(); // This line is in the way of debugging in the browser.
   return null;
 }

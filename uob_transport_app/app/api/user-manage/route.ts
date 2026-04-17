@@ -53,7 +53,12 @@ export async function GET(request: NextRequest) {
   });
 }
 
-// This endpoint is to update user info by super admin
+/**
+ * Update user info by super admin. This is used for user management in super admin dashboard. Super admin can update user's name, email, phone number, role, user status and department.
+ * Only super admin can access this endpoint. This endpoint will also send approval/rejection email to the user when the user status is updated.
+ * @param request 
+ * @returns 
+ */
 export async function POST(request: NextRequest) {
   // TODO Check super admin
 
@@ -81,7 +86,7 @@ export async function POST(request: NextRequest) {
   const userData = requestJson.userData
 
   const updateResult = await updateUserAccess(userData.user_id, {
-    name: userData.name!,
+    full_name: userData.full_name!,
     email: userData.email,
     phone_number: userData.phone_number!,
     role: userData.role!,
@@ -92,7 +97,9 @@ export async function POST(request: NextRequest) {
   if (updateResult) {
     // send approval/rejection email from the server side
     try {
-      await sendRes(userData.name!, userData.email, userData.user_status);
+      if (userData.user_status !== 0) {
+        await sendRes(userData.full_name!, userData.email, userData.user_status);
+      }
     } catch (err) {
       console.error("Failed to send registration response email:", err);
     }
@@ -106,7 +113,7 @@ export async function POST(request: NextRequest) {
     return new Response(JSON.stringify({
       message: 'update user failed'
     }), {
-      status: 201,
+      status: 500,
       headers: { 'Content-Type': 'application/json' },
     });
   }

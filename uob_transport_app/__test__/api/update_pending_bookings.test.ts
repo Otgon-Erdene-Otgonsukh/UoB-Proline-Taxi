@@ -2,7 +2,7 @@
  * @jest-environment node
  */
 
-import { POST } from "@/app/api/update_booking/route";
+import { POST } from "@/app/api/approve_booking/route";
 import updateStatus from "@/backend/update_booking_status/update_status";
 import { getBookingDetails } from "@/backend/access/booking_access";
 import { isAdmin } from "@/backend/access/user_access";
@@ -24,7 +24,7 @@ describe("Update booking API endpoint branch tests", () => {
     (auth as jest.Mock).mockResolvedValue(null);
 
     const body = { bookingId: 11, newStatus: "Approved", po: "PO-111" };
-    const req = new Request("http://localhost:3000/api/update_booking", {
+    const req = new Request("http://localhost:3000/api/approve_booking", {
       method: "POST",
       body: JSON.stringify(body),
       headers: {
@@ -75,7 +75,7 @@ describe("Update booking API endpoint branch tests", () => {
     (getBookingDetails as jest.Mock).mockResolvedValue(null);
 
     const body = { bookingId: 999, newStatus: "Approved", po: "PO-333" };
-    const req = new Request("http://localhost:3000/api/update_booking", {
+    const req = new Request("http://localhost:3000/api/approve_booking", {
       method: "POST",
       body: JSON.stringify(body),
       headers: {
@@ -103,7 +103,7 @@ describe("Update booking API endpoint branch tests", () => {
     (updateStatus as jest.Mock).mockRejectedValue(new Error("Database error"));
 
     const body = { bookingId: 11, newStatus: "Approved", po: "PO-444" };
-    const req = new Request("http://localhost:3000/api/update_booking", {
+    const req = new Request("http://localhost:3000/api/approve_booking", {
       method: "POST",
       body: JSON.stringify(body),
       headers: {

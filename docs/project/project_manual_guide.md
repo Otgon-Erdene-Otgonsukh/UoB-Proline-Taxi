@@ -2,12 +2,14 @@
 
 ## Description
 
-This manual provides information on the tools used in the development of this project, including brief descriptions that explain the reasons for choosing these tools, as well as instructions on how to utilize them. The goal of this guide is to enable team members who are facing difficulties understanding certain architectural concepts of the tools involved to get up to speed with concise and clear documentation that addresses all these issues.
+This manual provides information on the tools used in the development of this project, including brief descriptions that explain the reasons for choosing these tools, as well as instructions on how to utilize them. The goal of this guide is to enable team members who are facing difficulties understanding certain architectural concepts of the tools involved to get up to speed or for new developers who are not familiar with the tools involved with concise and clear documentation that addresses all these issues.
 
 - [Next.js](#nextjs-javascript-framework)
 - [Neon](#postgresql-database-hosted-with-neon)
 - [Prisma](#prisma-orm)
 - [Jest](#jest-for-testing)
+- [CI/CD](#github-actions-cicd)
+- [AWS](#aws--deployment)
 
 ## Next.js (Javascript Framework)
  [![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=Next.js&color=black)](https://nextjs.org)
@@ -58,6 +60,11 @@ To import and create the Prisma client instance, run the following commands at t
 import { PrismaClient } from "@/generate/prisma/client"
 
 const prisma = new PrismaClient();
+
+// or alternatively for ease of testing, use the deep mocked client
+
+import { prisma } from "@/utils/client"
+
 ```
 
 Now we can use prisma.user.create ... as such to query the database without raw sql.
@@ -109,6 +116,15 @@ jest.mock("module to be mocked", () => ({
 ```
 The above code snippet mocks the module and replaces one of the methods in the module `functions_in_the_module` with a mock function `jest.fn()`. Thus we can now decide what the behaviour of the function should be and test it agains that.
 
+### Using `prismaMock` for testing
+To avoid the headache of mocking the prisma client and all of its functions in every test, there is a deeply mocked version of the prisma client that you can easily import and define the behaviours of each function without manual mocking as long as the backend function or the api-endpoints use the exported client and not a new instance of it. You can import the pre-mocked prisma client by including the following import statement in your test file:
+
+```ts
+import { prismaMock } from "@/utils/singleton";
+
+prismaMock.bookings.findMany.mockResolvedValue({...})
+```
+
 ## Github Actions (CI/CD)
 [![Static Badge](https://img.shields.io/badge/Github%20Actions-2088FF?style=for-the-badge&logo=Github%20Actions&logoColor=white)
 ](https://docs.github.com/en/actions/get-started/understand-github-actions)
@@ -119,6 +135,17 @@ The `ci.yml` we have is composed of several steps including locating cache for f
 
 > [!IMPORTANT]
 > Note that when a PR is created, the workflow file that is triggered and run is the one on the PR branch and not the one on `dev` or `main`.
+
+### Continious Deployment
+As for deployment, we used AWS and the [`cd.yml`](/.github/workflows/cd.yml) defines the steps of deployment. The rough outline of the overall flow is defined as follows:
+
+ 1. Login to AWS using the credentials stored in github secrets.
+ 2. Builds docker image of the application.
+ 3. Pushes the image to AWS ECR.
+ 4. Updates the [`task-definition.json`](/.aws/task-definition.json) file to use the newly pushed image.
+ 5. Updates the AWS ECS task to start a container with the new task-definition.
+
+Further information on the AWS cloud architecture can be found in the [`AWS & Deployment`](#aws--deployment) section of the document.
 
 ## Auth.js
 For user authentication and session management, we used Auth.js which integrates well with next.js projects and provides automatic cookie management, easy sign in and sign out functionalities. 
@@ -154,3 +181,31 @@ const name = session.user.name;
 
 > [!TIP]
 > The object structure of the session object and what information is stored within it can be found in the file `/types/next-auth.d.ts`.
+
+## AWS & Deployment
+[![AWS](https://img.shields.io/badge/Amazon_Web_Services-FB7A24?style=for-the-badge&logoColor=white)](https://aws.amazon.com/)
+
+The project is deployed on AWS, utilizing the following services: 
+
+ - AWS ECR
+    - Registry to store docker images for ECS to pull.
+ - AWS ECS
+    - Container runtime environment to run the main image container
+ - AWS ALB
+    - Proxy and load balancer that provides static IP and DNS which our custom domain points to. Forwards traffic to the container
+ - AWS WAF
+    - Firewall that filters traffic and provides safety from application level attacks.
+ - AWS IAM
+    - User accounts for Github Actions and local AWS SES development.
+ - AWS SES
+    - Email service for sending emails to the users.
+ - AWS Secrets Manager
+    - Storage for keeping environment variables that is needed for the application and is accessible by ECS.
+ - AWS ACM
+    - Used for SSL certification that allows HTTPS.
+
+All these services come together to provide end-to-end flow from the internet to our application. 
+
+`task-denfiniton.json` is a file that contains the configuration for the AWS ECS service that defines the system resources like cpu and ram, container information like the name and the id of the image to use (which will be set to the URI of the image in ECR), environment variables and secret the application needs and the secret links stored in AWS Secrets Manager. 
+
+The setup of these services are straightforward, you just need to follow the steps that AWS provides to create ECR registry and ECS service.

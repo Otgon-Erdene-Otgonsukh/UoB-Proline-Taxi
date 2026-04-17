@@ -1,7 +1,7 @@
 import { booking } from '@/generated/prisma/client'
 import prisma from '@/utils/client'
 
-export const getUserBookingsAccess = async (userId: number, page: number, pageSize: number, searchParams: { from?: string, to?: string, bookingStatus?: string, pickUpTimeFrom?: string, pickUpTimeTo?: string }): Promise<booking[]> => {
+export const getUserBookingsAccess = async (userId: number, page: number, pageSize: number, searchParams: { from?: string, to?: string, bookingStatus?: string, pickUpTimeFrom?: string, pickUpTimeTo?: string, isExport?: boolean, department?: string }): Promise<booking[]> => {
   const query: { [key: string]: string | number | object } = {}
   if (searchParams.from !== undefined) {
     query['trip'] = {
@@ -22,7 +22,23 @@ export const getUserBookingsAccess = async (userId: number, page: number, pageSi
       }
     }
   }
-  if (searchParams.bookingStatus !== undefined) {
+
+  if (searchParams.department !== undefined) {
+    query['department'] = {
+      dep_name: {
+        contains: searchParams.department.trim(),
+        mode: "insensitive"
+      }
+    }
+  }
+
+  if (searchParams.isExport) {  
+    if (searchParams.bookingStatus === undefined) {
+      query['booking_status'] = {in : ["Approved", "Pending"]};
+    } else {
+      query['booking_status'] = searchParams.bookingStatus;
+    } 
+  } else if (searchParams.bookingStatus !== undefined) {
     query['booking_status'] = searchParams.bookingStatus
   }
   if (searchParams.pickUpTimeFrom !== undefined && searchParams.pickUpTimeTo !== undefined) {
@@ -57,10 +73,12 @@ export const getUserBookingsAccess = async (userId: number, page: number, pageSi
   return prisma.booking.findMany({
     where: {
       ...query,
-      user_id: userId,
+      user_id: userId === -1 ? undefined : userId,
     },
     include: {
       trip: true,
+      department: true,
+      ...(userId === -1 ? { User: { select: { full_name: true } } } : {})
     },
     orderBy: {
       time_created: 'desc'
@@ -90,6 +108,47 @@ export const getBookingDetails = async (userId: number, bookingId: number): Prom
   }
 }
 
+export const getTripDetails = async (tripId: number) => {
+  return prisma.trip.findUnique({
+    where: {
+      trip_id: tripId
+    }
+  })
+}
+
+export const getBookingTrip = async (bookingId: number) => {
+  const booking = await prisma.booking.findUnique({
+    where: {
+      booking_id: bookingId
+    },
+    include: {
+      trip: true
+    }
+  })
+
+  return booking;
+}
+
+export const getBookingIDsByDepartment = async (depId: number) => {
+  const prismaBooking = await prisma.booking.findMany({
+    select: {
+      booking_id: true,
+    },
+    where: {
+      dep_id: depId
+    }
+  })
+
+  const returnBookings: number[] = [];
+
+  for (const booking of prismaBooking) {
+    returnBookings.push(booking.booking_id);
+  }
+  
+  return returnBookings;
+}
+
+
 export const cancelBookingsAccess = async (bookingId: number): Promise<booking | null> => {
   return prisma.booking.update({
     where: {
@@ -101,7 +160,7 @@ export const cancelBookingsAccess = async (bookingId: number): Promise<booking |
   })
 }
 
-export const getUserBookingsCountAccess = async (userId: number, searchParams: { from?: string, to?: string, bookingStatus?: string, pickUpTimeFrom?: string, pickUpTimeTo?: string }): Promise<number> => {
+export const getUserBookingsCountAccess = async (userId: number, searchParams: { from?: string, to?: string, bookingStatus?: string, pickUpTimeFrom?: string, pickUpTimeTo?: string, isExport?: boolean, department?: string }): Promise<number> => {
   const query: { [key: string]: string | number | object } = {}
   if (searchParams.from !== undefined) {
     query['trip'] = {
@@ -122,7 +181,23 @@ export const getUserBookingsCountAccess = async (userId: number, searchParams: {
       }
     }
   }
-  if (searchParams.bookingStatus !== undefined) {
+
+  if (searchParams.department !== undefined) {
+    query['department'] = {
+      dep_name: {
+        contains: searchParams.department.trim(),
+        mode: "insensitive"
+      }
+    }
+  }
+
+  if (searchParams.isExport) {  
+    if (searchParams.bookingStatus === undefined) {
+      query['booking_status'] = {in : ["Approved", "Pending"]};
+    } else {
+      query['booking_status'] = searchParams.bookingStatus;
+    }   
+  } else if (searchParams.bookingStatus !== undefined) {
     query['booking_status'] = searchParams.bookingStatus
   }
   if (searchParams.pickUpTimeFrom !== undefined && searchParams.pickUpTimeTo !== undefined) {
@@ -158,7 +233,7 @@ export const getUserBookingsCountAccess = async (userId: number, searchParams: {
   return prisma.booking.count({
     where: {
       ...query,
-      user_id: userId,
+      user_id: userId === -1 ? undefined : userId,
     },
   })
 }

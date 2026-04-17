@@ -10,5 +10,4 @@ export async function GET(request: NextRequest) {
   const departmentsList = await getDepartmentsListAccess(depName)
 
   return new Response(JSON.stringify(departmentsList), { status: 200 });
-
 }

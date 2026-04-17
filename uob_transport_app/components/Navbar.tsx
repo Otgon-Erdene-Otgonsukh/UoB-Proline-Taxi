@@ -39,7 +39,7 @@ export const Navbar = () => {
 
   const pages = [
     { name: 'Home', path: '/home', icon: <HomeOutlinedIcon /> },
-    { name: 'Dashboard', path: '/dep-dashboard', icon: <DashboardOutlinedIcon /> },
+    { name: 'Dashboard', path: session?.user.account_type === "finance_staff" ? "/dep-dashboard" : "/normal", icon: <DashboardOutlinedIcon /> },
     { name: 'About', path: '/about', icon: <InfoOutlinedIcon /> },
     { name: 'Help', path: '/faq', icon: <HelpCenterOutlinedIcon /> },
   ];
@@ -197,8 +197,9 @@ export const Navbar = () => {
                   key={index}
                   onClick={() => { router.push(page.path); handleCloseNav(); }}
                   sx={{
-                    fontWeight: isActive(page.path) ? 700 : 400,
-                    color: '#2C2C2C'
+                    fontWeight: isActive(page.path) ? 750 : 400,
+                    color: '#2C2C2C',
+                    borderLeft: isActive(page.path) ? 4 : 0
                   }}
                 >
                   {page.icon}
@@ -210,8 +211,8 @@ export const Navbar = () => {
                 <div>
                   <Divider sx={{ my: 1 }} />
                   <MenuItem
-                    onClick={handleCloseNav}
-                    sx={{ color: '#2C2C2C' }}
+                    onClick={() => {setNavAnchorEl(null); router.push("/profile")}}
+                    sx={{ color: '#2C2C2C', fontWeight: isActive("/profile") ? 750 : 400, borderLeft: isActive("/profile") ? 4 : 0 }}
                   >
                     <Avatar sx={{ width: 24, height: 24, fontSize: '0.8rem', bgcolor: '#2C2C2C' }}>
                       {session?.user?.name?.charAt(0).toUpperCase()}

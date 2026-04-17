@@ -3,6 +3,21 @@ import {
   getPendingBookingsCount,
 } from "@/backend/pending_bookings/get_pending_bookings";
 import { prismaMock } from "@/utils/singleton";
+import { auth } from "@/auth";
+
+jest.mock("../../auth", () => ({
+  auth: jest.fn().mockResolvedValue({
+    user: {
+      user_id: 1,
+    },
+  }),
+}));
+
+jest.mock("../../backend/access/departments_access", () => ({
+  getDepartmentIdfromUserId: jest.fn().mockResolvedValue({
+    dep_id: 1
+  })
+}))
 
 describe("The tests for the 2 functions for fetching bookings/count for dep-dashboard page", () => {
   afterEach(() => {
@@ -20,12 +35,15 @@ describe("The tests for the 2 functions for fetching bookings/count for dep-dash
       total: false,
       status: false,
       overdue: false,
+      price: false,
+      withoutPrice: false,
     };
     await getPendingBookings(4, 10, mockSearchParams);
     await getPendingBookingsCount(mockSearchParams);
     expect(prismaMock.booking.findMany).toHaveBeenCalledWith({
       where: {
         booking_status: "Pending",
+        dep_id: 1
       },
       orderBy: {
         time_created: "desc",
@@ -46,6 +64,7 @@ describe("The tests for the 2 functions for fetching bookings/count for dep-dash
     expect(prismaMock.booking.count).toHaveBeenCalledWith({
       where: {
         booking_status: "Pending",
+        dep_id: 1
       },
     });
   });
@@ -61,6 +80,8 @@ describe("The tests for the 2 functions for fetching bookings/count for dep-dash
       total: true,
       status: false,
       overdue: false,
+      price: false,
+      withoutPrice: false,
     };
     prismaMock.booking.findMany.mockResolvedValue([{}]); //returning an empty object array to make the sort call work
     await getPendingBookings(2, 5, mockSearchParams);
@@ -88,6 +109,7 @@ describe("The tests for the 2 functions for fetching bookings/count for dep-dash
         booking_status: {
           not: "Cancelled",
         },
+        dep_id: 1
       },
       include: {
         trip: true,
@@ -123,6 +145,7 @@ describe("The tests for the 2 functions for fetching bookings/count for dep-dash
         booking_status: {
           not: "Cancelled",
         },
+        dep_id: 1
       },
     });
   });
@@ -138,6 +161,8 @@ describe("The tests for the 2 functions for fetching bookings/count for dep-dash
       total: false,
       status: false,
       overdue: true,
+      price: false,
+      withoutPrice: false,
     };
 
     await getPendingBookings(1, 10, mockSearchParams);
@@ -167,6 +192,7 @@ describe("The tests for the 2 functions for fetching bookings/count for dep-dash
           contains: "Geo",
           mode: "insensitive",
         },
+        dep_id: 1
       },
       include: {
         trip: true,
@@ -206,8 +232,193 @@ describe("The tests for the 2 functions for fetching bookings/count for dep-dash
           contains: "Geo",
           mode: "insensitive",
         },
+        dep_id: 1
       },
     });
     expect(prismaMock.booking.count).toHaveBeenCalledTimes(1);
   });
+
+  test("total branch sorts and paginates correctly", async () => {
+    prismaMock.booking.findMany.mockResolvedValue([
+      { booking_status: "Approved" },
+      { booking_status: "Pending" },
+      { booking_status: "Rejected" },
+    ]);
+
+    const params = {
+      from: undefined,
+      to: undefined,
+      passengerName: undefined,
+      pickUpTimeFrom: undefined,
+      pickUpTimeTo: undefined,
+      isFlight: false,
+      total: true, // 🔥 核心
+      status: false,
+      overdue: false,
+      price: false,
+      withoutPrice: false,
+    };
+
+    const result = await getPendingBookings(0, 2, params);
+
+    // 排序后：Pending → Approved → Rejected
+    expect(result).toEqual([
+      { booking_status: "Pending" },
+      { booking_status: "Approved" },
+    ]);
+  });
+
+  test("status branch triggers same logic as total", async () => {
+    prismaMock.booking.findMany.mockResolvedValue([
+      { booking_status: "Rejected" },
+      { booking_status: "Pending" },
+    ]);
+
+    const params = {
+      from: undefined,
+      to: undefined,
+      passengerName: undefined,
+      pickUpTimeFrom: undefined,
+      pickUpTimeTo: undefined,
+      isFlight: false,
+      total: false,
+      status: true, // 🔥
+      overdue: false,
+      price: false,
+      withoutPrice: false,
+    };
+
+    const result = await getPendingBookings(0, 10, params);
+
+    expect(result[0].booking_status).toBe("Pending");
+  });
+
+  test("price filter builds query correctly", async () => {
+    await getPendingBookings(0, 10, {
+      from: undefined,
+      to: undefined,
+      passengerName: undefined,
+      pickUpTimeFrom: undefined,
+      pickUpTimeTo: undefined,
+      isFlight: false,
+      total: false,
+      status: false,
+      overdue: false,
+      price: true,
+      withoutPrice: false,
+    });
+
+    expect(prismaMock.booking.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          trip: expect.objectContaining({
+            price: { not: null },
+          }),
+        }),
+      })
+    );
+  });
+
+  test("withoutPrice filter builds query correctly", async () => {
+    await getPendingBookings(0, 10, {
+      from: undefined,
+      to: undefined,
+      passengerName: undefined,
+      pickUpTimeFrom: undefined,
+      pickUpTimeTo: undefined,
+      isFlight: false,
+      total: false,
+      status: false,
+      overdue: false,
+      price: false,
+      withoutPrice: true,
+    });
+
+    expect(prismaMock.booking.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          trip: expect.objectContaining({
+            price: null,
+          }),
+        }),
+      })
+    );
+  });
+
+  test("when auth returns null, depId defaults to -1", async () => {
+    (auth as jest.Mock).mockResolvedValue(null);
+
+    await getPendingBookings(0, 10, {
+      from: undefined,
+      to: undefined,
+      passengerName: undefined,
+      pickUpTimeFrom: undefined,
+      pickUpTimeTo: undefined,
+      isFlight: false,
+      total: false,
+      status: false,
+      overdue: false,
+      price: false,
+      withoutPrice: false,
+    });
+
+    expect(prismaMock.booking.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          dep_id: -1,
+        }),
+      })
+    );
+  });
+
+  test("count total branch uses not Cancelled", async () => {
+    await getPendingBookingsCount({
+      from: undefined,
+      to: undefined,
+      passengerName: undefined,
+      pickUpTimeFrom: undefined,
+      pickUpTimeTo: undefined,
+      isFlight: false,
+      total: true,
+      status: false,
+      overdue: false,
+      price: false,
+      withoutPrice: false,
+    });
+
+    expect(prismaMock.booking.count).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          booking_status: { not: "Cancelled" },
+        }),
+      })
+    );
+  });
+
+  test("count handles price filter", async () => {
+    await getPendingBookingsCount({
+      from: undefined,
+      to: undefined,
+      passengerName: undefined,
+      pickUpTimeFrom: undefined,
+      pickUpTimeTo: undefined,
+      isFlight: false,
+      total: false,
+      status: false,
+      overdue: false,
+      price: true,
+      withoutPrice: false,
+    });
+
+    expect(prismaMock.booking.count).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          trip: expect.objectContaining({
+            price: { not: null },
+          }),
+        }),
+      })
+    );
+  });
+
 });
