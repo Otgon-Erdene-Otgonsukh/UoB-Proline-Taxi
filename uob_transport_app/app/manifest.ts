@@ -11,18 +11,18 @@ export default function manifest(): MetadataRoute.Manifest {
         theme_color: '#2c2c2c',
         icons: [
             {
-                src: '/weelv1.png',
-                sizes: '192x192',
+                src: '/windows.png',
+                sizes: '256x256',
                 type: 'image/png',
             },
             {
-                src: '/weelhv1.png',
+                src: '/windows-large.png',
                 sizes: '512x512',
                 type: 'image/png',
             },
             {
-                src: '/weelv1.png',
-                sizes: '192x192',
+                src: '/android.png',
+                sizes: '512x512',
                 type: 'image/png',
                 purpose: 'maskable',
             },
