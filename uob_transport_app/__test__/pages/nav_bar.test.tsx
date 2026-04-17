@@ -20,7 +20,7 @@ const pushMock = jest.fn();
 const mockPathname = jest.fn() as jest.Mock;
 jest.mock("next/navigation", () => ({
   useRouter: () => ({ push: pushMock }),
-  usePathname: jest.fn(),              // the import IS the mock
+  usePathname: () => mockPathname(),
 }));
 
 // mock next-auth
