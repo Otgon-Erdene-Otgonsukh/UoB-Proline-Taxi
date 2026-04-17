@@ -152,6 +152,21 @@ export const isAdmin = async (userId: number): Promise<boolean> => {
   }
 }
 
+ // Check if a user has finance staff privileges by their ID.
+export const isFinanceStaff = async (userId: number): Promise<boolean> => {
+  const user = await prisma.user.findUnique({
+    where: {
+      user_id: userId
+    }
+  })
+
+  if (user !== null && user.role === 'finance_staff') {
+    return true
+  } else {
+    return false
+  }
+}
+
 export const getUsersByDepIdAccess = async (depId: number) => {
   return prisma.user.findMany({
     where: {

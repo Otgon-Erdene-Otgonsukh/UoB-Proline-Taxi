@@ -5,7 +5,7 @@
 import { POST } from "@/app/api/approve_booking/route";
 import updateStatus from "@/backend/update_booking_status/update_status";
 import { getBookingDetails } from "@/backend/access/booking_access";
-import { isAdmin } from "@/backend/access/user_access";
+import { isAdmin, isFinanceStaff } from "@/backend/access/user_access";
 import { auth } from "@/auth";
 
 jest.mock("../../backend/update_booking_status/update_status.ts");
@@ -18,6 +18,9 @@ jest.mock("../../auth", () => ({
 describe("Update booking API endpoint branch tests", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    // Default both to false, each test sets what it needs
+    (isAdmin as jest.Mock).mockResolvedValue(false);
+    (isFinanceStaff as jest.Mock).mockResolvedValue(false);
   });
 
   test("Unauthenticated user request is rejected", async () => {
@@ -67,11 +70,67 @@ describe("Update booking API endpoint branch tests", () => {
     expect(updateStatus).toHaveBeenCalledWith(11, "Approved", "PO-111");
   });
 
+  test("Finance staff can update any booking", async () => {
+    (auth as jest.Mock).mockResolvedValue({
+      user: { user_id: 2 },
+    });
+    (isAdmin as jest.Mock).mockResolvedValue(false);
+    (isFinanceStaff as jest.Mock).mockResolvedValue(true);
+    (getBookingDetails as jest.Mock).mockResolvedValue({
+      booking_id: 11,
+      status: "Pending",
+    });
+    (updateStatus as jest.Mock).mockResolvedValue(undefined);
+
+    const body = { bookingId: 11, newStatus: "Approved", po: "PO-111" };
+    const req = new Request("http://localhost:3000/api/approve_booking", {
+      method: "POST",
+      body: JSON.stringify(body),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const res = await POST(req);
+    const data = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(data.success).toBe(true);
+    expect(getBookingDetails).toHaveBeenCalledWith(-1, 11);
+    expect(updateStatus).toHaveBeenCalledWith(11, "Approved", "PO-111");
+  });
+
+  test("Non-admin non-finance user cannot update booking", async () => {
+    (auth as jest.Mock).mockResolvedValue({
+      user: { user_id: 9 },
+    });
+    (isAdmin as jest.Mock).mockResolvedValue(false);
+    (isFinanceStaff as jest.Mock).mockResolvedValue(false);
+    (getBookingDetails as jest.Mock).mockResolvedValue(null);
+
+    const body = { bookingId: 11, newStatus: "Approved", po: "PO-111" };
+    const req = new Request("http://localhost:3000/api/approve_booking", {
+      method: "POST",
+      body: JSON.stringify(body),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const res = await POST(req);
+    const data = await res.json();
+
+    expect(res.status).toBe(404);
+    expect(data.success).toBe(false);
+    expect(updateStatus).not.toHaveBeenCalled();
+  });
+
   test("Returns 404 when booking not found", async () => {
     (auth as jest.Mock).mockResolvedValue({
       user: { user_id: 5 },
     });
     (isAdmin as jest.Mock).mockResolvedValue(false);
+    (isFinanceStaff as jest.Mock).mockResolvedValue(false);
     (getBookingDetails as jest.Mock).mockResolvedValue(null);
 
     const body = { bookingId: 999, newStatus: "Approved", po: "PO-333" };
