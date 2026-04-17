@@ -34,17 +34,16 @@ describe("Check whether the about page has the required elements", () => {
   });
 
   test("image renders", () => {
-    const images = screen.getAllByRole("img");
-    expect(images.length).toBeGreaterThanOrEqual(1);
-    expect(images[0]).toBeVisible();
+    const image = screen.getAllByRole("img");
+    expect(image.length).toBe(1);
+    expect(image[0]).toBeInTheDocument();
   });
 
   test("review cards are all displayed", () => {
     const cards = screen.getAllByTestId("review-card");
     cards.forEach((card) => {
       expect(card).toBeInTheDocument();
-      expect(card).toBeVisible();
-    });
+    })
     expect(cards.length).toBe(3);
   });
 

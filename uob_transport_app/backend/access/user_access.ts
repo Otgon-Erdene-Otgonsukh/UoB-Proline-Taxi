@@ -1,5 +1,6 @@
 import prisma from '@/utils/client';
 import { department, User } from '@/generated/prisma/client'
+import { BatchPayload } from '@/generated/prisma/internal/prismaNamespace';
 type noPasswordUser = Omit<User, "password">
 
 export const searchUserAccess = async (
@@ -28,6 +29,25 @@ export const getUserFromID = (
   });
 };
 
+export const getUsersByIdsAccess = (userIds: number[]) => {
+  return prisma.user.findMany({
+    where: {
+      user_id: {
+        in: userIds
+      }
+    },
+    select: {
+      time_created: true,
+      user_id: true,
+      full_name: true,
+      email: true,
+      phone_number: true,
+      role: true,
+      user_status: true
+    }
+  })
+}
+
 export const updateUserPassowrdAccess = async (
   email: string,
   password: string
@@ -55,7 +75,7 @@ export const getUserByEmailAccess = async (
 export const getUserListAccess = async (page: number, pageSize: number, name?: string, role?: string, userStatus?: number): Promise<noPasswordUser[] | null> => {
   const query: { [key: string]: string | number | object } = {}
   if (name !== undefined) {
-    query['name'] = {
+    query['full_name'] = {
       contains: name,
       mode: "insensitive"
     }
@@ -85,7 +105,7 @@ export const getUserListAccess = async (page: number, pageSize: number, name?: s
 export const getUserCountAccess = async (name?: string, role?: string, userStatus?: number): Promise<number | null> => {
   const query: { [key: string]: string | number | object } = {}
   if (name) {
-    query['name'] = {
+    query['full_name'] = {
       contains: name,
       mode: "insensitive"
     }
@@ -130,4 +150,34 @@ export const isAdmin = async (userId: number): Promise<boolean> => {
   } else {
     return false
   }
+}
+
+export const getUsersByDepIdAccess = async (depId: number) => {
+  return prisma.user.findMany({
+    where: {
+      dep_id: depId
+    },
+    select: {
+      time_created: true,
+      user_id: true,
+      full_name: true,
+      email: true,
+      phone_number: true,
+      role: true,
+      user_status: true
+    }
+  })
+}
+
+export const changeDepartmentForUsersAccess = async (userIds: number[], depId: number): Promise<BatchPayload> => {
+  return prisma.user.updateMany({
+    where: {
+      user_id: {
+        in: userIds
+      }
+    },
+    data: {
+      dep_id: depId
+    }
+  })
 }

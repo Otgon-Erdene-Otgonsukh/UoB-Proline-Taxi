@@ -7,6 +7,10 @@ import {
   getUserCountAccess,
   updateUserAccess,
   isAdmin,
+  getUserFromID,
+  getUsersByIdsAccess,
+  getUsersByDepIdAccess,
+  changeDepartmentForUsersAccess
 } from '@/backend/access/user_access';
 
 describe('user_access', () => {
@@ -64,7 +68,7 @@ describe('user_access', () => {
 
     expect(prismaMock.user.findMany).toHaveBeenCalledWith({
       where: {
-        name: { contains: 'Ali', mode: 'insensitive' },
+        full_name: { contains: 'Ali', mode: 'insensitive' },
         role: 'admin',
         user_status: 1,
       },
@@ -85,7 +89,7 @@ describe('user_access', () => {
 
     expect(prismaMock.user.count).toHaveBeenCalledWith({
       where: {
-        name: { contains: 'Bob', mode: 'insensitive' },
+        full_name: { contains: 'Bob', mode: 'insensitive' },
         role: 'staff',
         user_status: 0,
       },
@@ -136,6 +140,88 @@ describe('user_access', () => {
     const result = await isAdmin(2);
 
     expect(result).toBe(false);
+  });
+
+  test('getUserFromID calls findUnique correctly', async () => {
+    const mockUser = { user_id: 1 };
+    (prismaMock.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
+
+    const result = await getUserFromID(1);
+
+    expect(prismaMock.user.findUnique).toHaveBeenCalledWith({
+      where: { user_id: 1 },
+      include: { department: true },
+    });
+
+    expect(result).toBe(mockUser);
+  });
+
+  test('getUsersByIdsAccess queries by id array', async () => {
+    const mockUsers = [{ user_id: 1 }];
+    (prismaMock.user.findMany as jest.Mock).mockResolvedValue(mockUsers);
+
+    const result = await getUsersByIdsAccess([1, 2]);
+
+    expect(prismaMock.user.findMany).toHaveBeenCalledWith({
+      where: {
+        user_id: {
+          in: [1, 2],
+        },
+      },
+      select: {
+        time_created: true,
+        user_id: true,
+        full_name: true,
+        email: true,
+        phone_number: true,
+        role: true,
+        user_status: true,
+      },
+    });
+
+    expect(result).toEqual(mockUsers);
+  });
+  
+  test('getUsersByDepIdAccess queries correctly', async () => {
+    const mockUsers = [{ user_id: 1 }];
+    (prismaMock.user.findMany as jest.Mock).mockResolvedValue(mockUsers);
+
+    const result = await getUsersByDepIdAccess(5);
+
+    expect(prismaMock.user.findMany).toHaveBeenCalledWith({
+      where: { dep_id: 5 },
+      select: {
+        time_created: true,
+        user_id: true,
+        full_name: true,
+        email: true,
+        phone_number: true,
+        role: true,
+        user_status: true,
+      },
+    });
+
+    expect(result).toEqual(mockUsers);
+  });
+
+  test('changeDepartmentForUsersAccess updates users correctly', async () => {
+    const mockResult = { count: 2 };
+    (prismaMock.user.updateMany as jest.Mock).mockResolvedValue(mockResult);
+
+    const result = await changeDepartmentForUsersAccess([1, 2], 9);
+
+    expect(prismaMock.user.updateMany).toHaveBeenCalledWith({
+      where: {
+        user_id: {
+          in: [1, 2],
+        },
+      },
+      data: {
+        dep_id: 9,
+      },
+    });
+
+    expect(result).toBe(mockResult);
   });
 
 });

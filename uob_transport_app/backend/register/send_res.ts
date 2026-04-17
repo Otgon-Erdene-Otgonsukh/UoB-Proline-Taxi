@@ -10,7 +10,7 @@ export default async function sendRes(
 ) {
   const htmlData = await render(RegisterResponseMail({ name, status }));
   const input = new SendEmailCommand({
-    FromEmailAddress: process.env.SES_FROM_EMAIL!,
+    FromEmailAddress: `UoB Taxi & Chauffeur <${process.env.SES_FROM_EMAIL!}>`,
     Destination: {
       ToAddresses: [email],
     },

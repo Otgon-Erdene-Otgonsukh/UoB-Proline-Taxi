@@ -30,13 +30,13 @@ export default function SuperDashboard() {
       });
   }, []);
   return (
-    <div className="min-h-screen">
+    <div className="">
       <motion.div
         initial={{ y: 10, opacity: 0, scale: 0.94 }}
         animate={{ y: 0, opacity: 1, scale: 1 }}
         transition={{ duration: 2, ease: "easeInOut" }}
         id="cards"
-        className="grid grid-cols-2 md:grid-cols-4 md:mt-10 mt-5 mx-4 sm:mx-6 lg:mx-8 gap-4 md:gap-10 text-shadow-md/10"
+        className="grid grid-cols-2 md:grid-cols-4 md:mt-4 mt-5 mx-4 sm:mx-6 lg:mx-8 gap-4 md:gap-10 text-shadow-md/10"
       >
         <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 flex items-center gap-4 border-r-4 border-blue-500 hover:shadow-lg transition-shadow ease-in-out duration-200">
           <div className="bg-blue-100 rounded-full p-3 sm:p-4">
@@ -182,7 +182,7 @@ export default function SuperDashboard() {
         <div className="bg-white rounded-lg shadow-md p-5">
           <div className="flex justify-between items-start mb-8">
             <div className="text-shadow-md/10">
-              <h2 className="md:text-2xl text-md font-bold text-gray-800 mb-2">
+              <h2 className="md:text-xl text-md font-bold text-gray-800 mb-2">
                 Department Spending Activity
               </h2>
               <p className="md:text-sm text-[10px] text-gray-600">

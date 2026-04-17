@@ -8,6 +8,7 @@ import {
   Section,
   Hr,
 } from "@react-email/components";
+import { location } from "@/model/models";
 
 export default function BookingAdminReject({
   from,
@@ -18,27 +19,28 @@ export default function BookingAdminReject({
   pickUpTime,
   returnTime,
   returnTo,
-  firstName,
-  surName,
+  passengerName,
   phoneNumber,
   department,
   uniStaffRejection,
 }: {
-  from: string;
-  via: string;
-  to: string;
-  airport: string;
+  from: location;
+  via: location[];
+  to: location;
+  airport: location | null;
   flightNum: string;
   pickUpTime: Date;
   returnTime?: Date;
-  returnTo?: string;
-  firstName: string;
-  surName: string;
+  returnTo?: location;
+  passengerName: string;
   phoneNumber: string;
   department: string;
-  price: number;
-  uniStaffRejection: boolean
+  uniStaffRejection: boolean;
 }) {
+  const formatAddress = (loc: location) => {
+    return loc.short_name + ", " + loc.address.split(",").slice(-5)[0].trim();
+  };
+
   return (
     <Html>
       <Head />
@@ -48,7 +50,7 @@ export default function BookingAdminReject({
             {/* Header */}
             <Section className="text-center mb-6 bg-red-100 p-6 rounded-lg">
               <Text className="text-2xl font-bold text-red-600 mb-2">
-                Booking Rejection Notice
+                ✕ Booking Rejection Notice
               </Text>
               <Text className="text-lg text-gray-600">
                 Your booking has been rejected
@@ -58,10 +60,14 @@ export default function BookingAdminReject({
             <Hr className="border-gray-300 my-3" />
 
             <Text className="text-gray-700 mb-4">
-              The {uniStaffRejection ? "University finance staff of your associated department" : "admin"} has reviewed and <strong>rejected</strong> the booking
-              with the following details. If you think this was a mistake or
-              need support, contact <strong>Proline</strong> directly through
-              email or phone call or contact your associated department finance staff.
+              The{" "}
+              {uniStaffRejection
+                ? "University finance staff of your associated department"
+                : "admin"}{" "}
+              has reviewed and <strong>rejected</strong> the booking with the
+              following details. If you think this was a mistake or need
+              support, contact <strong>Proline</strong> directly through email
+              or phone call or contact your associated department finance staff.
             </Text>
             <Text className="font-semibold text-gray-800 mb-2">
               Proline Contact Details:
@@ -84,7 +90,7 @@ export default function BookingAdminReject({
                 Passenger Information
               </Text>
               <Text className="text-gray-700 mb-2">
-                <strong>Name:</strong> {firstName} {surName}
+                <strong>Name:</strong> {passengerName}
               </Text>
               <Text className="text-gray-700 mb-2">
                 <strong>Department:</strong> {department}
@@ -113,7 +119,7 @@ export default function BookingAdminReject({
                         <span className="text-gray-700 font-semibold">
                           From:
                         </span>{" "}
-                        {from}
+                        {formatAddress(from)}
                         <br />
                         <span className="text-gray-500 text-xs">
                           Pick-up time: {new Date(pickUpTime).toLocaleString()}
@@ -123,7 +129,7 @@ export default function BookingAdminReject({
                   </tbody>
                 </table>
                 {/* Via */}
-                {via && (
+                {via.length > 0 && (
                   <table className="w-full mb-2 align-top">
                     <tbody>
                       <tr>
@@ -132,10 +138,24 @@ export default function BookingAdminReject({
                           <div className="w-0.5 h-10 bg-gray-300 mt-1 mx-auto"></div>
                         </td>
                         <td className="align-top pl-2">
-                          <span className="text-gray-700 font-semibold">
-                            Via:
-                          </span>{" "}
-                          {via}
+                          <table className="w-full" role="presentation">
+                            <tbody>
+                              <tr>
+                                <td className="align-top pr-3 whitespace-nowrap">
+                                  <span className="text-gray-700 font-semibold mr-2">
+                                    Via:
+                                  </span>
+                                </td>
+                                <td className="align-top">
+                                  <ul className="m-0 p-0">
+                                    {via.map((loc, i) => (
+                                      <li key={i}>{formatAddress(loc)}</li>
+                                    ))}
+                                  </ul>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
                         </td>
                       </tr>
                     </tbody>
@@ -150,7 +170,7 @@ export default function BookingAdminReject({
                       </td>
                       <td className="align-top pl-2">
                         <span className="text-gray-700 font-semibold">To:</span>{" "}
-                        {to}
+                        {formatAddress(to)}
                       </td>
                     </tr>
                   </tbody>
@@ -169,7 +189,7 @@ export default function BookingAdminReject({
                             <span className="text-gray-700 font-semibold">
                               Return To:
                             </span>{" "}
-                            {returnTo}
+                            {formatAddress(returnTo)}
                             <br />
                             <span className="text-gray-500 text-xs">
                               Pick-up time:{" "}
@@ -182,12 +202,12 @@ export default function BookingAdminReject({
                   </>
                 )}
               </Section>
-              {airport !== "" && flightNum !== "" && (
+              {airport !== null && (
                 <>
                   <Hr className="border-gray-300 my-4" />
                   <Text className="font-bold text-[18px]">Flight Details</Text>
                   <Text className="text-gray-700 mb-2 mt-3">
-                    <strong>Airport:</strong> {airport}
+                    <strong>Airport:</strong> {airport.short_name}
                   </Text>
                   <Text className="text-gray-700 mb-2">
                     <strong>Flight Number:</strong> {flightNum}
@@ -204,8 +224,8 @@ export default function BookingAdminReject({
                 className="bg-blue-600 text-white font-semibold py-3 px-8 rounded-lg cursor-pointer"
                 href={
                   process.env.NODE_ENV === "development"
-                    ? "http://localhost:3000/dep-dashboard"
-                    : "http://uob-transport-alb-848507222.eu-west-2.elb.amazonaws.com/dep-dashboard"
+                    ? "http://localhost:3000/home"
+                    : "https://uobst.ilm.gg/home"
                 }
               >
                 Check Booking

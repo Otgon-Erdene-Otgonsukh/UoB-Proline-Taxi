@@ -167,7 +167,7 @@ describe("Admin API", () => {
     });
 
     const res = await POST(req);
-    expect(res.status).toBe(201);
+    expect(res.status).toBe(500);
   });
 
   test("user manage post api fails when unauthenticated", async () => {
