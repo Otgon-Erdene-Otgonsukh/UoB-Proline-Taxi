@@ -3,8 +3,6 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
-    Stack,
-    Chip,
     Button,
     Typography,
     IconButton,
@@ -22,17 +20,16 @@ import {
 } from "@mui/icons-material"
 import PersonOffIcon from '@mui/icons-material/PersonOff';
 import { DepartmentRecord } from "@/model/models";
-import { roleReadableStrMap, userStatusToIntMap, userStatusToStrMap } from "../constants";
+import { roleReadableStrMap } from "../constants";
 import { useEffect, useState } from "react";
 import { getUsersByDepId } from "../request";
 import { StyledStickyTableCell } from "@/components/StyledTableCell";
 
-const AssignManagerDialog = ({ viewData, dialogOpen, handleDialogClose }: { viewData: DepartmentRecord, dialogOpen: boolean, handleDialogClose: () => void }) => {
+const AssignManagerDialog = ({ viewData, dialogOpen, handleDialogClose, normalClose, assignSnackOpen }: { viewData: DepartmentRecord, dialogOpen: boolean, handleDialogClose: () => void, normalClose: () => void, assignSnackOpen: () => void }) => {
 
     const [members, setMembers] = useState<{ user_id: number, full_name: string, email: string, phone_number: string, role: string }[]>([]);
     const [isLoading, setIsLoading] = useState(true)
     const [selected, setSelected] = useState<number | null>(null);
-    const [selectedStaff, setSelectedMember] = useState<{ user_id: number, full_name: string, email: string, phone_number: string, role: string } | null>(null);
 
     useEffect(() => {
         if (!viewData?.depId) return;
@@ -52,15 +49,6 @@ const AssignManagerDialog = ({ viewData, dialogOpen, handleDialogClose }: { view
     const handleClickRow = (userId: number) => {
         const newSelected = selected === userId ? null : userId;
         setSelected(newSelected);
-
-        if (newSelected === null) {
-            setSelectedMember(null);
-        } else {
-            const member = members.find(m => m.user_id === newSelected);
-            if (member) {
-                setSelectedMember(member);
-            }
-        }
     };
  
     const handleAssignManager = async () => {
@@ -85,13 +73,14 @@ const AssignManagerDialog = ({ viewData, dialogOpen, handleDialogClose }: { view
         }).then(res => {
             if (res.ok) {
                 handleDialogClose();
+                assignSnackOpen();
             }
         })
     };
 
     return (<div>
         <Dialog
-            onClose={handleDialogClose}
+            onClose={normalClose}
             aria-labelledby="customized-dialog-title"
             open={dialogOpen}
             maxWidth="md"
@@ -122,7 +111,7 @@ const AssignManagerDialog = ({ viewData, dialogOpen, handleDialogClose }: { view
             </DialogTitle>
             <IconButton
                 aria-label="close"
-                onClick={handleDialogClose}
+                onClick={normalClose}
                 sx={(theme) => ({
                     position: "absolute",
                     right: 8,
@@ -179,9 +168,9 @@ const AssignManagerDialog = ({ viewData, dialogOpen, handleDialogClose }: { view
                                                         checked={isItemSelected}
                                                         onChange={(e) => {
                                                             if (e.target.checked) {
-                                                                setSelectedMember(member);
+                                                                handleClickRow(member.user_id);
                                                             } else {
-                                                                setSelectedMember(null);
+                                                                setSelected(null);
                                                             }
                                                         }}
                                                     />
@@ -214,7 +203,7 @@ const AssignManagerDialog = ({ viewData, dialogOpen, handleDialogClose }: { view
                         transition: "all 250ms",
                         ":hover": { bgcolor: "#2c2c2c", color: "white" },
                     }}
-                    onClick={handleDialogClose}
+                    onClick={normalClose}
                 >
                     Close
                 </Button>

@@ -3,12 +3,12 @@ import {
     Box,
     TablePagination,
     Button,
-    Chip
 } from "@mui/material";
 import { StyledTableCell } from "@/components/StyledTableCell";
 import CustomizedButton from "@/components/CustomizedButton";
 import { DepartmentRecord } from "@/model/models";
 import { TablePaginationProps } from "@mui/material";
+import PersonIcon from '@mui/icons-material/Person';
 
 interface DepartmentTableViewProps {
     data: DepartmentRecord[];
@@ -66,7 +66,7 @@ export const DepartmentTable = ({ data, count, page, pageSize, onPageChange, onP
                                             >
                                                 {row.manager.full_name}
                                             </Button>
-                                            ) :
+                                            ) : (row.userCount === 0) ? "N/A" :
                                             (<CustomizedButton
                                                 click={() => onAssignManager(row)}
                                                 type="warning"
@@ -76,7 +76,7 @@ export const DepartmentTable = ({ data, count, page, pageSize, onPageChange, onP
                                         }
                                         </div>
                                     </StyledTableCell>
-                                    <StyledTableCell>{row.userCount}</StyledTableCell>
+                                    <StyledTableCell><div className="bg-gray-200 rounded-xl w-fit mx-auto px-1.5 py-0.5 flex items-center"><PersonIcon sx={{ fontSize: 21 }}/> • {row.userCount}</div></StyledTableCell>
                                     <StyledTableCell>
                                         <div className="flex gap-2 justify-center">
                                             <CustomizedButton

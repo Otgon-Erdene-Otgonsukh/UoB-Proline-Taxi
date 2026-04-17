@@ -15,9 +15,9 @@ import {
 import { DepartmentRecord } from "@/model/models";
 import { roleReadableStrMap, userStatusToIntMap, userStatusToStrMap } from "../constants";
 
-const ViewDepartmentDialog = ({ viewData, dialogOpen, handleDialogClose }: { viewData: DepartmentRecord['manager'], dialogOpen: boolean, handleDialogClose: () => void }) => {
+const ViewDepartmentDialog = ({ viewData, dialogOpen, handleDialogClose, unassignSnackOpen, normalClose }: { viewData: DepartmentRecord['manager'], dialogOpen: boolean, handleDialogClose: () => void, unassignSnackOpen: () => void, normalClose: () => void }) => {
 
-  const handleUnassignManager = async (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleUnassignManager = async () => {
         try {
             const res = await fetch("/api/manager_assignment", {
                 method: "POST",
@@ -29,6 +29,7 @@ const ViewDepartmentDialog = ({ viewData, dialogOpen, handleDialogClose }: { vie
 
             if (res.ok) {
                 handleDialogClose();
+                unassignSnackOpen();
             } else {
                 alert("Failed to unassign manager. Please try again.");
             }
@@ -39,7 +40,7 @@ const ViewDepartmentDialog = ({ viewData, dialogOpen, handleDialogClose }: { vie
 
   return (<div>
     <Dialog
-      onClose={handleDialogClose}
+      onClose={normalClose}
       aria-labelledby="customized-dialog-title"
       open={dialogOpen}
       sx={{
@@ -156,7 +157,7 @@ const ViewDepartmentDialog = ({ viewData, dialogOpen, handleDialogClose }: { vie
             transition: "all 250ms",
             ":hover": { bgcolor: "#2c2c2c", color: "white" },
           }}
-          onClick={handleDialogClose}
+          onClick={normalClose}
         >
           Close
         </Button>

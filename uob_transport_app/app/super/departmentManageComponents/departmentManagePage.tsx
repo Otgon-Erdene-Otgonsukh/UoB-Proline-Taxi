@@ -5,7 +5,9 @@ import {
   IconButton, 
   TextField, 
   Typography, 
-  useTheme 
+  useTheme,
+  Snackbar,
+  Alert 
 } from "@mui/material";
 import {
   FirstPage,
@@ -67,7 +69,7 @@ const DepartmentManagePage = () => {
   const [searchFormInput, setSearchFormInput] = useState<SearchFormProps>({
     name: '',
   })
-  const handleSubmitSearchForm = (e: React.FormEvent) => {
+  const handleSubmitSearchForm = (e: React.SubmitEvent) => {
     e.preventDefault()
     setPaginationMeta({
       page: 0,
@@ -84,6 +86,8 @@ const DepartmentManagePage = () => {
     setManagerDialogOpen(true);
   };
 
+  const [assignSnack, setAssignSnackOpen] = useState(false);
+  const [unassignSnack, setUnassignSnack] = useState(false);
 
   const [managerAssignDepartment, setManagerAssignDepartment] = useState<DepartmentRecord>();
   const [managerAssignDialogOpen, setManagerAssignDialogOpen] = useState(false)
@@ -213,7 +217,11 @@ const DepartmentManagePage = () => {
         setIsLoading(true);
         _rerenderTable(paginationMeta.page, paginationMeta.pageSize);
       }}
+      normalClose={() => {
+        setManagerAssignDialogOpen(false);
+      }}
       viewData={managerAssignDepartment!}
+      assignSnackOpen={() => setAssignSnackOpen(true)}
     />
 
     {managerData && (
@@ -225,6 +233,10 @@ const DepartmentManagePage = () => {
         setIsLoading(true);
         _rerenderTable(paginationMeta.page, paginationMeta.pageSize);
       }}
+        unassignSnackOpen={() => setUnassignSnack(true)}
+        normalClose={() => {
+          setManagerDialogOpen(false);
+        }}
       />
     )}
 
@@ -238,6 +250,10 @@ const DepartmentManagePage = () => {
           setDepartmentData(undefined);
           setIsLoading(true);
           _rerenderTable(paginationMeta.page, paginationMeta.pageSize);
+        }}
+        normalClose={() => {
+          setDepartmentDialogOpen(false);
+          setDepartmentData(undefined)
         }}
         notifyUserCountChange={() => {
           setIsLoading(true);
@@ -260,6 +276,18 @@ const DepartmentManagePage = () => {
       }}
       cancelCallBack={() => setConfirmDeleteDialogOpen(false)}
     />
+
+    <Snackbar open={assignSnack} autoHideDuration={3000} onClose={() => setAssignSnackOpen(false)} anchorOrigin={{ vertical: "top", horizontal: "center" }}>
+      <Alert variant="filled" severity="success">
+        Manager assigned to department successfully
+      </Alert>
+    </Snackbar>
+
+    <Snackbar open={unassignSnack} autoHideDuration={3000} onClose={() => setUnassignSnack(false)} anchorOrigin={{ vertical: "top", horizontal: "center" }}>
+      <Alert variant="filled" severity="success">
+        Manager unassigned from department successfully
+      </Alert>
+    </Snackbar>
   </>)
 }
 
