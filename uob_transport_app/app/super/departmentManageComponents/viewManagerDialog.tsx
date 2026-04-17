@@ -17,17 +17,24 @@ import { roleReadableStrMap, userStatusToIntMap, userStatusToStrMap } from "../c
 
 const ViewDepartmentDialog = ({ viewData, dialogOpen, handleDialogClose }: { viewData: DepartmentRecord['manager'], dialogOpen: boolean, handleDialogClose: () => void }) => {
 
-  const handleUnassignManager = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleUnassignManager = async (event: React.MouseEvent<HTMLButtonElement>) => {
+        try {
+            const res = await fetch("/api/manager_assignment", {
+                method: "POST",
+                body: JSON.stringify({
+                    user_id: viewData?.user_id,
+                    isAssign: false
+                })
+            });
 
-        fetch("/api/manager_assignment", {
-            method: "POST",
-            body: JSON.stringify({
-                user_id: viewData?.user_id,
-                isAssign: false
-            })
-        })
-
-        handleDialogClose();
+            if (res.ok) {
+                handleDialogClose();
+            } else {
+                alert("Failed to unassign manager. Please try again.");
+            }
+        } catch (error) {
+            alert("Error unassigning manager. Please try again.");
+        }
   };
 
   return (<div>
