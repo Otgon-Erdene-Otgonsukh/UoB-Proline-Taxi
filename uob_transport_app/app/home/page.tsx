@@ -414,7 +414,7 @@ const Page = () => {
           </motion.div>
         </div>
       )}
-      {bookingListData.length === 0 && !noFilterBooking && !isLoading ? (
+      {bookingListData.length === 0 && !noFilterBooking && !isLoading && searchFormInput.bookingStatus === "All" ? (
         <motion.div
           className="bg-white shadow-lg/20 rounded-lg p-10 md:p-12 w-full max-w-6xl my-15 mt-13 flex flex-col items-center justify-center"
           initial={{ opacity: 0, y: 6, scale: 0.98 }}
@@ -663,7 +663,7 @@ const Page = () => {
             >
               Getting your bookings...
             </Typography>
-          ) : bookingListData.length === 0 && noFilterBooking ? (
+          ) : bookingListData.length === 0 && searchFormInput.bookingStatus !== "All" ? (
             <Typography
               sx={{ color: "gray", fontSize: 16, textAlign: "center", my: 10 }}
             >

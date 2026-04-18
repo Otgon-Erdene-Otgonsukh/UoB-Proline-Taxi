@@ -5,8 +5,6 @@
 import { POST } from "@/app/api/create_booking/route";
 import createBooking from "@/backend/create_booking/create_booking";
 import { auth } from "@/auth";
-import { render } from "@react-email/components";
-import { sesClient } from "@/utils/ses_client";
 import { prismaMock } from "@/utils/singleton";
 import { getUserFromID } from "@/backend/access/user_access";
 
