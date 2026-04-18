@@ -11,6 +11,10 @@ const config: Config = {
   coverageProvider: "v8",
   testEnvironment: "jsdom",
   verbose: true,
+  coveragePathIgnorePatterns: [
+    "/node_modules/",
+    "<rootDir>/components/emails/",
+  ],
   testMatch: [
     "**/__test__/api/**/*.test.ts", // find the organized tests correctly
     "**/__test__/pages/**/*.test.tsx",
@@ -19,7 +23,7 @@ const config: Config = {
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/$1",
   },
-  setupFilesAfterEnv: ['<rootDir>/utils/singleton.ts'],
+  setupFilesAfterEnv: ["<rootDir>/utils/singleton.ts"],
 };
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async

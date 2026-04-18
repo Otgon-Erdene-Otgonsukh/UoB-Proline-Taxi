@@ -681,7 +681,7 @@ export default function BookingPage() {
         [swLng, swLat],
         [neLng, neLat],
       ];
-      mobileMapRef.current?.fitBounds(bounds, { padding: 100 });
+      mobileMapRef.current?.fitBounds(bounds, { padding: 130 });
       desktopMapRef.current?.fitBounds(bounds, { padding: 100 });
     }
   }
@@ -1451,7 +1451,7 @@ export default function BookingPage() {
                   )}
                   ;
                   {routes && routes.length > 0 && (
-                    <div className="absolute top-3 left-3 bg-black text-white opacity-80 rounded-md py-3 px-4 flex flex-row w-87 justify-between">
+                    <div className="absolute top-3 left-3 bg-black text-white opacity-80 rounded-md py-3 px-4 flex flex-row w-80 justify-between">
 
                       <div className="flex flex-col gap-1">
                         <div className="flex items-center gap-1">
