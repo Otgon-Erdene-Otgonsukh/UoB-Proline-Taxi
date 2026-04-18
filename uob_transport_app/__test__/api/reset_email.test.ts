@@ -28,8 +28,13 @@ jest.mock("../../components/emails/reset_password_mail", () => ({
   default: jest.fn(() => null),
 }));
 jest.mock("../../lib/rateLimit", () => ({
-  withRateLimit: () => (handler: (req: NextRequest) => Promise<Response>) =>
-    handler,
+  withRateLimit: (config: { getIdentifier: (req: NextRequest) => string }) =>
+    (handler: (req: NextRequest) => Promise<Response>) =>
+      (req: NextRequest) => {
+        // exercise the supplied getIdentifier so it gets covered
+        config.getIdentifier(req);
+        return handler(req);
+      },
 }));
 
 const buildPost = (body: object) =>
