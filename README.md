@@ -37,12 +37,13 @@ A booking and account management platform to streamline how the University of Br
 
 ### Key Features
 
-- Streamlined booking: enter pick-up/drop-off, time, name, email, instant confirmation through email.
-- Interactive map: intuitive map component with routing, ETA and distance information.
-- Automated data handling: routing important booking details to the corresponding head/finance team of the relevant University department for approval.
-- Real-time journey visibility: live status changes and booking visibility.
-- Informative dashboards: data dashboards with numeric data and charts for analysis.
-- CSV booking export: convert and export booking information as CSV for management and data compiling. 
+- **Streamlined booking**: enter pick-up/drop-off, time, name, email, instant confirmation through email.
+- **Interactive map**: intuitive map component with routing, ETA and distance information.
+- **Automated data handling**: routing important booking details to the corresponding head/finance team of the relevant University department for approval.
+- **Real-time journey visibility**: live status changes and booking visibility.
+- **Informative dashboards**: data dashboards with numeric data and charts for analysis.
+- **CSV booking export:** convert and export booking information as CSV for management and data compiling. 
+- **Mobile friendly interface and integration**: the application is fully mobile responsive and can be installed on both mobile and desktop devices with push notifications.
 
 ## Project Structure
 
@@ -210,6 +211,8 @@ SES_FROM_EMAIL="SES_VERIFIED_EMAIL"
 NODE_ENV="DEVELOPMENT_OR_PRODUCTION"
 AUTH_URL="YOUR_DOMAIN"
 OSRM_SECRET="OSRM_KEY_FOR_ROUTING"
+NEXT_PUBLIC_VAPID_PUBLIC_KEY="YOUR_VAPID_PUBLIC_KEY"
+VAPID_PRIVATE_KEY="YOUR_VAPID_PRIVATE_KEY"
 
 # AWS SES user credentials (Only for development)
 AWS_ACCESS_KEY="YOUR_AWS_ACCESS_KEY"
@@ -278,7 +281,9 @@ docker compose up
 This will build the image and run the container and you can access the application in the browser on `http://localhost:3000`.
 
 ## Further Guidance
-If you are new to the framework and tools used in this project and struggling to get started, there is a dedicated document that provides concise description of the utilized technologies and the reason they were used alongside quick guides and code snippets to help you get started. The document can be found [`right here`](/docs/project/project_manual_guide.md).
+If you are new to the framework and tools used in this project and struggling to get started, there is a dedicated document that provides concise description of the utilized technologies and the reason they were used alongside quick guides and code snippets to help you get started. The document can be found [`here`](/docs/project/project_manual_guide.md).
+
+As for further in-depth developer instructions and guidance, the handover document that contains more information about environment variables and database can be found [`here`](/docs/handover/handover.md).
 
 ## Team Members
 
