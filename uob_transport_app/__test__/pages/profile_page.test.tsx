@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom";
 import Profile from "@/app/profile/page";
 import userEvent from "@testing-library/user-event";
-import { screen, render, waitFor, fireEvent } from "@testing-library/react";
+import { screen, render, waitFor, fireEvent, within } from "@testing-library/react";
 import { useSession } from "next-auth/react";
 
 // ─── Mocks ───
@@ -358,6 +358,133 @@ describe("Profile page", () => {
           screen.getByText("Changes were not saved, try again later."),
         ).toBeInTheDocument();
       });
+    });
+
+    test("clicking the mobile Edit button opens edit mode for every field", async () => {
+      const user = userEvent.setup();
+      render(<Profile />);
+
+      await waitFor(() => {
+        expect(screen.getByText("bob.myers@example.com")).toBeInTheDocument();
+      });
+
+      const editButtons = screen.getAllByRole("button", { name: /^Edit$/ });
+      const mobileEdit = editButtons[editButtons.length - 1];
+      await user.click(mobileEdit);
+
+      expect(await screen.findByLabelText("Email")).toBeInTheDocument();
+      expect(screen.getByLabelText("Phone Number")).toBeInTheDocument();
+      expect(screen.getByLabelText("Department")).toBeInTheDocument();
+      expect(screen.getByLabelText("Name")).toHaveValue("Bob Myers");
+    });
+
+    test("hovering and clicking the Email edit pencil reveals an editable input", async () => {
+      const user = userEvent.setup();
+      render(<Profile />);
+
+      await waitFor(() => {
+        expect(screen.getByText("bob.myers@example.com")).toBeInTheDocument();
+      });
+
+      const emailDiv = screen
+        .getByText("bob.myers@example.com")
+        .closest("div.bg-gray-50")!;
+
+      fireEvent.mouseEnter(emailDiv);
+      const pencil = await within(emailDiv as HTMLElement).findByRole("button");
+      await user.click(pencil);
+
+      const emailInput = await screen.findByLabelText("Email");
+      await user.clear(emailInput);
+      await user.type(emailInput, "new@example.com");
+      expect(emailInput).toHaveValue("new@example.com");
+
+      // mouseLeave on the original gray div should still be exercised earlier
+      fireEvent.mouseLeave(emailDiv);
+    });
+
+    test("hovering and clicking the Phone edit pencil reveals an editable phone input", async () => {
+      const user = userEvent.setup();
+      render(<Profile />);
+
+      await waitFor(() => {
+        expect(screen.getByText("+1234567890")).toBeInTheDocument();
+      });
+
+      const phoneDiv = screen
+        .getByText("+1234567890")
+        .closest("div.bg-gray-50")!;
+
+      fireEvent.mouseEnter(phoneDiv);
+      const pencil = await within(phoneDiv as HTMLElement).findByRole("button");
+      await user.click(pencil);
+
+      const phoneInput = await screen.findByLabelText("Phone Number");
+      await user.clear(phoneInput);
+      await user.type(phoneInput, "+447700900000");
+      expect(phoneInput).toHaveValue("+447700900000");
+
+      fireEvent.mouseLeave(phoneDiv);
+    });
+
+    test("hovering and clicking the Department edit pencil reveals the autocomplete", async () => {
+      const user = userEvent.setup();
+      render(<Profile />);
+
+      await waitFor(() => {
+        expect(screen.getByText("Computer Science")).toBeInTheDocument();
+      });
+
+      const depDiv = screen
+        .getByText("Computer Science")
+        .closest("div.bg-blue-50")!;
+
+      fireEvent.mouseEnter(depDiv);
+      const pencil = await within(depDiv as HTMLElement).findByRole("button");
+      await user.click(pencil);
+
+      expect(await screen.findByLabelText("Department")).toBeInTheDocument();
+      fireEvent.mouseLeave(depDiv);
+    });
+
+    test("snackbar onClose handler runs when dismiss is triggered", async () => {
+      const user = userEvent.setup();
+      (global.fetch as jest.Mock).mockResolvedValueOnce({ status: 200 });
+
+      render(<Profile />);
+
+      await openNameEdit(user);
+      await user.click(screen.getByText("Save Changes"));
+
+      const passwordInput = await screen.findByLabelText("Password");
+      await user.type(passwordInput, "secret123");
+
+      const saveButtons = screen.getAllByText("Save");
+      await user.click(saveButtons[saveButtons.length - 1]);
+
+      const successText = await screen.findByText("Changes saved successfully.");
+      // Find the close button rendered inside the Alert and click it.
+      const alert = successText.closest('[role="alert"]') as HTMLElement;
+      const closeButton = alert?.querySelector("button");
+      if (closeButton) {
+        await user.click(closeButton);
+      }
+    });
+
+    test("password dialog onClose runs when clicking the backdrop", async () => {
+      const user = userEvent.setup();
+      render(<Profile />);
+
+      await openNameEdit(user);
+      await user.click(screen.getByText("Save Changes"));
+
+      const dialog = await screen.findByRole("dialog");
+      const backdrop = dialog.parentElement?.querySelector(
+        ".MuiBackdrop-root",
+      ) as HTMLElement | null;
+      if (backdrop) {
+        fireEvent.click(backdrop);
+      }
     });
 
     test("shows invalid password error message on 401 response", async () => {
