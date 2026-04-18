@@ -213,6 +213,48 @@ describe("NormalUserDashboard", () => {
     expect(redirectMock).toHaveBeenCalledWith("/book");
   });
 
+  // ===== 6. recent booking row interactions =====
+  test("clicking the ✚ tile redirects to /book", async () => {
+    (useSession as jest.Mock).mockReturnValue({
+      status: "authenticated",
+      data: mockSession,
+    });
+
+    (easyGetRequest as jest.Mock).mockResolvedValue({
+      status: 200,
+      json: async () => baseResponse,
+    });
+
+    render(<NormalUserDashboard />);
+
+    const addButton = await screen.findByRole("button", { name: "✚" });
+    fireEvent.click(addButton);
+
+    expect(redirectMock).toHaveBeenCalledWith("/book");
+  });
+
+  test("clicking a recent booking row marks it as the active selection", async () => {
+    (useSession as jest.Mock).mockReturnValue({
+      status: "authenticated",
+      data: mockSession,
+    });
+
+    (easyGetRequest as jest.Mock).mockResolvedValue({
+      status: 200,
+      json: async () => baseResponse,
+    });
+
+    render(<NormalUserDashboard />);
+
+    const startLabel = await screen.findByText("Start");
+    const row = startLabel.closest("div.cursor-pointer") as HTMLElement;
+    expect(row).toBeTruthy();
+
+    expect(row.className).toContain("bg-slate-50");
+    fireEvent.click(row);
+    expect(row.className).toContain("bg-slate-800");
+  });
+
   // ===== 7. via path rendering =====
   test("renders via location when exists", async () => {
     const responseWithVia = {
