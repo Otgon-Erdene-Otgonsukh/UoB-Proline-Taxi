@@ -22,6 +22,11 @@ jest.mock("../../components/emails/booking_price", () => ({
   default: jest.fn(() => null),
 }));
 
+jest.mock("@/utils/notificationSender", () => ({
+  notificationHelper: jest.fn().mockResolvedValue(undefined)
+}));
+
+
 const buildReq = (body: object) =>
   new Request("http://localhost:3000/api/price-attach", {
     method: "POST",

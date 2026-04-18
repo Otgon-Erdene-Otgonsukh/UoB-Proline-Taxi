@@ -14,6 +14,9 @@ jest.mock("../../backend/access/user_access.ts");
 jest.mock("../../auth", () => ({
   auth: jest.fn(),
 }));
+jest.mock("@/utils/notificationSender", () => ({
+  notificationHelper: jest.fn().mockResolvedValue(undefined)
+}));
 
 describe("Update booking API endpoint branch tests", () => {
   beforeEach(() => {

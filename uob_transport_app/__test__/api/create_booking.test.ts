@@ -23,6 +23,10 @@ jest.mock("../../utils/ses_client.ts", () => ({
   },
 }));
 
+jest.mock("@/utils/notificationSender", () => ({
+  notificationHelper: jest.fn().mockResolvedValue(undefined)
+}))
+
 jest.mock("@aws-sdk/client-sesv2", () => ({
   SendEmailCommand: jest.fn(),
 }));

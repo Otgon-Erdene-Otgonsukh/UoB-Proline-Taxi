@@ -17,6 +17,11 @@ jest.mock("@aws-sdk/client-sesv2", () => ({
   SendEmailCommand: jest.fn().mockImplementation((input) => input),
 }));
 
+jest.mock("@/utils/notificationSender", () => ({
+  notificationHelper: jest.fn().mockResolvedValue(undefined)
+}));
+
+
 describe("Update booking status backend test", () => {
   beforeEach(() => {
     jest.clearAllMocks();
