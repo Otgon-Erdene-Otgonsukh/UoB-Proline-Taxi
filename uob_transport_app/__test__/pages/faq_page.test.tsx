@@ -1,10 +1,40 @@
 import "@testing-library/jest-dom";
-import { screen, render } from "@testing-library/react";
+import { screen, render, fireEvent } from "@testing-library/react";
 import FAQ from "@/app/faq/page";
 
 describe("Faq page renders with all elements", () => {
   beforeEach(() => {
     render(<FAQ />);
+  });
+
+  test("clicking a FAQ question expands it and clicking again collapses it", () => {
+    const button = screen.getByRole("button", {
+      name: /What fleet options are there\?/i,
+    });
+    expect(button).toHaveAttribute("aria-expanded", "false");
+
+    fireEvent.click(button);
+    expect(button).toHaveAttribute("aria-expanded", "true");
+
+    fireEvent.click(button);
+    expect(button).toHaveAttribute("aria-expanded", "false");
+  });
+
+  test("opening a different FAQ question switches which one is open", () => {
+    const first = screen.getByRole("button", {
+      name: /What fleet options are there\?/i,
+    });
+    const second = screen.getByRole("button", {
+      name: /How can I book a taxi\?/i,
+    });
+
+    fireEvent.click(first);
+    expect(first).toHaveAttribute("aria-expanded", "true");
+    expect(second).toHaveAttribute("aria-expanded", "false");
+
+    fireEvent.click(second);
+    expect(first).toHaveAttribute("aria-expanded", "false");
+    expect(second).toHaveAttribute("aria-expanded", "true");
   });
 
   test("Titles are both present", () => {

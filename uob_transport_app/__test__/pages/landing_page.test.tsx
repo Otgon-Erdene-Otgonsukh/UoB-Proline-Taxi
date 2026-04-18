@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import Land from "@/components/Landing_page";
 import { useSession } from "next-auth/react";
 
@@ -78,11 +78,28 @@ describe("Landing page", () => {
 
   test("If no session exists, redirects to login page", () => {
     (useSession as jest.Mock).mockReturnValue({
-      data: null    
+      data: null
     })
     render(<Land />);
     const links = screen.getAllByRole("link");
     expect(links[0]).toHaveAttribute("href", "/login");
     expect(links[1]).toHaveAttribute("href", "/about");
   })
+
+  test("clicking the primary CTA swaps the label for a loading spinner", () => {
+    (useSession as jest.Mock).mockReturnValue({
+      data: {
+        user: { account_type: "normal_user" },
+      },
+    });
+    render(<Land />);
+
+    const ctaButton = screen.getByRole("button", { name: /VIEW BOOKINGS/i });
+    fireEvent.click(ctaButton);
+
+    expect(
+      screen.queryByRole("button", { name: /VIEW BOOKINGS/i }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByRole("progressbar")).toBeInTheDocument();
+  });
 });
