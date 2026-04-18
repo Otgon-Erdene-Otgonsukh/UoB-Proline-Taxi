@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
 import type { Session } from "next-auth";
 import { easyGetRequest } from "@/utils/easyRequest";
 
-// ================= mocks =================
+//mocks
 
 // next-auth
 jest.mock("next-auth/react", () => ({
@@ -56,7 +56,7 @@ global.fetch = jest.fn().mockResolvedValue({
   }),
 }) as unknown as typeof fetch;
 
-// ================= mock data =================
+//mock data
 
 const mockSession: Session = {
   user: {
@@ -92,14 +92,14 @@ const baseResponse = {
   recentBookings: [booking],
 };
 
-// ================= tests =================
+//tests
 
 describe("NormalUserDashboard", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  // ===== 1. loading state =====
+  //1. loading state
   test("shows loading indicators before data is loaded", async () => {
     (useSession as jest.Mock).mockReturnValue({
       status: "authenticated",
@@ -116,7 +116,7 @@ describe("NormalUserDashboard", () => {
     expect(screen.getAllByRole("progressbar").length).toBeGreaterThan(0);
   });
 
-  // ===== 2. cards values =====
+  //2. cards values
   test("renders card values after fetch", async () => {
     (useSession as jest.Mock).mockReturnValue({
       status: "authenticated",
@@ -139,7 +139,7 @@ describe("NormalUserDashboard", () => {
     expect(screen.getByText("1")).toBeInTheDocument();
   });
 
-  // ===== 3. recent bookings list =====
+  //3. recent bookings list
   test("renders recent bookings list correctly", async () => {
     (useSession as jest.Mock).mockReturnValue({
       status: "authenticated",
@@ -160,11 +160,11 @@ describe("NormalUserDashboard", () => {
     expect(screen.getByText("Start")).toBeInTheDocument();
     expect(screen.getByText("End")).toBeInTheDocument();
 
-    // 日期来自页面逻辑：toDateString()
+
     expect(screen.getByText("Wed Jan 01 2025")).toBeInTheDocument();
   });
 
-  // ===== 4. empty state =====
+  //4. empty state
   test("renders empty state when no bookings", async () => {
     (useSession as jest.Mock).mockReturnValue({
       status: "authenticated",
@@ -190,7 +190,7 @@ describe("NormalUserDashboard", () => {
     ).toBeInTheDocument();
   });
 
-  // ===== 5. create booking button =====
+  //5. create booking button
   test("clicking create booking triggers redirect", async () => {
     (useSession as jest.Mock).mockReturnValue({
       status: "authenticated",
@@ -213,7 +213,7 @@ describe("NormalUserDashboard", () => {
     expect(redirectMock).toHaveBeenCalledWith("/book");
   });
 
-  // ===== 6. recent booking row interactions =====
+  //6. recent booking row interactions
   test("clicking the ✚ tile redirects to /book", async () => {
     (useSession as jest.Mock).mockReturnValue({
       status: "authenticated",
@@ -255,7 +255,7 @@ describe("NormalUserDashboard", () => {
     expect(row.className).toContain("bg-slate-800");
   });
 
-  // ===== 7. via path rendering =====
+  //7. via path rendering
   test("renders via location when exists", async () => {
     const responseWithVia = {
       ...baseResponse,
