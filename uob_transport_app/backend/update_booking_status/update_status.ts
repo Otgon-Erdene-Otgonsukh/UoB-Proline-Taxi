@@ -6,6 +6,7 @@ import { render } from "@react-email/components";
 import BookingPoAttach from "@/components/emails/booking_po_attach";
 import BookingApproved from "@/components/emails/booking_approved";
 import BookingAdminReject from "@/components/emails/booking_admin_rejection";
+import { notificationHelper } from "@/utils/notificationSender";
 
 export default async function updateBookingStatus(
   bookingId: number,
@@ -46,6 +47,9 @@ export default async function updateBookingStatus(
         email: true,
       },
     });
+
+    // Send notification
+    await notificationHelper("booking_approve", undefined, booking?.user_id || -1);
 
     const superAdminEmail = await prisma.user.findFirst({
       where: {
@@ -262,5 +266,8 @@ export default async function updateBookingStatus(
     });
 
     await sesClient.send(rejectInput);
+
+    // Send notification
+    await notificationHelper("booking_reject", undefined, booking?.user_id || -1);
   }
 }
