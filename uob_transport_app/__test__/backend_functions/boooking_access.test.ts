@@ -5,7 +5,9 @@ import {
   cancelBookingsAccess,
   getUserBookingsCountAccess,
 
-  getTripDetails
+  getTripDetails,
+  getBookingTrip,
+  getBookingIDsByDepartment,
 } from '@/backend/access/booking_access'
 
 
@@ -408,6 +410,46 @@ test('getTripDetails calls prisma.trip.findUnique correctly', async () => {
   });
 
   expect(result).toBe(mockTrip);
+});
+
+test('getBookingTrip returns booking with trip relation', async () => {
+  const mockBooking = { booking_id: 7, trip: { trip_id: 70 } };
+
+  (prismaMock.booking.findUnique as jest.Mock).mockResolvedValue(mockBooking);
+
+  const result = await getBookingTrip(7);
+
+  expect(prismaMock.booking.findUnique).toHaveBeenCalledWith({
+    where: { booking_id: 7 },
+    include: { trip: true },
+  });
+
+  expect(result).toBe(mockBooking);
+});
+
+test('getBookingIDsByDepartment returns array of booking ids', async () => {
+  (prismaMock.booking.findMany as jest.Mock).mockResolvedValue([
+    { booking_id: 11 },
+    { booking_id: 22 },
+    { booking_id: 33 },
+  ]);
+
+  const result = await getBookingIDsByDepartment(4);
+
+  expect(prismaMock.booking.findMany).toHaveBeenCalledWith({
+    select: { booking_id: true },
+    where: { dep_id: 4 },
+  });
+
+  expect(result).toEqual([11, 22, 33]);
+});
+
+test('getBookingIDsByDepartment returns empty array when nothing found', async () => {
+  (prismaMock.booking.findMany as jest.Mock).mockResolvedValue([]);
+
+  const result = await getBookingIDsByDepartment(99);
+
+  expect(result).toEqual([]);
 });
 
 })
