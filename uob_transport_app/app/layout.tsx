@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   title: "UoB Taxi & Chauffeur",
   description: "A Smart Booking Platform designed to streamline the booking flow for the staff at the University of Bristol in collaboration with ProLine Taxi Company",
   icons: {
-    icon: "/windows.png",
+    icon: "/favicon2.png",
     apple: "/apple-touch-icon.png",
   },
 };
