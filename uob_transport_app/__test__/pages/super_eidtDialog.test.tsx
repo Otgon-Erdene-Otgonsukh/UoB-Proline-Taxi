@@ -128,4 +128,113 @@ describe("Super-admin EditDialog (user edit)", () => {
     await user.clear(screen.getByLabelText("Phone Number"));
     expect(screen.getByText("Please enter phone number")).toBeInTheDocument();
   });
+  test("clicking Cancel invokes handleDialogClose(false)", async () => {
+    const user = userEvent.setup();
+    const handleDialogClose = jest.fn();
+
+    render(
+      <EditDialog
+        editData={baseUser}
+        dialogOpen={true}
+        handleDialogClose={handleDialogClose}
+        departmentList={departmentList}
+      />,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Cancel" }));
+    expect(handleDialogClose).toHaveBeenCalledWith(false);
+  });
+
+  test("clicking close icon invokes handleDialogClose(false)", async () => {
+    const user = userEvent.setup();
+    const handleDialogClose = jest.fn();
+
+    render(
+      <EditDialog
+        editData={baseUser}
+        dialogOpen={true}
+        handleDialogClose={handleDialogClose}
+        departmentList={departmentList}
+      />,
+    );
+
+    await user.click(screen.getByRole("button", { name: "close" }));
+    expect(handleDialogClose).toHaveBeenCalledWith(false);
+  });
+
+  test("Save submits updated data and closes on success", async () => {
+    const user = userEvent.setup();
+    const handleDialogClose = jest.fn();
+    (updateUserAsAdmin as jest.Mock).mockResolvedValue({ status: 200 });
+
+    render(
+      <EditDialog
+        editData={baseUser}
+        dialogOpen={true}
+        handleDialogClose={handleDialogClose}
+        departmentList={departmentList}
+      />,
+    );
+
+    const nameInput = screen.getByLabelText("Name");
+    await user.clear(nameInput);
+    await user.type(nameInput, "Alice");
+
+    await user.click(screen.getByRole("button", { name: "Save" }));
+
+    await waitFor(() => {
+      expect(updateUserAsAdmin).toHaveBeenCalledTimes(1);
+    });
+
+    const payload = (updateUserAsAdmin as jest.Mock).mock.calls[0][0];
+    expect(payload.full_name).toBe("Alice");
+    expect(payload.user_id).toBe(42);
+    expect(payload.phone_number).toBe("+44 7123456789");
+
+    await waitFor(() => {
+      expect(handleDialogClose).toHaveBeenCalledWith(true);
+    });
+  });
+
+  test("shows error snackbar when update fails", async () => {
+    const user = userEvent.setup();
+    (updateUserAsAdmin as jest.Mock).mockResolvedValue({ status: 500 });
+
+    render(
+      <EditDialog
+        editData={baseUser}
+        dialogOpen={true}
+        handleDialogClose={jest.fn()}
+        departmentList={departmentList}
+      />,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Save" }));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Update Failed! Try again"),
+      ).toBeInTheDocument();
+    });
+  });
+
+  test("shows success snackbar after successful save", async () => {
+    const user = userEvent.setup();
+    (updateUserAsAdmin as jest.Mock).mockResolvedValue({ status: 200 });
+
+    render(
+      <EditDialog
+        editData={baseUser}
+        dialogOpen={true}
+        handleDialogClose={jest.fn()}
+        departmentList={departmentList}
+      />,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Save" }));
+
+    await waitFor(() => {
+      expect(screen.getByText("Update success!")).toBeInTheDocument();
+    });
+  });
 });
