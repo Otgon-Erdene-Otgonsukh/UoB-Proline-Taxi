@@ -29,7 +29,7 @@ const renderManagerDialog = (
 ) => {
   const handleDialogClose = props.handleDialogClose ?? jest.fn();
   const unassignSnackOpen = props.unassignSnackOpen ?? jest.fn();
-  const normalClose = props.normalClose ?? jest.fn();
+  const normalClose = props.normalClose ?? handleDialogClose;
 
   render(
     <TestViewManagerDialog

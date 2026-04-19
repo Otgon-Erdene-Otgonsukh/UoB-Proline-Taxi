@@ -70,7 +70,7 @@ const TestViewDepartmentDialog =
 
 function renderDialog(overrides: Partial<ViewDepartmentDialogTestProps> = {}) {
   const handleDialogClose = overrides.handleDialogClose ?? jest.fn();
-  const normalClose = overrides.normalClose ?? jest.fn();
+  const normalClose = overrides.normalClose ?? handleDialogClose;
   const notifyUserCountChange = overrides.notifyUserCountChange ?? jest.fn();
   const notifyDepartmentNameChange =
     overrides.notifyDepartmentNameChange ?? jest.fn();
