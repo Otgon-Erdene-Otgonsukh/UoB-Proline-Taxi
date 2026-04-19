@@ -22,7 +22,7 @@ export function Landing_page() {
         <Image
           width="100"
           height="100"
-          className="w-80 h-80 mr-5 mt-14 sm:w-80 sm:h-80 sm:mt-25 lg:w-100 lg:h-100 lg:order-2 lg:mr-12 mb-8 lg:mb-0"
+          className="w-80 h-80 mr-5 mt-30 sm:w-80 sm:h-80 sm:mt-25 lg:w-100 lg:h-100 lg:order-2 lg:mr-12 mb-8 lg:mb-0"
           src={"/landpic.svg"}
           alt="Landing"
         />

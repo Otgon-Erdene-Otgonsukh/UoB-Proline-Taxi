@@ -30,27 +30,27 @@ async function createUserHandler(req: Request) {
 
   // hashing
   const hashRounds = 10;
-  const hashedPassword = await bcrypt.hash(password, hashRounds);
+  const hashedPassword = await bcrypt.hash(password.trim(), hashRounds);
 
   try {
     // if the department already exists, appoint the existing dep_id
     const department = await prisma.department.findFirst({
       where: {
         dep_name: {
-          equals: departmentName,
+          equals: departmentName.trim(),
           mode: "insensitive",
         },
       },
     });
 
-    if (role === "proline_staff") {
+    if (role.trim() === "proline_staff") {
       // for proline staff reg-requests, no department is created, only user entry
       await prisma.user.create({
         data: {
-          full_name: firstName + " " + lastName,
-          phone_number: phoneNumber,
+          full_name: firstName.trim() + " " + lastName.trim(),
+          phone_number: phoneNumber.trim(),
           role: role,
-          email: mail,
+          email: mail.trim(),
           password: hashedPassword,
         },
       });
@@ -58,17 +58,17 @@ async function createUserHandler(req: Request) {
       // TODO department should be created by normal user when registering
       const newDepartment = await prisma.department.create({
         data: {
-          dep_name: departmentName,
+          dep_name: departmentName.trim(),
         },
       });
       await prisma.user.create({
         data: {
           dep_id: newDepartment.dep_id,
-          full_name: firstName + " " + lastName,
-          phone_number: phoneNumber,
+          full_name: firstName.trim() + " " + lastName.trim(),
+          phone_number: phoneNumber.trim(),
           role: role,
           user_status: role === "normal_user" ? 1 : 0,
-          email: mail,
+          email: mail.trim(),
           password: hashedPassword,
         },
       });
@@ -76,16 +76,16 @@ async function createUserHandler(req: Request) {
       await prisma.user.create({
         data: {
           dep_id: department.dep_id,
-          full_name: firstName + " " + lastName,
-          phone_number: phoneNumber,
+          full_name: firstName.trim() + " " + lastName.trim(),
+          phone_number: phoneNumber.trim(),
           role: role,
           user_status: role === "normal_user" ? 1 : 0,
-          email: mail,
+          email: mail.trim(),
           password: hashedPassword,
         },
       });
     }
-    await sendReq(firstName, mail, role)
+    await sendReq(firstName.trim(), mail.trim(), role)
     return NextResponse.json({
       status: 200,
       message: "User is created successfully.",

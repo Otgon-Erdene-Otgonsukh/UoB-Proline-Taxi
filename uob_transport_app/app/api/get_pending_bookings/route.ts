@@ -4,16 +4,27 @@ import {
 } from "@/backend/pending_bookings/get_pending_bookings";
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
+import { isAdmin, isFinanceStaff } from "@/backend/access/user_access";
 
 export async function GET(request: NextRequest) {
   const session = await auth();
   if (!session) {
     return new Response(
-      JSON.stringify({
-        message: "login required",
-      }),
+      JSON.stringify({ message: "login required" }),
       {
         status: 401,
+        headers: { "Content-Type": "application/json" },
+      },
+    );
+  }
+
+  // Only admins and finance staff can view pending bookings
+  const userId = session.user.user_id;
+  if (!await isAdmin(userId) && !await isFinanceStaff(userId)) {
+    return new Response(
+      JSON.stringify({ message: "Forbidden" }),
+      {
+        status: 403,
         headers: { "Content-Type": "application/json" },
       },
     );
@@ -60,10 +71,6 @@ export async function GET(request: NextRequest) {
     });
   }
 
-  // TODO: Add admin check / privilege check here later, these are currently not done.
-  // All logged in users can currently view pending bookings.
-  // This part of logic is not clear for now. Isn't it to be the department manager who can view and approve pending bookings?
-
   try {
     const pendingBookings = await getPendingBookings(
       parseInt(page),
@@ -96,6 +103,7 @@ export async function GET(request: NextRequest) {
       price,
       withoutPrice,
     });
+
     return NextResponse.json({ pendingBookings, totalNum }, { status: 200 });
   } catch (error) {
     console.error("There was an error fetching pending bookings.", error);

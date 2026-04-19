@@ -5,7 +5,9 @@ import {
   IconButton, 
   TextField, 
   Typography, 
-  useTheme 
+  useTheme,
+  Snackbar,
+  Alert 
 } from "@mui/material";
 import {
   FirstPage,
@@ -17,6 +19,7 @@ import React, { useState, useEffect } from "react";
 import { DepartmentRecord } from "@/model/models";
 import { DepartmentTable } from "@/components/SuperDepartmentsTable";
 import ViewManagerDialog from "./viewManagerDialog";
+import AssignManagerDialog from "./assignManagers";
 import ViewDepartmentDialog from "./viewDepartmentDialog";
 import ConfirmDialog from "@/components/confirmDIalog";
 import CustomizedButton from "@/components/CustomizedButton";
@@ -28,7 +31,7 @@ const DepartmentManagePage = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    _rerenderTable()
+    _rerenderTable(paginationMeta.page, paginationMeta.pageSize)
   }, []);
 
   const [departments, setDepartments] = useState<DepartmentRecord[]>([]);
@@ -39,23 +42,24 @@ const DepartmentManagePage = () => {
   });
 
   const handleChangePage = (_: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
-    setPaginationMeta({
-      ...paginationMeta,
-      page: newPage
-    })
+    setPaginationMeta((prev) => ({
+      ...prev,
+      page: newPage,
+    }));
     setIsLoading(true);
-    _rerenderTable()
+    _rerenderTable(newPage, paginationMeta.pageSize)
   };
 
   const handleChangePageSize = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
+    const newPageSize = parseInt(event.target.value, 10);
     setPaginationMeta({
       page: 0,
-      pageSize: parseInt(event.target.value, 10),
+      pageSize: newPageSize,
     });
-    setIsLoading(true)
-    _rerenderTable()
+    setIsLoading(true);
+    _rerenderTable(0, newPageSize)
   };
 
   // search form
@@ -65,14 +69,14 @@ const DepartmentManagePage = () => {
   const [searchFormInput, setSearchFormInput] = useState<SearchFormProps>({
     name: '',
   })
-  const handleSubmitSearchForm = (e: React.FormEvent) => {
+  const handleSubmitSearchForm = (e: React.SubmitEvent) => {
     e.preventDefault()
     setPaginationMeta({
       page: 0,
       pageSize: paginationMeta.pageSize,
     })
     setIsLoading(true)
-    _rerenderTable()
+    _rerenderTable(0, paginationMeta.pageSize)
   }
 
   const [managerData, setManagerData] = useState<DepartmentRecord["manager"]>();
@@ -81,6 +85,16 @@ const DepartmentManagePage = () => {
     setManagerData(manager);
     setManagerDialogOpen(true);
   };
+
+  const [assignSnack, setAssignSnackOpen] = useState(false);
+  const [unassignSnack, setUnassignSnack] = useState(false);
+
+  const [managerAssignDepartment, setManagerAssignDepartment] = useState<DepartmentRecord>();
+  const [managerAssignDialogOpen, setManagerAssignDialogOpen] = useState(false)
+  const handleAssignManager = (department: DepartmentRecord) => {
+    setManagerAssignDepartment(department);
+    setManagerAssignDialogOpen(true);
+  }
 
   const [departmentData, setDepartmentData] = useState<DepartmentRecord>();
   const [departmentDialogOpen, setDepartmentDialogOpen] = useState(false)
@@ -94,7 +108,7 @@ const DepartmentManagePage = () => {
     deleteDepartment(department.depId).then(async (res) => {
       if (res.status === 200) {
         setIsLoading(true)
-        _rerenderTable()
+        _rerenderTable(paginationMeta.page, paginationMeta.pageSize)
       }
     });
   };
@@ -104,7 +118,7 @@ const DepartmentManagePage = () => {
     setNewDepartmentDialogOpen(true)
   }
 
-  const _rerenderTable = () => {
+  const _rerenderTable = (page: number, pageSize: number) => {
     getDepartmentManageList().then(async (res) => {
       if (res.status === 200) {
         const data = await res.json()
@@ -115,8 +129,8 @@ const DepartmentManagePage = () => {
           )
         }
 
-        const startIndex = paginationMeta.page * paginationMeta.pageSize;
-        const endIndex = startIndex + paginationMeta.pageSize;
+        const startIndex = page * pageSize;
+        const endIndex = startIndex + pageSize;
         const paginatedData = filteredData.slice(startIndex, endIndex);
 
         setDepartments(paginatedData)
@@ -181,6 +195,7 @@ const DepartmentManagePage = () => {
           onViewDetails={handleViewDepartment}
           onViewManager={handleViewManager}
           onDeleteDepartment={(d) => { setDepartmentData(d); setConfirmDeleteDialogOpen(true); }}
+          onAssignManager={handleAssignManager}
           ActionsComponent={TablePaginationActions}
         />
       </div>
@@ -191,15 +206,37 @@ const DepartmentManagePage = () => {
       handleDialogClose={() => {
         setNewDepartmentDialogOpen(false);
         setIsLoading(true);
-        _rerenderTable();
+        _rerenderTable(paginationMeta.page, paginationMeta.pageSize);
       }}
+    />
+
+    <AssignManagerDialog
+      dialogOpen={managerAssignDialogOpen}
+      handleDialogClose={() => {
+        setManagerAssignDialogOpen(false);
+        setIsLoading(true);
+        _rerenderTable(paginationMeta.page, paginationMeta.pageSize);
+      }}
+      normalClose={() => {
+        setManagerAssignDialogOpen(false);
+      }}
+      viewData={managerAssignDepartment!}
+      assignSnackOpen={() => setAssignSnackOpen(true)}
     />
 
     {managerData && (
       <ViewManagerDialog
         viewData={managerData}
         dialogOpen={managerDialogOpen}
-        handleDialogClose={() => setManagerDialogOpen(false)}
+        handleDialogClose={() => {
+        setManagerDialogOpen(false);
+        setIsLoading(true);
+        _rerenderTable(paginationMeta.page, paginationMeta.pageSize);
+      }}
+        unassignSnackOpen={() => setUnassignSnack(true)}
+        normalClose={() => {
+          setManagerDialogOpen(false);
+        }}
       />
     )}
 
@@ -212,15 +249,19 @@ const DepartmentManagePage = () => {
           setDepartmentDialogOpen(false);
           setDepartmentData(undefined);
           setIsLoading(true);
-          _rerenderTable();
+          _rerenderTable(paginationMeta.page, paginationMeta.pageSize);
+        }}
+        normalClose={() => {
+          setDepartmentDialogOpen(false);
+          setDepartmentData(undefined)
         }}
         notifyUserCountChange={() => {
           setIsLoading(true);
-          _rerenderTable();
+          _rerenderTable(paginationMeta.page, paginationMeta.pageSize);
         }}
         notifyDepartmentNameChange={() => {
           setIsLoading(true);
-          _rerenderTable();
+          _rerenderTable(paginationMeta.page, paginationMeta.pageSize);
         }}
       />
     )}
@@ -235,6 +276,18 @@ const DepartmentManagePage = () => {
       }}
       cancelCallBack={() => setConfirmDeleteDialogOpen(false)}
     />
+
+    <Snackbar open={assignSnack} autoHideDuration={3000} onClose={() => setAssignSnackOpen(false)} anchorOrigin={{ vertical: "top", horizontal: "center" }}>
+      <Alert variant="filled" severity="success">
+        Manager assigned to department successfully
+      </Alert>
+    </Snackbar>
+
+    <Snackbar open={unassignSnack} autoHideDuration={3000} onClose={() => setUnassignSnack(false)} anchorOrigin={{ vertical: "top", horizontal: "center" }}>
+      <Alert variant="filled" severity="success">
+        Manager unassigned from department successfully
+      </Alert>
+    </Snackbar>
   </>)
 }
 

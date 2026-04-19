@@ -12,13 +12,18 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 // The website is automatically zoomed out a bit to avoid browser default zooms making UI feel off
 export const viewport: Viewport = { 
   width: "device-width",
-  initialScale: 0.93
+  initialScale: 0.93,
+  userScalable: false,
+  maximumScale: 0.93
 };
 
 export const metadata: Metadata = {
   title: "UoB Taxi & Chauffeur",
   description: "A Smart Booking Platform designed to streamline the booking flow for the staff at the University of Bristol in collaboration with ProLine Taxi Company",
-  icons: "/0309.png",
+  icons: {
+    icon: "/favicon2.png",
+    apple: "/apple-touch-icon.png",
+  },
 };
 
 export default function RootLayout({

@@ -37,12 +37,12 @@ interface Props {
   viewData: DepartmentRecord,
   dialogOpen: boolean,
   handleDialogClose: () => void,
-  normalClose?: () => void,
+  normalClose: () => void,
   notifyUserCountChange: (fromDepId: number, toDepId: number, userCount: number) => void
   notifyDepartmentNameChange: (depId: number, newDepName: string) => void
 }
 
-const ViewDepartmentDialog = ({ departmentList, viewData, dialogOpen, handleDialogClose, notifyUserCountChange, notifyDepartmentNameChange }: Props) => {
+const ViewDepartmentDialog = ({ departmentList, viewData, dialogOpen, handleDialogClose, normalClose, notifyUserCountChange, notifyDepartmentNameChange }: Props) => {
 
   const [members, setMembers] = useState<{ user_id: number, full_name: string, email: string, phone_number: string, role: string }[]>([]);
   const [isLoading, setIsLoading] = useState(true)
@@ -188,7 +188,7 @@ const ViewDepartmentDialog = ({ departmentList, viewData, dialogOpen, handleDial
 
   return (<div>
     <Dialog
-      onClose={handleDialogClose}
+      onClose={normalClose}
       aria-labelledby="customized-dialog-title"
       open={dialogOpen}
       maxWidth="md"
@@ -310,7 +310,7 @@ const ViewDepartmentDialog = ({ departmentList, viewData, dialogOpen, handleDial
             transition: "all 250ms",
             ":hover": { bgcolor: "#2c2c2c", color: "white" },
           }}
-          onClick={handleDialogClose}
+          onClick={normalClose}
         >
           Close
         </Button>

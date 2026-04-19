@@ -3,12 +3,12 @@ import {
     Box,
     TablePagination,
     Button,
-    Chip
 } from "@mui/material";
 import { StyledTableCell } from "@/components/StyledTableCell";
 import CustomizedButton from "@/components/CustomizedButton";
 import { DepartmentRecord } from "@/model/models";
 import { TablePaginationProps } from "@mui/material";
+import PersonIcon from '@mui/icons-material/Person';
 
 interface DepartmentTableViewProps {
     data: DepartmentRecord[];
@@ -21,9 +21,10 @@ interface DepartmentTableViewProps {
     onViewDetails: (department: DepartmentRecord) => void;
     onViewManager: (manager: DepartmentRecord["manager"]) => void;
     onDeleteDepartment: (department: DepartmentRecord) => void;
+    onAssignManager: (department: DepartmentRecord) => void;
 }
 
-export const DepartmentTable = ({ data, count, page, pageSize, onPageChange, onPageSizeChange, ActionsComponent, onViewDetails, onViewManager, onDeleteDepartment }: DepartmentTableViewProps) => {
+export const DepartmentTable = ({ data, count, page, pageSize, onPageChange, onPageSizeChange, ActionsComponent, onViewDetails, onViewManager, onDeleteDepartment, onAssignManager }: DepartmentTableViewProps) => {
     return (
         <Box>
             <TableContainer
@@ -55,18 +56,27 @@ export const DepartmentTable = ({ data, count, page, pageSize, onPageChange, onP
                                 >
                                     <StyledTableCell>{row.depName}</StyledTableCell>
                                     <StyledTableCell>
+                                        <div className="flex gap-2 justify-center">
                                         {row.manager ?
-                                            (<Button onClick={() => onViewManager(row.manager)}>
+                                            (<Button
+                                                onClick={() => onViewManager(row.manager)}
+                                                sx={{
+                                                    textTransform: "none",
+                                                }}
+                                            >
                                                 {row.manager.full_name}
-                                            </Button>) :
-                                            (<Chip
-                                                size="small"
-                                                color='default'
-                                                label="To be assigned"
-                                                sx={{ border: 2, borderColor: "gray" }}
-                                            />)}
+                                            </Button>
+                                            ) : (row.userCount === 0) ? "N/A" :
+                                            (<CustomizedButton
+                                                click={() => onAssignManager(row)}
+                                                type="warning"
+                                                title="Assign"
+                                            />
+                                            )
+                                        }
+                                        </div>
                                     </StyledTableCell>
-                                    <StyledTableCell>{row.userCount}</StyledTableCell>
+                                    <StyledTableCell><div className="bg-gray-200 rounded-xl w-fit mx-auto px-1.5 py-0.5 flex items-center"><PersonIcon sx={{ fontSize: 21 }}/> • {row.userCount}</div></StyledTableCell>
                                     <StyledTableCell>
                                         <div className="flex gap-2 justify-center">
                                             <CustomizedButton

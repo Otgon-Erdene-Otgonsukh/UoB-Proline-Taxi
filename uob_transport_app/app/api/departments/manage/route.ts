@@ -1,7 +1,6 @@
 import { NextRequest } from "next/server";
 import { getDepartmentListIncludeManagerIdAccess } from "@/backend/access/departments_access";
 import { getUsersByIdsAccess } from "@/backend/access/user_access";
-import { User } from "@/generated/prisma/client";
 
 /**
  * Get a list of departments with their managers and user count. If depName query param is provided, filter departments by name.
