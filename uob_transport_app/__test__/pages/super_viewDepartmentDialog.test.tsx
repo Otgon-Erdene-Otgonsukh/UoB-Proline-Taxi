@@ -11,8 +11,23 @@ jest.mock("@/app/super/request", () => ({
 }));
 
 jest.mock("@/app/super/departmentManageComponents/changeDepartmentDialog", () => ({
-  ChangeDepartmentDialog: ({ dialogOpen }: { dialogOpen: boolean }) =>
-    dialogOpen ? <div data-testid="change-dep-dialog" /> : null,
+  ChangeDepartmentDialog: ({
+    dialogOpen,
+    handleDialogClose,
+  }: {
+    dialogOpen: boolean;
+    handleDialogClose: (isSucceed: boolean, chosenDepId?: number) => void;
+  }) =>
+    dialogOpen ? (
+      <div data-testid="change-dep-dialog">
+        <button onClick={() => handleDialogClose(true, 2)}>
+          close-dep-success
+        </button>
+        <button onClick={() => handleDialogClose(false)}>
+          close-dep-cancel
+        </button>
+      </div>
+    ) : null,
 }));
 
 const departmentList = [
@@ -212,6 +227,136 @@ describe("Super-admin ViewDepartmentDialog", () => {
       ).toBeInTheDocument();
     });
     expect(notifyDepartmentNameChange).toHaveBeenCalledWith(1, "New CS Dept");
+  });
+
+  test("department name update network error shows generic error snackbar", async () => {
+    const user = userEvent.setup();
+    (updateDepartmentName as jest.Mock).mockRejectedValue(new Error("boom"));
+
+    renderDialog();
+
+    await waitFor(() =>
+      expect(screen.getByText("Alice Smith")).toBeInTheDocument(),
+    );
+
+    const depNameBlock = screen.getByText("Computer Science").closest("p")!;
+    const editIcon = depNameBlock.querySelector("svg")!;
+    await user.click(editIcon);
+
+    const input = await screen.findByLabelText("Department Name");
+    await user.clear(input);
+    await user.type(input, "Other");
+
+    await user.click(screen.getByRole("button", { name: "Save" }));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          "An error occurred while updating the department name.",
+        ),
+      ).toBeInTheDocument();
+    });
+  });
+
+  test("select-all then deselect via checkbox clears selection", async () => {
+    const user = userEvent.setup();
+    renderDialog();
+
+    await waitFor(() =>
+      expect(screen.getByText("Alice Smith")).toBeInTheDocument(),
+    );
+
+    const selectAll = screen.getByRole("checkbox", {
+      name: "select all desserts",
+    });
+    await user.click(selectAll);
+    expect(screen.getByText("Selected 2 out of 2:")).toBeInTheDocument();
+
+    await user.click(selectAll);
+    expect(screen.getByText("Members (Total 2):")).toBeInTheDocument();
+  });
+
+  test("clicking middle row deselects it while keeping others", async () => {
+    const extendedMembers = [
+      ...members,
+      {
+        user_id: 12,
+        full_name: "Carol Dee",
+        email: "carol@example.com",
+        phone_number: "+44 7100000003",
+        role: "normal_user",
+      },
+    ];
+    (getUsersByDepId as jest.Mock).mockResolvedValue({
+      status: 200,
+      json: async () => extendedMembers,
+    });
+
+    const user = userEvent.setup();
+    renderDialog();
+
+    await waitFor(() =>
+      expect(screen.getByText("Alice Smith")).toBeInTheDocument(),
+    );
+
+    // Select all 3 then click middle row to deselect
+    const selectAll = screen.getByRole("checkbox", {
+      name: "select all desserts",
+    });
+    await user.click(selectAll);
+    expect(screen.getByText(/Selected 3 out of/)).toBeInTheDocument();
+
+    const bobRow = screen.getByText("Bob Myers").closest("tr")!;
+    await user.click(bobRow);
+    expect(screen.getByText(/Selected 2 out of/)).toBeInTheDocument();
+  });
+
+  test("change-department dialog success updates user count and shows snackbar", async () => {
+    const user = userEvent.setup();
+    const { notifyUserCountChange } = renderDialog();
+
+    await waitFor(() =>
+      expect(screen.getByText("Alice Smith")).toBeInTheDocument(),
+    );
+
+    const aliceRow = screen.getByText("Alice Smith").closest("tr")!;
+    await user.click(aliceRow);
+    await user.click(
+      screen.getByRole("button", { name: /Change Department/ }),
+    );
+
+    expect(screen.getByTestId("change-dep-dialog")).toBeInTheDocument();
+    await user.click(screen.getByText("close-dep-success"));
+
+    await waitFor(() =>
+      expect(
+        screen.getByText("Department changed successfully!"),
+      ).toBeInTheDocument(),
+    );
+    expect(notifyUserCountChange).toHaveBeenCalledWith(1, 2, 1);
+  });
+
+  test("change-department cancel just closes the dialog", async () => {
+    const user = userEvent.setup();
+    const { notifyUserCountChange } = renderDialog();
+
+    await waitFor(() =>
+      expect(screen.getByText("Alice Smith")).toBeInTheDocument(),
+    );
+
+    const aliceRow = screen.getByText("Alice Smith").closest("tr")!;
+    await user.click(aliceRow);
+    await user.click(
+      screen.getByRole("button", { name: /Change Department/ }),
+    );
+    await user.click(screen.getByText("close-dep-cancel"));
+
+    await waitFor(() =>
+      expect(
+        screen.queryByTestId("change-dep-dialog"),
+      ).not.toBeInTheDocument(),
+    );
+    expect(notifyUserCountChange).not.toHaveBeenCalled();
   });
 
   test("failed department name update shows server error message", async () => {
