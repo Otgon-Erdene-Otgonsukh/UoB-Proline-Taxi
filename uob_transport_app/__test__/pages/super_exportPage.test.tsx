@@ -138,4 +138,74 @@ describe("Super-admin ExportPage", () => {
     const depSelect = screen.getByText("Select a department to export");
     expect(depSelect).toBeInTheDocument();
   });
+
+  test("typing in the department search field updates input", async () => {
+    mockGetBookingsList();
+    mockEasyGetRequest();
+    const user = userEvent.setup();
+
+    render(<ExportPage />);
+
+    await waitFor(() =>
+      expect(screen.getByTestId("row-1")).toBeInTheDocument(),
+    );
+
+    const input = screen.getByLabelText("Department");
+    await user.type(input, "CS");
+    expect(input).toHaveValue("CS");
+  });
+
+  test("Clear button resets search form fields", async () => {
+    mockGetBookingsList();
+    mockEasyGetRequest();
+    const user = userEvent.setup();
+
+    render(<ExportPage />);
+
+    await waitFor(() =>
+      expect(screen.getByTestId("row-1")).toBeInTheDocument(),
+    );
+
+    const fromInput = screen.getByLabelText("From");
+    await user.type(fromInput, "Place A");
+    expect(fromInput).toHaveValue("Place A");
+
+    await user.click(screen.getByRole("button", { name: "Clear" }));
+    expect(fromInput).toHaveValue("");
+  });
+
+  test("submitting the search form refetches bookings", async () => {
+    mockGetBookingsList();
+    mockEasyGetRequest();
+    const user = userEvent.setup();
+
+    render(<ExportPage />);
+
+    await waitFor(() =>
+      expect(screen.getByTestId("row-1")).toBeInTheDocument(),
+    );
+
+    (getBookingsList as jest.Mock).mockClear();
+
+    const fromInput = screen.getByLabelText("From");
+    await user.type(fromInput, "Main");
+    fireEvent.submit(fromInput.closest("form")!);
+
+    await waitFor(() => {
+      expect(getBookingsList).toHaveBeenCalled();
+    });
+  });
+
+  test("renders nothing in depCount select when request fails", async () => {
+    mockGetBookingsList();
+    (easyGetRequest as jest.Mock).mockResolvedValue({ status: 500 });
+
+    render(<ExportPage />);
+
+    await waitFor(() =>
+      expect(screen.getByTestId("row-1")).toBeInTheDocument(),
+    );
+
+    expect(screen.getByText("Select a department to export")).toBeInTheDocument();
+  });
 });
