@@ -174,10 +174,15 @@ const depCounts = [
   { dep_id: 2, dep_name: "Mathematics", count: 5 },
 ];
 
-function mockGetBookingsList() {
+function mockGetBookingsList(
+  payload: { bookings: typeof bookings; totalNum: number } = {
+    bookings,
+    totalNum: 1,
+  },
+) {
   (getBookingsList as jest.Mock).mockResolvedValue({
     status: 200,
-    json: async () => ({ bookings, totalNum: 1 }),
+    json: async () => payload,
   });
 }
 
@@ -410,5 +415,93 @@ describe("Super-admin ExportPage", () => {
     expect(
       await screen.findByText("Price has been successfully attached."),
     ).toBeInTheDocument();
+  });
+
+  test("page size change triggers refetch with new size", async () => {
+    mockGetBookingsList();
+    mockEasyGetRequest();
+    const user = userEvent.setup();
+
+    render(<ExportPage />);
+    await waitFor(() =>
+      expect(screen.getByTestId("row-1")).toBeInTheDocument(),
+    );
+
+    (getBookingsList as jest.Mock).mockClear();
+    await user.click(screen.getByText("page-size-change"));
+
+    await waitFor(() => {
+      expect(getBookingsList).toHaveBeenCalledWith(
+        0,
+        25,
+        true,
+        expect.any(Object),
+      );
+    });
+  });
+
+  test("page change handler refetches and keeps page size", async () => {
+    mockGetBookingsList({ bookings, totalNum: 50 });
+    mockEasyGetRequest();
+    const user = userEvent.setup();
+
+    render(<ExportPage />);
+    await waitFor(() =>
+      expect(screen.getByTestId("row-1")).toBeInTheDocument(),
+    );
+
+    (getBookingsList as jest.Mock).mockClear();
+    await user.click(screen.getByText("page-change"));
+
+    await waitFor(() => {
+      expect(getBookingsList).toHaveBeenCalledWith(
+        1,
+        10,
+        true,
+        expect.any(Object),
+      );
+    });
+  });
+
+  test("TablePaginationActions disables prev/first on first page, enables next/last", async () => {
+    mockGetBookingsList({ bookings, totalNum: 50 });
+    mockEasyGetRequest();
+
+    render(<ExportPage />);
+    await waitFor(() =>
+      expect(screen.getByTestId("row-1")).toBeInTheDocument(),
+    );
+
+    expect(screen.getByLabelText("first page")).toBeDisabled();
+    expect(screen.getByLabelText("previous page")).toBeDisabled();
+    expect(screen.getByLabelText("next page")).not.toBeDisabled();
+    expect(screen.getByLabelText("last page")).not.toBeDisabled();
+  });
+
+  test("clicking last/first/next/prev pagination buttons all call page handler", async () => {
+    mockGetBookingsList({ bookings, totalNum: 50 });
+    mockEasyGetRequest();
+    const user = userEvent.setup();
+
+    render(<ExportPage />);
+    await waitFor(() =>
+      expect(screen.getByTestId("row-1")).toBeInTheDocument(),
+    );
+
+    (getBookingsList as jest.Mock).mockClear();
+    await user.click(screen.getByLabelText("next page"));
+    await waitFor(() => expect(getBookingsList).toHaveBeenCalled());
+
+    (getBookingsList as jest.Mock).mockClear();
+    await user.click(screen.getByLabelText("last page"));
+    await waitFor(() => expect(getBookingsList).toHaveBeenCalled());
+
+    (getBookingsList as jest.Mock).mockClear();
+    await user.click(screen.getByLabelText("previous page"));
+    await waitFor(() => expect(getBookingsList).toHaveBeenCalled());
+
+    (getBookingsList as jest.Mock).mockClear();
+    await user.click(screen.getByLabelText("first page"));
+    await waitFor(() => expect(getBookingsList).toHaveBeenCalled());
   });
 });
