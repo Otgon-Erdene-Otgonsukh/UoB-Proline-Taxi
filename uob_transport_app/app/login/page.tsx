@@ -125,7 +125,7 @@ export default function Log_forgot() {
     });
 
     if (!response.ok) {
-      throw new Error("Failed to create subscription");
+      console.error("Subscription failed");
     }
   };
 
