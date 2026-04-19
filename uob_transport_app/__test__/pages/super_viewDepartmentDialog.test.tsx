@@ -180,4 +180,65 @@ describe("Super-admin ViewDepartmentDialog", () => {
     expect(screen.queryByText("Selected 1 out of 2:")).not.toBeInTheDocument();
     expect(screen.getByText("Members (Total 2):")).toBeInTheDocument();
   });
+
+  test("successful department name update shows success snackbar", async () => {
+    const user = userEvent.setup();
+    (updateDepartmentName as jest.Mock).mockResolvedValue({ status: 200 });
+
+    const { notifyDepartmentNameChange } = renderDialog();
+
+    await waitFor(() =>
+      expect(screen.getByText("Alice Smith")).toBeInTheDocument(),
+    );
+
+    // Click the edit icon next to the department name
+    const depNameBlock = screen.getByText("Computer Science").closest("p")!;
+    const editIcon = depNameBlock.querySelector("svg")!;
+    await user.click(editIcon);
+
+    // SingleInputDialog opens — change text and confirm
+    const input = await screen.findByLabelText("Department Name");
+    await user.clear(input);
+    await user.type(input, "New CS Dept");
+
+    await user.click(screen.getByRole("button", { name: "Save" }));
+
+    await waitFor(() => {
+      expect(updateDepartmentName).toHaveBeenCalledWith(1, "New CS Dept");
+    });
+    await waitFor(() => {
+      expect(
+        screen.getByText("Department name updated successfully!"),
+      ).toBeInTheDocument();
+    });
+    expect(notifyDepartmentNameChange).toHaveBeenCalledWith(1, "New CS Dept");
+  });
+
+  test("failed department name update shows server error message", async () => {
+    const user = userEvent.setup();
+    (updateDepartmentName as jest.Mock).mockResolvedValue({
+      status: 400,
+      json: async () => ({ message: "Name already taken" }),
+    });
+
+    renderDialog();
+
+    await waitFor(() =>
+      expect(screen.getByText("Alice Smith")).toBeInTheDocument(),
+    );
+
+    const depNameBlock = screen.getByText("Computer Science").closest("p")!;
+    const editIcon = depNameBlock.querySelector("svg")!;
+    await user.click(editIcon);
+
+    const input = await screen.findByLabelText("Department Name");
+    await user.clear(input);
+    await user.type(input, "Dup");
+
+    await user.click(screen.getByRole("button", { name: "Save" }));
+
+    await waitFor(() => {
+      expect(screen.getByText("Name already taken")).toBeInTheDocument();
+    });
+  });
 });
