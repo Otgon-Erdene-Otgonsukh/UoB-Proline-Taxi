@@ -13,26 +13,34 @@ const baseManager = {
   user_status: 1,
 };
 
+const renderManagerDialog = (
+  props: Partial<React.ComponentProps<typeof ViewManagerDialog>> = {},
+) => {
+  const handleDialogClose = props.handleDialogClose ?? jest.fn();
+  const unassignSnackOpen = props.unassignSnackOpen ?? jest.fn();
+  const normalClose = props.normalClose ?? jest.fn();
+
+  render(
+    <ViewManagerDialog
+      viewData={props.viewData ?? baseManager}
+      dialogOpen={props.dialogOpen ?? true}
+      handleDialogClose={handleDialogClose}
+      unassignSnackOpen={unassignSnackOpen}
+      normalClose={normalClose}
+    />,
+  );
+
+  return { handleDialogClose, unassignSnackOpen, normalClose };
+};
+
 describe("Super-admin ViewManagerDialog", () => {
   test("does not render when closed", () => {
-    render(
-      <ViewManagerDialog
-        viewData={baseManager}
-        dialogOpen={false}
-        handleDialogClose={jest.fn()}
-      />,
-    );
+    renderManagerDialog({ dialogOpen: false });
     expect(screen.queryByText("Manager Detail")).not.toBeInTheDocument();
   });
 
   test("renders manager fields when open", () => {
-    render(
-      <ViewManagerDialog
-        viewData={baseManager}
-        dialogOpen={true}
-        handleDialogClose={jest.fn()}
-      />,
-    );
+    renderManagerDialog();
 
     expect(screen.getByText("Manager Detail")).toBeInTheDocument();
     expect(screen.getByText("Carol Manager")).toBeInTheDocument();
@@ -42,24 +50,12 @@ describe("Super-admin ViewManagerDialog", () => {
   });
 
   test("renders Approved status for user_status=1", () => {
-    render(
-      <ViewManagerDialog
-        viewData={{ ...baseManager, user_status: 1 }}
-        dialogOpen={true}
-        handleDialogClose={jest.fn()}
-      />,
-    );
+    renderManagerDialog({ viewData: { ...baseManager, user_status: 1 } });
     expect(screen.getByText("Approved")).toBeInTheDocument();
   });
 
   test("renders Pending status for user_status=0", () => {
-    render(
-      <ViewManagerDialog
-        viewData={{ ...baseManager, user_status: 0 }}
-        dialogOpen={true}
-        handleDialogClose={jest.fn()}
-      />,
-    );
+    renderManagerDialog({ viewData: { ...baseManager, user_status: 0 } });
     expect(screen.getByText("Pending")).toBeInTheDocument();
   });
 
@@ -67,48 +63,24 @@ describe("Super-admin ViewManagerDialog", () => {
     const user = userEvent.setup();
     const handleDialogClose = jest.fn();
 
-    render(
-      <ViewManagerDialog
-        viewData={baseManager}
-        dialogOpen={true}
-        handleDialogClose={handleDialogClose}
-      />,
-    );
+    renderManagerDialog({ handleDialogClose });
 
     await user.click(screen.getByRole("button", { name: "Close" }));
     expect(handleDialogClose).toHaveBeenCalledTimes(1);
   });
 
   test("renders Rejected status for user_status=2", () => {
-    render(
-      <ViewManagerDialog
-        viewData={{ ...baseManager, user_status: 2 }}
-        dialogOpen={true}
-        handleDialogClose={jest.fn()}
-      />,
-    );
+    renderManagerDialog({ viewData: { ...baseManager, user_status: 2 } });
     expect(screen.getByText("Rejected")).toBeInTheDocument();
   });
 
   test("renders default chip colour when user_status is unknown", () => {
-    render(
-      <ViewManagerDialog
-        viewData={{ ...baseManager, user_status: 99 }}
-        dialogOpen={true}
-        handleDialogClose={jest.fn()}
-      />,
-    );
+    renderManagerDialog({ viewData: { ...baseManager, user_status: 99 } });
     expect(screen.getByText("User Status:")).toBeInTheDocument();
   });
 
   test("renders blank time when time_created is missing", () => {
-    render(
-      <ViewManagerDialog
-        viewData={{ ...baseManager, time_created: "" }}
-        dialogOpen={true}
-        handleDialogClose={jest.fn()}
-      />,
-    );
+    renderManagerDialog({ viewData: { ...baseManager, time_created: "" } });
     expect(screen.getByText("Time Created:")).toBeInTheDocument();
   });
 
@@ -116,13 +88,7 @@ describe("Super-admin ViewManagerDialog", () => {
     const user = userEvent.setup();
     const handleDialogClose = jest.fn();
 
-    render(
-      <ViewManagerDialog
-        viewData={baseManager}
-        dialogOpen={true}
-        handleDialogClose={handleDialogClose}
-      />,
-    );
+    renderManagerDialog({ handleDialogClose });
 
     await user.click(screen.getByRole("button", { name: "close" }));
     expect(handleDialogClose).toHaveBeenCalledTimes(1);

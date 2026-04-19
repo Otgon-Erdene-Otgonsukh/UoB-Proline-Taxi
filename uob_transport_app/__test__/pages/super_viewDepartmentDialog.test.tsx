@@ -61,10 +61,12 @@ const members = [
 function renderDialog(overrides: Partial<{
   dialogOpen: boolean;
   handleDialogClose: () => void;
+  normalClose: () => void;
   notifyUserCountChange: jest.Mock;
   notifyDepartmentNameChange: jest.Mock;
 }> = {}) {
   const handleDialogClose = overrides.handleDialogClose ?? jest.fn();
+  const normalClose = overrides.normalClose ?? jest.fn();
   const notifyUserCountChange = overrides.notifyUserCountChange ?? jest.fn();
   const notifyDepartmentNameChange =
     overrides.notifyDepartmentNameChange ?? jest.fn();
@@ -75,12 +77,18 @@ function renderDialog(overrides: Partial<{
       viewData={viewData}
       dialogOpen={overrides.dialogOpen ?? true}
       handleDialogClose={handleDialogClose}
+      normalClose={normalClose}
       notifyUserCountChange={notifyUserCountChange}
       notifyDepartmentNameChange={notifyDepartmentNameChange}
     />,
   );
 
-  return { handleDialogClose, notifyUserCountChange, notifyDepartmentNameChange };
+  return {
+    handleDialogClose,
+    normalClose,
+    notifyUserCountChange,
+    notifyDepartmentNameChange,
+  };
 }
 
 describe("Super-admin ViewDepartmentDialog", () => {

@@ -37,6 +37,7 @@ interface Props {
   viewData: DepartmentRecord,
   dialogOpen: boolean,
   handleDialogClose: () => void,
+  normalClose?: () => void,
   notifyUserCountChange: (fromDepId: number, toDepId: number, userCount: number) => void
   notifyDepartmentNameChange: (depId: number, newDepName: string) => void
 }

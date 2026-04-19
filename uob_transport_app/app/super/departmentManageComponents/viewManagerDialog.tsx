@@ -15,7 +15,17 @@ import {
 import { DepartmentRecord } from "@/model/models";
 import { roleReadableStrMap, userStatusToIntMap, userStatusToStrMap } from "../constants";
 
-const ViewDepartmentDialog = ({ viewData, dialogOpen, handleDialogClose }: { viewData: DepartmentRecord['manager'], dialogOpen: boolean, handleDialogClose: () => void }) => {
+const ViewDepartmentDialog = ({
+  viewData,
+  dialogOpen,
+  handleDialogClose,
+}: {
+  viewData: DepartmentRecord['manager'],
+  dialogOpen: boolean,
+  handleDialogClose: () => void,
+  unassignSnackOpen?: () => void,
+  normalClose?: () => void,
+}) => {
 
   return (<div>
     <Dialog
