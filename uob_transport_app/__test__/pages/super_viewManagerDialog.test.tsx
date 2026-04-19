@@ -13,15 +13,26 @@ const baseManager = {
   user_status: 1,
 };
 
+type ViewManagerDialogTestProps = Omit<
+  React.ComponentProps<typeof ViewManagerDialog>,
+  "unassignSnackOpen" | "normalClose"
+> & {
+  unassignSnackOpen?: () => void;
+  normalClose?: () => void;
+};
+
+const TestViewManagerDialog =
+  ViewManagerDialog as React.ComponentType<ViewManagerDialogTestProps>;
+
 const renderManagerDialog = (
-  props: Partial<React.ComponentProps<typeof ViewManagerDialog>> = {},
+  props: Partial<ViewManagerDialogTestProps> = {},
 ) => {
   const handleDialogClose = props.handleDialogClose ?? jest.fn();
   const unassignSnackOpen = props.unassignSnackOpen ?? jest.fn();
   const normalClose = props.normalClose ?? jest.fn();
 
   render(
-    <ViewManagerDialog
+    <TestViewManagerDialog
       viewData={props.viewData ?? baseManager}
       dialogOpen={props.dialogOpen ?? true}
       handleDialogClose={handleDialogClose}

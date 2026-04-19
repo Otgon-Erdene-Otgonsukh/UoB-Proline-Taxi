@@ -58,13 +58,17 @@ const members = [
   },
 ];
 
-function renderDialog(overrides: Partial<{
-  dialogOpen: boolean;
-  handleDialogClose: () => void;
-  normalClose: () => void;
-  notifyUserCountChange: jest.Mock;
-  notifyDepartmentNameChange: jest.Mock;
-}> = {}) {
+type ViewDepartmentDialogTestProps = Omit<
+  React.ComponentProps<typeof ViewDepartmentDialog>,
+  "normalClose"
+> & {
+  normalClose?: () => void;
+};
+
+const TestViewDepartmentDialog =
+  ViewDepartmentDialog as React.ComponentType<ViewDepartmentDialogTestProps>;
+
+function renderDialog(overrides: Partial<ViewDepartmentDialogTestProps> = {}) {
   const handleDialogClose = overrides.handleDialogClose ?? jest.fn();
   const normalClose = overrides.normalClose ?? jest.fn();
   const notifyUserCountChange = overrides.notifyUserCountChange ?? jest.fn();
@@ -72,7 +76,7 @@ function renderDialog(overrides: Partial<{
     overrides.notifyDepartmentNameChange ?? jest.fn();
 
   render(
-    <ViewDepartmentDialog
+    <TestViewDepartmentDialog
       departmentList={departmentList}
       viewData={viewData}
       dialogOpen={overrides.dialogOpen ?? true}
