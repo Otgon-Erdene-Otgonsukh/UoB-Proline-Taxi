@@ -113,6 +113,31 @@ describe("Super-admin AddDepartmentDialog", () => {
     expect(handleDialogClose).toHaveBeenCalledTimes(1);
   });
 
+  test("empty-name snackbar can be closed via Alert close button", async () => {
+    const user = userEvent.setup();
+    render(
+      <AddDepartmentDialog
+        dialogOpen={true}
+        handleDialogClose={jest.fn()}
+      />,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Create" }));
+    expect(
+      await screen.findByText("Name field cannot be empty!"),
+    ).toBeInTheDocument();
+
+    const closeButtons = screen.getAllByRole("button", { name: /close/i });
+    // The last close button is the snackbar Alert close
+    await user.click(closeButtons[closeButtons.length - 1]);
+
+    await waitFor(() =>
+      expect(
+        screen.queryByText("Name field cannot be empty!"),
+      ).not.toBeInTheDocument(),
+    );
+  });
+
   test("failed create shows error snackbar and keeps dialog open", async () => {
     const user = userEvent.setup();
     const handleDialogClose = jest.fn();
