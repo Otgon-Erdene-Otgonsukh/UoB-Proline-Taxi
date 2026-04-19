@@ -60,4 +60,72 @@ describe("Super-admin EditDialog (user edit)", () => {
     expect(screen.getByLabelText("Email")).toHaveValue("bob.myers@example.com");
     expect(screen.getByLabelText("Phone Number")).toHaveValue("7123456789");
   });
+
+//validation test
+
+    test("shows error helper when name is cleared", async () => {
+    const user = userEvent.setup();
+    render(
+      <EditDialog
+        editData={baseUser}
+        dialogOpen={true}
+        handleDialogClose={jest.fn()}
+        departmentList={departmentList}
+      />,
+    );
+
+    await user.clear(screen.getByLabelText("Name"));
+    expect(screen.getByText("Name cannot be empty")).toBeInTheDocument();
+  });
+
+  test("shows empty-email helper when email is cleared", async () => {
+    const user = userEvent.setup();
+    render(
+      <EditDialog
+        editData={baseUser}
+        dialogOpen={true}
+        handleDialogClose={jest.fn()}
+        departmentList={departmentList}
+      />,
+    );
+
+    await user.clear(screen.getByLabelText("Email"));
+    expect(
+      screen.getByText("Enter email the code to be sent!"),
+    ).toBeInTheDocument();
+  });
+
+  test("shows invalid-email helper when email has no @", async () => {
+    const user = userEvent.setup();
+    render(
+      <EditDialog
+        editData={baseUser}
+        dialogOpen={true}
+        handleDialogClose={jest.fn()}
+        departmentList={departmentList}
+      />,
+    );
+
+    const emailInput = screen.getByLabelText("Email");
+    await user.clear(emailInput);
+    await user.type(emailInput, "not-an-email");
+    expect(
+      screen.getByText("Please enter a valid email address!"),
+    ).toBeInTheDocument();
+  });
+
+  test("shows empty-phone helper when phone is cleared", async () => {
+    const user = userEvent.setup();
+    render(
+      <EditDialog
+        editData={baseUser}
+        dialogOpen={true}
+        handleDialogClose={jest.fn()}
+        departmentList={departmentList}
+      />,
+    );
+
+    await user.clear(screen.getByLabelText("Phone Number"));
+    expect(screen.getByText("Please enter phone number")).toBeInTheDocument();
+  });
 });
