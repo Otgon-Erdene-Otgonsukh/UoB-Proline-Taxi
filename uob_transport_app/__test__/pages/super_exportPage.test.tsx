@@ -311,4 +311,104 @@ describe("Super-admin ExportPage", () => {
 
     expect(screen.getByText("Select a department to export")).toBeInTheDocument();
   });
+
+  test("handleCheck toggles a booking id on and off", async () => {
+    mockGetBookingsList();
+    mockEasyGetRequest();
+    const user = userEvent.setup();
+
+    render(<ExportPage />);
+    await waitFor(() =>
+      expect(screen.getByTestId("row-1")).toBeInTheDocument(),
+    );
+
+    await user.click(screen.getByText("check-1"));
+    await waitFor(() =>
+      expect(screen.getByTestId("selectedIds")).toHaveTextContent("1"),
+    );
+
+    await user.click(screen.getByText("check-1"));
+    await waitFor(() =>
+      expect(screen.getByTestId("selectedIds")).toHaveTextContent(""),
+    );
+  });
+
+  test("onEditBooking triggers redirect", async () => {
+    mockGetBookingsList();
+    mockEasyGetRequest();
+    const user = userEvent.setup();
+
+    render(<ExportPage />);
+    await waitFor(() =>
+      expect(screen.getByTestId("row-1")).toBeInTheDocument(),
+    );
+
+    await user.click(screen.getByText("edit-1"));
+    expect(redirect).toHaveBeenCalledWith("/book?update=1");
+  });
+
+  test("onCancelBooking opens confirm dialog, confirm calls cancelBooking", async () => {
+    mockGetBookingsList();
+    mockEasyGetRequest();
+    (cancelBooking as jest.Mock).mockResolvedValue({
+      status: 200,
+      json: async () => ({ ok: true }),
+    });
+    const user = userEvent.setup();
+
+    render(<ExportPage />);
+    await waitFor(() =>
+      expect(screen.getByTestId("row-1")).toBeInTheDocument(),
+    );
+
+    await user.click(screen.getByText("cancel-1"));
+    expect(screen.getByTestId("confirm-dialog")).toBeInTheDocument();
+
+    await user.click(screen.getByText("confirm-cancel"));
+
+    await waitFor(() => {
+      expect(cancelBooking).toHaveBeenCalledWith(1);
+    });
+  });
+
+  test("confirm dialog reject closes without calling cancelBooking", async () => {
+    mockGetBookingsList();
+    mockEasyGetRequest();
+    const user = userEvent.setup();
+
+    render(<ExportPage />);
+    await waitFor(() =>
+      expect(screen.getByTestId("row-1")).toBeInTheDocument(),
+    );
+
+    await user.click(screen.getByText("cancel-1"));
+    await user.click(screen.getByText("reject-cancel"));
+
+    await waitFor(() =>
+      expect(screen.queryByTestId("confirm-dialog")).not.toBeInTheDocument(),
+    );
+    expect(cancelBooking).not.toHaveBeenCalled();
+  });
+
+  test("onPriceAttached triggers refetch; openSnackBar shows snackbar", async () => {
+    mockGetBookingsList();
+    mockEasyGetRequest();
+    const user = userEvent.setup();
+
+    render(<ExportPage />);
+    await waitFor(() =>
+      expect(screen.getByTestId("row-1")).toBeInTheDocument(),
+    );
+
+    (getBookingsList as jest.Mock).mockClear();
+    await user.click(screen.getByText("price-attached"));
+    await waitFor(() => {
+      expect(getBookingsList).toHaveBeenCalled();
+    });
+
+    await user.click(screen.getByText("open-snackbar"));
+    expect(
+      await screen.findByText("Price has been successfully attached."),
+    ).toBeInTheDocument();
+  });
 });
