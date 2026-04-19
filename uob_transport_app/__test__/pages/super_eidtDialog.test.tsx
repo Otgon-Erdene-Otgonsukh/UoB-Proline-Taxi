@@ -237,4 +237,63 @@ describe("Super-admin EditDialog (user edit)", () => {
       expect(screen.getByText("Update success!")).toBeInTheDocument();
     });
   });
+  test("does not submit when name is empty", async () => {
+    const user = userEvent.setup();
+    (updateUserAsAdmin as jest.Mock).mockResolvedValue({ status: 200 });
+
+    render(
+      <EditDialog
+        editData={baseUser}
+        dialogOpen={true}
+        handleDialogClose={jest.fn()}
+        departmentList={departmentList}
+      />,
+    );
+
+    await user.clear(screen.getByLabelText("Name"));
+    await user.click(screen.getByRole("button", { name: "Save" }));
+
+    expect(updateUserAsAdmin).not.toHaveBeenCalled();
+  });
+
+  test("does not submit when email is invalid", async () => {
+    const user = userEvent.setup();
+    (updateUserAsAdmin as jest.Mock).mockResolvedValue({ status: 200 });
+
+    render(
+      <EditDialog
+        editData={baseUser}
+        dialogOpen={true}
+        handleDialogClose={jest.fn()}
+        departmentList={departmentList}
+      />,
+    );
+
+    const emailInput = screen.getByLabelText("Email");
+    await user.clear(emailInput);
+    await user.type(emailInput, "invalid");
+
+    await user.click(screen.getByRole("button", { name: "Save" }));
+
+    expect(updateUserAsAdmin).not.toHaveBeenCalled();
+  });
+
+  test("does not submit when phone is empty", async () => {
+    const user = userEvent.setup();
+    (updateUserAsAdmin as jest.Mock).mockResolvedValue({ status: 200 });
+
+    render(
+      <EditDialog
+        editData={baseUser}
+        dialogOpen={true}
+        handleDialogClose={jest.fn()}
+        departmentList={departmentList}
+      />,
+    );
+
+    await user.clear(screen.getByLabelText("Phone Number"));
+    await user.click(screen.getByRole("button", { name: "Save" }));
+
+    expect(updateUserAsAdmin).not.toHaveBeenCalled();
+  });
 });
