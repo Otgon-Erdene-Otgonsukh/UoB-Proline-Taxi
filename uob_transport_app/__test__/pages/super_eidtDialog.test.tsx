@@ -296,4 +296,57 @@ describe("Super-admin EditDialog (user edit)", () => {
 
     expect(updateUserAsAdmin).not.toHaveBeenCalled();
   });
+
+  test("email cleared then re-typed without @ then with @ hits all email branches", async () => {
+    const user = userEvent.setup();
+
+    render(
+      <EditDialog
+        editData={baseUser}
+        dialogOpen={true}
+        handleDialogClose={jest.fn()}
+        departmentList={departmentList}
+      />,
+    );
+
+    const emailInput = screen.getByLabelText("Email");
+    // empty branch
+    await user.clear(emailInput);
+    // invalid (no @)
+    await user.type(emailInput, "bad");
+    // valid again
+    await user.type(emailInput, "@example.com");
+    expect(emailInput).toHaveValue("bad@example.com");
+  });
+
+  test("save failure opens snackbar which can be closed", async () => {
+    const user = userEvent.setup();
+    (updateUserAsAdmin as jest.Mock).mockResolvedValue({ status: 500 });
+
+    render(
+      <EditDialog
+        editData={baseUser}
+        dialogOpen={true}
+        handleDialogClose={jest.fn()}
+        departmentList={departmentList}
+      />,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Save" }));
+
+    const errorMsg = await screen.findByText(
+      /error|fail|try again/i,
+    );
+    expect(errorMsg).toBeInTheDocument();
+
+    // Close snackbar via its Alert close icon
+    const closeIcons = screen.getAllByRole("button", { name: /close/i });
+    await user.click(closeIcons[closeIcons.length - 1]);
+
+    await waitFor(() =>
+      expect(
+        screen.queryByText(/error|fail|try again/i),
+      ).not.toBeInTheDocument(),
+    );
+  });
 });

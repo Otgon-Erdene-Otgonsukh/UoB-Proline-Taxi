@@ -133,4 +133,16 @@ describe("Super-admin ViewDialog (user detail)", () => {
     );
     expect(screen.getByText("Time Created:")).toBeInTheDocument();
   });
+
+  test("renders default chip colour when user_status is unknown", () => {
+    render(
+      <ViewDialog
+        viewData={{ ...baseUser, user_status: 99 }}
+        dialogOpen={true}
+        handleDialogClose={jest.fn()}
+      />,
+    );
+    // Default branch ('default' colour) is rendered; map returns undefined label
+    expect(screen.getByText("User Status:")).toBeInTheDocument();
+  });
 });

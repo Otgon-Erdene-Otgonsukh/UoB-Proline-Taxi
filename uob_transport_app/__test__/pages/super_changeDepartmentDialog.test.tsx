@@ -129,6 +129,44 @@ describe("Super-admin ChangeDepartmentDialog", () => {
     });
   });
 
+  test("error snackbar can be closed via its Alert close icon", async () => {
+    const user = userEvent.setup();
+    (changeDepartmentForUsers as jest.Mock).mockResolvedValue({ status: 500 });
+
+    render(
+      <ChangeDepartmentDialog
+        departmentList={departmentList}
+        dialogOpen={true}
+        handleDialogClose={jest.fn()}
+        selectedRows={selectedRows}
+      />,
+    );
+
+    const input = screen.getByLabelText("Department");
+    await user.click(input);
+    await user.type(input, "Math");
+    const option = await screen.findByText("Mathematics");
+    await user.click(option);
+
+    await user.click(screen.getByRole("button", { name: "Save" }));
+
+    const errorAlert = await screen.findByText(
+      "Change department failed, try again later!",
+    );
+    expect(errorAlert).toBeInTheDocument();
+
+    const alertCloseBtn = errorAlert
+      .closest(".MuiAlert-root")!
+      .querySelector("button")!;
+    await user.click(alertCloseBtn);
+
+    await waitFor(() =>
+      expect(
+        screen.queryByText("Change department failed, try again later!"),
+      ).not.toBeInTheDocument(),
+    );
+  });
+
   test("failed save shows error snackbar", async () => {
     const user = userEvent.setup();
     (changeDepartmentForUsers as jest.Mock).mockResolvedValue({ status: 500 });
