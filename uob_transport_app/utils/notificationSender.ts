@@ -1,17 +1,33 @@
 import prisma from "./client";
 import webpush from "web-push";
 
-webpush.setVapidDetails(
-  "mailto:placeholder@example.com",
-  process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
-  process.env.VAPID_PRIVATE_KEY!,
-);
+let vapidConfigured = false;
 
 export async function notificationHelper(
   notificationType: string,
   bookingId: number | undefined,
   userId: number,
 ) {
+  if (!vapidConfigured) {
+    const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+    const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY;
+
+    if (!vapidPublicKey || !vapidPrivateKey) {
+      return;
+    }
+
+    webpush.setVapidDetails(
+      "mailto:placeholder@example.com",
+      vapidPublicKey,
+      vapidPrivateKey,
+    );
+    vapidConfigured = true;
+  }
+
+  if (!vapidConfigured) {
+    return;
+  }
+
   let payload;
   let userSub;
 
