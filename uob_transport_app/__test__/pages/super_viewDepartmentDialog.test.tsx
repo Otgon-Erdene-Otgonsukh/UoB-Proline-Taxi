@@ -119,4 +119,65 @@ describe("Super-admin ViewDepartmentDialog", () => {
     // resolve to avoid an unhandled promise warning
     resolveFn!({ status: 200, json: async () => [] });
   });
+
+  test("clicking Close button invokes handleDialogClose", async () => {
+    const user = userEvent.setup();
+    const { handleDialogClose } = renderDialog();
+
+    await waitFor(() =>
+      expect(screen.getByText("Alice Smith")).toBeInTheDocument(),
+    );
+
+    await user.click(screen.getByRole("button", { name: "Close" }));
+    expect(handleDialogClose).toHaveBeenCalledTimes(1);
+  });
+
+  test("selecting rows toggles the change-department toolbar button", async () => {
+    const user = userEvent.setup();
+    renderDialog();
+
+    await waitFor(() =>
+      expect(screen.getByText("Alice Smith")).toBeInTheDocument(),
+    );
+
+    expect(screen.queryByText("Change Department")).not.toBeInTheDocument();
+
+    const aliceRow = screen.getByText("Alice Smith").closest("tr")!;
+    await user.click(aliceRow);
+
+    expect(screen.getByText("Change Department")).toBeInTheDocument();
+    expect(screen.getByText("Selected 1 out of 2:")).toBeInTheDocument();
+  });
+
+  test("select-all checkbox selects every member", async () => {
+    const user = userEvent.setup();
+    renderDialog();
+
+    await waitFor(() =>
+      expect(screen.getByText("Alice Smith")).toBeInTheDocument(),
+    );
+
+    const selectAll = screen.getByRole("checkbox", {
+      name: "select all desserts",
+    });
+    await user.click(selectAll);
+    expect(screen.getByText("Selected 2 out of 2:")).toBeInTheDocument();
+  });
+
+  test("clicking a selected row de-selects it", async () => {
+    const user = userEvent.setup();
+    renderDialog();
+
+    await waitFor(() =>
+      expect(screen.getByText("Alice Smith")).toBeInTheDocument(),
+    );
+
+    const aliceRow = screen.getByText("Alice Smith").closest("tr")!;
+    await user.click(aliceRow);
+    expect(screen.getByText("Selected 1 out of 2:")).toBeInTheDocument();
+
+    await user.click(aliceRow);
+    expect(screen.queryByText("Selected 1 out of 2:")).not.toBeInTheDocument();
+    expect(screen.getByText("Members (Total 2):")).toBeInTheDocument();
+  });
 });
