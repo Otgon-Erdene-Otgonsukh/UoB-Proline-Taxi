@@ -126,8 +126,24 @@ jest.mock("@/components/datetimePicker/locale", () => ({
 
 jest.mock("@/components/confirmDIalog", () => ({
   __esModule: true,
-  default: ({ open, dialogTitle }: { open: boolean; dialogTitle: string }) =>
-    open ? <div data-testid="confirm-dialog">{dialogTitle}</div> : null,
+  default: ({
+    open,
+    dialogTitle,
+    confirmCallBack,
+    cancelCallBack,
+  }: {
+    open: boolean;
+    dialogTitle: string;
+    confirmCallBack: () => void;
+    cancelCallBack: () => void;
+  }) =>
+    open ? (
+      <div data-testid="confirm-dialog">
+        {dialogTitle}
+        <button onClick={confirmCallBack}>confirm-cancel</button>
+        <button onClick={cancelCallBack}>reject-cancel</button>
+      </div>
+    ) : null,
 }));
 
 jest.mock("@/components/CustomizedButton", () => ({
@@ -176,6 +192,7 @@ describe("Super-admin ExportPage", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     global.fetch = jest.fn();
+    global.URL.createObjectURL = jest.fn(() => "blob:url");
   });
 
   test("shows loading state before data arrives", () => {
