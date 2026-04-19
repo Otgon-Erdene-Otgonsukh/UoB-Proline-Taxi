@@ -117,7 +117,23 @@ jest.mock("@/components/SuperBookingsTable", () => ({
 }));
 
 jest.mock("@/components/datetimePicker/DateTimePicker", () => ({
-  DateTimePicker: () => <div data-testid="datetime-picker" />,
+  DateTimePicker: ({
+    open,
+    onClose,
+    onDateChange,
+  }: {
+    open: boolean;
+    onClose: () => void;
+    onDateChange: (d: Date) => void;
+  }) =>
+    open ? (
+      <div data-testid="datetime-picker">
+        <button onClick={() => onDateChange(new Date("2025-07-01T10:00:00Z"))}>
+          pick-date
+        </button>
+        <button onClick={onClose}>close-picker</button>
+      </div>
+    ) : null,
 }));
 
 jest.mock("@/components/datetimePicker/locale", () => ({
@@ -165,6 +181,28 @@ const bookings = [
       dropoff_location: "Airport",
       via: null,
       pickup_time: "2025-06-02T12:00:00.000Z",
+    },
+  },
+  {
+    booking_id: 2,
+    additional_info: "",
+    time_created: "2025-06-02T12:00:00.000Z",
+    booking_status: "Pending",
+    department: { dep_name: "Math" },
+    trip: {
+      pickup_location: JSON.stringify({
+        short_name: "Library",
+        address: "Some Rd, Area, City, Region, UK",
+      }),
+      dropoff_location: JSON.stringify({
+        short_name: "Heathrow Airport",
+        address: "airport rd",
+      }),
+      via: JSON.stringify([
+        { short_name: "Stop A", address: "r1, a, b, c, City, UK" },
+        { short_name: "Heathrow Airport", address: "airport rd" },
+      ]),
+      pickup_time: "2025-06-03T12:00:00.000Z",
     },
   },
 ];
@@ -476,6 +514,236 @@ describe("Super-admin ExportPage", () => {
     expect(screen.getByLabelText("previous page")).toBeDisabled();
     expect(screen.getByLabelText("next page")).not.toBeDisabled();
     expect(screen.getByLabelText("last page")).not.toBeDisabled();
+  });
+
+  test("selecting a department enables export and handleDepartmentExport fires", async () => {
+    mockGetBookingsList();
+    mockEasyGetRequest();
+    (global.fetch as jest.Mock).mockResolvedValue({
+      status: 200,
+      blob: async () => new Blob(["csv"], { type: "text/csv" }),
+    });
+    const user = userEvent.setup();
+
+    render(<ExportPage />);
+    await waitFor(() =>
+      expect(screen.getByTestId("row-1")).toBeInTheDocument(),
+    );
+
+    const depSelect = screen.getByText("Select a department to export");
+    await user.click(depSelect);
+    const option = await screen.findByRole("option", {
+      name: /Computer Science/,
+    });
+    await user.click(option);
+
+    const exportBtn = screen.getByLabelText(
+      "Export all Computer Science bookings",
+    );
+    await user.click(exportBtn);
+
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalledWith(
+        "/api/export_bookings",
+        expect.objectContaining({ method: "POST" }),
+      );
+    });
+  });
+
+  test("handleCheckAll=true fetches ids and marks allChecked", async () => {
+    mockGetBookingsList();
+    mockEasyGetRequest();
+    (global.fetch as jest.Mock).mockResolvedValue({
+      status: 200,
+      json: async () => [1, 2, 3],
+    });
+    const user = userEvent.setup();
+
+    render(<ExportPage />);
+    await waitFor(() =>
+      expect(screen.getByTestId("row-1")).toBeInTheDocument(),
+    );
+
+    await user.click(screen.getByText("check-all-on"));
+
+    await waitFor(() =>
+      expect(screen.getByTestId("allChecked")).toHaveTextContent("true"),
+    );
+    expect(screen.getByTestId("selectedIds")).toHaveTextContent("1,2,3");
+  });
+
+  test("handleCheckAll=false clears selection", async () => {
+    mockGetBookingsList();
+    mockEasyGetRequest();
+    (global.fetch as jest.Mock).mockResolvedValue({
+      status: 200,
+      json: async () => [1, 2],
+    });
+    const user = userEvent.setup();
+
+    render(<ExportPage />);
+    await waitFor(() =>
+      expect(screen.getByTestId("row-1")).toBeInTheDocument(),
+    );
+
+    await user.click(screen.getByText("check-all-on"));
+    await waitFor(() =>
+      expect(screen.getByTestId("allChecked")).toHaveTextContent("true"),
+    );
+
+    await user.click(screen.getByText("check-all-off"));
+    expect(screen.getByTestId("allChecked")).toHaveTextContent("false");
+    expect(screen.getByTestId("selectedIds")).toHaveTextContent("");
+  });
+
+  test("handleSelectedExport sends selected booking ids", async () => {
+    mockGetBookingsList();
+    mockEasyGetRequest();
+    (global.fetch as jest.Mock).mockResolvedValue({
+      status: 200,
+      blob: async () => new Blob(["csv"], { type: "text/csv" }),
+    });
+    const user = userEvent.setup();
+
+    render(<ExportPage />);
+    await waitFor(() =>
+      expect(screen.getByTestId("row-1")).toBeInTheDocument(),
+    );
+
+    await user.click(screen.getByText("check-1"));
+    await user.click(screen.getByLabelText("Export selected bookings"));
+
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalledWith(
+        "/api/export_bookings",
+        expect.objectContaining({ method: "POST" }),
+      );
+    });
+  });
+
+  test("Clear-selected button in ready-to-export panel resets selection", async () => {
+    mockGetBookingsList();
+    mockEasyGetRequest();
+    const user = userEvent.setup();
+
+    render(<ExportPage />);
+    await waitFor(() =>
+      expect(screen.getByTestId("row-1")).toBeInTheDocument(),
+    );
+
+    await user.click(screen.getByText("check-1"));
+    const clearButtons = await screen.findAllByRole("button", {
+      name: "Clear",
+    });
+    // The second "Clear" button sits in the "Ready to export" panel
+    await user.click(clearButtons[clearButtons.length - 1]);
+
+    expect(screen.getByTestId("selectedIds")).toHaveTextContent("");
+  });
+
+  test("changing booking status select triggers refetch", async () => {
+    mockGetBookingsList();
+    mockEasyGetRequest();
+    const user = userEvent.setup();
+
+    render(<ExportPage />);
+    await waitFor(() =>
+      expect(screen.getByTestId("row-1")).toBeInTheDocument(),
+    );
+
+    (getBookingsList as jest.Mock).mockClear();
+
+    const statusSelect = screen.getByLabelText("Booking Status");
+    await user.click(statusSelect);
+    const approved = await screen.findByRole("option", { name: "Approved" });
+    await user.click(approved);
+
+    await waitFor(() => {
+      expect(getBookingsList).toHaveBeenCalled();
+    });
+  });
+
+  test("onViewDetails opens booking detail dialog with formatted locations", async () => {
+    mockGetBookingsList({ bookings, totalNum: 2 });
+    mockEasyGetRequest();
+    const user = userEvent.setup();
+
+    render(<ExportPage />);
+    await screen.findByTestId("row-1");
+    await screen.findByTestId("row-2");
+
+    await user.click(screen.getByText("view-2"));
+
+    expect(await screen.findByText("Booking Detail")).toBeInTheDocument();
+    expect(screen.getByText(/Library/)).toBeInTheDocument();
+    // Airport short-circuit paths
+    expect(screen.getAllByText(/Heathrow Airport/).length).toBeGreaterThan(0);
+  });
+
+  test("booking detail close button closes the dialog", async () => {
+    mockGetBookingsList();
+    mockEasyGetRequest();
+    const user = userEvent.setup();
+
+    render(<ExportPage />);
+    await waitFor(() =>
+      expect(screen.getByTestId("row-1")).toBeInTheDocument(),
+    );
+
+    await user.click(screen.getByText("view-1"));
+    expect(await screen.findByText("Booking Detail")).toBeInTheDocument();
+
+    const closeBtn = screen.getAllByRole("button", { name: "Close" })[0];
+    await user.click(closeBtn);
+
+    await waitFor(() =>
+      expect(screen.queryByText("Booking Detail")).not.toBeInTheDocument(),
+    );
+  });
+
+  test("date picker From sets date and shows banner on submit", async () => {
+    mockGetBookingsList();
+    mockEasyGetRequest();
+    const user = userEvent.setup();
+
+    render(<ExportPage />);
+    await waitFor(() =>
+      expect(screen.getByTestId("row-1")).toBeInTheDocument(),
+    );
+
+    await user.click(screen.getByLabelText("Pick Up Date From"));
+    expect(screen.getByTestId("datetime-picker")).toBeInTheDocument();
+    await user.click(screen.getByText("pick-date"));
+    await user.click(screen.getByText("close-picker"));
+
+    const form = screen.getByLabelText("From").closest("form")!;
+    fireEvent.submit(form);
+
+    await waitFor(() =>
+      expect(screen.getByText(/Showing Bookings from/)).toBeInTheDocument(),
+    );
+  });
+
+  test("date picker To sets date and shows up-to banner on submit", async () => {
+    mockGetBookingsList();
+    mockEasyGetRequest();
+    const user = userEvent.setup();
+
+    render(<ExportPage />);
+    await waitFor(() =>
+      expect(screen.getByTestId("row-1")).toBeInTheDocument(),
+    );
+
+    await user.click(screen.getByLabelText("Pick Up Date To"));
+    await user.click(screen.getByText("pick-date"));
+    await user.click(screen.getByText("close-picker"));
+
+    const form = screen.getByLabelText("From").closest("form")!;
+    fireEvent.submit(form);
+
+    await waitFor(() =>
+      expect(screen.getByText(/Showing Bookings up to/)).toBeInTheDocument(),
+    );
   });
 
   test("clicking last/first/next/prev pagination buttons all call page handler", async () => {
