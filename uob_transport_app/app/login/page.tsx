@@ -85,7 +85,7 @@ export default function Log_forgot() {
       return;
     }
 
-    const reg = await navigator.serviceWorker.register("/service_worker/sw.js");
+    const reg = await navigator.serviceWorker.register("/sw.js");
 
     if (!reg.active) {
       // AI generated due to problem with navigator.serviceWorker.ready status
