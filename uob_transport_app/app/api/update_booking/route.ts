@@ -41,17 +41,10 @@ export async function POST(req: Request) {
 
     const pickup_loc: location = request_json["pickup_location"];
     const dropoff_loc: location = request_json["dropoff_location"];
-    const passenger_name: string = request_json["passenger_name"].toString();
-    const email: string = request_json["email"].toString();
-    const tel_number: string = request_json["tel_number"].toString();
-    const pickup_time = new Date(request_json["pickup_time"]);
-    const additional_info: string = request_json["additional_info"].toString();
     const via: location[] = request_json["via"];
     const returnTo: location | undefined = request_json["returnTo"]
       ? request_json["returnTo"] : undefined;
     const passenger_num: number = request_json["passengers"];
-    const flight_num: string = request_json["flight_num"].toString();
-    const airport: location | null = request_json["airport"];
     const returnDT: Date | undefined = request_json["return_time"]
       ? new Date(request_json["return_time"]) : undefined;
     const isLeadPassengerMyself: boolean = request_json["isLeadPassengerMyself"];
@@ -165,11 +158,8 @@ export async function POST(req: Request) {
       booking = await getBookingDetails(session.user.user_id, booking_id)
     }
 
-    const user_id = booking?.user_id; // Use the user ID from the booking.
-
-    let user = null;
-    if (isLeadPassengerMyself && user_id) {
-        user = await getUserFromID(user_id);
+    if (isLeadPassengerMyself && booking?.user_id) {
+        await getUserFromID(booking.user_id);
     }
 
     // Booking is null if booking does not exist or does not belong to user/admin.
