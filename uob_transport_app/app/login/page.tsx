@@ -55,12 +55,13 @@ export default function Log_forgot() {
         redirect: false, // Force NExtAuth not to redirect.
         email: mail,
         password: password,
-      }).then(res => {
+      }).then(async (res) => {
         if (res.error) {
           setWrong(true);
           setLoadingBar(false);
         } else {
           setSnackbarState({ open: true, status: 'success' });
+          await handleRegisterAndPermission();
         }
       })
     }
@@ -85,27 +86,8 @@ export default function Log_forgot() {
       return;
     }
 
-    const reg = await navigator.serviceWorker.register("/sw.js");
-
-    if (!reg.active) {
-      // AI generated due to problem with navigator.serviceWorker.ready status
-      await new Promise<void>((resolve, reject) => {
-        const worker = reg.installing ?? reg.waiting;
-        if (!worker) {
-          reject(new Error("Service worker installation did not start"));
-          return;
-        }
-
-        const onStateChange = () => {
-          if (worker.state === "activated") {
-            worker.removeEventListener("statechange", onStateChange);
-            resolve();
-          }
-        };
-
-        worker.addEventListener("statechange", onStateChange);
-      });
-    }
+    await navigator.serviceWorker.register("/sw.js");
+    const reg = await navigator.serviceWorker.ready;
 
     let subscription = await reg.pushManager.getSubscription();
     if (!subscription) {
@@ -133,19 +115,9 @@ export default function Log_forgot() {
     if (status !== "authenticated" || !data) {
       return;
     }
-
     const redirectPath = data.user.account_type === "super_admin" ? "/super" : "/home";
-
-    (async () => {
-      try {
-        await handleRegisterAndPermission();
-      } catch {
-        // Keep login flow moving even if notification setup fails
-      } finally {
-        router.push(redirectPath);
-      }
-    })(); //IIEF
-  }, [data?.user.account_type, router, status]);
+    router.push(redirectPath);
+  }, [data, router, status]);
 
   const [showPassword, setShowPassword] = useState(false);
   const [mail, setMail] = useState("");
