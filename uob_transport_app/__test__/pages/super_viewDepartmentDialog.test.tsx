@@ -371,6 +371,25 @@ describe("Super-admin ViewDepartmentDialog", () => {
     expect(notifyUserCountChange).not.toHaveBeenCalled();
   });
 
+  test("deselecting the last-selected row keeps earlier selections", async () => {
+    const user = userEvent.setup();
+    renderDialog();
+
+    await waitFor(() =>
+      expect(screen.getByText("Alice Smith")).toBeInTheDocument(),
+    );
+
+    const aliceRow = screen.getByText("Alice Smith").closest("tr")!;
+    const bobRow = screen.getByText("Bob Myers").closest("tr")!;
+
+    await user.click(aliceRow);
+    await user.click(bobRow);
+    expect(screen.getByText("Selected 2 out of 2:")).toBeInTheDocument();
+
+    await user.click(bobRow);
+    expect(screen.getByText("Selected 1 out of 2:")).toBeInTheDocument();
+  });
+
   test("failed department name update shows server error message", async () => {
     const user = userEvent.setup();
     (updateDepartmentName as jest.Mock).mockResolvedValue({

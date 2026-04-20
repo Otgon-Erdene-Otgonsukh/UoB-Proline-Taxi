@@ -349,4 +349,109 @@ describe("Super-admin EditDialog (user edit)", () => {
       ).not.toBeInTheDocument(),
     );
   });
+
+  test("initialises with empty country code and phone when phone_number is blank", () => {
+    render(
+      <EditDialog
+        editData={{ ...baseUser, phone_number: "" }}
+        dialogOpen={true}
+        handleDialogClose={jest.fn()}
+        departmentList={departmentList}
+      />,
+    );
+
+    expect(screen.getByLabelText("Phone Number")).toHaveValue("");
+  });
+
+  test("changing role, user status and department updates form and saves", async () => {
+    const user = userEvent.setup();
+    const handleDialogClose = jest.fn();
+    (updateUserAsAdmin as jest.Mock).mockResolvedValue({ status: 200 });
+
+    render(
+      <EditDialog
+        editData={baseUser}
+        dialogOpen={true}
+        handleDialogClose={handleDialogClose}
+        departmentList={departmentList}
+      />,
+    );
+
+    const roleSelect = screen.getByRole("combobox", { name: /Role/i });
+    await user.click(roleSelect);
+    await user.click(await screen.findByRole("option", { name: "Finance Staff" }));
+
+    const statusSelect = screen.getByRole("combobox", {
+      name: /User Status/i,
+    });
+    await user.click(statusSelect);
+    await user.click(await screen.findByRole("option", { name: "Pending" }));
+
+    const deptInput = screen.getByLabelText("Departments");
+    await user.click(deptInput);
+    await user.clear(deptInput);
+    await user.type(deptInput, "Math");
+    const mathOption = await screen.findByRole("option", {
+      name: "Mathematics",
+    });
+    await user.click(mathOption);
+
+    await user.click(screen.getByRole("button", { name: /Save/i }));
+
+    await waitFor(() => {
+      expect(updateUserAsAdmin).toHaveBeenCalledWith(
+        expect.objectContaining({
+          role: "finance_staff",
+          user_status: 0,
+          department: expect.objectContaining({ dep_id: 2 }),
+        }),
+      );
+    });
+  });
+
+  test("changing country code updates phone prefix on save", async () => {
+    const user = userEvent.setup();
+    (updateUserAsAdmin as jest.Mock).mockResolvedValue({ status: 200 });
+
+    render(
+      <EditDialog
+        editData={baseUser}
+        dialogOpen={true}
+        handleDialogClose={jest.fn()}
+        departmentList={departmentList}
+      />,
+    );
+
+    const countrySelects = screen.getAllByRole("combobox");
+    await user.click(countrySelects[0]);
+    await user.click(await screen.findByRole("option", { name: /US\/CA/ }));
+
+    await user.click(screen.getByRole("button", { name: /Save/i }));
+
+    await waitFor(() => {
+      expect(updateUserAsAdmin).toHaveBeenCalledWith(
+        expect.objectContaining({ phone_number: "+1 7123456789" }),
+      );
+    });
+  });
+
+  test("pressing Escape triggers Dialog onClose with false", async () => {
+    const user = userEvent.setup();
+    const handleDialogClose = jest.fn();
+
+    render(
+      <EditDialog
+        editData={baseUser}
+        dialogOpen={true}
+        handleDialogClose={handleDialogClose}
+        departmentList={departmentList}
+      />,
+    );
+
+    await user.keyboard("{Escape}");
+
+    await waitFor(() => {
+      expect(handleDialogClose).toHaveBeenCalledWith(false);
+    });
+  });
 });
