@@ -18,6 +18,7 @@ model User {
   time_created DateTime    @default(now()) @db.Timestamp(6)
   role         String      @db.VarChar(255)
   user_status  Int         @default(0)
+  subscription String?
   department   department? @relation(fields: [dep_id], references: [dep_id], onUpdate: NoAction)
   booking      booking[]
 }

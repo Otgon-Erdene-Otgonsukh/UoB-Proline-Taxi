@@ -44,6 +44,8 @@ SES_FROM_EMAIL="SES_VERIFIED_EMAIL"
 NODE_ENV="DEVELOPMENT_OR_PRODUCTION"
 AUTH_URL="YOUR_DOMAIN"
 OSRM_SECRET="OSRM_KEY_FOR_ROUTING"
+NEXT_PUBLIC_VAPID_PUBLIC_KEY="YOUR_VAPID_PUBLIC_KEY"
+VAPID_PRIVATE_KEY="YOUR_VAPID_PRIVATE_KEY"
 
 # AWS SES user credentials (Only for development)
 AWS_ACCESS_KEY="YOUR_AWS_ACCESS_KEY"
@@ -97,6 +99,15 @@ npx auth secret
 ```
 
 You might need to copy and paste the variable from the `.env.local` file that is created by the command to your `.env` file.
+
+#### `NEXT_PUBLIC_VAPID_PUBLIC_KEY` and `VAPID_PRIVATE_KEY`
+These two environment variables are used for server authentication for PWA push notification where the private key is stored in the server and the public key is shared with the browser.
+
+These can be created by running the following command:
+```sh
+npx web-push generate-vapid-keys 
+```
+This will create a pair of keys in the terminal which can be copied to your local `.env` file.
 
 #### `OSRM_SECRET`
 

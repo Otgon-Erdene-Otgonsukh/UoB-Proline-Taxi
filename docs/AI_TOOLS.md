@@ -80,6 +80,9 @@ This document provides an overview of all AI tools utilized in the project, in a
 **AI Tool:** ImgUpscaler.AI </br>
 **Used from** 23rd February 2026
 
+**AI Tool:** ChatGPT 4.5 </br>
+**Used on:** 19th April 2026
+
 **Scope:**
  - Applying repetitive styling with agentic coding
  - Formatting markdown files to be more structured 
@@ -90,6 +93,7 @@ This document provides an overview of all AI tools utilized in the project, in a
  - Writing complex raw sql query
  - Proofreading and fixing spelling or grammar mistakes in docs/md files
  - Enhancing  the quality of certain public assets like images.
+ - Debugging PWA push notification implementation
 
 **Example Prompts:**
  - Apply the same styling logic to other divs in the MUI component.
@@ -99,6 +103,7 @@ This document provides an overview of all AI tools utilized in the project, in a
  - How to group bookings by department and sum and count their amount and prices?
  - Read through this file and identify and patch up the spelling or grammar mistakes.
  - Sharpen and enhance the following icons.
+ - The service worker is registered correctly but the subscription api call is not being called ?
 
 **Used in the following files:**
  - `jest.config.ts`
@@ -108,3 +113,4 @@ This document provides an overview of all AI tools utilized in the project, in a
  - `/app/api/super-data`
  - `/docs/handover/handover.md`
  - `/public`
+ - `/app/login/page.tsx`

@@ -7,6 +7,7 @@ import { render } from "@react-email/components";
 import { location } from "@/model/models";
 import { auth } from "@/auth";
 import { USER_ROLE } from "@/model/models";
+import { notificationHelper } from "@/utils/notificationSender";
 
 export async function POST(req: Request) {
   const body = await req.json();
@@ -131,6 +132,9 @@ export async function POST(req: Request) {
 
     // Send email
     await sesClient.send(input);
+
+    // Send notification to finance staffs
+    await notificationHelper("price_attach", booking_id, -1);
 
     return NextResponse.json(
       { message: "Price attached successfully" },

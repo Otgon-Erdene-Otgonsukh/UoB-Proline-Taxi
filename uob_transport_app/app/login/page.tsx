@@ -25,7 +25,21 @@ export default function Log_forgot() {
   const router = useRouter();
   const { data, status } = useSession();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Taken from next.js docs
+  const urlBase64ToUint8Array = (base64String: string) => {
+    const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+    const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+
+    for (let i = 0; i < rawData.length; i += 1) {
+      outputArray[i] = rawData.charCodeAt(i);
+    }
+
+    return outputArray;
+  };
+
+  const handleSubmit = (e: React.SubmitEvent) => {
     e.preventDefault();
     const isMailEmpty = mail.length == 0;
     const isPassEmpty = password.length == 0;
@@ -52,16 +66,86 @@ export default function Log_forgot() {
     }
   };
 
-  useEffect(() => {
-    if (!data) {
-      return
-    } 
-    if (data?.user.account_type === "super_admin") { // super admin gets redirected straight to super page
-      router.push("/super")
-    } else {
-      router.push("/home")
+  const handleRegisterAndPermission = async () => {
+    if (typeof window === "undefined" || !window.isSecureContext) {
+      return;
     }
-  }, [status]);
+
+    if (!("serviceWorker" in navigator) || !("Notification" in window)) {
+      return;
+    }
+
+    const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+    if (!vapidPublicKey) {
+      return;
+    }
+
+    const permission = await Notification.requestPermission();
+    if (permission !== "granted") {
+      return;
+    }
+
+    const reg = await navigator.serviceWorker.register("/service_worker/sw.js");
+
+    if (!reg.active) {
+      // AI generated due to problem with navigator.serviceWorker.ready status
+      await new Promise<void>((resolve, reject) => {
+        const worker = reg.installing ?? reg.waiting;
+        if (!worker) {
+          reject(new Error("Service worker installation did not start"));
+          return;
+        }
+
+        const onStateChange = () => {
+          if (worker.state === "activated") {
+            worker.removeEventListener("statechange", onStateChange);
+            resolve();
+          }
+        };
+
+        worker.addEventListener("statechange", onStateChange);
+      });
+    }
+
+    let subscription = await reg.pushManager.getSubscription();
+    if (!subscription) {
+      subscription = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(vapidPublicKey),
+      });
+    }
+
+    const response = await fetch("/api/create_subscription", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      keepalive: true,
+      body: JSON.stringify({ subscription }),
+    });
+
+    if (!response.ok) {
+      console.error("Subscription failed");
+    }
+  };
+
+  useEffect(() => {
+    if (status !== "authenticated" || !data) {
+      return;
+    }
+
+    const redirectPath = data.user.account_type === "super_admin" ? "/super" : "/home";
+
+    (async () => {
+      try {
+        await handleRegisterAndPermission();
+      } catch {
+        // Keep login flow moving even if notification setup fails
+      } finally {
+        router.push(redirectPath);
+      }
+    })(); //IIEF
+  }, [data?.user.account_type, router, status]);
 
   const [showPassword, setShowPassword] = useState(false);
   const [mail, setMail] = useState("");

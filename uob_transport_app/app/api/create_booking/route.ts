@@ -9,6 +9,7 @@ import { SendEmailCommand } from "@aws-sdk/client-sesv2";
 import { location } from "@/model/models";
 import { commonLocations } from "@/model/models";
 import { getUserFromID } from "@/backend/access/user_access";
+import { notificationHelper } from "@/utils/notificationSender";
 
 const prisma = new PrismaClient();
 
@@ -235,6 +236,9 @@ export async function POST(request: Request) {
 
       // Send Email
       await sesClient.send(input);
+
+      // Show push notification
+      await notificationHelper("booking_creation", undefined, user_id);
     }
 
     return NextResponse.json({ status: 200 });
