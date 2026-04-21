@@ -43,11 +43,12 @@ jobs:
       working-directory: uob_transport_app
       env:
         DATABASE_URL: ${{secrets.DATABASE_URL}}
+        NEXT_PUBLIC_VAPID_PUBLIC_KEY: ${{secrets.NEXT_PUBLIC_VAPID_PUBLIC_KEY}}
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         IMAGE_TAG: ${{ github.sha }}
       run: |
         # Build using docker compose with build args
-        docker compose build --build-arg DATABASE_URL="$DATABASE_URL"
+        docker compose build --build-arg DATABASE_URL="$DATABASE_URL" --build-arg NEXT_PUBLIC_VAPID_PUBLIC_KEY="$NEXT_PUBLIC_VAPID_PUBLIC_KEY"
         # Tag the image for ECR
         docker tag uob-sustainable-transport:latest $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         # Push to ECR

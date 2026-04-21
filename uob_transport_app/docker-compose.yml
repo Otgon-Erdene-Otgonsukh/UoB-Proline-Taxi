@@ -4,6 +4,7 @@ services:
       context: .
       args:
         DATABASE_URL: ${DATABASE_URL}
+        NEXT_PUBLIC_VAPID_PUBLIC_KEY: ${NEXT_PUBLIC_VAPID_PUBLIC_KEY}
     image: uob-sustainable-transport
     ports:
       - "3000:3000"
