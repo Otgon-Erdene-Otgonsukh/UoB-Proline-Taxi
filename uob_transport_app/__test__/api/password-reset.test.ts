@@ -33,6 +33,11 @@ describe("Password reset api endpoint branch tests", () => {
       password: "d".repeat(65),
     };
 
+    const empty = {
+      uuid: "123121333",
+      password: "",
+    };
+
     const req = new NextRequest("http://localhost:3000/api/reset-password", {
       method: "POST",
       body: JSON.stringify(short),
@@ -50,6 +55,15 @@ describe("Password reset api endpoint branch tests", () => {
     const data2 = await res2.json();
     expect(res2.status).toBe(400);
     expect(data2.message).toBe("Password too long.");
+
+    const req3 = new NextRequest("http://localhost:3000/api/reset-password", {
+      method: "POST",
+      body: JSON.stringify(empty),
+    });
+    const res3 = await POST(req3);
+    const data3 = await res3.json();
+    expect(res3.status).toBe(400);
+    expect(data3.message).toBe("Password is required.");
   });
 
   test("Valid expiry timed request is processed correctly", async () => {

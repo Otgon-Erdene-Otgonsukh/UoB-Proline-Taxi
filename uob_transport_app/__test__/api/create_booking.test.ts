@@ -127,11 +127,11 @@ describe("create booking api route tests", () => {
   //   );
   // });
 
+
   test("when no session exists, the request is denied", async () => {
     (auth as jest.Mock).mockResolvedValue(null);
     prismaMock.booking.create.mockResolvedValue(undefined);
     const jsonBody = {
-      user_id: 3,
       pickup_location: "Test",
       dropoff_location: "test",
       pickup_time: "",
@@ -169,7 +169,7 @@ describe("create booking api route tests", () => {
       ],
     });
 
-    const req = new Request("http://test", {
+    const req = new Request("http://localhost:3000/api/create_booking", {
       method: "POST",
       body: JSON.stringify({
         pickup_location: { address: "", short_name: "", lat: 1, lng: 1 },
@@ -213,7 +213,7 @@ describe("create booking api route tests", () => {
       lng: 1,
     };
 
-    const req = new Request("http://test", {
+    const req = new Request("http://localhost:3000/api/create_booking", {
       method: "POST",
       body: JSON.stringify({
         pickup_location: loc,
@@ -246,7 +246,7 @@ describe("create booking api route tests", () => {
       lng: 1,
     };
 
-    const req = new Request("http://test", {
+    const req = new Request("http://localhost:3000/api/create_booking", {
       method: "POST",
       body: JSON.stringify({
         pickup_location: loc,
@@ -284,7 +284,7 @@ describe("create booking api route tests", () => {
       lng: 1,
     };
 
-    const req = new Request("http://test", {
+    const req = new Request("http://localhost:3000/api/create_booking", {
       method: "POST",
       body: JSON.stringify({
         pickup_location: loc,
@@ -307,6 +307,73 @@ describe("create booking api route tests", () => {
     expect(res.status).toBe(400);
   });
 
+  const loc = {
+      address: "random",
+      short_name: "random",
+      lat: 1,
+      lng: 1,
+    };
+
+  const bookingData = {
+    pickup_location: loc,
+    dropoff_location: { ...loc, address: "B" },
+    pickup_time: new Date().toISOString(),
+    passenger_name: "A",
+    email: "valid@example.com",
+    tel_number: "+44 7700 900900",
+    additional_info: "",
+    via: [],
+    passengers: 1,
+    airport: null,
+    flight_num: "",
+    dep_id: 1,
+  };
+
+   test("Validates input data", async () => {
+    (auth as jest.Mock).mockResolvedValue({ user: { user_id: 1 } });
+
+    (global.fetch as jest.Mock).mockResolvedValue({
+      ok: true,
+      json: async () => [],
+    });
+
+    // Long passenger name
+    const req = new Request("http://localhost:3000/api/create_booking", {
+      method: "POST",
+      body: JSON.stringify({...bookingData, passenger_name: "A".repeat(101)}),
+    });
+
+    const res = await POST(req);
+    expect(res.status).toBe(400);
+
+    // Invalid email
+    const req2 = new Request("http://localhost:3000/api/create_booking", {
+      method: "POST",
+      body: JSON.stringify({...bookingData, email: "'invalid'@email.com"}),
+    });
+
+    const res2 = await POST(req2);
+    expect(res2.status).toBe(400);
+
+    // Additional info too long
+    const req3 = new Request("http://localhost:3000/api/create_booking", {
+      method: "POST",
+      body: JSON.stringify({...bookingData, additional_info: "A".repeat(501)}),
+    });
+
+    const res3 = await POST(req3);
+    expect(res3.status).toBe(400);
+
+    // flight number too long
+    const req4 = new Request("http://localhost:3000/api/create_booking", {
+      method: "POST",
+      body: JSON.stringify({...bookingData, flight_num: "A".repeat(21)}),
+    });
+
+    const res4 = await POST(req4);
+    expect(res4.status).toBe(400);
+  });
+
   test("returns 500 when fetch fails", async () => {
     (auth as jest.Mock).mockResolvedValue({ user: { user_id: 1 } });
 
@@ -322,7 +389,7 @@ describe("create booking api route tests", () => {
       lng: 1,
     };
 
-    const req = new Request("http://test", {
+    const req = new Request("http://localhost:3000/api/create_booking", {
       method: "POST",
       body: JSON.stringify({
         pickup_location: loc,
@@ -374,7 +441,7 @@ describe("create booking api route tests", () => {
       lng: 1,
     };
 
-    const req = new Request("http://test", {
+    const req = new Request("http://localhost:3000/api/create_booking", {
       method: "POST",
       body: JSON.stringify({
         pickup_location: loc,
@@ -427,7 +494,7 @@ describe("create booking api route tests", () => {
       lng: 1,
     };
 
-    const req = new Request("http://test", {
+    const req = new Request("http://localhost:3000/api/create_booking", {
       method: "POST",
       body: JSON.stringify({
         pickup_location: loc,
