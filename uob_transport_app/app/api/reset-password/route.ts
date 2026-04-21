@@ -10,7 +10,14 @@ async function resetPasswordHandler(request: NextRequest) {
   const newPassword = requestJson['password']
 
   // Server side validaion length check.
-  if (newPassword.length < 5) {
+  if (newPassword.length === 0 || newPassword === null || newPassword === undefined) {
+    return new Response(JSON.stringify({
+      message: 'Password is required.'
+    }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  } else if (newPassword.length < 5) {
     return new Response(JSON.stringify({
       message: 'Password too short.'
     }), {
