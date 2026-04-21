@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
 import {
   Box,
   Button,
@@ -39,7 +39,7 @@ export default function Log_forgot() {
     return outputArray;
   };
 
-  const handleSubmit = (e: React.SubmitEvent) => {
+  const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
     const isMailEmpty = mail.length == 0;
     const isPassEmpty = password.length == 0;
@@ -51,19 +51,29 @@ export default function Log_forgot() {
     if (!isMailEmpty && !isPassEmpty) {
       setLoadingBar(true);
       // Use NextAuth for authentication, stores cookie automatically.
-      signIn('credentials', {
+      const res = await signIn('credentials', {
         redirect: false, // Force NExtAuth not to redirect.
         email: mail,
         password: password,
-      }).then(async (res) => {
-        if (res.error) {
-          setWrong(true);
-          setLoadingBar(false);
-        } else {
-          setSnackbarState({ open: true, status: 'success' });
-          await handleRegisterAndPermission();
-        }
-      })
+      });
+
+      if (res.error) {
+        setWrong(true);
+        setLoadingBar(false);
+        return;
+      }
+
+      setSnackbarState({ open: true, status: "success" });
+
+      try {
+        await handleRegisterAndPermission(); // wait until it returns and redirect
+      } catch (error) {
+        console.log("PWA Registration failed")
+
+      } finally { // redirect even if register and permission failed to avoid stalling
+        const session = await getSession(); // get the latest session
+        router.push(session?.user.account_type === "super_admin" ? "/super" : "/home");
+      }
     }
   };
 
@@ -110,14 +120,6 @@ export default function Log_forgot() {
       console.error("Subscription failed");
     }
   };
-
-  useEffect(() => {
-    if (status !== "authenticated" || !data) {
-      return;
-    }
-    const redirectPath = data.user.account_type === "super_admin" ? "/super" : "/home";
-    router.push(redirectPath);
-  }, [data, router, status]);
 
   const [showPassword, setShowPassword] = useState(false);
   const [mail, setMail] = useState("");
