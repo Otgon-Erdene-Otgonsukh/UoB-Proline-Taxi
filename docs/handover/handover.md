@@ -142,6 +142,16 @@ docker compose up
 
 This will build the image and run the container and you can access the application in the browser on `http://localhost:3000`.
 
+## OSRM Service and Nominatim
+In our testing, the public services from Project OSRM (http://router.project-osrm.org) were slow, often taking more than 10 seconds to return a route even for a non-complex journey. It's recommended to set up your own, which can be done in a docker container:
+
+Following the Quick Start guide from https://github.com/Project-OSRM/osrm-backend should get you up to speed on how to spin up your own Docker container. However, instead of using Europe or UK OSRM extracts, we use the 
+[Great Britain](https://download.geofabrik.de/europe/great-britain.html) from Geofabrik as it nautrally filters out journeys internationally and to Northern Ireland and Ireland.
+
+In order to limit the access to the server (which also proxies it to clients): You could either lock it down with a token in the URI parameter behind a WAF or another Reverse Proxy, or limit the allowed IPs in the server's firewall rules to the requesting server, if that address will remain static forever.
+
+For Nominatim, we found that the free service that's hard-coded into the platform is sufficient. The Terms of using it require any production website to include a header or User Agent, which is why we have added this as "UoB Sustainable Transport" in the code. We'd recommend changing this to reflect your company's details. If the public interface is not suitable, you could also download the Nominatim database and run it on a server, however, this has a storage requirement of 70GB+ and does not provide the option to limit the coverage to specific regions.
+
 ## Project Structure and Architecture
 
 The following is a architectural diagram of the project that includes the key framework and external systems that comprises the application and their relations.
