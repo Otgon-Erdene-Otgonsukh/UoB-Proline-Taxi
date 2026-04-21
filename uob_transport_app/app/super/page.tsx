@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react";
 import { UserRecord } from "@/model/models";
 import { USER_ROLE } from "@/model/models";
 import SuperDashboard from "@/components/SuperDashboard";
+import Profile from "../profile/page";
 import {
   Box,
   Typography,
@@ -19,11 +20,12 @@ import {
   Button,
   IconButton,
   Tooltip,
+  Avatar
 } from "@mui/material";
 import PeopleIcon from "@mui/icons-material/People";
 import MenuIcon from "@mui/icons-material/Menu";
 import LocalTaxiIcon from "@mui/icons-material/LocalTaxi";
-import SettingsIcon from "@mui/icons-material/Settings";
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import GroupsIcon from "@mui/icons-material/Groups";
@@ -87,7 +89,7 @@ const Page = () => {
       setIsDrawerOpen(open);
     };
 
-  const [tabValue, setTabValue] = useState(0);
+  const [tabValue, setTabValue] = useState(1);
 
   if (isForbidden) {
     return <ForbiddenPage />;
@@ -112,7 +114,7 @@ const Page = () => {
         </div>
         <Tooltip title="Log Out">
           <IconButton onClick={() => setSignOutDialogOpen(true)}>
-            <LogoutIcon sx={{ color: "red", fontSize: 32 }} />
+            <LogoutIcon sx={{ color: "white", fontSize: 32 }} />
           </IconButton>
         </Tooltip>
       </header>
@@ -138,17 +140,25 @@ const Page = () => {
             </Typography>
             <Divider />
             <List>
+              <ListItem disablePadding sx={{":hover": { borderLeft: tabValue !== 0 ? "5px solid #2c2c2c" : ""}, transition: "all ease 0.2s", color: tabValue === 0 ? "white" : "", bgcolor: tabValue === 0 ? "#2c2c2c" : ""}}>
+                <ListItemButton onClick={() => setTabValue(0)}>
+                  <Avatar sx={{ width: 24, height: 24, fontSize: '0.8rem', bgcolor: tabValue !== 0 ? '#2C2C2C' : "white", color: tabValue === 0 ? "#2c2c2c" : ""}}>{data?.user.name.charAt(0).toUpperCase()}</Avatar>
+                  <ListItemText primary="Profile" sx={{ ml: 4 }}/>
+                </ListItemButton>
+                { tabValue === 0 && <NavigateNextIcon/> }
+              </ListItem>
               {[
-                { text: 'Users', icon: <PeopleIcon />, index: 0 },
-                { text: 'Departments', icon: <GroupsIcon />, index: 1 },
-                { text: 'Bookings', icon: <LocalTaxiIcon />, index: 2 },
-                { text: 'Dashboard', icon: <DashboardIcon />, index: 3},
-                { text: 'Export Bookings', icon: <FileDownloadIcon />, index: 4 },
+                { text: 'Users', icon: <PeopleIcon />, index: 1 },
+                { text: 'Departments', icon: <GroupsIcon />, index: 2 },
+                { text: 'Bookings', icon: <LocalTaxiIcon />, index: 3 },
+                { text: 'Dashboard', icon: <DashboardIcon />, index: 4},
+                { text: 'Export Bookings', icon: <FileDownloadIcon />, index: 5 },
               ].map((item) => (
-                <ListItem key={item.text} disablePadding>
+                <ListItem key={item.text} disablePadding sx={{ bgcolor: tabValue === item.index ? "#2c2c2c" : "", color: tabValue === item.index ? "white" : "", ":hover": { borderLeft: tabValue !== item.index ? "5px solid #2c2c2c" : "" }, transition: "all ease 0.2s"}}>
                   <ListItemButton onClick={() => setTabValue(item.index)}>
-                    <ListItemIcon>{item.icon}</ListItemIcon>
+                    <ListItemIcon sx={{ color: tabValue === item.index ? "white" : "" }}>{item.icon}</ListItemIcon>
                     <ListItemText primary={item.text} />
+                    { tabValue === item.index && <NavigateNextIcon/>}
                   </ListItemButton>
                 </ListItem>
               ))}
@@ -157,24 +167,25 @@ const Page = () => {
         </Drawer>
 
         <div className="w-full">
-          {tabValue === 0 && (
+          {tabValue === 0 && <Profile/>}
+          {tabValue === 1 && (
             <div>
               <UserManagePage departments={departments} />
             </div>
           )}
 
-          {tabValue === 1 && (
+          {tabValue === 2 && (
             <div>
               <DepartmentManagePage />
             </div>
           )}
-          {tabValue === 2 && (
+          {tabValue === 3 && (
             <div>
               <BookingManagePage />
             </div>
           )}
-          {tabValue === 3 && <SuperDashboard />}
-          {tabValue === 4 && <ExportPage />}
+          {tabValue === 4 && <SuperDashboard />}
+          {tabValue === 5 && <ExportPage />}
         </div>
       </div>
 
