@@ -146,7 +146,7 @@ This will build the image and run the container and you can access the applicati
 In our testing, the public services from Project OSRM (http://router.project-osrm.org) were slow, often taking more than 10 seconds to return a route even for a non-complex journey. It's recommended to set up your own, which can be done in a docker container:
 
 Following the Quick Start guide from https://github.com/Project-OSRM/osrm-backend should get you up to speed on how to spin up your own Docker container. However, instead of using Europe or UK OSRM extracts, we use the 
-[Great Britain](https://download.geofabrik.de/europe/great-britain.html) from Geofabrik as it nautrally filters out journeys internationally and to Northern Ireland and Ireland.
+[Great Britain](https://download.geofabrik.de/europe/great-britain.html) from Geofabrik as it naturally filters out journeys internationally and to Northern Ireland and Ireland.
 
 In order to limit the access to the server (which also proxies it to clients): You could either lock it down with a token in the URI parameter behind a WAF or another Reverse Proxy, or limit the allowed IPs in the server's firewall rules to the requesting server, if that address will remain static forever.
 
