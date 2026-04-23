@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react";
 import { Button, TableHead } from "@mui/material";
 import CancelIcon from "@mui/icons-material/Cancel";
 import SummarizeIcon from "@mui/icons-material/Summarize";
+import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import Box from "@mui/material/Box";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -131,9 +132,22 @@ const Page = () => {
     message: "",
   });
 
+  const [notificationSnackbarState, setNotificationSnackbarState] = useState({
+    open: false,
+    status: "info",
+    message: "",
+  });
+
   const handleCloseSnackbarState = () => {
     setSnackbarState({
       ...snackbarState,
+      open: false,
+    });
+  };
+
+  const handleCloseNotificationSnackbarState = () => {
+    setNotificationSnackbarState({
+      ...notificationSnackbarState,
       open: false,
     });
   };
@@ -207,6 +221,115 @@ const Page = () => {
     _getBookingListData(0, paginationMeta.pageSize, true);
   };
 
+   // Taken from next.js docs
+  const urlBase64ToUint8Array = (base64String: string) => {
+    const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+    const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+
+    for (let i = 0; i < rawData.length; i += 1) {
+      outputArray[i] = rawData.charCodeAt(i);
+    }
+
+    return outputArray;
+  };
+
+  const handleEnableNotifications = async () => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const isStandaloneMode =
+      window.matchMedia("(display-mode: standalone)").matches ||
+      Boolean((window.navigator as Navigator & { standalone?: boolean }).standalone); // IOS specific check
+  
+    if (!window.isSecureContext) {
+      return;
+    }
+  
+    if (!isStandaloneMode) {
+      setNotificationSnackbarState({
+        open: true,
+        status: "warning",
+        message: "Add this app to your home screen to enable notifications.",
+      });
+      return;
+    }
+  
+    if (!("Notification" in window)) {
+      setNotificationSnackbarState({
+        open: true,
+        status: "error",
+        message: "Notifications are not supported on this device/browser.",
+      });
+      return;
+    }
+  
+    const permission = await Notification.requestPermission();
+  
+    if (permission !== "granted") {
+      setNotificationSnackbarState({
+        open: true,
+        status: "warning",
+        message: "Notification permission was denied.",
+      });
+      return;
+    }
+
+    setNotificationSnackbarState({
+      open: true,
+      status: "success",
+      message: "Notification permission granted. Enabling push notifications...",
+    });
+  
+    const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+    if (!vapidPublicKey) {
+      setNotificationSnackbarState({
+        open: true,
+        status: "error",
+        message: "Notication enable failed. Please try again.",
+      });
+      return;
+    }
+  
+    await navigator.serviceWorker.register("/sw.js");
+    const reg = await navigator.serviceWorker.ready;
+  
+    let subscription = await reg.pushManager.getSubscription();
+    if (!subscription) {
+      subscription = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(vapidPublicKey),
+      });
+    }
+  
+    const response = await fetch("/api/create_subscription", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      keepalive: true,
+      body: JSON.stringify({ subscription }),
+    });
+  
+    if (!response.ok) {
+      console.error("Subscription failed");
+      setNotificationSnackbarState({
+        open: true,
+        status: "error",
+        message: "Notication enable failed. Please try again.",
+      });
+      return;
+    }
+
+    setNotificationSnackbarState({
+      open: true,
+      status: "success",
+      message: "Notifications enabled successfully.",
+    });
+  };
+
   const _getBookingListData = (
     page: number,
     pageSize: number,
@@ -272,9 +395,29 @@ const Page = () => {
         <p className="text-gray-600 text-lg font-normal">
           To Your Booking Space
         </p>
+        {Notification.permission !== "granted" && 
+          <Button sx={{
+             textTransform: "none",
+              bgcolor: "white",
+              border: "2px solid #2c2c2c",
+              borderRadius: 2,
+              color: "#2c2c2c",
+              height: { xs: 35, md: "100%"},
+              ":hover": {
+                scale: 1.02
+              },
+              transition: "all ease 0.2s"
+            }}
+            onClick={handleEnableNotifications}
+            >
+              <NotificationsNoneIcon sx={{ fontSize: 22, mr: 0.5 }}/>
+              Enable Notifications
+          </Button>
+        }
+        
       </motion.div>
       {data?.user.account_type === "finance_staff" ? (
-        <div className="flex md:flex-row flex-col mt-7 gap-10 text-sm max-w-6xl">
+        <div className="flex md:flex-row flex-col mt-5 gap-10 text-sm max-w-6xl">
           <motion.div
             className="bg-white flex flex-col items-center rounded-lg overflow-hidden px-4 text-gray-800 border-l-6 border-l-orange-500 drop-shadow-md/20 flex-1 cursor-pointer"
             initial={{ opacity: 0, y: 6, scale: 0.9 }}
@@ -358,7 +501,7 @@ const Page = () => {
           </motion.div>
         </div>
       ) : (
-        <div className="flex md:flex-row flex-col mt-7 gap-10 max-w-6xl">
+        <div className="flex md:flex-row flex-col mt-5 gap-10 max-w-6xl">
           <motion.div
             className="bg-white flex items-center rounded-lg overflow-hidden px-4 text-gray-800 border-l-6 border-l-yellow-500 drop-shadow-md/20"
             initial={{ opacity: 0, y: 6, scale: 0.9 }}
@@ -823,6 +966,21 @@ const Page = () => {
           sx={{ width: "100%" }}
         >
           {snackbarState.message}
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        autoHideDuration={3000}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        open={notificationSnackbarState.open}
+        onClose={handleCloseNotificationSnackbarState}
+      >
+        <Alert
+          onClose={handleCloseNotificationSnackbarState}
+          severity={notificationSnackbarState.status === "success" ? "success" : "error"}
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {notificationSnackbarState.message}
         </Alert>
       </Snackbar>
     </div>

@@ -451,7 +451,7 @@ describe("Super-admin ExportPage", () => {
 
     await user.click(screen.getByText("open-snackbar"));
     expect(
-      await screen.findByText("Price has been successfully attached."),
+      await screen.findByText("Price has been successfully attached and an email sent to the finance staffs."),
     ).toBeInTheDocument();
   });
 
