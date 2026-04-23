@@ -67,11 +67,11 @@ export async function POST(request: Request) {
         );
       }
 
-      let isValidCommonLocation = true;
+      let isValidCommonLocation = false;
 
       // Check that, if it's a commonLocation, that the short name and lat/lon and address match expected values.
       if (loc.short_name in commonLocations) {
-        isValidCommonLocation
+        isValidCommonLocation = true;
         if (commonLocations[loc.short_name].address !== loc.address
           || commonLocations[loc.short_name].lat !== loc.lat
           || commonLocations[loc.short_name].lng !== loc.lng
