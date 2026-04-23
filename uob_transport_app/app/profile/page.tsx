@@ -359,16 +359,8 @@ export default function Profile() {
 
                 {nameEdit && (
                   <Button
-                    fullWidth
-                    sx={{
-                      py: 2.5,
-                      bgcolor: "#2c2c2c",
-                      color: "white",
-                      borderRadius: 2,
-                      "&:hover": { bgcolor: "#414040", transform: "scale(1.01)" },
-                      transition: "all 0.2s",
-                      fontSize: "0.875rem",
-                    }}
+                    data-testid="name-edit-button"
+                    sx={{ minWidth: "auto", padding: "4px", color: "gray" }}
                     onClick={() => {
                       setEditData({
                         ...editData,
