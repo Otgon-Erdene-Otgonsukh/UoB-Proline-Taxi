@@ -29,3 +29,25 @@ Log-out and log-in to the finance staff account with the details provided above
 
 **Task 5:**
 Find the email and phone number of Proline taxi
+
+## Scenario 2:
+
+**Task 1:**
+Log-in to the normal user account with the details provided
+
+**Task 2:**
+You are arriving back in Bristol from a trip to Edinburgh university. Create a new booking from Bristol airport to the tropical paradise of Turbo Island. You and your passengers are very hungry so on your journey you wish to stop off via a food spot of your choosing. This booking is for yourself (The logged in user) and 2 other travellers all with lots of luggage.
+
+* Flight number: EZ1214
+* ETA: 24/04/2026 10:15
+
+**Task 3:**
+Log-out and log-in to the finance staff account with the details provided
+
+**Task 4:**
+Find, view, then reject the booking going from Victoria rooms at 19/04/2026, 12:40:00
+
+**Task 5:**
+You have got a new phone and wish to update your phone number, find and update your phone number to:
+* Mobile number: 07700 900 456
+
