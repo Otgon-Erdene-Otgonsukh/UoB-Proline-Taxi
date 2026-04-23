@@ -67,18 +67,19 @@ export async function POST(request: Request) {
         );
       }
 
+      let isValidCommonLocation = true;
+
       // Check that, if it's a commonLocation, that the short name and lat/lon and address match expected values.
       if (loc.short_name in commonLocations) {
+        isValidCommonLocation
         if (commonLocations[loc.short_name].address !== loc.address
-          || commonLocations[loc.short_name].lat - loc.lat > 0.0005 || commonLocations[loc.short_name].lat - loc.lat < -0.0005
-          || commonLocations[loc.short_name].lng - loc.lng > 0.0005 || commonLocations[loc.short_name].lng - loc.lng < -0.0005
+          || commonLocations[loc.short_name].lat !== loc.lat
+          || commonLocations[loc.short_name].lng !== loc.lng
         ) {
-          return NextResponse.json(
-            { error: "Address / latitude and longitude, or short name / address mismatch." },
-            { status: 400 },
-          );
+          isValidCommonLocation = false;
         }
-      } else {
+      }
+      if (!isValidCommonLocation) {
         // If it's a nominatim address, check by sending the requests again.
         // adapted from booking page client.
         const headers = {
