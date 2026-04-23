@@ -210,6 +210,79 @@ export default function Profile() {
     }
   };
 
+  // Taken from next.js docs
+  const urlBase64ToUint8Array = (base64String: string) => {
+    const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+    const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+
+    for (let i = 0; i < rawData.length; i += 1) {
+      outputArray[i] = rawData.charCodeAt(i);
+    }
+
+    return outputArray;
+  };
+
+  const handleEnableNotifications = async () => {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  if (!window.isSecureContext) {
+    alert("Notifications require a secure context (HTTPS)");
+    return;
+  }
+
+  if (!window.matchMedia("(display-mode: standalone)").matches) {
+    alert("Please add this app to your home screen to enable notifications.");
+    return;
+  }
+
+  if (!("Notification" in window)) {
+    alert("Notifications not supported");
+    return;
+  }
+
+  const permission = await Notification.requestPermission();
+
+  console.log(Notification.permission);
+
+  if (permission !== "granted") {
+    alert("Permission denied");
+    return;
+  }
+
+  const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+  if (!vapidPublicKey) {
+    return;
+  }
+
+  await navigator.serviceWorker.register("/sw.js");
+  const reg = await navigator.serviceWorker.ready;
+
+  let subscription = await reg.pushManager.getSubscription();
+  if (!subscription) {
+    subscription = await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array(vapidPublicKey),
+    });
+  }
+
+  const response = await fetch("/api/create_subscription", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    keepalive: true,
+    body: JSON.stringify({ subscription }),
+  });
+
+  if (!response.ok) {
+    console.error("Subscription failed");
+  }
+};
+
   return (
     <div className="min-h-screen flex justify-center items-center flex-col p-6 mt-6">
       <motion.div
@@ -286,8 +359,16 @@ export default function Profile() {
 
                 {nameEdit && (
                   <Button
-                    data-testid="name-edit-button"
-                    sx={{ minWidth: "auto", padding: "4px", color: "gray" }}
+                    fullWidth
+                    sx={{
+                      py: 2.5,
+                      bgcolor: "#2c2c2c",
+                      color: "white",
+                      borderRadius: 2,
+                      "&:hover": { bgcolor: "#414040", transform: "scale(1.01)" },
+                      transition: "all 0.2s",
+                      fontSize: "0.875rem",
+                    }}
                     onClick={() => {
                       setEditData({
                         ...editData,
@@ -418,6 +499,9 @@ export default function Profile() {
                 )}
               </div>
             )}
+            <Button onClick={handleEnableNotifications}>
+              Enable Notifications
+            </Button>
           </div>
         </motion.div>
 
