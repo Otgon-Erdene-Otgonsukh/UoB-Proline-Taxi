@@ -51,3 +51,23 @@ Find, view, then reject the booking going from Victoria rooms at 19/04/2026, 12:
 You have got a new phone and wish to update your phone number, find and update your phone number to:
 * Mobile number: 07700 900 456
 
+## Scenario 3:
+
+**Task 1:**
+Log-in to the normal user account with the details provided
+
+**Task 2:**
+An academic, Jhon Doe, and 2 other passengers are requesting for you to book transport for them from Bristol temple meads to the university, on 26/04/2026 at 10:00. Create this booking 
+
+**Passenger details**
+* Department: Education
+* Mobile number: 07700 900 456
+* email: jhon.doe@example.net
+
+**Task 3:**
+Log-out and log-in to the finance staff account with the details provided
+
+**Task 4:** Find, view, then approve the booking going from the Victoria Rooms to Cherry Orchards with passenger “Soggy Waffles” 
+
+**Task 5:**
+View all bookings for approval which are now overdue
