@@ -819,7 +819,7 @@ export const BookingManagePage = () => {
             severity="success"
             variant="filled"
             >
-            Price has been successfully attached.
+            Price has been successfully attached and an email sent to the finance staffs.
           </Alert>
     </Snackbar>
 

@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react";
 import { Button, TableHead } from "@mui/material";
 import CancelIcon from "@mui/icons-material/Cancel";
 import SummarizeIcon from "@mui/icons-material/Summarize";
+import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import Box from "@mui/material/Box";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -401,10 +402,15 @@ const Page = () => {
               border: "2px solid #2c2c2c",
               borderRadius: 2,
               color: "#2c2c2c",
-              height: { xs: 35, md: "100%"}
+              height: { xs: 35, md: "100%"},
+              ":hover": {
+                scale: 1.02
+              },
+              transition: "all ease 0.2s"
             }}
             onClick={handleEnableNotifications}
             >
+              <NotificationsNoneIcon sx={{ fontSize: 22, mr: 0.5 }}/>
               Enable Notifications
           </Button>
         }

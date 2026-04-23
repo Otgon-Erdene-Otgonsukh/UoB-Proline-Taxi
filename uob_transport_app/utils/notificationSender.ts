@@ -100,8 +100,12 @@ export async function notificationHelper(
       // Send the price notification to all the finance staff that is subscribed
       for (const sub of financeStaffSubs) {
         if (sub.subscription !== null) {
-          const parsed = JSON.parse(sub.subscription);
-          await webpush.sendNotification(parsed, JSON.stringify(payload));
+          try { // try to send to every finance staff that has a valid subscription 
+            const parsed = JSON.parse(sub.subscription);
+            await webpush.sendNotification(parsed, JSON.stringify(payload));
+          } catch (error) {
+            console.error("Invalid subscription or network error", error);
+          }
         }
       }
     }

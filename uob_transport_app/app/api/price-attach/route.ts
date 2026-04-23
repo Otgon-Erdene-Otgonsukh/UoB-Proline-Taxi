@@ -111,36 +111,48 @@ export async function POST(req: Request) {
     );
 
     // Send mail to every finance staff under the same department as the booking
-    const input = new SendEmailCommand({
+    try {
+      const input = new SendEmailCommand({
         FromEmailAddress: `UoB Taxi & Chauffeur <${process.env.SES_FROM_EMAIL!}>`,
         Destination: {
-            ToAddresses: financeStaffEmails.map(e => e.email)
+          ToAddresses: financeStaffEmails.map((e) => e.email),
         },
         Content: {
-            Simple: {
-                Subject: {
-                    Data: "Price Attachment Notice"
-                },
-                Body: {
-                    Html: {
-                        Data: emailHtml
-                    }
-                }
-            }
-        }
-    });
+          Simple: {
+            Subject: {
+              Data: "Price Attachment Notice",
+            },
+            Body: {
+              Html: {
+                Data: emailHtml,
+              },
+            },
+          },
+        },
+      });
 
-    // Send email
-    await sesClient.send(input);
+      // Send email
+      await sesClient.send(input);
+    } catch (noFinanceStaff) {
+      console.error("No finance staff linked to the booking", noFinanceStaff);
+    }
 
-    // Send notification to finance staffs
-    await notificationHelper("price_attach", booking_id, -1);
+    // Send notification to finance staffs but have fallback even if notification sender throws
+    try {
+      await notificationHelper("price_attach", booking_id, -1);
+    } catch (notificationError) {
+      console.error(
+        "Price attached, but push notification failed",
+        notificationError,
+      );
+    }
 
     return NextResponse.json(
       { message: "Price attached successfully" },
       { status: 201 },
     );
   } catch (error) {
+    console.error("Failed to attach price:", error);
     return NextResponse.json(
       { message: "There was an error when attaching price" },
       { status: 500 },
