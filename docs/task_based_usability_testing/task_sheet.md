@@ -71,3 +71,19 @@ Log-out and log-in to the finance staff account with the details provided
 
 **Task 5:**
 View all bookings for approval which are now overdue
+
+## Scenario 4:
+
+**Task 1:**
+Log-in to the normal user account with the details provided
+
+**Task 2:**
+You (the logged in user) and 4 colleagues are going to take a day trip from Senate House to IKEA to get supplies to renovate the office, you will be traveling on 26/04/2026 at 9am and traveling back at 1pm. Create a round-trip booking to get to and from your day out.
+
+**Task 3:**
+Find the total number of bookings your account has made
+
+**Task 4:**
+Log-out and log-in to the finance staff account with the details provided
+
+**Task 5:** Find, view, then reject the booking going from the Queens Building for the passenger “Demo Davies”
