@@ -15,13 +15,8 @@ import {
 } from "@mui/icons-material"
 import { UserRecord } from "@/model/models";
 import { roleReadableStrMap, userStatusToIntMap, userStatusToStrMap } from "../../super/constants";
-import CustomizedButton from "@/components/CustomizedButton";
 
 const Page = ({ viewData, dialogOpen, handleDialogClose }: { viewData: UserRecord, dialogOpen: boolean, handleDialogClose: () => void }) => {
-
-  const handleViewBookings = () => {
-    console.log("view bookings clicked");
-  }
 
   return (<div>
     <Dialog

@@ -23,7 +23,6 @@ import { motion } from "framer-motion";
 
 export default function Log_forgot() {
   const router = useRouter();
-  const { data, status } = useSession();
 
   // Taken from next.js docs
   const urlBase64ToUint8Array = (base64String: string) => {

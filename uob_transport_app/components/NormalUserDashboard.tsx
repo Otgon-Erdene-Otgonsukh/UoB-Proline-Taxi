@@ -11,7 +11,6 @@ import {
 } from "./ui/map";
 import { easyGetRequest } from "@/utils/easyRequest";
 import { NormalBookings, NormalDashboardData } from "@/model/models";
-import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 import CustomizedButton from "./CustomizedButton";
 import { CircularProgress } from "@mui/material";
@@ -399,7 +398,7 @@ export default function NormalUserDashboard() {
       >
         <div className="h-200 overflow-hidden rounded-2xl border border-slate-300 bg-white shadow-[0_10px_28px_rgba(15,23,42,0.12)] lg:h-full">
           <Map ref={mapRef} center={[-2.5955, 51.45411]} zoom={14}>
-            {sortedRoutes.map((r, _) => {
+            {sortedRoutes.map((r) => {
               const coordinates = r.route?.coordinates;
 
               if (!coordinates) return null;

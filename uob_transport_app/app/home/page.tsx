@@ -165,12 +165,8 @@ const Page = () => {
   };
 
   // Edit Dialog
-  const [editBookDialogOpen, setEditBookDialogOpen] = useState(false);
   const handleEditTrigger = (data: BookingRecord) => {
     redirect(`/book?update=${data.booking_id}`);
-  };
-  const handleEditTriggerClose = () => {
-    setEditBookDialogOpen(false);
   };
 
   // Search form state

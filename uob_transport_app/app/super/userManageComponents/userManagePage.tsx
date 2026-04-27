@@ -4,10 +4,9 @@ import {
   KeyboardArrowLeft,
   KeyboardArrowRight,
   LastPage,
-  Menu as MenuIcon,
 } from '@mui/icons-material';
 import React, { useState, useEffect } from "react";
-import { roleReadableStrMap, roles, userStatusToIntMap, userStatusToStrMap, roleStrMap } from "../constants";
+import { roleReadableStrMap, roles, userStatusToIntMap, userStatusToStrMap } from "../constants";
 import { getUsersAsAdmin, updateUserAsAdmin } from "../request";
 import { UserRecord } from "@/model/models";
 import { UserTable } from "@/components/SuperUsersTable";

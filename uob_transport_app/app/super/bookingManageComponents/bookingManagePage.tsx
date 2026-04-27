@@ -7,7 +7,6 @@ import {
   KeyboardArrowRight,
   LastPage,
   Cancel as CancelIcon,
-  Close as CloseIcon,
   FindInPage as FindInPageIcon,
 } from '@mui/icons-material';
 import React, { useState, useEffect, useRef } from "react";
