@@ -588,7 +588,7 @@ export default function BookingPage() {
       
     }
   },
-  [formData, session.data ,prefilledBooking]);
+  [prefilledBooking]);
 
 
   // Update the route when start or end changes.
