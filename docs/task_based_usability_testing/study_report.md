@@ -33,4 +33,31 @@ The users also provided additional comments about the application, one of which 
 The usability of the platform was quantified using two primary metrics, task success rate and mean time on task. These metrics provide an insight into the efficiency and intuitiveness of the platform. Tasks were timed from the end of comprehension up to the point of task completion. Whilst this data was collected, as the study only has a sample of four participants the data is highly susceptible to outliers. The raw data can be found at the bottom of this document [here](video_analysis.md#time-per-Task).
 
 The task which on average took the longest time was the booking creation, this is however very heavily affected by participant two taking 4 minutes and 45 seconds to complete this task due to the technical error experienced when submitting the form. More concerningly, the booking approval/rejection task had an average completion time of 2 minutes and 55 seconds, 4 seconds faster than the slowest task. This time is higher than expected for this task as the time encapsulates all users’ confusion on the differentiation of the dashboard to the home page. Positively both the log-in/log-out and miscellaneous tasks were all completed with an average time of under 30 seconds. Another metric to consider is the success rate, 75% of tasks were completed independently, with the overall success rate being 100% when assistance was given.
- 
+
+## Recommendations for continued development
+The following are recommendations given the analysis of user feedback, the recommendations given are not conclusive and further considerations would need to be made as to how to implement them into the project. 
+
+All users experienced no friction when logging in or switching accounts, additionally users didn’t face any issues when completing the miscellaneous tasks given to them. Therefore, there will be no recommendations as to these tasks directly.  
+
+Many users experienced some friction with the booking page; this friction could be lowered by:
+* Implementing auto complete on the address fields.
+* Separating the address field to multiple sections (like online booking platforms).
+* Removing the common pickup location dropdown or allowing for a user to type directly into it as if it were a text field, therefore removing the need for the “manually enter” toggle.
+* Improve failed form submission errors, especially the false highlighting of the final field in the form on unrelated errors.
+* When the “I am the lead passenger” toggle is selected, the passenger details should remain visible however be greyed out preventing a user from booking a taxi under the wrong name.
+* Before submission, give a booking summary to the user allowing them to catch unwanted errors.
+* The labels at the top of the home page for normal users should be interactable or present in a way as to not confuse the user into thinking they are buttons.
+
+Lots of users experienced friction when completing the Booking approval/rejection task, some recommendations would be:
+* The landing page of the finance staff accounts should be the dashboard page to prevent unnecessary confusion and to prioritise finance staffs’ most likely action.
+* Strong consideration should be taken as to whether finance staff accounts need the ability to book taxis. Removing this feature would remove confusion as to the differences between the home and dashboard page.
+* To extend of the last recommendation a “switch account” or multiple account management system could allow finance staff to switch accounts to book taxis faster.
+* The search filters could dynamically apply allowing users to identify mistakes in their search queries as they make them.
+* Refinement of the date “clear field” button to be less visually striking.
+* Finance staff should be given a text field upon rejecting a booking allowing the system to relay the reason for booking rejection, reducing manual communication.
+* Collaboration with the university could be investigated to provide inbuilt information on university staff guidance for taxi requests. 
+
+Great consideration should be made to align the application with the university's “house styles” where possible. These changes however should not negatively impact usability of the software, such as making information slower to comprehend, so are to be applied where appropriate.
+
+Implementing these changes will greatly improve the usability of the platform for all stakeholders. Normal users would benefit from the increased clarity when making bookings, making them less likely to make mistakes when creating a booking. For all finance staff, and particularly finance staff who are new to the platform, these changes would reduce off platform communication and increase booking accuracy. The super admin will also benefit from increased booking accuracy as they would be responsible for identifying and correcting errors in created bookings.
+
