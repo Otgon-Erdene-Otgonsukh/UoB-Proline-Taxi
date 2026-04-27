@@ -23,7 +23,7 @@ const Normal = () => {
     } else if (data && data.user?.account_type === USER_ROLE.NORMAL_USER) {
       setIsForbidden(false);
     }
-  }, [status]);
+  }, [status, data]);
 
   if (isForbidden) {
     return <ForbiddenPage />;

@@ -174,6 +174,7 @@ export default function DepDashboard() {
     });
     _getBookingListData(0, paginationMeta.pageSize);
   }, [
+    paginationMeta.pageSize,
     totalApplied,
     statusApplied,
     overdueApplied,

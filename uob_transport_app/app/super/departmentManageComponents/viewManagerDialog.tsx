@@ -33,7 +33,7 @@ const ViewDepartmentDialog = ({ viewData, dialogOpen, handleDialogClose, unassig
             } else {
                 alert("Failed to unassign manager. Please try again.");
             }
-        } catch (error) {
+        } catch {
             alert("Error unassigning manager. Please try again.");
         }
   };

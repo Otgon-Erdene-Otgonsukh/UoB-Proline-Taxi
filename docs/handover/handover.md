@@ -261,6 +261,9 @@ The above diagram displays the AWS Services that was used during development to 
 
 Additional technical information is available [here](/docs/project/project_manual_guide.md) for any beginner developers who are struggling to understand some concepts regarding the tools and external systems used in the project. The document contains concise information about the tools and frameworks of the project and a step-by-step guide to start using those tools in the code base with example code snippets.
 
+## Usability Testing with University Staff
+Towards the end of development, we have conducted a **think-aloud usability testing** with the university staffs who is actively involved in the booking process with the Proline company with the old booking system. To gather comparative data on whether our solution is preferred over the old method, we compiled an in-depth study brief and report containing the result from the testing which can be found [`here`](/docs/task_based_usability_testing/). The user testing documents are meant to be used as a resource for discovering **potential improvements** and **new features** that can be added to the application to further enhance the user experience. Additionally, the document provides common pain-points encountered by the university staff with the booking system which can help focus future developments on solving these issues.
+
 ## Detailed User Instruction
 
 The following section provides a visual guidance on how each user can interact with the web application and complete their corresponding crucial task.

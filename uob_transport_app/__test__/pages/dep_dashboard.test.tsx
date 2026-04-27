@@ -2,7 +2,6 @@ import { screen, render, waitFor, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import Dashboard from "@/app/dep-dashboard/page";
 import type { BookingWithTrip } from "@/app/dep-dashboard/constants";
-import { getPendingBookingList } from "@/app/dep-dashboard/requests";
 import userEvent from "@testing-library/user-event";
 import { useSession } from "next-auth/react";
 

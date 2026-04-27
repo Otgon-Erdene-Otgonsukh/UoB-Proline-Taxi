@@ -4,10 +4,9 @@ import {
   KeyboardArrowLeft,
   KeyboardArrowRight,
   LastPage,
-  Menu as MenuIcon,
 } from '@mui/icons-material';
 import React, { useState, useEffect } from "react";
-import { roleReadableStrMap, roles, userStatusToIntMap, userStatusToStrMap, roleStrMap } from "../constants";
+import { roleReadableStrMap, roles, userStatusToIntMap, userStatusToStrMap } from "../constants";
 import { getUsersAsAdmin, updateUserAsAdmin } from "../request";
 import { UserRecord } from "@/model/models";
 import { UserTable } from "@/components/SuperUsersTable";
@@ -87,7 +86,7 @@ export const UserManagePage = (
 
   useEffect(() => {
     _rerenderTable(paginationMeta.page, paginationMeta.pageSize);
-  }, [searchFormInput.role, searchFormInput.user_status])
+  }, [ paginationMeta.page, paginationMeta.pageSize, searchFormInput.role, searchFormInput.user_status])
 
   const [userDetail, setUserDetail] = useState<UserRecord>()
   const [viewDialogOpen, setViewDialogOpen] = useState(false);

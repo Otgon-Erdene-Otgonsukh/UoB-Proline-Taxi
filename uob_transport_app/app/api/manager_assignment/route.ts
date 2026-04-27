@@ -60,7 +60,7 @@ export async function POST(req: Request) {
             })
         }
         return NextResponse.json({ message: "Manager updated successfully" }, { status: 200 });
-    } catch (error) {
+    } catch {
         return NextResponse.json({ message: "There was an error" }, { status: 500 })
     }
 

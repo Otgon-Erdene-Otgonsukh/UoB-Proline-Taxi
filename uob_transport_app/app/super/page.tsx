@@ -73,7 +73,7 @@ const Page = () => {
         }
       });
     }
-  }, [status, router]);
+  }, [status, router, data]);
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 

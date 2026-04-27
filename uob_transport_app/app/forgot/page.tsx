@@ -36,7 +36,7 @@ export default function Forgot() {
     } else {
       setIsLoading(true);
       sendResetEmail(mail).then(res => {
-        res.json().then(_ => {
+        res.json().then(() => {
           setAlterMessageMeta({
             show: true,
             status: 'success',

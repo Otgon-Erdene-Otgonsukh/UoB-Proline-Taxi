@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef, use } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter, redirect } from "next/navigation";
 import {
   Button,
@@ -588,7 +588,7 @@ export default function BookingPage() {
       
     }
   },
-  [prefilledBooking]);
+  [formData, session.data ,prefilledBooking]);
 
 
   // Update the route when start or end changes.
