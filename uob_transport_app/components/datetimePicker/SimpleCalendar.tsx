@@ -248,7 +248,7 @@ export function SimpleCalendar({
                 goToPrevMonth();
             }
         },
-        [viewMode, year, month],
+        [goToNextMonth, goToPrevMonth, viewMode, year, month],
     );
 
     const handleDateClick = (date: Date) => {

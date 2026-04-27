@@ -468,7 +468,7 @@ export const BookingManagePage = () => {
 
   useEffect(() => { // auto re-render the table on selections
     _rerenderTable(paginationMeta.page, paginationMeta.pageSize)
-  }, [searchFormInput.bookingStatus]);
+  }, [searchFormInput.bookingStatus, paginationMeta.page, paginationMeta.pageSize]);
 
   const dateTimePickerFromAnchorRef = useRef<HTMLDivElement>(null);
   const dateTimePickerToAnchorRef = useRef<HTMLDivElement>(null);

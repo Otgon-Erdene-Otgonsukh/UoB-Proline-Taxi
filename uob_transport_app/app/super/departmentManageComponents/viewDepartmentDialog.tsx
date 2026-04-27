@@ -58,7 +58,7 @@ const ViewDepartmentDialog = ({ departmentList, viewData, dialogOpen, handleDial
     }).finally(() => {
       setIsLoading(false);
     });
-  }, [])
+  }, [viewData.depId])
 
   const [nameEditOn, setNameEditOn] = useState(false);
   const [snackbarState, setSnackbarState] = useState({

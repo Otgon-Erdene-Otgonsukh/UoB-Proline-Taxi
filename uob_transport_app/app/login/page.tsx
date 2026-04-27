@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { getSession, useSession } from "next-auth/react";
+import { getSession } from "next-auth/react";
 import {
   Box,
   Button,
@@ -66,7 +66,7 @@ export default function Log_forgot() {
 
       try {
         await handleRegisterAndPermission(); // wait until it returns and redirect
-      } catch (error) {
+      } catch {
         console.log("PWA Registration failed")
 
       } finally { // redirect even if register and permission failed to avoid stalling

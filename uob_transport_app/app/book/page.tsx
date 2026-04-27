@@ -588,7 +588,7 @@ export default function BookingPage() {
       
     }
   },
-  [prefilledBooking]);
+  [formData, session.data ,prefilledBooking]);
 
 
   // Update the route when start or end changes.
@@ -596,7 +596,7 @@ export default function BookingPage() {
     if (end != null && start != null) {
       updateRoute();
     }
-  }, [start, end, vias, returnloc]);
+  }, [start, end, vias, returnloc, updateRoute]);
 
   const [departmentList, setDepartmentList] = useState<department[]>([]);
 

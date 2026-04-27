@@ -86,7 +86,7 @@ export const UserManagePage = (
 
   useEffect(() => {
     _rerenderTable(paginationMeta.page, paginationMeta.pageSize);
-  }, [searchFormInput.role, searchFormInput.user_status])
+  }, [ paginationMeta.page, paginationMeta.pageSize, searchFormInput.role, searchFormInput.user_status])
 
   const [userDetail, setUserDetail] = useState<UserRecord>()
   const [viewDialogOpen, setViewDialogOpen] = useState(false);

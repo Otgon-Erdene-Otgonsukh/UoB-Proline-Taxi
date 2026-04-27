@@ -372,7 +372,7 @@ const Page = () => {
   
   useEffect(() => {
     _getBookingListData(paginationMeta.page, paginationMeta.pageSize, false);
-  }, [searchFormInput.bookingStatus])
+  }, [_getBookingListData, searchFormInput.bookingStatus])
 
   // Do nothing if we get a status. Await for this check to be carried out in useEffect.
   if (status === "loading" || status === "unauthenticated") {

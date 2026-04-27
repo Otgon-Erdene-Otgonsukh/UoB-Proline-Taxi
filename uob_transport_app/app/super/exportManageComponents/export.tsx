@@ -624,7 +624,7 @@ export default function ExportPage() {
   useEffect(() => {
     // auto re-render the table on selections and clearing
     _rerenderTable(paginationMeta.page, paginationMeta.pageSize);
-  }, [searchFormInput.bookingStatus]);
+  }, [searchFormInput.bookingStatus, paginationMeta.page, paginationMeta.pageSize]);
 
   const dateTimePickerFromAnchorRef = useRef<HTMLDivElement>(null);
   const dateTimePickerToAnchorRef = useRef<HTMLDivElement>(null);

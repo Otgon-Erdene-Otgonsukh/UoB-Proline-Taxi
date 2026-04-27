@@ -204,7 +204,7 @@ export default function NormalUserDashboard() {
       ],
       { padding: 140 },
     );
-  }, [activeIndex]);
+  }, [activeIndex, dashboardData]);
 
   // Sort routes: non-selected first, selected last (renders on top)
   const sortedRoutes = [...routes].sort((a, b) => {

@@ -88,7 +88,7 @@ export async function GET(request: Request) {
                 headers: { "Content-Type": "application/json" },
             },
         );
-    } catch (error) {
+    } catch {
         return new Response(
         JSON.stringify({
             message: "Error fetching booking details.",

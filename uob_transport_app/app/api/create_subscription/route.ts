@@ -25,7 +25,7 @@ export async function POST(req: Request) {
       { message: "Subscription created succesffully" },
       { status: 200 },
     );
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       {
         message: "Something went wrong",

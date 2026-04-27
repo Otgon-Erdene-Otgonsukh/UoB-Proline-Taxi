@@ -104,7 +104,7 @@ export async function GET() {
     };
 
     return NextResponse.json(superData, { status: 200 });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { message: "Something went wrong when catching dashboard information" },
       { status: 500 },
