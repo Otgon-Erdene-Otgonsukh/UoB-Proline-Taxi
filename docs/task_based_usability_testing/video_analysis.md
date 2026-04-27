@@ -68,3 +68,15 @@
 * Task 4: Success with assistance - User was guided to the dashboard page after searching for the booking and it not being there. User correctly identifies the booking using the from search field.
 * Task 5: Success
 * Further Comments: "That was actually quite easy to navigate", found updating personal details easy and intuitive. It was unclear the need to go to the dashboard to approve/reject bookings. "The login screen was very straight forward", "the map bit was very nice and that was very fast and very good". "When you start typing in location names and not having things come up".
+
+## Time per Task and Task Success rate 
+
+| Participant | Task 1 | Task 2 | Task 3 | Task 4 | Task 5 |
+| :---------: | :----: | :----: | :----: | :----: | :----: |
+| Participant 1 | 00:14 | 03:14 | 00:24 | 03:33 | 00:22 |
+| Participant 2 | 00:48 | 04:45 | 00:42 | 03:07 | 00:37 |
+| Participant 3 | 00:17 | 01:41 | 00:28 | 02:49 | 00:11 |
+| Participant 4 | 00:32 | 02:16 | 00:20 | 02:10 | 00:30 |
+| Mean Time | 00:28 | 02:59 | 00:29 | 02:55 | 00:25 |
+
+* 75% of tasks were completed independently, with the overall success rate being 100% when assistance was given.
