@@ -14,6 +14,8 @@ This document provides an overview of all AI tools utilized in the project, in a
  - Basic styling baseground to build upon 
  - Understanding Jest/Next.js error messages
  - Searching up how to co-author a git commit 
+ - Extensive spelling and gramma checking on writen documents
+ - Reformating text documents to markdown
 
 **Example Prompts:**
  - "What is the difference between useState and useRef in React ?"
@@ -21,10 +23,14 @@ This document provides an overview of all AI tools utilized in the project, in a
  - "Responsive styling syntax in Tailwind ?"
  - "I stashed changes to my local branch, then my laptop ran out of charge and shut down, when I rebooted it and did git stash pop, it said "No stash entries found". How do I recover my changes?"
  - "What is the command syntax to co author a commit in git?"
+ - "Highlight spelling and grammatical errers in this document"
+ - "Convert this to markdown format. Don’t change any of the contents"
 
 **Used in the following files:**
  - `/components/Navbar.tsx`
  - `/__test__/nav_bar.test.tsx`
+ - `/docs/task_based_usability_testing/study_report`
+ - `/docs/task_based_usability_testing/video_analysis`
 
 ## Ioan Moir
 **AI Tool:** Chat GPT 4.0
