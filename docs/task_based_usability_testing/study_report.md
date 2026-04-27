@@ -64,3 +64,21 @@ Implementing these changes will greatly improve the usability of the platform fo
 ## Conclusion
 The task based usability study proved to be very effective at exposing areas of improvement for our project. Additionally, it confirmed that the platform can progress to small scale test deployment, with all suggested changes being refinements to the user experience as opposed to critical errors with platform functionality. Whilst no tasks were failed by users, it would be important to use the findings of this study to create platform onboarding documentation to promote the smooth adoption of the platform. Based on participant feedback, all participants indicated that the platform would be a viable tool. The proposed refinements will cement this statement and reduce the learning curve for new users of the system. Furthermore, the continued assessment of usability will enable the fast and continued adoption of the platform as staff share their positive experiences with it.
 
+## Review of the study
+The study was a broad success, highlighting pitfalls in usability, however some key alterations could be made to improve the relevance and quality of the findings. 
+
+The study utilised proxy users, whilst the users who participated were all university staff, none of them were responsible for taxi booking administration. This could have a noticeable effect on the outcome of the study as they would have a better understanding of the differentiation between the booking creation and administration workflows.  
+
+Similarly, due to time constraints only four participants were able to complete the study. Whilst valuable feedback was collected in the qualitative findings the quantitative conclusions lacked academic relevance. Increasing the sample size would allow further statistical analysis of the time and success rate of the user group.
+
+Alongside more participants, the study could be improved by a wider range of tasks covering all workflows within the application. To extend this idea, randomised scenario generation could be implemented using Large Language Models to eliminate the need for manual task creation for a large study sample size.
+
+Whilst all staff were given the option to use a mouse, an improvement to the method of the study could be if participants could use their work computer when participating. This would allow the participant to be familiar with their peripherals, resulting in an increase in real-world accuracy in time per task measurements.
+
+In an ideal scenario, it would be more appropriate to compensate participants for their time and feedback. This would have increased the participants commitment to the project and study. Unfortunately, this wasn’t an option as the project is unfunded.
+
+Throughout conducting the study, I made subtle but substantial changes to how I led the sessions, I became clearer when I explained the tasks vocally and gave better clarifications to tasks without unintentionally providing hints to the users.
+
+As well as the form error mentioned earlier, when logging-in with the normal user account details provided, a google chrome alert triggered regarding the password being involved in a data breach. This distracted users from the tasks and interrupted the user experience and therefore test accounts should have passwords which aren’t going to cause this to happen.
+
+Reviewing all the videos took a lot of time, the review methods should be improved if the study were to be repeated with a larger sample size. Research should be conducted with the assistance of tools which would aid this process. The sessions should be adapted for these tools if necessary.
