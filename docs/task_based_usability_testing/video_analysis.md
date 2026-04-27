@@ -52,3 +52,19 @@
 * Further Comments: "It is very intuitive", "it looks very professional". User expected to be able to click on the info labels at the top of the normal user home page.
 
 
+## Participant 4
+
+### Timestamps
+* Task 1: 00:03 - 00:35 (00:32)
+* Task 2: 01:09 - 03:25 (02:16)
+* Task 3: 04:18 - 04:38 (00:20)
+* Task 4: 04:51 - 07:01 (02:10)
+* Task 5: 07:29 - 07:59 (00:30)
+
+### Notes
+* Task 1: Success
+* Task 2: Success - User is initially confused with where to find the pickup location as the airport is not listed in the common pickup location, however quickly finds the flight toggle. User searched in the via box "Tobacco Factory, Bedminster" and the system was unable to find a location, however removing "Bedminster" worked and they did this unprompted.
+* Task 3: Success
+* Task 4: Success with assistance - User was guided to the dashboard page after searching for the booking and it not being there. User correctly identifies the booking using the from search field.
+* Task 5: Success
+* Further Comments: "That was actually quite easy to navigate", found updating personal details easy and intuitive. It was unclear the need to go to the dashboard to approve/reject bookings. "The login screen was very straight forward", "the map bit was very nice and that was very fast and very good". "When you start typing in location names and not having things come up".
