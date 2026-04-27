@@ -596,7 +596,7 @@ export default function BookingPage() {
     if (end != null && start != null) {
       updateRoute();
     }
-  }, [start, end, vias, returnloc, updateRoute]);
+  }, [start, end, vias, returnloc]);
 
   const [departmentList, setDepartmentList] = useState<department[]>([]);
 
