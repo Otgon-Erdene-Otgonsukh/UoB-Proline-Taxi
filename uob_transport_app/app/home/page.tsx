@@ -379,6 +379,11 @@ const Page = () => {
     return null;
   }
 
+  const notificationPermissionGranted =
+    typeof (globalThis as unknown) !== "undefined" &&
+    typeof (globalThis).Notification !== "undefined" &&
+    (globalThis).Notification.permission === "granted";
+
   return (
     <div className="flex flex-col items-center font-inter p-4">
       <motion.div
@@ -391,14 +396,13 @@ const Page = () => {
         <p className="text-gray-600 text-lg font-normal">
           To Your Booking Space
         </p>
-        {Notification.permission !== "granted" && 
+        {notificationPermissionGranted == false &&
           <Button sx={{
              textTransform: "none",
               bgcolor: "white",
               border: "2px solid #2c2c2c",
               borderRadius: 2,
               color: "#2c2c2c",
-              height: { xs: 35, md: "100%"},
               ":hover": {
                 scale: 1.02
               },
