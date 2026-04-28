@@ -380,9 +380,9 @@ const Page = () => {
   }
 
   const notificationPermissionGranted =
-    typeof (globalThis as any) !== "undefined" &&
-    typeof (globalThis as any).Notification !== "undefined" &&
-    (globalThis as any).Notification.permission === "granted";
+    typeof (globalThis as unknown) !== "undefined" &&
+    typeof (globalThis).Notification !== "undefined" &&
+    (globalThis).Notification.permission === "granted";
 
   return (
     <div className="flex flex-col items-center font-inter p-4">
