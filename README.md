@@ -286,6 +286,7 @@ If you are new to the framework and tools used in this project and struggling to
 As for further in-depth developer instructions and guidance, the handover document that contains more information about environment variables and database can be found [`here`](/docs/handover/handover.md).
 
 ## Team Members
+This project is a product of a collaborative effort that has been contributed by the following people that were part of the course. The details are shown below.  
 
 | **Name**                     | **Email**             |
 | ---------------------------- | --------------------- |
