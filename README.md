@@ -17,6 +17,24 @@
 [![OpenStreetMap](https://img.shields.io/badge/Open_Street_Map-7EBC6F?style=for-the-badge&logo=OpenStreetMap&logoColor=white)](https://wiki.openstreetmap.org/)
 [![AWS](https://img.shields.io/badge/Amazon_Web_Services-FB7A24?style=for-the-badge&logoColor=white)](https://aws.amazon.com/)
 
+## Preview
+<p>
+  <img width="500" alt="localhost_3000_" src="https://github.com/user-attachments/assets/58ec6a5b-197e-42f1-a3f3-7a8ef346833f" />
+  <img width="500" alt="564481190-e1a985dc-0597-463d-b02d-779e26bc5ace" src="https://github.com/user-attachments/assets/4fb5329b-5e52-45b1-b589-544b75c777a6" />
+  <img width="500" alt="localhost_3000_ (1)" src="https://github.com/user-attachments/assets/f3e1f74a-c371-4397-82ce-2b27b999ee7b" />
+  <img width="500" alt="559973164-f084c44d-8a58-4c7c-ae06-08cc569736a8 (1)" src="https://github.com/user-attachments/assets/e4452003-066b-4d54-b2fc-0014fd3aa704" />
+  <img width="500" alt="localhost_3000_ (2)" src="https://github.com/user-attachments/assets/4db353f6-3ce6-4403-b9e8-e6f24efa07ab" />
+  <img width="500" alt="superBooking" src="https://github.com/user-attachments/assets/1b259f68-c60d-4c28-ad38-1cefa044e062" />
+</p>
+
+### Mobile Compatibility and PWA
+
+<img width="600" alt="Picture3" src="https://github.com/user-attachments/assets/ee1fc234-6add-47cd-a493-8f71274735d4" />
+<img width="600" alt="Picture2" src="https://github.com/user-attachments/assets/49e14a54-7a38-4dfc-8939-0d06de935277" />
+
+
+
+
 
 ## Table of Contents
 
